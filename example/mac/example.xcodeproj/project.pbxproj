@@ -1,0 +1,309 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2DB888F01792EE6F00FB3764 /* example.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2DB888EF1792EE6F00FB3764 /* example.1 */; };
+		2DB8891F1792EF1900FB3764 /* DspAudioDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DB889171792EEE400FB3764 /* DspAudioDevice.cpp */; };
+		2DB889201792EF1900FB3764 /* DspOscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8891A1792EEE400FB3764 /* DspOscillator.cpp */; };
+		2DB889211792EF1900FB3764 /* DspWaveStreamer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8891C1792EEE400FB3764 /* DspWaveStreamer.cpp */; };
+		2DB889221792EF1900FB3764 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8891E1792EEE400FB3764 /* main.cpp */; };
+		2DB889291792EF7F00FB3764 /* libdspatch.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DB889281792EF7600FB3764 /* libdspatch.dylib */; };
+		2DB8892C1792EF9700FB3764 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DB8892A1792EF9700FB3764 /* CoreAudio.framework */; };
+		2DB8892D1792EF9700FB3764 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DB8892B1792EF9700FB3764 /* CoreServices.framework */; };
+		2DB889311792EFE200FB3764 /* RtAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2DB8892F1792EFDD00FB3764 /* RtAudio.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2DB889271792EF7600FB3764 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2DB889231792EF7600FB3764 /* dspatch.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2DB888DA1792EE5300FB3764;
+			remoteInfo = dspatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2DB888E81792EE6F00FB3764 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				2DB888F01792EE6F00FB3764 /* example.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2DB888EA1792EE6F00FB3764 /* example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = example; sourceTree = BUILT_PRODUCTS_DIR; };
+		2DB888EF1792EE6F00FB3764 /* example.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = example.1; sourceTree = "<group>"; };
+		2DB889161792EEE400FB3764 /* DspAdder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DspAdder.h; path = ../../DspAdder.h; sourceTree = "<group>"; };
+		2DB889171792EEE400FB3764 /* DspAudioDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DspAudioDevice.cpp; path = ../../DspAudioDevice.cpp; sourceTree = "<group>"; };
+		2DB889181792EEE400FB3764 /* DspAudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DspAudioDevice.h; path = ../../DspAudioDevice.h; sourceTree = "<group>"; };
+		2DB889191792EEE400FB3764 /* DspGain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DspGain.h; path = ../../DspGain.h; sourceTree = "<group>"; };
+		2DB8891A1792EEE400FB3764 /* DspOscillator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DspOscillator.cpp; path = ../../DspOscillator.cpp; sourceTree = "<group>"; };
+		2DB8891B1792EEE400FB3764 /* DspOscillator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DspOscillator.h; path = ../../DspOscillator.h; sourceTree = "<group>"; };
+		2DB8891C1792EEE400FB3764 /* DspWaveStreamer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = DspWaveStreamer.cpp; path = ../../DspWaveStreamer.cpp; sourceTree = "<group>"; };
+		2DB8891D1792EEE400FB3764 /* DspWaveStreamer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DspWaveStreamer.h; path = ../../DspWaveStreamer.h; sourceTree = "<group>"; };
+		2DB8891E1792EEE400FB3764 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../main.cpp; sourceTree = "<group>"; };
+		2DB889231792EF7600FB3764 /* dspatch.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = dspatch.xcodeproj; path = ../../build/mac/dspatch.xcodeproj; sourceTree = "<group>"; };
+		2DB8892A1792EF9700FB3764 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		2DB8892B1792EF9700FB3764 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		2DB8892F1792EFDD00FB3764 /* RtAudio.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RtAudio.cpp; path = ../rtaudio/RtAudio.cpp; sourceTree = "<group>"; };
+		2DB889301792EFDD00FB3764 /* RtAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RtAudio.h; path = ../rtaudio/RtAudio.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2DB888E71792EE6F00FB3764 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DB8892C1792EF9700FB3764 /* CoreAudio.framework in Frameworks */,
+				2DB8892D1792EF9700FB3764 /* CoreServices.framework in Frameworks */,
+				2DB889291792EF7F00FB3764 /* libdspatch.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2DB888E11792EE6F00FB3764 = {
+			isa = PBXGroup;
+			children = (
+				2DB8892A1792EF9700FB3764 /* CoreAudio.framework */,
+				2DB8892B1792EF9700FB3764 /* CoreServices.framework */,
+				2DB889231792EF7600FB3764 /* dspatch.xcodeproj */,
+				2DB888EC1792EE6F00FB3764 /* example */,
+				2DB8892E1792EFC000FB3764 /* rtaudio */,
+				2DB888EB1792EE6F00FB3764 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2DB888EB1792EE6F00FB3764 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2DB888EA1792EE6F00FB3764 /* example */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2DB888EC1792EE6F00FB3764 /* example */ = {
+			isa = PBXGroup;
+			children = (
+				2DB889161792EEE400FB3764 /* DspAdder.h */,
+				2DB889171792EEE400FB3764 /* DspAudioDevice.cpp */,
+				2DB889181792EEE400FB3764 /* DspAudioDevice.h */,
+				2DB889191792EEE400FB3764 /* DspGain.h */,
+				2DB8891A1792EEE400FB3764 /* DspOscillator.cpp */,
+				2DB8891B1792EEE400FB3764 /* DspOscillator.h */,
+				2DB8891C1792EEE400FB3764 /* DspWaveStreamer.cpp */,
+				2DB8891D1792EEE400FB3764 /* DspWaveStreamer.h */,
+				2DB8891E1792EEE400FB3764 /* main.cpp */,
+				2DB888EF1792EE6F00FB3764 /* example.1 */,
+			);
+			path = example;
+			sourceTree = "<group>";
+		};
+		2DB889241792EF7600FB3764 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2DB889281792EF7600FB3764 /* libdspatch.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2DB8892E1792EFC000FB3764 /* rtaudio */ = {
+			isa = PBXGroup;
+			children = (
+				2DB8892F1792EFDD00FB3764 /* RtAudio.cpp */,
+				2DB889301792EFDD00FB3764 /* RtAudio.h */,
+			);
+			name = rtaudio;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2DB888E91792EE6F00FB3764 /* example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2DB888F31792EE6F00FB3764 /* Build configuration list for PBXNativeTarget "example" */;
+			buildPhases = (
+				2DB888E61792EE6F00FB3764 /* Sources */,
+				2DB888E71792EE6F00FB3764 /* Frameworks */,
+				2DB888E81792EE6F00FB3764 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = example;
+			productName = example;
+			productReference = 2DB888EA1792EE6F00FB3764 /* example */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2DB888E21792EE6F00FB3764 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Marcus Tomlinson";
+			};
+			buildConfigurationList = 2DB888E51792EE6F00FB3764 /* Build configuration list for PBXProject "example" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2DB888E11792EE6F00FB3764;
+			productRefGroup = 2DB888EB1792EE6F00FB3764 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2DB889241792EF7600FB3764 /* Products */;
+					ProjectRef = 2DB889231792EF7600FB3764 /* dspatch.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				2DB888E91792EE6F00FB3764 /* example */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		2DB889281792EF7600FB3764 /* libdspatch.dylib */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.dylib";
+			path = libdspatch.dylib;
+			remoteRef = 2DB889271792EF7600FB3764 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2DB888E61792EE6F00FB3764 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2DB889311792EFE200FB3764 /* RtAudio.cpp in Sources */,
+				2DB8891F1792EF1900FB3764 /* DspAudioDevice.cpp in Sources */,
+				2DB889201792EF1900FB3764 /* DspOscillator.cpp in Sources */,
+				2DB889211792EF1900FB3764 /* DspWaveStreamer.cpp in Sources */,
+				2DB889221792EF1900FB3764 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2DB888F11792EE6F00FB3764 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2DB888F21792EE6F00FB3764 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2DB888F41792EE6F00FB3764 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					__MACOSX_CORE__,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2DB888F51792EE6F00FB3764 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = __MACOSX_CORE__;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2DB888E51792EE6F00FB3764 /* Build configuration list for PBXProject "example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2DB888F11792EE6F00FB3764 /* Debug */,
+				2DB888F21792EE6F00FB3764 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2DB888F31792EE6F00FB3764 /* Build configuration list for PBXNativeTarget "example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2DB888F41792EE6F00FB3764 /* Debug */,
+				2DB888F51792EE6F00FB3764 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2DB888E21792EE6F00FB3764 /* Project object */;
+}
