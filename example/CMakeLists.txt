@@ -26,6 +26,7 @@ target_link_libraries(
 # Definition for RtAudio Windows, using direct sound
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_definitions(-D__WINDOWS_DS__)
+
     target_link_libraries(
         ${PROJECT_NAME}
         dsound.lib
@@ -35,6 +36,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 # Definition for RtAudio Linux, using ASLA
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D__LINUX_ALSA__)
+
     target_link_libraries(
         ${PROJECT_NAME}
         asound
@@ -44,6 +46,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 # Definition for RtAudio Mac OSX, using Core Audio
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions(-D__MACOSX_CORE__)
+
     target_link_libraries(
         ${PROJECT_NAME}
         "-framework CoreAudio"

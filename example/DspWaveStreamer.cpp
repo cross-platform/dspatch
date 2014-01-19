@@ -80,7 +80,7 @@ bool DspWaveStreamer::LoadFile( const char* filePath )
     return false;
   }
   inFile.seekg( 4, std::ios::beg ); //get file size
-  inFile.read( reinterpret_cast<char*>( &dwFileSize ), sizeof( dwFileSize ) );
+  inFile.read( reinterpret_cast<char*>( &dwFileSize ), 4 );
   if( dwFileSize <= 16 )
   {
     inFile.close();
