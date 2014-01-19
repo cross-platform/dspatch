@@ -27,13 +27,9 @@ target_link_libraries(
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_definitions(-D__WINDOWS_DS__)
 
-    include_directories(
-        $ENV{DXSDK_DIR}/Include
-    )
-
     target_link_libraries(
         ${PROJECT_NAME}
-        $ENV{DXSDK_DIR}/Lib/$ENV{PROCESSOR_ARCHITECTURE}/dsound.lib
+        dsound.lib
     )
     
     add_custom_command(
