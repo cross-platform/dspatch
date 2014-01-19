@@ -51,9 +51,6 @@ DspAudioDevice::DspAudioDevice()
 
   _deviceCount( 0 ),
 
-  _inputDevice( 0 ),
-  _outputDevice( 0 ),
-
   _gotWaitReady( false ),
   _gotSyncReady( true ),
 

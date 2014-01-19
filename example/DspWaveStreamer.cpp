@@ -101,7 +101,7 @@ bool DspWaveStreamer::LoadFile( const char* filePath )
     inFile.seekg( i, std::ios::beg );
     inFile.read( dwChunkId, 4 );
     inFile.seekg( i + 4, std::ios::beg );
-    inFile.read( reinterpret_cast<char*>( &dwChunkSize ), sizeof( dwChunkSize ) );
+    inFile.read( reinterpret_cast<char*>( &dwChunkSize ), 4 );
     if( !strcmp( dwChunkId, "fmt " ) )
     {
       inFile.seekg( i + 8, std::ios::beg );
@@ -136,7 +136,7 @@ bool DspWaveStreamer::LoadFile( const char* filePath )
     inFile.seekg( i, std::ios::beg );
     inFile.read( dwChunkId, 4 );
     inFile.seekg( i + 4, std::ios::beg );
-    inFile.read( reinterpret_cast<char*>( &dwChunkSize ), sizeof( dwChunkSize ) );
+    inFile.read( reinterpret_cast<char*>( &dwChunkSize ), 4 );
     if( !strcmp( dwChunkId, "data" ) )
     {
       _waveData.resize( dwChunkSize / 2 );

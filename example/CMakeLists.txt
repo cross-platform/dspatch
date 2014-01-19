@@ -10,12 +10,7 @@ include_directories(
 )
 
 # Add definition of example audio file
-set(
-    EXAMPLE_WAV_FILE
-    ${CMAKE_CURRENT_SOURCE_DIR}/Tchaikovski-Swan-Lake-Scene.wav
-)
-
-add_definitions(-DEXAMPLE_WAV_FILE="${EXAMPLE_WAV_FILE}")
+add_definitions(-DEXAMPLE_WAV_FILE="${CMAKE_CURRENT_SOURCE_DIR}/Sample.wav")
 
 add_executable(
     ${PROJECT_NAME}
@@ -49,4 +44,9 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 # Definition for RtAudio Mac OSX, using Core Audio
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions(-D__MACOSX_CORE__)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        "-framework CoreAudio"
+        "-framework CoreFoundation"
+    )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

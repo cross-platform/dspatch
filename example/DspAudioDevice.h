@@ -65,9 +65,6 @@ private:
 
   unsigned short _deviceCount;
 
-  unsigned short _inputDevice;
-  unsigned short _outputDevice;
-
   DspMutex _buffersMutex;
   DspMutex _syncMutex;
   DspWaitCondition _waitCondt;
