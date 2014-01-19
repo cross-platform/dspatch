@@ -27,9 +27,20 @@ target_link_libraries(
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     add_definitions(-D__WINDOWS_DS__)
 
+    include_directories(
+        $ENV{DXSDK_DIR}/Include
+    )
+
     target_link_libraries(
         ${PROJECT_NAME}
-        dsound.lib
+        $ENV{DXSDK_DIR}/Lib/$ENV{PROCESSOR_ARCHITECTURE}/dsound.lib
+    )
+    
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/DSPatch.dll
+        ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>
     )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
