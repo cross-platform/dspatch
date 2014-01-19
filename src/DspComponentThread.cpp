@@ -22,8 +22,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include "DspComponentThread.h"
-#include "DspComponent.h"
+#include <DspComponentThread.h>
+#include <DspComponent.h>
 
 //=================================================================================================
 

@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef DSPADDER_H
 #define DSPADDER_H
 
-#include "../include/DSPatch.h"
+#include <DSPatch.h>
 
 //=================================================================================================
 /// Example DspComponent: Adder

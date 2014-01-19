@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef DSPAUDIODEVICE_H
 #define DSPAUDIODEVICE_H
 
-#include "../include/DSPatch.h"
+#include <DSPatch.h>
 
 struct RtAudioMembers;
 

@@ -22,7 +22,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include "DspWaveStreamer.h"
+#include <DspWaveStreamer.h>
 
 #include <fstream>
 #include <iostream>
@@ -31,7 +31,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //=================================================================================================
 
 DspWaveStreamer::DspWaveStreamer()
-: _waveData( NULL ),
+: _waveData( 0 ),
   _isPlaying( false ),
   _bufferSize( 512 ),
   _sampleIndex( 0 ),

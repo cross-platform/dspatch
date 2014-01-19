@@ -22,51 +22,50 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPCOMPONENTTHREAD_H
-#define DSPCOMPONENTTHREAD_H
+#ifndef DSPWIREBUS_H
+#define DSPWIREBUS_H
 
 //-------------------------------------------------------------------------------------------------
 
-#include "DspThread.h"
+#include <vector>
+
+#include <DspWire.h>
+#include <DspThread.h>
 
 class DspComponent;
 
 //=================================================================================================
-/// Thread class for ticking and reseting a single component
+/// DspWire container
 
 /**
-A DspComponentThread is responsible for ticking and reseting a single component continuously in
-a separate free-running thread. On construction, a reference to the component must be provided for
-the DspThread's _Run() method to use. Once Start() has been called, the thread will begin
-repeatedly executing the _Run() method. On each thread iteration, DspComponentThread simply calls
-the reference component's Tick() and Reset() methods. The Pause() method causes DspComponentThread
-to wait until instructed to Resume() again.
+A DspWireBus contains DspWires (see DspWire). Each component contains an input wire bus. Via
+the Tick() method, a DspComponent uses it's input wire bus to retrieve it's input signals from
+incoming linked components, as mapped out in each DspWire. The DspCircuit class has an additional 2
+wire buses use to connect the circuit's IO signals to and from it's internal components.
 */
 
-class DLLEXPORT DspComponentThread : public DspThread
+class DLLEXPORT DspWireBus
 {
 public:
-  DspComponentThread();
-  ~DspComponentThread();
+  DspWireBus( bool isLinkedComponentReceivingSignals = false );
+  virtual ~DspWireBus();
 
-  void Initialise( DspComponent* component );
-  bool IsStopped() const;
+  bool AddWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
-  void Start( Priority priority = TimeCriticalPriority );
-  void Stop();
-  void Pause();
-  void Resume();
+  bool RemoveWire( unsigned short wireIndex );
+  bool RemoveWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
+
+  void RemoveAllWires();
+
+  DspWire* GetWire( unsigned short wireIndex );
+
+  unsigned short GetWireCount() const;
 
 private:
-  DspComponent* _component;
-  bool _stop, _pause;
-  bool _stopped;
-  DspMutex _resumeMutex;
-  DspWaitCondition _resumeCondt, _pauseCondt;
-
-  virtual void _Run();
+  bool _isLinkedComponentReceivingSignals;
+  std::vector< DspWire > _wires;
 };
 
 //=================================================================================================
 
-#endif // DSPCOMPONENTTHREAD_H
+#endif // DSPWIREBUS_H

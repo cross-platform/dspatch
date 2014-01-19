@@ -22,9 +22,9 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include "DspWireBus.h"
-#include "DspComponent.h"
-#include "DspWire.h"
+#include <DspWireBus.h>
+#include <DspComponent.h>
+#include <DspWire.h>
 
 //=================================================================================================
 

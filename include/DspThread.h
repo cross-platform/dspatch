@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifdef _WIN32
 
   #define DLLEXPORT __declspec(dllexport)
-  #include "DspThreadWin.h"
+  #include <DspThreadWin.h>
 
   #pragma warning(disable:4251) // disable class needs to have dll-interface warning
   #pragma warning(disable:4275) // disable non dll-interface class used as base warning
@@ -33,11 +33,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #elif DSP_NOTHREADS
 
   #define DLLEXPORT
-  #include "DspThreadNull.h"
+  #include <DspThreadNull.h>
 
 #else
 
   #define DLLEXPORT
-  #include "DspThreadUnix.h"
+  #include <DspThreadUnix.h>
 
 #endif

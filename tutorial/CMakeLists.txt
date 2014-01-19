@@ -1,15 +1,20 @@
 project(DSPatchTutorial)
 
+file(GLOB srcs *.cpp)
+file(GLOB hdrs *.h)
+
 include_directories(
-	${CMAKE_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-file(GLOB srcs *.cpp rtaudio/*.cpp)
-file(GLOB hdrs *.h rtaudio/*.h)
+add_executable(
+    ${PROJECT_NAME}
+    ${srcs}
+    ${hdrs}
+)
 
-add_executable(${PROJECT_NAME} ${srcs} ${hdrs})
-
-target_link_libraries(${PROJECT_NAME}
-	DSPatch
+target_link_libraries(
+    ${PROJECT_NAME}
+    DSPatch
 )

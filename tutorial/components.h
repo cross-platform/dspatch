@@ -1,4 +1,4 @@
-#include "DSPatch.h"
+#include <DSPatch.h>
 
 #include <time.h>
 #include <iostream>
@@ -96,12 +96,13 @@ protected:
     if( inputs.GetValue( 0, inputBool ) )
     {
       // print "true" / "false" depending on boolean value received
-      switch( inputBool )
+      if( inputBool )
       {
-        case true:
-          std::cout << "true" << '\n';
-        case false:
-          std::cout << "false" << '\n';
+        std::cout << "true" << '\n';
+      }
+      else
+      {
+        std::cout << "false" << '\n';
       }
     }
   }

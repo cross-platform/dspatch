@@ -22,12 +22,12 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include "DspAudioDevice.h"
+#include <DspAudioDevice.h>
 
-#include "rtaudio/RtAudio.h"
+#include <RtAudio.h>
 
 #include <iostream>
-#include "string.h"
+#include <string.h>
 #include <cstdlib>
 
 //=================================================================================================

@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef DSPWAVESTREAMER_H
 #define DSPWAVESTREAMER_H
 
-#include "../include/DSPatch.h"
+#include <DSPatch.h>
 
 //=================================================================================================
 

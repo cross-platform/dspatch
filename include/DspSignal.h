@@ -30,8 +30,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string>
 #include <vector>
 
-#include "DspRunType.h"
-#include "DspThread.h"
+#include <DspRunType.h>
+#include <DspThread.h>
 
 //=================================================================================================
 /// Value container used to carry data between components

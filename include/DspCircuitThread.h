@@ -29,7 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <vector>
 
-#include "DspThread.h"
+#include <DspThread.h>
 
 class DspComponent;
 

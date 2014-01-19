@@ -27,7 +27,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //-------------------------------------------------------------------------------------------------
 
-#include "../src/DspCircuit.h"
+#include <DspCircuit.h>
 
 //=================================================================================================
 /// System-wide DSPatch functionality
@@ -251,8 +251,8 @@ protected:
 	wish to use in our application:
 
 	\code
-#include "DSPatch.h"
-#include "components.h"
+#include <DSPatch.h>
+#include <components.h>
 	\endcode
 
 	Next, we must instantiate our DspCircuit object and all DspComponent objects needed for our

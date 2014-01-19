@@ -1,5 +1,5 @@
-#include "DSPatch.h"
-#include "components.h"
+#include <DSPatch.h>
+#include <components.h>
 #include <stdio.h>
 
 //=================================================================================================
