@@ -17,12 +17,12 @@ add_library(
 )
 
 # Link pthread on Linux
-IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if(UNIX)
     target_link_libraries(
         ${PROJECT_NAME}
         pthread
     )
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+endif(UNIX)
 
 install(
     TARGETS ${PROJECT_NAME}
