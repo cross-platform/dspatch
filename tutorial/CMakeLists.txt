@@ -1,4 +1,4 @@
-project(dspatch_tutorial)
+project(DSPatchTutorial)
 
 file(GLOB srcs *.cpp)
 file(GLOB hdrs *.h)
@@ -16,7 +16,7 @@ add_executable(
 
 target_link_libraries(
     ${PROJECT_NAME}
-    dspatch
+    DSPatch
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
