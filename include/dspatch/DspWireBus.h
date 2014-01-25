@@ -29,8 +29,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <vector>
 
-#include <DspWire.h>
-#include <DspThread.h>
+#include <dspatch/DspWire.h>
+#include <dspatch/DspThread.h>
 
 class DspComponent;
 

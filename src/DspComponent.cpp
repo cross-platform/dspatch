@@ -24,10 +24,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <DSPatch.h>
 
-#include <DspCircuit.h>
-#include <DspComponent.h>
-#include <DspComponentThread.h>
-#include <DspWire.h>
+#include <dspatch/DspCircuit.h>
+#include <dspatch/DspComponent.h>
+#include <dspatch/DspComponentThread.h>
+#include <dspatch/DspWire.h>
 
 //=================================================================================================
 

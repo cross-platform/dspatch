@@ -27,9 +27,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //-------------------------------------------------------------------------------------------------
 
-#include <DspSignalBus.h>
-#include <DspWireBus.h>
-#include <DspComponentThread.h>
+#include <dspatch/DspSignalBus.h>
+#include <dspatch/DspWireBus.h>
+#include <dspatch/DspComponentThread.h>
 
 class DspCircuit;
 

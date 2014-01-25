@@ -27,7 +27,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //-------------------------------------------------------------------------------------------------
 
-#include <DspSignal.h>
+#include <dspatch/DspSignal.h>
 
 //=================================================================================================
 /// DspSignal container

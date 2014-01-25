@@ -4,6 +4,7 @@ project(dspatch)
 
 file(GLOB srcs src/*.cpp)
 file(GLOB hdrs include/*.h)
+file(GLOB in_hdrs include/dspatch/*.h)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -14,6 +15,7 @@ add_library(
     ${PROJECT_NAME} SHARED
     ${srcs}
     ${hdrs}
+    ${in_hdrs}
 )
 
 # Link pthread on Linux
@@ -31,6 +33,11 @@ install(
 
 install(
     FILES ${hdrs}
+    DESTINATION include
+)
+
+install(
+    FILES ${in_hdrs}
     DESTINATION include/dspatch
 )
 
