@@ -1,4 +1,4 @@
-project(DSPatchExample)
+project(dspatch_example)
 
 file(GLOB srcs *.cpp rtaudio/*.cpp)
 file(GLOB hdrs *.h rtaudio/*.h)
@@ -20,7 +20,7 @@ add_executable(
 
 target_link_libraries(
     ${PROJECT_NAME}
-    DSPatch
+    dspatch
 )
 
 # Definition for RtAudio Windows, using direct sound

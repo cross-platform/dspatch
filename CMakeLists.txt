@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(DSPatch)
+project(dspatch)
 
 file(GLOB srcs src/*.cpp)
 file(GLOB hdrs include/*.h)
@@ -31,7 +31,7 @@ install(
 
 install(
     FILES ${hdrs}
-    DESTINATION include
+    DESTINATION include/dspatch
 )
 
 option(BUILD_EXAMPLES "Build Examples" ON)
