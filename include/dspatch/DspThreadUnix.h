@@ -114,8 +114,6 @@ private:
 
 class DspMutex
 {
-  friend class DspWaitCondition;
-
 public:
   DspMutex()
   {
@@ -138,6 +136,8 @@ public:
   }
 
 private:
+  friend class DspWaitCondition;
+
   pthread_mutex_t _mutex;
 };
 

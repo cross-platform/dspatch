@@ -49,13 +49,13 @@ the necessary memory cleanup.
 
 class DLLEXPORT DSPatch
 {
-  friend class DspComponent;
-
 public:
   static void SetGlobalThreadCount( unsigned short threadCount );
   static void Finalize();
 
 private:
+  friend class DspComponent;
+
   static bool _IsThisGlobalCircuit( DspComponent* thisComponent );
 
   static bool _AddGlobalComponent( DspComponent* component );

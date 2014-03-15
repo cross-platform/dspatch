@@ -60,9 +60,6 @@ most commonly used to tick over an instance of DspCircuit).
 
 class DLLEXPORT DspComponent
 {
-  friend class DspCircuit;
-  friend class DspCircuitThread;
-
 public:
   DspComponent();
   virtual ~DspComponent();
@@ -87,8 +84,13 @@ public:
   void DisconnectInput( DspComponent* inputComponent );
   void DisconnectInputs();
 
+  ///! get input / output names
   unsigned short GetInputCount() const;
   unsigned short GetOutputCount() const;
+
+  ///! set parameter value
+  ///! get parameter value
+  ///! get parameter name / type
 
   void Tick();
   void Reset();
@@ -112,6 +114,8 @@ protected:
 
   void RemoveAllInputs_();
   void RemoveAllOutputs_();
+
+  ///! add remove parameter (name, type, init_value)
 
 private:
   void _SetParentCircuit( DspCircuit* parentCircuit );
@@ -137,6 +141,9 @@ private:
   void _ReleaseThread( unsigned short threadNo );
 
 private:
+  friend class DspCircuit;
+  friend class DspCircuitThread;
+
   DspCircuit* _parentCircuit;
 
   unsigned short _bufferCount;
