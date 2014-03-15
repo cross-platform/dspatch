@@ -323,7 +323,7 @@ bool DspComponent::AddOutput_( std::string outputName )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::RemoveInputs_()
+void DspComponent::RemoveAllInputs_()
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
   {
@@ -334,7 +334,7 @@ void DspComponent::RemoveInputs_()
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::RemoveOutputs_()
+void DspComponent::RemoveAllOutputs_()
 {
   for( unsigned short i = 0; i < _outputBuses.size(); i++ )
   {

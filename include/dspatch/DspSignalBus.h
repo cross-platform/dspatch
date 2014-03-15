@@ -48,6 +48,11 @@ public:
 
   bool AddSignal( std::string signalName = "" );
 
+  void RemoveSignal( std::string signalName );
+  void RemoveSignal( unsigned short signalIndex );
+
+  void RemoveAllSignals();
+
   bool SetSignal( unsigned short signalIndex, const DspSignal* newSignal );
   bool SetSignal( std::string signalName, const DspSignal* newSignal );
 
@@ -58,8 +63,6 @@ public:
   bool FindSignal( unsigned short signalIndex, unsigned short& returnIndex ) const;
 
   unsigned short GetSignalCount() const;
-
-  void RemoveAllSignals();
 
   template< class ValueType >
   bool SetValue( unsigned short signalIndex, const ValueType& newValue );

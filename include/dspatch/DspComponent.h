@@ -70,17 +70,17 @@ public:
   void SetComponentName( std::string componentName );
   std::string GetComponentName() const;
 
-  template< class FromOutputType, class ToInputType >
-  bool ConnectInput( DspComponent* fromComponent, FromOutputType fromOutput, ToInputType toInput );
+  template< class FromOutputId, class ToInputId >
+  bool ConnectInput( DspComponent* fromComponent, FromOutputId fromOutput, ToInputId toInput );
 
-  template< class FromOutputType, class ToInputType >
-  bool ConnectInput( DspComponent& fromComponent, FromOutputType fromOutput, ToInputType toInput );
+  template< class FromOutputId, class ToInputId >
+  bool ConnectInput( DspComponent& fromComponent, FromOutputId fromOutput, ToInputId toInput );
 
-  template< class FromOutputType, class ToInputType >
-  void DisconnectInput( DspComponent* fromComponent, FromOutputType fromOutput, ToInputType toInput );
+  template< class FromOutputId, class ToInputId >
+  void DisconnectInput( DspComponent* fromComponent, FromOutputId fromOutput, ToInputId toInput );
 
-  template< class FromOutputType, class ToInputType >
-  void DisconnectInput( DspComponent& fromComponent, FromOutputType fromOutput, ToInputType toInput );
+  template< class FromOutputId, class ToInputId >
+  void DisconnectInput( DspComponent& fromComponent, FromOutputId fromOutput, ToInputId toInput );
 
   void DisconnectInput( unsigned short inputIndex );
   void DisconnectInput( std::string inputName );
@@ -104,8 +104,14 @@ protected:
   bool AddInput_( std::string inputName = "" );
   bool AddOutput_( std::string outputName = "" );
 
-  void RemoveInputs_();
-  void RemoveOutputs_();
+  template< class InputId >
+  void RemoveInput_( InputId input );
+
+  template< class OutputId >
+  void RemoveOutput_( OutputId output );
+
+  void RemoveAllInputs_();
+  void RemoveAllOutputs_();
 
 private:
   void _SetParentCircuit( DspCircuit* parentCircuit );
@@ -159,8 +165,8 @@ private:
 
 //=================================================================================================
 
-template< class FromOutputType, class ToInputType >
-bool DspComponent::ConnectInput( DspComponent* fromComponent, FromOutputType fromOutput, ToInputType toInput )
+template< class FromOutputId, class ToInputId >
+bool DspComponent::ConnectInput( DspComponent* fromComponent, FromOutputId fromOutput, ToInputId toInput )
 {
   unsigned short fromOutputIndex;
   unsigned short toInputIndex;
@@ -180,16 +186,16 @@ bool DspComponent::ConnectInput( DspComponent* fromComponent, FromOutputType fro
 
 //-------------------------------------------------------------------------------------------------
 
-template< class FromOutputType, class ToInputType >
-bool DspComponent::ConnectInput( DspComponent& fromComponent, FromOutputType fromOutput, ToInputType toInput )
+template< class FromOutputId, class ToInputId >
+bool DspComponent::ConnectInput( DspComponent& fromComponent, FromOutputId fromOutput, ToInputId toInput )
 {
   return ConnectInput( &fromComponent, fromOutput, toInput );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-template< class FromOutputType, class ToInputType >
-void DspComponent::DisconnectInput( DspComponent* fromComponent, FromOutputType fromOutput, ToInputType toInput )
+template< class FromOutputId, class ToInputId >
+void DspComponent::DisconnectInput( DspComponent* fromComponent, FromOutputId fromOutput, ToInputId toInput )
 {
   unsigned short fromOutputIndex;
   unsigned short toInputIndex;
@@ -207,10 +213,26 @@ void DspComponent::DisconnectInput( DspComponent* fromComponent, FromOutputType 
 
 //-------------------------------------------------------------------------------------------------
 
-template< class FromOutputType, class ToInputType >
-void DspComponent::DisconnectInput( DspComponent& fromComponent, FromOutputType fromOutput, ToInputType toInput )
+template< class FromOutputId, class ToInputId >
+void DspComponent::DisconnectInput( DspComponent& fromComponent, FromOutputId fromOutput, ToInputId toInput )
 {
   DisconnectInput( &fromComponent, fromOutput, toInput );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+template< class InputId >
+void DspComponent::RemoveInput_( InputId input )
+{
+  _inputBus.RemoveSignal( input );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+template< class OutputId >
+void DspComponent::RemoveOutput_( OutputId output )
+{
+  _outputBus.RemoveSignal( output );
 }
 
 //=================================================================================================

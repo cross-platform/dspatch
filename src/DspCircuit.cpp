@@ -250,16 +250,20 @@ bool DspCircuit::AddOutput( std::string outputName )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::RemoveInputs()
+void DspCircuit::RemoveAllInputs()
 {
-  RemoveInputs_();
+  PauseAutoTick();
+  RemoveAllInputs_();
+  ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::RemoveOutputs()
+void DspCircuit::RemoveAllOutputs()
 {
-  RemoveOutputs_();
+  PauseAutoTick();
+  RemoveAllOutputs_();
+  ResumeAutoTick();
 }
 
 //=================================================================================================
@@ -427,12 +431,7 @@ void DspCircuit::_RemoveComponent( unsigned short componentIndex )
   // setting a component's parent to NULL (above) calls _RemoveComponent (hence the following code will run)
   else if( _components.size() != 0 )
   {
-    for( unsigned short i = componentIndex; i < _components.size() - 1; i++ )
-    {
-      _components[i] = _components[i + 1]; // shift all lower elements up
-    }
-
-    _components.pop_back(); // remove end item
+    _components.erase( _components.begin() + componentIndex );
   }
 }
 

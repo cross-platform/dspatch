@@ -101,11 +101,7 @@ bool DspWireBus::RemoveWire( unsigned short wireIndex )
     return false;
   }
 
-  for( unsigned short j = wireIndex; j < ( _wires.size() - 1 ); j++ )
-  {
-    _wires[j] = _wires[j + 1]; // shift all other elements up
-  }
-  _wires.pop_back(); // remove end item
+  _wires.erase( _wires.begin() + wireIndex );
 
   return true;
 }
