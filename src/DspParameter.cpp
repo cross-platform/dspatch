@@ -26,19 +26,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-DspParameter::DspParameter( std::string const& name, ParamType const& type, bool isInputParam )
-  : _name( name ),
-    _type( type ),
+DspParameter::DspParameter( ParamType const& type, bool isInputParam )
+  : _type( type ),
     _isInputParam( isInputParam ) {}
 
 //=================================================================================================
-
-std::string const DspParameter::Name() const
-{
-  return _name;
-}
-
-//-------------------------------------------------------------------------------------------------
 
 DspParameter::ParamType const DspParameter::Type() const
 {

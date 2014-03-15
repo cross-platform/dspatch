@@ -53,9 +53,8 @@ public:
     List // this type acts as a vector (available items), an int (index selected), and a string (item selected)
   };
 
-  DspParameter( std::string const& name, ParamType const& type, bool isInputParam = true );
+  DspParameter( ParamType const& type, bool isInputParam = true );
 
-  std::string const Name() const;
   ParamType const Type() const;
   bool const IsInputParam() const;
 
@@ -77,7 +76,6 @@ public:
   bool SetParam( DspParameter const& param );
 
 private:
-  const std::string _name;
   const ParamType _type;
   const bool _isInputParam;
 

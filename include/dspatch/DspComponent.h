@@ -30,6 +30,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspSignalBus.h>
 #include <dspatch/DspWireBus.h>
 #include <dspatch/DspComponentThread.h>
+#include <dspatch/DspParameter.h>
+
+#include <map>
 
 class DspCircuit;
 
@@ -115,7 +118,10 @@ protected:
   void RemoveAllInputs_();
   void RemoveAllOutputs_();
 
-  ///! add remove parameter (name, type, init_value)
+  ///! add remove parameter (name, type, isInput)
+  bool AddParameter_( std::string name, DspParameter::ParamType type, bool isInputParam = true );
+  bool RemoveParameter_( std::string name );
+  void RemoveAllParameters_();
 
 private:
   void _SetParentCircuit( DspCircuit* parentCircuit );
@@ -153,6 +159,8 @@ private:
 
   std::vector< DspSignalBus > _inputBuses;
   std::vector< DspSignalBus > _outputBuses;
+
+  std::map< std::string, DspParameter > _parameters;
 
   std::string _componentName;
   bool _isAutoTickRunning;
