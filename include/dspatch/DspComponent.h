@@ -58,7 +58,7 @@ method. The Reset() method then informs the component that the last circuit trav
 and hence can execute the next Tick() request. A component's Tick() and Reset() methods can be
 called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a
 seperate thread will spawn, automatically calling Tick() and Reset() methods continuously (This is
-most commonly used to tick over an instance of DspCircuit).
+most commonly used to tick over an instance of DspCircuit).///! more info on parameters
 */
 
 class DLLEXPORT DspComponent
@@ -85,15 +85,18 @@ public:
   void DisconnectInput( unsigned short inputIndex );
   void DisconnectInput( std::string inputName );
   void DisconnectInput( DspComponent* inputComponent );
-  void DisconnectInputs();
+  void DisconnectAllInputs();
 
-  ///! get input / output names
   unsigned short GetInputCount() const;
   unsigned short GetOutputCount() const;
+  unsigned short GetParameterCount() const;
 
-  ///! set parameter value
-  ///! get parameter value
-  ///! get parameter name / type
+  std::string GetInputName( unsigned short index );
+  std::string GetOutputName( unsigned short index );
+  std::string GetParameterName( unsigned short index ) const;
+
+  bool GetParameter( std::string const& paramName, DspParameter& returnParam ) const;
+  bool SetParameter( std::string const& paramName, DspParameter const& param );
 
   void Tick();
   void Reset();
@@ -104,10 +107,12 @@ public:
   virtual void ResumeAutoTick();
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs ) {};
+  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs ) {}
+  virtual void ParameterUpdated_( std::string const& name, DspParameter const& param ) {}
 
   bool AddInput_( std::string inputName = "" );
   bool AddOutput_( std::string outputName = "" );
+  bool AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );
 
   template< class InputId >
   void RemoveInput_( InputId input );
@@ -115,12 +120,10 @@ protected:
   template< class OutputId >
   void RemoveOutput_( OutputId output );
 
+  bool RemoveParameter_( std::string const& paramName );
+
   void RemoveAllInputs_();
   void RemoveAllOutputs_();
-
-  ///! add remove parameter (name, type, isInput)
-  bool AddParameter_( std::string name, DspParameter::ParamType type, bool isInputParam = true );
-  bool RemoveParameter_( std::string name );
   void RemoveAllParameters_();
 
 private:

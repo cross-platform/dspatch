@@ -112,6 +112,7 @@ public:
 
   bool AddInput( std::string inputName = "" );
   bool AddOutput( std::string outputName = "" );
+  bool AddParameter( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );
 
   template< class InputId >
   void RemoveInput( InputId input );
@@ -119,8 +120,11 @@ public:
   template< class OutputId >
   void RemoveOutput( OutputId output );
 
+  bool RemoveParameter( std::string const& paramName );
+
   void RemoveAllInputs();
   void RemoveAllOutputs();
+  void RemoveAllParameters();
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );

@@ -53,7 +53,7 @@ DspComponent::~DspComponent()
 
   StopAutoTick();
   _SetBufferCount( 0 );
-  DisconnectInputs();
+  DisconnectAllInputs();
 }
 
 //=================================================================================================
@@ -123,7 +123,7 @@ void DspComponent::DisconnectInput( DspComponent* inputComponent )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInputs()
+void DspComponent::DisconnectAllInputs()
 {
   PauseAutoTick();
   _inputWires.RemoveAllWires();
@@ -142,6 +142,74 @@ unsigned short DspComponent::GetInputCount() const
 unsigned short DspComponent::GetOutputCount() const
 {
   return _outputBus.GetSignalCount();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+unsigned short DspComponent::GetParameterCount() const
+{
+  return _parameters.size();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::string DspComponent::GetInputName( unsigned short index )
+{
+  if( index < _inputBus.GetSignalCount() )
+  {
+    return _inputBus.GetSignal( index )->GetSignalName();
+  }
+  return "";
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::string DspComponent::GetOutputName( unsigned short index )
+{
+  if( index < _outputBus.GetSignalCount() )
+  {
+    return _outputBus.GetSignal( index )->GetSignalName();
+  }
+  return "";
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::string DspComponent::GetParameterName( unsigned short index ) const
+{
+  if( index < _parameters.size() )
+  {
+    std::map< std::string, DspParameter >::const_iterator it = _parameters.begin();
+    std::advance( it, index );
+    return it->first;
+  }
+  return "";
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::GetParameter( std::string const& paramName, DspParameter& returnParam ) const
+{
+  if( _parameters.find( paramName ) != _parameters.end() )
+  {
+    return returnParam.SetParam( _parameters.at( paramName ) );
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
+{
+  if( _parameters.find( paramName ) != _parameters.end() )
+  {
+    if( _parameters.at( paramName ).SetParam( param ) )
+    {
+      ParameterUpdated_( paramName, param );
+      return true;
+    }
+  }
+  return false;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -323,6 +391,30 @@ bool DspComponent::AddOutput_( std::string outputName )
 
 //-------------------------------------------------------------------------------------------------
 
+bool DspComponent::AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam )
+{
+  if( _parameters.find( paramName ) == _parameters.end() )
+  {
+    _parameters.insert( std::make_pair( paramName, DspParameter( paramType, isInputParam ) ) );
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::RemoveParameter_( std::string const& paramName )
+{
+  if( _parameters.find( paramName ) != _parameters.end() )
+  {
+    _parameters.erase( paramName );
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void DspComponent::RemoveAllInputs_()
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
@@ -341,6 +433,13 @@ void DspComponent::RemoveAllOutputs_()
     _outputBuses[i].RemoveAllSignals();
   }
   return _outputBus.RemoveAllSignals();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::RemoveAllParameters_()
+{
+  _parameters.clear();
 }
 
 //=================================================================================================

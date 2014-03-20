@@ -250,6 +250,28 @@ bool DspCircuit::AddOutput( std::string outputName )
 
 //-------------------------------------------------------------------------------------------------
 
+bool DspCircuit::AddParameter( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam )
+{
+  PauseAutoTick();
+  bool result = AddParameter_( paramName, paramType, isInputParam );
+  ResumeAutoTick();
+
+  return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspCircuit::RemoveParameter( std::string const& paramName )
+{
+  PauseAutoTick();
+  bool result = RemoveParameter_( paramName );
+  ResumeAutoTick();
+
+  return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 void DspCircuit::RemoveAllInputs()
 {
   PauseAutoTick();
@@ -263,6 +285,15 @@ void DspCircuit::RemoveAllOutputs()
 {
   PauseAutoTick();
   RemoveAllOutputs_();
+  ResumeAutoTick();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspCircuit::RemoveAllParameters()
+{
+  PauseAutoTick();
+  RemoveAllParameters_();
   ResumeAutoTick();
 }
 
@@ -393,7 +424,7 @@ bool DspCircuit::_FindComponent( unsigned short componentIndex, unsigned short& 
 void DspCircuit::_DisconnectComponent( unsigned short componentIndex )
 {
   // remove component from _inputComponents and _inputWires
-  _components[ componentIndex ]->DisconnectInputs();
+  _components[ componentIndex ]->DisconnectAllInputs();
 
   // remove component from _inToInWires
   DspWire* wire;
