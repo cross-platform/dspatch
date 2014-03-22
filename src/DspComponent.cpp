@@ -31,14 +31,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-DspComponent::DspComponent( Callback_t callback )
+DspComponent::DspComponent()
 : _parentCircuit( NULL ),
   _bufferCount( 0 ),
   _componentName( "" ),
   _isAutoTickRunning( false ),
   _isAutoTickPaused( false ),
   _hasTicked( false ),
-  _callback( callback )
+  _callback( _CallbackStub )
 {
   _componentThread.Initialise( this );
 }
@@ -58,6 +58,13 @@ DspComponent::~DspComponent()
 }
 
 //=================================================================================================
+
+void DspComponent::SetCallback( Callback_t callback )
+{
+  _callback = callback;
+}
+
+//-------------------------------------------------------------------------------------------------
 
 void DspComponent::SetComponentName( std::string componentName )
 {

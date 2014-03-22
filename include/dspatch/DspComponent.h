@@ -74,11 +74,12 @@ public:
     ParameterRemoved,
     ParameterUpdated
   };
-  typedef void( *Callback_t )( DspComponent* component, CallbackType const& callbackType, int const& index );
-  static void CallbackStub( DspComponent*, CallbackType const&, int const&) {}
+  typedef void( *Callback_t )( DspComponent const* component, CallbackType const& callbackType, int const& index );
 
-  DspComponent( Callback_t callback = CallbackStub );
+  DspComponent();
   virtual ~DspComponent();
+
+  void SetCallback( Callback_t callback );
 
   void SetComponentName( std::string componentName );
   std::string GetComponentName() const;
@@ -160,6 +161,8 @@ private:
 
   void _WaitForRelease( unsigned short threadNo );
   void _ReleaseThread( unsigned short threadNo );
+
+  static void _CallbackStub( DspComponent const*, CallbackType const&, int const&) {}
 
 private:
   friend class DspCircuit;

@@ -44,7 +44,6 @@ int main()
   std::map< std::string, DspParameter > params = oscill.GetCreateParams();
   DspComponent* oscil = oscill.Create( params );
 
-  return 0;
   // 1. Stream Wave
   // ==============
 
