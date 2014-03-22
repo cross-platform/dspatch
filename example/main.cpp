@@ -27,7 +27,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <DspWaveStreamer.h>
 #include <DspGain.h>
 #include <DspAudioDevice.h>
-#include <DspOscillator.h>
+//#include <DspOscillator.h>
 #include <DspAdder.h>
 
 #include <stdio.h>
@@ -36,8 +36,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // This is a simple program that streams an wave out of an audio device,
 // then overlays a 1KHz oscillator when a key is pressed.
 
+#include <osc-plugin/DspOscillator.h>
+
 int main()
 {
+  DspPluginLoader oscill( "./osc-plugin/libDspOscillator.so" );
+  std::map< std::string, DspParameter > params = oscill.GetCreateParams();
+  DspComponent* oscil = oscill.Create( params );
+
+  return 0;
   // 1. Stream Wave
   // ==============
 
@@ -53,7 +60,7 @@ int main()
   // set circuit thread count to 2
   circuit.SetThreadCount( 2 );
 
-  //// start separate thread to tick the circuit continuously ("auto-tick")
+  // start separate thread to tick the circuit continuously ("auto-tick")
   circuit.StartAutoTick();
 
   // add new components to the circuit (these methods return pointers to the new components)

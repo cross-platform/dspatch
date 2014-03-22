@@ -96,6 +96,7 @@ public:
   std::string GetParameterName( unsigned short index ) const;
 
   bool GetParameter( std::string const& paramName, DspParameter& returnParam ) const;
+  ///! callback
   bool SetParameter( std::string const& paramName, DspParameter const& param );
 
   void Tick();
@@ -110,6 +111,8 @@ protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs ) {}
   virtual void ParameterUpdated_( std::string const& name, DspParameter const& param ) {}
 
+  ///! callbacks for IO changes
+  ///! callbacks for Param changes
   bool AddInput_( std::string inputName = "" );
   bool AddOutput_( std::string outputName = "" );
   bool AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );

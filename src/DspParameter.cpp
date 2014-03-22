@@ -28,7 +28,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 DspParameter::DspParameter( ParamType const& type, bool isInputParam )
   : _type( type ),
-    _isInputParam( isInputParam ) {}
+    _isInputParam( isInputParam ),
+    _isSet( false ),
+    _isRangeSet( false ) {}
 
 //=================================================================================================
 
@@ -48,6 +50,11 @@ bool const DspParameter::IsInputParam() const
 
 bool DspParameter::GetBool( bool& returnValue ) const
 {
+  if( !_isSet )
+  {
+    return false;
+  }
+
   if( _type == Bool )
   {
     returnValue = _value.boolValue;
@@ -61,6 +68,11 @@ bool DspParameter::GetBool( bool& returnValue ) const
 
 bool DspParameter::GetInt( int& returnValue ) const
 {
+  if( !_isSet )
+  {
+    return false;
+  }
+
   if( _type == Int || _type == List )
   {
     returnValue = _value.intValue.current;
@@ -74,6 +86,11 @@ bool DspParameter::GetInt( int& returnValue ) const
 
 bool DspParameter::GetIntRange( int& minValue, int& maxValue ) const
 {
+  if( !_isRangeSet )
+  {
+    return false;
+  }
+
   if( _type == Int || _type == List )
   {
     minValue = _value.intValue.min;
@@ -88,6 +105,11 @@ bool DspParameter::GetIntRange( int& minValue, int& maxValue ) const
 
 bool DspParameter::GetFloat( float& returnValue ) const
 {
+  if( !_isSet )
+  {
+    return false;
+  }
+
   if( _type == Float )
   {
     returnValue = _value.floatValue.current;
@@ -101,6 +123,11 @@ bool DspParameter::GetFloat( float& returnValue ) const
 
 bool DspParameter::GetFloatRange( float& minValue, float& maxValue ) const
 {
+  if( !_isRangeSet )
+  {
+    return false;
+  }
+
   if( _type == Float )
   {
     minValue = _value.floatValue.min;
@@ -115,6 +142,11 @@ bool DspParameter::GetFloatRange( float& minValue, float& maxValue ) const
 
 bool DspParameter::GetString( std::string& returnValue ) const
 {
+  if( !_isSet )
+  {
+    return false;
+  }
+
   if( _type == String || _type == FilePath )
   {
     returnValue = _stringValue;
@@ -133,6 +165,11 @@ bool DspParameter::GetString( std::string& returnValue ) const
 
 bool DspParameter::GetList( std::vector< std::string >& returnValue ) const
 {
+  if( !_isSet )
+  {
+    return false;
+  }
+
   if( _type == List )
   {
     returnValue = _listValue;
@@ -149,6 +186,7 @@ bool DspParameter::SetBool( bool const& value )
   if( _type == Bool )
   {
     _value.boolValue = value;
+    _isSet = true;
     return true;
   }
 
@@ -159,10 +197,16 @@ bool DspParameter::SetBool( bool const& value )
 
 bool DspParameter::SetInt( int const& value )
 {
+  if( !_isRangeSet )
+  {
+    return false;
+  }
+
   if( _type == Int || _type == List )
   {
     _value.intValue.current = value < _value.intValue.min ? _value.intValue.min : value;
     _value.intValue.current = value > _value.intValue.max ? _value.intValue.max : value;
+    _isSet = true;
     return true;
   }
 
@@ -184,6 +228,7 @@ bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
     _value.intValue.current = _value.intValue.current > maxValue ?
           maxValue : _value.intValue.current;
 
+    _isRangeSet = true;
     return true;
   }
 
@@ -194,10 +239,16 @@ bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
 
 bool DspParameter::SetFloat( float const& value )
 {
+  if( !_isRangeSet )
+  {
+    return false;
+  }
+
   if( _type == Float )
   {
     _value.floatValue.current = value < _value.floatValue.min ? _value.floatValue.min : value;
     _value.floatValue.current = value > _value.floatValue.max ? _value.floatValue.max : value;
+    _isSet = true;
     return true;
   }
 
@@ -219,6 +270,7 @@ bool DspParameter::SetFloatRange( float const& minValue, float const& maxValue )
     _value.floatValue.current = _value.floatValue.current > maxValue ?
           maxValue : _value.floatValue.current;
 
+    _isRangeSet = true;
     return true;
   }
 
@@ -232,6 +284,7 @@ bool DspParameter::SetString( std::string const& value )
   if( _type == String || _type == FilePath )
   {
     _stringValue = value;
+    _isSet = true;
     return true;
   }
   else if( _type == List )
@@ -241,6 +294,7 @@ bool DspParameter::SetString( std::string const& value )
       if( _listValue[i] == value )
       {
         _value.intValue.current = i;
+        _isSet = true;
         return true;
       }
     }
@@ -259,6 +313,7 @@ bool DspParameter::SetList( std::vector< std::string > const& value )
     _value.intValue.min = 0;
     _value.intValue.max = value.size() - 1;
     _value.intValue.current = 0;
+    _isSet = true;
     return true;
   }
 

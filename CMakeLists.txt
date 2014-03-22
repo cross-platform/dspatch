@@ -23,6 +23,7 @@ if(UNIX)
     target_link_libraries(
         ${PROJECT_NAME}
         pthread
+        dl
     )
 endif(UNIX)
 

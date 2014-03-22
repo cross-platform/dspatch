@@ -78,6 +78,8 @@ public:
 private:
   const ParamType _type;
   const bool _isInputParam;
+  bool _isSet;
+  bool _isRangeSet;
 
   union
   {

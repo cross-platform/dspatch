@@ -1,5 +1,7 @@
 project(DSPatchExample)
 
+add_subdirectory(osc-plugin)
+
 file(GLOB srcs *.cpp rtaudio/*.cpp)
 file(GLOB hdrs *.h rtaudio/*.h)
 
