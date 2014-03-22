@@ -48,8 +48,7 @@ public:
 
   bool AddSignal( std::string signalName = "" );
 
-  void RemoveSignal( std::string signalName );
-  void RemoveSignal( unsigned short signalIndex );
+  bool RemoveSignal();
 
   void RemoveAllSignals();
 

@@ -64,7 +64,20 @@ most commonly used to tick over an instance of DspCircuit).///! more info on par
 class DLLEXPORT DspComponent
 {
 public:
-  DspComponent();
+  enum CallbackType
+  {
+    InputAdded,
+    InputRemoved,
+    OutputAdded,
+    OutputRemoved,
+    ParameterAdded,
+    ParameterRemoved,
+    ParameterUpdated
+  };
+  typedef void( *Callback_t )( DspComponent* component, CallbackType const& callbackType, int const& index );
+  static void CallbackStub( DspComponent*, CallbackType const&, int const&) {}
+
+  DspComponent( Callback_t callback = CallbackStub );
   virtual ~DspComponent();
 
   void SetComponentName( std::string componentName );
@@ -117,13 +130,9 @@ protected:
   bool AddOutput_( std::string outputName = "" );
   bool AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );
 
-  template< class InputId >
-  void RemoveInput_( InputId input );
-
-  template< class OutputId >
-  void RemoveOutput_( OutputId output );
-
-  bool RemoveParameter_( std::string const& paramName );
+  bool RemoveInput_();
+  bool RemoveOutput_();
+  bool RemoveParameter_();
 
   void RemoveAllInputs_();
   void RemoveAllOutputs_();
@@ -182,6 +191,8 @@ private:
   std::vector< bool > _gotReleases; // bool pointers not used here as only 1 thread writes to this vector at a time
   std::vector< DspMutex > _releaseMutexes;
   std::vector< DspWaitCondition > _releaseCondts;
+
+  Callback_t _callback;
 };
 
 //=================================================================================================
@@ -238,22 +249,6 @@ template< class FromOutputId, class ToInputId >
 void DspComponent::DisconnectInput( DspComponent& fromComponent, FromOutputId fromOutput, ToInputId toInput )
 {
   DisconnectInput( &fromComponent, fromOutput, toInput );
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template< class InputId >
-void DspComponent::RemoveInput_( InputId input )
-{
-  _inputBus.RemoveSignal( input );
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template< class OutputId >
-void DspComponent::RemoveOutput_( OutputId output )
-{
-  _outputBus.RemoveSignal( output );
 }
 
 //=================================================================================================

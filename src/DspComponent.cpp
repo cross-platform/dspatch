@@ -31,13 +31,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-DspComponent::DspComponent()
+DspComponent::DspComponent( Callback_t callback )
 : _parentCircuit( NULL ),
   _bufferCount( 0 ),
   _componentName( "" ),
   _isAutoTickRunning( false ),
   _isAutoTickPaused( false ),
-  _hasTicked( false )
+  _hasTicked( false ),
+  _callback( callback )
 {
   _componentThread.Initialise( this );
 }
@@ -205,6 +206,7 @@ bool DspComponent::SetParameter( std::string const& paramName, DspParameter cons
   {
     if( _parameters.at( paramName ).SetParam( param ) )
     {
+      _callback( this, ParameterUpdated, std::distance( _parameters.begin(), _parameters.find( paramName ) ) );
       ParameterUpdated_( paramName, param );
       return true;
     }
@@ -375,7 +377,12 @@ bool DspComponent::AddInput_( std::string inputName )
   {
     _inputBuses[i].AddSignal( inputName );
   }
-  return _inputBus.AddSignal( inputName );
+  if( _inputBus.AddSignal( inputName ) )
+  {
+    _callback( this, InputAdded, _inputBus.GetSignalCount() - 1 );
+    return true;
+  }
+  return false;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -386,7 +393,12 @@ bool DspComponent::AddOutput_( std::string outputName )
   {
     _outputBuses[i].AddSignal( outputName );
   }
-  return _outputBus.AddSignal( outputName );
+  if( _outputBus.AddSignal( outputName ) )
+  {
+    _callback( this, OutputAdded, _outputBus.GetSignalCount() - 1 );
+    return true;
+  }
+  return false;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -396,6 +408,7 @@ bool DspComponent::AddParameter_( std::string const& paramName, DspParameter::Pa
   if( _parameters.find( paramName ) == _parameters.end() )
   {
     _parameters.insert( std::make_pair( paramName, DspParameter( paramType, isInputParam ) ) );
+    _callback( this, ParameterAdded, _parameters.size() - 1 );
     return true;
   }
   return false;
@@ -403,11 +416,36 @@ bool DspComponent::AddParameter_( std::string const& paramName, DspParameter::Pa
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::RemoveParameter_( std::string const& paramName )
+bool DspComponent::RemoveInput_()
 {
-  if( _parameters.find( paramName ) != _parameters.end() )
+  if( _inputBus.RemoveSignal() )
   {
-    _parameters.erase( paramName );
+    _callback( this, InputRemoved, _inputBus.GetSignalCount() );
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::RemoveOutput_()
+{
+  if( _outputBus.RemoveSignal() )
+  {
+    _callback( this, OutputRemoved, _outputBus.GetSignalCount() );
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::RemoveParameter_()
+{
+  if( _parameters.size() > 0 )
+  {
+    _parameters.erase( _parameters.rbegin()->first );
+    _callback( this, ParameterRemoved, _parameters.size() );
     return true;
   }
   return false;
@@ -421,7 +459,8 @@ void DspComponent::RemoveAllInputs_()
   {
     _inputBuses[i].RemoveAllSignals();
   }
-  return _inputBus.RemoveAllSignals();
+  _inputBus.RemoveAllSignals();
+  _callback( this, InputRemoved, -1 );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -432,7 +471,8 @@ void DspComponent::RemoveAllOutputs_()
   {
     _outputBuses[i].RemoveAllSignals();
   }
-  return _outputBus.RemoveAllSignals();
+  _outputBus.RemoveAllSignals();
+  _callback( this, OutputRemoved, -1 );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -440,6 +480,7 @@ void DspComponent::RemoveAllOutputs_()
 void DspComponent::RemoveAllParameters_()
 {
   _parameters.clear();
+  _callback( this, ParameterRemoved, -1 );
 }
 
 //=================================================================================================

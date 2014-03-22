@@ -261,13 +261,29 @@ bool DspCircuit::AddParameter( std::string const& paramName, DspParameter::Param
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::RemoveParameter( std::string const& paramName )
+void DspCircuit::RemoveInput()
 {
   PauseAutoTick();
-  bool result = RemoveParameter_( paramName );
+  RemoveInput_();
   ResumeAutoTick();
+}
 
-  return result;
+//-------------------------------------------------------------------------------------------------
+
+void DspCircuit::RemoveOutput()
+{
+  PauseAutoTick();
+  RemoveOutput_();
+  ResumeAutoTick();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspCircuit::RemoveParameter()
+{
+  PauseAutoTick();
+  RemoveParameter_();
+  ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -48,24 +48,14 @@ bool DspSignalBus::AddSignal( std::string signalName )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspSignalBus::RemoveSignal( unsigned short signalIndex )
+bool DspSignalBus::RemoveSignal()
 {
-  if( signalIndex < _signals.size() )
+  if( _signals.size() > 0 )
   {
-    _signals.erase( _signals.begin() + signalIndex );
+    _signals.pop_back();
+    return true;
   }
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void DspSignalBus::RemoveSignal( std::string signalName )
-{
-  unsigned short signalIndex;
-
-  if( FindSignal( signalName, signalIndex ) )
-  {
-    _signals.erase( _signals.begin() + signalIndex );
-  }
+  return false;
 }
 
 //-------------------------------------------------------------------------------------------------

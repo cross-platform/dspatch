@@ -114,13 +114,9 @@ public:
   bool AddOutput( std::string outputName = "" );
   bool AddParameter( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );
 
-  template< class InputId >
-  void RemoveInput( InputId input );
-
-  template< class OutputId >
-  void RemoveOutput( OutputId output );
-
-  bool RemoveParameter( std::string const& paramName );
+  void RemoveInput();
+  void RemoveOutput();
+  void RemoveParameter();
 
   void RemoveAllInputs();
   void RemoveAllOutputs();
@@ -312,26 +308,6 @@ bool DspCircuit::DisconnectOutToOut( FromComponentType& fromComponent, FromOutpu
   ResumeAutoTick();
 
   return result;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template< class InputId >
-void DspCircuit::RemoveInput( InputId input )
-{
-  PauseAutoTick();
-  RemoveInput_( input );
-  ResumeAutoTick();
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template< class OutputId >
-void DspCircuit::RemoveOutput( OutputId output )
-{
-  PauseAutoTick();
-  RemoveOutput_( output );
-  ResumeAutoTick();
 }
 
 //=================================================================================================
