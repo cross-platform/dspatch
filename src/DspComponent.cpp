@@ -428,7 +428,7 @@ DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned 
 
 //=================================================================================================
 
-void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& )
+void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter > const& )
 {
   Process_( inputs, outputs );
 }
@@ -439,9 +439,9 @@ bool DspComponent::AddInput_( std::string inputName )
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
   {
-    _inputBuses[i].AddSignal( inputName );
+    _inputBuses[i]._AddSignal( inputName );
   }
-  if( _inputBus.AddSignal( inputName ) )
+  if( _inputBus._AddSignal( inputName ) )
   {
     _callback( this, InputAdded, _inputBus.GetSignalCount() - 1 );
     return true;
@@ -455,9 +455,9 @@ bool DspComponent::AddOutput_( std::string outputName )
 {
   for( unsigned short i = 0; i < _outputBuses.size(); i++ )
   {
-    _outputBuses[i].AddSignal( outputName );
+    _outputBuses[i]._AddSignal( outputName );
   }
-  if( _outputBus.AddSignal( outputName ) )
+  if( _outputBus._AddSignal( outputName ) )
   {
     _callback( this, OutputAdded, _outputBus.GetSignalCount() - 1 );
     return true;
@@ -482,7 +482,7 @@ bool DspComponent::AddParameter_( std::string const& paramName, DspParameter::Pa
 
 bool DspComponent::RemoveInput_()
 {
-  if( _inputBus.RemoveSignal() )
+  if( _inputBus._RemoveSignal() )
   {
     _callback( this, InputRemoved, _inputBus.GetSignalCount() );
     return true;
@@ -494,7 +494,7 @@ bool DspComponent::RemoveInput_()
 
 bool DspComponent::RemoveOutput_()
 {
-  if( _outputBus.RemoveSignal() )
+  if( _outputBus._RemoveSignal() )
   {
     _callback( this, OutputRemoved, _outputBus.GetSignalCount() );
     return true;
@@ -521,9 +521,9 @@ void DspComponent::RemoveAllInputs_()
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
   {
-    _inputBuses[i].RemoveAllSignals();
+    _inputBuses[i]._RemoveAllSignals();
   }
-  _inputBus.RemoveAllSignals();
+  _inputBus._RemoveAllSignals();
   _callback( this, InputRemoved, -1 );
 }
 
@@ -533,9 +533,9 @@ void DspComponent::RemoveAllOutputs_()
 {
   for( unsigned short i = 0; i < _outputBuses.size(); i++ )
   {
-    _outputBuses[i].RemoveAllSignals();
+    _outputBuses[i]._RemoveAllSignals();
   }
-  _outputBus.RemoveAllSignals();
+  _outputBus._RemoveAllSignals();
   _callback( this, OutputRemoved, -1 );
 }
 
@@ -650,12 +650,12 @@ void DspComponent::_SetBufferCount( unsigned short bufferCount )
 
     for( unsigned short j = 0; j < _inputBus.GetSignalCount(); j++ )
     {
-      _inputBuses[i].AddSignal( _inputBus.GetSignal( j )->GetSignalName() );
+      _inputBuses[i]._AddSignal( _inputBus.GetSignal( j )->GetSignalName() );
     }
 
     for( unsigned short j = 0; j < _outputBus.GetSignalCount(); j++ )
     {
-      _outputBuses[i].AddSignal( _outputBus.GetSignal( j )->GetSignalName() );
+      _outputBuses[i]._AddSignal( _outputBus.GetSignal( j )->GetSignalName() );
     }
   }
 

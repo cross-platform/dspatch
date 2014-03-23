@@ -30,43 +30,6 @@ DspSignalBus::~DspSignalBus() {};
 
 //=================================================================================================
 
-bool DspSignalBus::AddSignal( std::string signalName )
-{
-  if( signalName != "" )
-  {
-    unsigned short signalIndex;
-    if( FindSignal( signalName, signalIndex ) ) // if the name already exists
-    {
-      return false;
-    }
-  }
-
-  _signals.push_back( DspSignal( signalName ) );
-
-  return true;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-bool DspSignalBus::RemoveSignal()
-{
-  if( _signals.size() > 0 )
-  {
-    _signals.pop_back();
-    return true;
-  }
-  return false;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void DspSignalBus::RemoveAllSignals()
-{
-  _signals.clear();
-}
-
-//-------------------------------------------------------------------------------------------------
-
 bool DspSignalBus::SetSignal( unsigned short signalIndex, const DspSignal* newSignal )
 {
   if( signalIndex < _signals.size() && newSignal != NULL )
@@ -196,6 +159,43 @@ void DspSignalBus::ClearAllValues()
   {
     _signals[i].ClearValue();
   }
+}
+
+//=================================================================================================
+
+bool DspSignalBus::_AddSignal( std::string signalName )
+{
+  if( signalName != "" )
+  {
+    unsigned short signalIndex;
+    if( FindSignal( signalName, signalIndex ) ) // if the name already exists
+    {
+      return false;
+    }
+  }
+
+  _signals.push_back( DspSignal( signalName ) );
+
+  return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspSignalBus::_RemoveSignal()
+{
+  if( _signals.size() > 0 )
+  {
+    _signals.pop_back();
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspSignalBus::_RemoveAllSignals()
+{
+  _signals.clear();
 }
 
 //=================================================================================================

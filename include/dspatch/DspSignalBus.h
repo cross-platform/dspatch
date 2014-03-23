@@ -46,12 +46,6 @@ class DLLEXPORT DspSignalBus
 public:
   virtual ~DspSignalBus();
 
-  bool AddSignal( std::string signalName = "" );
-
-  bool RemoveSignal();
-
-  void RemoveAllSignals();
-
   bool SetSignal( unsigned short signalIndex, const DspSignal* newSignal );
   bool SetSignal( std::string signalName, const DspSignal* newSignal );
 
@@ -79,6 +73,14 @@ public:
   void ClearValue( std::string signalName );
 
   void ClearAllValues();
+
+private:
+  friend class DspComponent;
+
+  bool _AddSignal( std::string signalName = "" );
+
+  bool _RemoveSignal();
+  void _RemoveAllSignals();
 
 private:
   std::vector< DspSignal > _signals;
