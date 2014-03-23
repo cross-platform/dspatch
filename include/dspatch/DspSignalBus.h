@@ -37,8 +37,7 @@ A DspSignalBus contains DspSignals (see DspSignal). Via the Process_() method, a
 receives signals into it's "inputs" DspSignalBus and provides signals to it's "outputs"
 DspSignalBus. Although DspSignals can be acquired from a DspSignalBus, the DspSignalBus class
 provides public getters and setters for manipulating it's internal DspSignal values directly,
-abstracting the need to retrieve and interface with the contained DspSignal objects. Likewise,
-signals can be added and removed from a DspSignalBus via public methods.
+abstracting the need to retrieve and interface with the contained DspSignals themself.
 */
 
 class DLLEXPORT DspSignalBus
