@@ -48,12 +48,14 @@ public:
 };
 
 //=================================================================================================
+/// TODO
+
+/**
+///! TODO
+*/
 
 class DLLEXPORT DspPluginLoader : public DspPlugin
 {
-  typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
-  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter > const& );
-
 public:
   DspPluginLoader( std::string const& pluginPath );
   ~DspPluginLoader();
@@ -64,6 +66,9 @@ public:
   DspComponent* Create( std::map< std::string, DspParameter > const& params );
 
 private:
+  typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
+  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter > const& );
+
   void* _handle;
   GetCreateParams_t _getCreateParams;
   Create_t _create;

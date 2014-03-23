@@ -66,13 +66,9 @@ class DLLEXPORT DspComponent
 public:
   enum CallbackType
   {
-    InputAdded,
-    InputRemoved,
-    OutputAdded,
-    OutputRemoved,
-    ParameterAdded,
-    ParameterRemoved,
-    ParameterUpdated
+    InputAdded, InputRemoved,
+    OutputAdded, OutputRemoved,
+    ParameterAdded, ParameterRemoved, ParameterUpdated
   };
   typedef void( *Callback_t )( DspComponent const* component, CallbackType const& callbackType, int const& index );
 
@@ -101,16 +97,15 @@ public:
   void DisconnectInput( DspComponent* inputComponent );
   void DisconnectAllInputs();
 
-  unsigned short GetInputCount() const;
-  unsigned short GetOutputCount() const;
-  unsigned short GetParameterCount() const;
+  unsigned short GetInputCount();
+  unsigned short GetOutputCount();
+  unsigned short GetParameterCount();
 
   std::string GetInputName( unsigned short index );
   std::string GetOutputName( unsigned short index );
-  std::string GetParameterName( unsigned short index ) const;
+  std::string GetParameterName( unsigned short index );
 
-  bool GetParameter( std::string const& paramName, DspParameter& returnParam ) const;
-  ///! callback
+  bool GetParameter( std::string const& paramName, DspParameter& returnParam );
   bool SetParameter( std::string const& paramName, DspParameter const& param );
 
   void Tick();
@@ -123,10 +118,9 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs ) {}
+  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& parameters );
   virtual void ParameterUpdated_( std::string const& name, DspParameter const& param ) {}
 
-  ///! callbacks for IO changes
-  ///! callbacks for Param changes
   bool AddInput_( std::string inputName = "" );
   bool AddOutput_( std::string outputName = "" );
   bool AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );
@@ -162,7 +156,7 @@ private:
   void _WaitForRelease( unsigned short threadNo );
   void _ReleaseThread( unsigned short threadNo );
 
-  static void _CallbackStub( DspComponent const*, CallbackType const&, int const&) {}
+  static void _CallbackStub( DspComponent const*, CallbackType const&, int const& ) {}
 
 private:
   friend class DspCircuit;

@@ -52,6 +52,8 @@ DspPluginLoader::DspPluginLoader( std::string const& pluginPath )
   }
 }
 
+//-------------------------------------------------------------------------------------------------
+
 DspPluginLoader::~DspPluginLoader()
 {
   // close library

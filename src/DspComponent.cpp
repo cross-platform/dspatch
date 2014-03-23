@@ -61,7 +61,9 @@ DspComponent::~DspComponent()
 
 void DspComponent::SetCallback( Callback_t callback )
 {
+  PauseAutoTick();
   _callback = callback;
+  ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -104,10 +106,14 @@ void DspComponent::DisconnectInput( std::string inputName )
 {
   unsigned short inputIndex;
 
+  PauseAutoTick();
+
   if( _FindInput( inputName, inputIndex ) )
   {
     DisconnectInput( inputIndex );
   }
+
+  ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -140,85 +146,129 @@ void DspComponent::DisconnectAllInputs()
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetInputCount() const
+unsigned short DspComponent::GetInputCount()
 {
-  return _inputBus.GetSignalCount();
+  PauseAutoTick();
+  unsigned short inputCount = _inputBus.GetSignalCount();
+  ResumeAutoTick();
+  return inputCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetOutputCount() const
+unsigned short DspComponent::GetOutputCount()
 {
-  return _outputBus.GetSignalCount();
+  PauseAutoTick();
+  unsigned short outputCount = _outputBus.GetSignalCount();
+  ResumeAutoTick();
+  return outputCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetParameterCount() const
+unsigned short DspComponent::GetParameterCount()
 {
-  return _parameters.size();
+  PauseAutoTick();
+  unsigned short parameterCount = _parameters.size();
+  ResumeAutoTick();
+  return parameterCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 std::string DspComponent::GetInputName( unsigned short index )
 {
+  std::string inputName;
+
+  PauseAutoTick();
+
   if( index < _inputBus.GetSignalCount() )
   {
-    return _inputBus.GetSignal( index )->GetSignalName();
+    inputName = _inputBus.GetSignal( index )->GetSignalName();
   }
-  return "";
+  inputName = "";
+
+  ResumeAutoTick();
+  return inputName;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 std::string DspComponent::GetOutputName( unsigned short index )
 {
+  std::string outputName;
+
+  PauseAutoTick();
+
   if( index < _outputBus.GetSignalCount() )
   {
-    return _outputBus.GetSignal( index )->GetSignalName();
+    outputName = _outputBus.GetSignal( index )->GetSignalName();
   }
-  return "";
+  outputName = "";
+
+  ResumeAutoTick();
+  return outputName;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-std::string DspComponent::GetParameterName( unsigned short index ) const
+std::string DspComponent::GetParameterName( unsigned short index )
 {
+  std::string parameterName;
+
+  PauseAutoTick();
+
   if( index < _parameters.size() )
   {
     std::map< std::string, DspParameter >::const_iterator it = _parameters.begin();
     std::advance( it, index );
-    return it->first;
+    parameterName = it->first;
   }
-  return "";
+  parameterName = "";
+
+  ResumeAutoTick();
+  return parameterName;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::GetParameter( std::string const& paramName, DspParameter& returnParam ) const
+bool DspComponent::GetParameter( std::string const& paramName, DspParameter& returnParam )
 {
+  bool result;
+
+  PauseAutoTick();
+
   if( _parameters.find( paramName ) != _parameters.end() )
   {
-    return returnParam.SetParam( _parameters.at( paramName ) );
+    result = returnParam.SetParam( _parameters.at( paramName ) );
   }
-  return false;
+  result = false;
+
+  ResumeAutoTick();
+  return result;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
 {
+  bool result;
+
+  PauseAutoTick();
+
   if( _parameters.find( paramName ) != _parameters.end() )
   {
     if( _parameters.at( paramName ).SetParam( param ) )
     {
-      _callback( this, ParameterUpdated, std::distance( _parameters.begin(), _parameters.find( paramName ) ) );
       ParameterUpdated_( paramName, param );
-      return true;
+      _callback( this, ParameterUpdated, std::distance( _parameters.begin(), _parameters.find( paramName ) ) );
+      result = true;
     }
   }
-  return false;
+  result = false;
+
+  ResumeAutoTick();
+  return result;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -245,7 +295,7 @@ void DspComponent::Tick()
     _outputBus.ClearAllValues();
 
     // 4. call Process_() with newly aquired inputs
-    Process_( _inputBus, _outputBus );
+    Process_( _inputBus, _outputBus, _parameters );
   }
 }
 
@@ -377,6 +427,13 @@ DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned 
 }
 
 //=================================================================================================
+
+void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& )
+{
+  Process_( inputs, outputs );
+}
+
+//-------------------------------------------------------------------------------------------------
 
 bool DspComponent::AddInput_( std::string inputName )
 {
@@ -644,7 +701,7 @@ void DspComponent::_ThreadTick( unsigned short threadNo )
     _WaitForRelease( threadNo );
 
     // 5. call Process_() with newly aquired inputs
-    Process_( _inputBuses[threadNo], _outputBuses[threadNo] );
+    Process_( _inputBuses[threadNo], _outputBuses[threadNo], _parameters );
 
     // 6. signal that you're done processing.
     _ReleaseThread( threadNo );
