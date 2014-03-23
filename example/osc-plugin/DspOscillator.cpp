@@ -31,23 +31,6 @@ static const float TWOPI = 6.283185307179586476925286766559f;
 
 //=================================================================================================
 
-class DspOscillatorPlugin : public DspPlugin
-{
-  std::map< std::string, DspParameter > GetCreateParams()
-  {
-    std::cout << "GetCreateParams" << std::endl;
-    return std::map< std::string, DspParameter >();
-  }
-
-  DspComponent* Create( std::map< std::string, DspParameter > const& params )
-  {
-    std::cout << "Create" << std::endl;
-    return NULL;
-  }
-}; EXPORT_DSPPLUGIN( DspOscillatorPlugin )
-
-//=================================================================================================
-
 DspOscillator::DspOscillator( float startFreq, float startAmpl )
 : _freq( startFreq ),
   _ampl( startAmpl ),

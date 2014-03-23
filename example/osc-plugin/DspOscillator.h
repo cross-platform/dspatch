@@ -86,4 +86,21 @@ private:
 
 //=================================================================================================
 
+class DspOscillatorPlugin : public DspPlugin
+{
+  std::map< std::string, DspParameter > GetCreateParams()
+  {
+    std::cout << "GetCreateParams" << std::endl;
+    return std::map< std::string, DspParameter >();
+  }
+
+  DspComponent* Create( std::map< std::string, DspParameter > const& params )
+  {
+    std::cout << "Create" << std::endl;
+    return new DspOscillator();
+  }
+}; EXPORT_DSPPLUGIN( DspOscillatorPlugin )
+
+//=================================================================================================
+
 #endif /* DSPOSCILLATOR_H */
