@@ -99,7 +99,9 @@ class DspOscillatorPlugin : public DspPlugin
     std::cout << "Create" << std::endl;
     return new DspOscillator();
   }
-}; EXPORT_DSPPLUGIN( DspOscillatorPlugin )
+};
+
+EXPORT_DSPPLUGIN( DspOscillatorPlugin )
 
 //=================================================================================================
 

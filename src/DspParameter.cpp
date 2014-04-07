@@ -327,26 +327,34 @@ bool DspParameter::SetParam( DspParameter const& param )
   if( param.Type() == Bool )
   {
     bool value;
-    param.GetBool( value );
-    return SetBool( value );
+    if( param.GetBool( value ) )
+    {
+      return SetBool( value );
+    }
   }
   else if( param.Type() == Int || param.Type() == List )
   {
     int value;
-    param.GetInt( value );
-    return SetInt( value );
+    if( param.GetInt( value ) )
+    {
+      return SetInt( value );
+    }
   }
   else if( param.Type() == Float )
   {
     float value;
-    param.GetFloat( value );
-    return SetFloat( value );
+    if( param.GetFloat( value ) )
+    {
+      return SetFloat( value );
+    }
   }
   else if( param.Type() == String || param.Type() == FilePath )
   {
     std::string value;
-    param.GetString( value );
-    return SetString( value );
+    if( param.GetString( value ) )
+    {
+      return SetString( value );
+    }
   }
 
   return false;

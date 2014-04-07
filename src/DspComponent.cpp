@@ -428,7 +428,7 @@ DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned 
 
 //=================================================================================================
 
-void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter > const& )
+void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& )
 {
   Process_( inputs, outputs );
 }
