@@ -38,7 +38,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <osc-plugin/DspOscillator.h>
 
-void Callback( DspComponent const*, DspComponent::CallbackType const&, int const&)
+void Callback( DspComponent const*, DspComponent::CallbackType const&, int)
 {
   std::cout << "callback\n";
 }

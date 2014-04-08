@@ -122,7 +122,7 @@ bool DspAudioDevice::SetDevice( short deviceIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-std::string DspAudioDevice::GetDeviceName( short deviceIndex )
+std::string DspAudioDevice::GetDeviceName( short deviceIndex ) const
 {
   if( deviceIndex >= 0 && deviceIndex < ( _deviceCount ) )
   {
@@ -134,35 +134,35 @@ std::string DspAudioDevice::GetDeviceName( short deviceIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspAudioDevice::GetDeviceInputCount( short deviceIndex )
+unsigned short DspAudioDevice::GetDeviceInputCount( short deviceIndex ) const
 {
   return _rtAudio->deviceList[deviceIndex].inputChannels;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspAudioDevice::GetDeviceOutputCount( short deviceIndex )
+unsigned short DspAudioDevice::GetDeviceOutputCount( short deviceIndex ) const
 {
   return _rtAudio->deviceList[deviceIndex].outputChannels;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspAudioDevice::GetCurrentDevice()
+unsigned short DspAudioDevice::GetCurrentDevice() const
 {
   return _currentDevice;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspAudioDevice::GetDeviceCount()
+unsigned short DspAudioDevice::GetDeviceCount() const
 {
   return _deviceCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspAudioDevice::IsStreaming()
+bool DspAudioDevice::IsStreaming() const
 {
   return _isStreaming;
 }
@@ -196,7 +196,7 @@ void DspAudioDevice::SetSampleRate( unsigned long sampleRate )
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned long DspAudioDevice::GetSampleRate()
+unsigned long DspAudioDevice::GetSampleRate() const
 {
   return _sampleRate;
 }
@@ -359,7 +359,7 @@ int DspAudioDevice::_StaticCallback( void* outputBuffer,
                                      unsigned int status,
                                      void* userData )
 {
-  return ( ( DspAudioDevice* ) userData )->_DynamicCallback( inputBuffer, outputBuffer );
+  return ( reinterpret_cast<DspAudioDevice*>( userData ) )->_DynamicCallback( inputBuffer, outputBuffer );
 }
 
 //-------------------------------------------------------------------------------------------------

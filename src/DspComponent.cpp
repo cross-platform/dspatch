@@ -492,7 +492,7 @@ bool DspComponent::RemoveOutput_()
 
 bool DspComponent::RemoveParameter_()
 {
-  if( _parameters.size() > 0 )
+  if( !_parameters.empty() )
   {
     _parameters.erase( _parameters.rbegin()->first );
     _callback( this, ParameterRemoved, _parameters.size() );

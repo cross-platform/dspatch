@@ -40,7 +40,7 @@ public:
   void Pause();
   void Stop();
 
-  bool IsPlaying();
+  bool IsPlaying() const;
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );

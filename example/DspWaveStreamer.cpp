@@ -37,6 +37,8 @@ DspWaveStreamer::DspWaveStreamer()
   _sampleIndex( 0 ),
   _shortToFloatCoeff( 1.0f / 32767.0f )
 {
+  _waveFormat.Clear();
+
   _leftChannel.resize( _bufferSize );
   _rightChannel.resize( _bufferSize );
 
@@ -64,8 +66,8 @@ bool DspWaveStreamer::LoadFile( char const* filePath )
     return false;
 
   unsigned long dwFileSize = 0, dwChunkSize = 0;
-  char* dwChunkId = new char[5];
-  char* dwExtra = new char[5];
+  char dwChunkId[5];
+  char dwExtra[5];
 
   dwChunkId[4] = 0;
   dwExtra[4] = 0;
@@ -194,7 +196,7 @@ void DspWaveStreamer::Stop()
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWaveStreamer::IsPlaying()
+bool DspWaveStreamer::IsPlaying() const
 {
   return _isPlaying;
 }

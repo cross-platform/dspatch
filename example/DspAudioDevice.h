@@ -39,17 +39,17 @@ public:
 
   bool SetDevice( short deviceIndex );
 
-  std::string GetDeviceName( short deviceIndex );
-  unsigned short GetDeviceInputCount( short deviceIndex );
-  unsigned short GetDeviceOutputCount( short deviceIndex );
-  unsigned short GetCurrentDevice();
-  unsigned short GetDeviceCount();
+  std::string GetDeviceName( short deviceIndex ) const;
+  unsigned short GetDeviceInputCount( short deviceIndex ) const;
+  unsigned short GetDeviceOutputCount( short deviceIndex ) const;
+  unsigned short GetCurrentDevice() const;
+  unsigned short GetDeviceCount() const;
 
-  bool IsStreaming();
+  bool IsStreaming() const;
 
   void SetBufferSize( unsigned long bufferSize );
   void SetSampleRate( unsigned long sampleRate );
-  unsigned long GetSampleRate();
+  unsigned long GetSampleRate() const;
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
