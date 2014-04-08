@@ -109,14 +109,16 @@ unsigned short DspCircuit::GetThreadCount() const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::AddComponent( DspComponent* component, std::string componentName )
+bool DspCircuit::AddComponent( DspComponent* component, std::string const& componentName )
 {
   if( component != this )
   {
+    std::string compName = componentName;
+
     // if the component has a name already
-    if( component->GetComponentName() != "" && componentName == "" )
+    if( component->GetComponentName() != "" && compName == "" )
     {
-      componentName = component->GetComponentName();
+      compName = component->GetComponentName();
     }
 
     unsigned short componentIndex;
@@ -129,7 +131,7 @@ bool DspCircuit::AddComponent( DspComponent* component, std::string componentNam
     {
       return false; // if the component is already in the array
     }
-    if( _FindComponent( componentName, componentIndex ) )
+    if( _FindComponent( compName, componentIndex ) )
     {
       return false; // if the component name is already in the array
     }
@@ -137,7 +139,7 @@ bool DspCircuit::AddComponent( DspComponent* component, std::string componentNam
     // components within the circuit need to have as many buffers as there are threads in the circuit
     component->_SetParentCircuit( this );
     component->_SetBufferCount( _circuitThreads.size() );
-    component->SetComponentName( componentName );
+    component->SetComponentName( compName );
 
     PauseAutoTick();
     _components.push_back( component );
@@ -151,14 +153,14 @@ bool DspCircuit::AddComponent( DspComponent* component, std::string componentNam
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::AddComponent( DspComponent& component, std::string componentName )
+bool DspCircuit::AddComponent( DspComponent& component, std::string const& componentName )
 {
   return AddComponent( &component, componentName );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::RemoveComponent( DspComponent* component )
+void DspCircuit::RemoveComponent( DspComponent const* component )
 {
   unsigned short componentIndex;
 
@@ -172,14 +174,14 @@ void DspCircuit::RemoveComponent( DspComponent* component )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::RemoveComponent( DspComponent& component )
+void DspCircuit::RemoveComponent( DspComponent const& component )
 {
   RemoveComponent( &component );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::RemoveComponent( std::string componentName )
+void DspCircuit::RemoveComponent( std::string const& componentName )
 {
   unsigned short componentIndex;
 
@@ -212,7 +214,7 @@ unsigned short DspCircuit::GetComponentCount() const
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::DisconnectComponent( std::string component )
+void DspCircuit::DisconnectComponent( std::string const& component )
 {
   unsigned short componentIndex;
 
@@ -228,7 +230,7 @@ void DspCircuit::DisconnectComponent( std::string component )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::AddInput( std::string inputName )
+bool DspCircuit::AddInput( std::string const& inputName )
 {
   PauseAutoTick();
   bool result = AddInput_( inputName );
@@ -239,7 +241,7 @@ bool DspCircuit::AddInput( std::string inputName )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::AddOutput( std::string outputName )
+bool DspCircuit::AddOutput( std::string const& outputName )
 {
   PauseAutoTick();
   bool result = AddOutput_( outputName );
@@ -356,7 +358,7 @@ void DspCircuit::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 
 //=================================================================================================
 
-bool DspCircuit::_FindComponent( DspComponent* component, unsigned short& returnIndex ) const
+bool DspCircuit::_FindComponent( DspComponent const* component, unsigned short& returnIndex ) const
 {
   for( unsigned short i = 0; i < _components.size(); i++ )
   {
@@ -372,14 +374,14 @@ bool DspCircuit::_FindComponent( DspComponent* component, unsigned short& return
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::_FindComponent( DspComponent& component, unsigned short& returnIndex ) const
+bool DspCircuit::_FindComponent( DspComponent const& component, unsigned short& returnIndex ) const
 {
   return _FindComponent( &component, returnIndex );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::_FindComponent( std::string componentName, unsigned short& returnIndex ) const
+bool DspCircuit::_FindComponent( std::string const& componentName, unsigned short& returnIndex ) const
 {
   for( unsigned short i = 0; i < _components.size(); i++ )
   {

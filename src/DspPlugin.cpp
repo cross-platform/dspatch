@@ -26,7 +26,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-std::map< std::string, DspParameter > DspPlugin::GetCreateParams()
+std::map< std::string, DspParameter > DspPlugin::GetCreateParams() const
 {
   return std::map< std::string, DspParameter >();
 }
@@ -65,14 +65,14 @@ DspPluginLoader::~DspPluginLoader()
 
 //=================================================================================================
 
-bool DspPluginLoader::IsLoaded()
+bool DspPluginLoader::IsLoaded() const
 {
   return _handle;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-std::map< std::string, DspParameter > DspPluginLoader::GetCreateParams()
+std::map< std::string, DspParameter > DspPluginLoader::GetCreateParams() const
 {
   if( _handle )
   {
@@ -83,7 +83,7 @@ std::map< std::string, DspParameter > DspPluginLoader::GetCreateParams()
 
 //-------------------------------------------------------------------------------------------------
 
-DspComponent* DspPluginLoader::Create( std::map< std::string, DspParameter > const& params )
+DspComponent* DspPluginLoader::Create( std::map< std::string, DspParameter > const& params ) const
 {
   if( _handle )
   {

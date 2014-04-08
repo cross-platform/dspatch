@@ -56,10 +56,10 @@ public:
 private:
   friend class DspComponent;
 
-  static bool _IsThisGlobalCircuit( DspComponent* thisComponent );
+  static bool _IsThisGlobalCircuit( DspComponent const* thisComponent );
 
   static bool _AddGlobalComponent( DspComponent* component );
-  static void _RemoveGlobalComponent( DspComponent* component );
+  static void _RemoveGlobalComponent( DspComponent const* component );
 
   static unsigned short _GetGlobalComponentCount();
 

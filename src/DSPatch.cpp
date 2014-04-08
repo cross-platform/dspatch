@@ -48,7 +48,7 @@ void DSPatch::Finalize()
 
 //=================================================================================================
 
-bool DSPatch::_IsThisGlobalCircuit( DspComponent* thisComponent )
+bool DSPatch::_IsThisGlobalCircuit( DspComponent const* thisComponent )
 {
   if( _globalCircuit != NULL )
   {
@@ -72,7 +72,7 @@ bool DSPatch::_AddGlobalComponent( DspComponent* component )
 
 //-------------------------------------------------------------------------------------------------
 
-void DSPatch::_RemoveGlobalComponent( DspComponent* component )
+void DSPatch::_RemoveGlobalComponent( DspComponent const* component )
 {
   if( _globalCircuit != NULL )
   {

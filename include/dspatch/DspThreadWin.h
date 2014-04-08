@@ -37,7 +37,7 @@ public:
   DspThread()
   : _threadHandle( NULL ) {}
 
-  DspThread( const DspThread& )
+  DspThread( DspThread const& )
   : _threadHandle( NULL ) {}
 
   virtual ~DspThread()
@@ -105,7 +105,7 @@ public:
     InitializeCriticalSection( &_cs );
   }
 
-  DspMutex( const DspMutex& )
+  DspMutex( DspMutex const& )
   {
     InitializeCriticalSection( &_cs );
   }
@@ -139,7 +139,7 @@ public:
     _hEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
   }
 
-  DspWaitCondition( const DspWaitCondition& )
+  DspWaitCondition( DspWaitCondition const& )
   {
     _hEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
   }

@@ -53,7 +53,7 @@ public:
   bool AddWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
   bool RemoveWire( unsigned short wireIndex );
-  bool RemoveWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
+  bool RemoveWire( DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
   void RemoveAllWires();
 

@@ -70,48 +70,48 @@ public:
   void SetThreadCount( unsigned short threadCount );
   unsigned short GetThreadCount() const;
 
-  bool AddComponent( DspComponent* component, std::string componentName = "" );
-  bool AddComponent( DspComponent& component, std::string componentName = "" );
+  bool AddComponent( DspComponent* component, std::string const& componentName = "" );
+  bool AddComponent( DspComponent& component, std::string const& componentName = "" );
 
-  void RemoveComponent( DspComponent* component );
-  void RemoveComponent( DspComponent& component );
-  void RemoveComponent( std::string componentName );
+  void RemoveComponent( DspComponent const* component );
+  void RemoveComponent( DspComponent const& component );
+  void RemoveComponent( std::string const& componentName );
 
   void RemoveAllComponents();
 
   template< class ComponentType >
-  ComponentType* GetComponent( std::string componentName );
+  ComponentType* GetComponent( std::string const& componentName );
 
   unsigned short GetComponentCount() const;
 
   // component output to component input
   template< class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId >
-  bool ConnectOutToIn( FromComponentType& fromComponent, FromOutputId fromOutput, ToComponentType& toComponent, ToInputId toInput );
+  bool ConnectOutToIn( FromComponentType& fromComponent, FromOutputId const& fromOutput, ToComponentType& toComponent, ToInputId const& toInput );
 
   // circuit input to component input
   template< class FromInputId, class ToComponentType, class ToInputId >
-  bool ConnectInToIn( FromInputId fromInput, ToComponentType& toComponent, ToInputId toInput );
+  bool ConnectInToIn( FromInputId const& fromInput, ToComponentType& toComponent, ToInputId const& toInput );
 
   // component output to circuit output
   template< class FromComponentType, class FromOutputId, class ToOutputId >
-  bool ConnectOutToOut( FromComponentType& fromComponent, FromOutputId fromOutput, ToOutputId toOutput );
+  bool ConnectOutToOut( FromComponentType& fromComponent, FromOutputId const& fromOutput, ToOutputId const& toOutput );
 
   // component output to component input
   template< class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId >
-  void DisconnectOutToIn( FromComponentType& fromComponent, FromOutputId fromOutput, ToComponentType& toComponent, ToInputId toInput );
+  void DisconnectOutToIn( FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToComponentType const& toComponent, ToInputId const& toInput );
 
   // circuit input to component input
   template< class FromInputId, class ToComponentType, class ToInputId >
-  bool DisconnectInToIn( FromInputId fromInput, ToComponentType& toComponent, ToInputId toInput );
+  bool DisconnectInToIn( FromInputId const& fromInput, ToComponentType const& toComponent, ToInputId const& toInput );
 
   // component output to circuit output
   template< class FromComponentType, class FromOutputId, class ToOutputId >
-  bool DisconnectOutToOut( FromComponentType& fromComponent, FromOutputId fromOutput, ToOutputId toOutput );
+  bool DisconnectOutToOut( FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToOutputId const& toOutput );
 
-  void DisconnectComponent( std::string component );
+  void DisconnectComponent( std::string const& component );
 
-  bool AddInput( std::string inputName = "" );
-  bool AddOutput( std::string outputName = "" );
+  bool AddInput( std::string const& inputName = "" );
+  bool AddOutput( std::string const& outputName = "" );
 
   void RemoveInput();
   void RemoveOutput();
@@ -131,9 +131,9 @@ private:
   DspWireBus _inToInWires;
   DspWireBus _outToOutWires;
 
-  bool _FindComponent( DspComponent* component, unsigned short& returnIndex ) const;
-  bool _FindComponent( DspComponent& component, unsigned short& returnIndex ) const;
-  bool _FindComponent( std::string componentName, unsigned short& returnIndex ) const;
+  bool _FindComponent( DspComponent const* component, unsigned short& returnIndex ) const;
+  bool _FindComponent( DspComponent const& component, unsigned short& returnIndex ) const;
+  bool _FindComponent( std::string const& componentName, unsigned short& returnIndex ) const;
   bool _FindComponent( unsigned short componentIndex, unsigned short& returnIndex ) const;
 
   void _DisconnectComponent( unsigned short componentIndex );
@@ -143,7 +143,7 @@ private:
 //=================================================================================================
 
 template< class ComponentType >
-ComponentType* DspCircuit::GetComponent( std::string componentName )
+ComponentType* DspCircuit::GetComponent( std::string const& componentName )
 {
   unsigned short componentIndex;
 
@@ -160,7 +160,7 @@ ComponentType* DspCircuit::GetComponent( std::string componentName )
 //-------------------------------------------------------------------------------------------------
 
 template< class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId >
-bool DspCircuit::ConnectOutToIn( FromComponentType& fromComponent, FromOutputId fromOutput, ToComponentType& toComponent, ToInputId toInput )
+bool DspCircuit::ConnectOutToIn( FromComponentType& fromComponent, FromOutputId const& fromOutput, ToComponentType& toComponent, ToInputId const& toInput )
 {
   unsigned short fromComponentIndex;
   unsigned short toComponentIndex;
@@ -184,7 +184,7 @@ bool DspCircuit::ConnectOutToIn( FromComponentType& fromComponent, FromOutputId 
 //-------------------------------------------------------------------------------------------------
 
 template< class FromInputId, class ToComponentType, class ToInputId >
-bool DspCircuit::ConnectInToIn( FromInputId fromInput, ToComponentType& toComponent, ToInputId toInput )
+bool DspCircuit::ConnectInToIn( FromInputId const& fromInput, ToComponentType& toComponent, ToInputId const& toInput )
 {
   unsigned short fromInputIndex;
   unsigned short toComponentIndex;
@@ -210,7 +210,7 @@ bool DspCircuit::ConnectInToIn( FromInputId fromInput, ToComponentType& toCompon
 //-------------------------------------------------------------------------------------------------
 
 template< class FromComponentType, class FromOutputId, class ToOutputId >
-bool DspCircuit::ConnectOutToOut( FromComponentType& fromComponent, FromOutputId fromOutput, ToOutputId toOutput )
+bool DspCircuit::ConnectOutToOut( FromComponentType& fromComponent, FromOutputId const& fromOutput, ToOutputId const& toOutput )
 {
   unsigned short fromComponentIndex;
   unsigned short fromOutputIndex;
@@ -236,7 +236,7 @@ bool DspCircuit::ConnectOutToOut( FromComponentType& fromComponent, FromOutputId
 //-------------------------------------------------------------------------------------------------
 
 template< class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId >
-void DspCircuit::DisconnectOutToIn( FromComponentType& fromComponent, FromOutputId fromOutput, ToComponentType& toComponent, ToInputId toInput )
+void DspCircuit::DisconnectOutToIn( FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToComponentType const& toComponent, ToInputId const& toInput )
 {
   unsigned short fromComponentIndex;
   unsigned short toComponentIndex;
@@ -258,7 +258,7 @@ void DspCircuit::DisconnectOutToIn( FromComponentType& fromComponent, FromOutput
 //-------------------------------------------------------------------------------------------------
 
 template< class FromInputId, class ToComponentType, class ToInputId >
-bool DspCircuit::DisconnectInToIn( FromInputId fromInput, ToComponentType& toComponent, ToInputId toInput )
+bool DspCircuit::DisconnectInToIn( FromInputId const& fromInput, ToComponentType const& toComponent, ToInputId const& toInput )
 {
   unsigned short fromInputIndex;
   unsigned short toComponentIndex;
@@ -284,7 +284,7 @@ bool DspCircuit::DisconnectInToIn( FromInputId fromInput, ToComponentType& toCom
 //-------------------------------------------------------------------------------------------------
 
 template< class FromComponentType, class FromOutputId, class ToOutputId >
-bool DspCircuit::DisconnectOutToOut( FromComponentType& fromComponent, FromOutputId fromOutput, ToOutputId toOutput )
+bool DspCircuit::DisconnectOutToOut( FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToOutputId const& toOutput )
 {
   unsigned short fromComponentIndex;
   unsigned short fromOutputIndex;

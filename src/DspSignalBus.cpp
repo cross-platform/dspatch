@@ -30,7 +30,7 @@ DspSignalBus::~DspSignalBus() {}
 
 //=================================================================================================
 
-bool DspSignalBus::SetSignal( unsigned short signalIndex, const DspSignal* newSignal )
+bool DspSignalBus::SetSignal( unsigned short signalIndex, DspSignal const* newSignal )
 {
   if( signalIndex < _signals.size() && newSignal != NULL )
   {
@@ -44,7 +44,7 @@ bool DspSignalBus::SetSignal( unsigned short signalIndex, const DspSignal* newSi
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspSignalBus::SetSignal( std::string signalName, const DspSignal* newSignal )
+bool DspSignalBus::SetSignal( std::string const& signalName, DspSignal const* newSignal )
 {
   unsigned short signalIndex;
 
@@ -74,7 +74,7 @@ DspSignal* DspSignalBus::GetSignal( unsigned short signalIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-DspSignal* DspSignalBus::GetSignal( std::string signalName )
+DspSignal* DspSignalBus::GetSignal( std::string const& signalName )
 {
   unsigned short signalIndex;
 
@@ -90,7 +90,7 @@ DspSignal* DspSignalBus::GetSignal( std::string signalName )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspSignalBus::FindSignal( std::string signalName, unsigned short& returnIndex ) const
+bool DspSignalBus::FindSignal( std::string const& signalName, unsigned short& returnIndex ) const
 {
   if( signalName == "" )
   {
@@ -141,7 +141,7 @@ void DspSignalBus::ClearValue( unsigned short signalIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspSignalBus::ClearValue( std::string signalName )
+void DspSignalBus::ClearValue( std::string const& signalName )
 {
   unsigned short signalIndex;
 
@@ -163,7 +163,7 @@ void DspSignalBus::ClearAllValues()
 
 //=================================================================================================
 
-bool DspSignalBus::_AddSignal( std::string signalName )
+bool DspSignalBus::_AddSignal( std::string const& signalName )
 {
   if( signalName != "" )
   {

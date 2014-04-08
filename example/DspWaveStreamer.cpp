@@ -51,7 +51,7 @@ DspWaveStreamer::~DspWaveStreamer() {}
 
 //=================================================================================================
 
-bool DspWaveStreamer::LoadFile( const char* filePath )
+bool DspWaveStreamer::LoadFile( char const* filePath )
 {
   bool wasPlaying = _isPlaying;
   Stop();

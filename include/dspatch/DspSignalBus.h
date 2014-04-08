@@ -45,38 +45,38 @@ class DLLEXPORT DspSignalBus
 public:
   virtual ~DspSignalBus();
 
-  bool SetSignal( unsigned short signalIndex, const DspSignal* newSignal );
-  bool SetSignal( std::string signalName, const DspSignal* newSignal );
+  bool SetSignal( unsigned short signalIndex, DspSignal const* newSignal );
+  bool SetSignal( std::string const& signalName, DspSignal const* newSignal );
 
   DspSignal* GetSignal( unsigned short signalIndex );
-  DspSignal* GetSignal( std::string signalName );
+  DspSignal* GetSignal( std::string const& signalName );
 
-  bool FindSignal( std::string signalName, unsigned short& returnIndex ) const;
+  bool FindSignal( std::string const& signalName, unsigned short& returnIndex ) const;
   bool FindSignal( unsigned short signalIndex, unsigned short& returnIndex ) const;
 
   unsigned short GetSignalCount() const;
 
   template< class ValueType >
-  bool SetValue( unsigned short signalIndex, const ValueType& newValue );
+  bool SetValue( unsigned short signalIndex, ValueType const& newValue );
 
   template< class ValueType >
-  bool SetValue( std::string signalName, const ValueType& newValue );
+  bool SetValue( std::string const& signalName, ValueType const& newValue );
 
   template< class ValueType >
   bool GetValue( unsigned short signalIndex, ValueType& returnValue ) const;
 
   template< class ValueType >
-  bool GetValue( std::string signalName, ValueType& returnValue ) const;
+  bool GetValue( std::string const& signalName, ValueType& returnValue ) const;
 
   void ClearValue( unsigned short signalIndex );
-  void ClearValue( std::string signalName );
+  void ClearValue( std::string const& signalName );
 
   void ClearAllValues();
 
 private:
   friend class DspComponent;
 
-  bool _AddSignal( std::string signalName = "" );
+  bool _AddSignal( std::string const& signalName = "" );
 
   bool _RemoveSignal();
   void _RemoveAllSignals();
@@ -88,7 +88,7 @@ private:
 //=================================================================================================
 
 template< class ValueType >
-bool DspSignalBus::SetValue( unsigned short signalIndex, const ValueType& newValue )
+bool DspSignalBus::SetValue( unsigned short signalIndex, ValueType const& newValue )
 {
   if( signalIndex < _signals.size() )
   {
@@ -103,7 +103,7 @@ bool DspSignalBus::SetValue( unsigned short signalIndex, const ValueType& newVal
 //-------------------------------------------------------------------------------------------------
 
 template< class ValueType >
-bool DspSignalBus::SetValue( std::string signalName, const ValueType& newValue )
+bool DspSignalBus::SetValue( std::string const& signalName, ValueType const& newValue )
 {
   unsigned short signalIndex;
 
@@ -135,7 +135,7 @@ bool DspSignalBus::GetValue( unsigned short signalIndex, ValueType& returnValue 
 //-------------------------------------------------------------------------------------------------
 
 template< class ValueType >
-bool DspSignalBus::GetValue( std::string signalName, ValueType& returnValue ) const
+bool DspSignalBus::GetValue( std::string const& signalName, ValueType& returnValue ) const
 {
   unsigned short signalIndex;
 

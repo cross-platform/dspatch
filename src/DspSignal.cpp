@@ -36,7 +36,7 @@ DspSignal::~DspSignal() {}
 
 //=================================================================================================
 
-bool DspSignal::SetSignal( const DspSignal* newSignal )
+bool DspSignal::SetSignal( DspSignal const* newSignal )
 {
   if( newSignal != NULL )
   {

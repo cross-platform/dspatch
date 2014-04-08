@@ -88,13 +88,13 @@ private:
 
 class DspOscillatorPlugin : public DspPlugin
 {
-  std::map< std::string, DspParameter > GetCreateParams()
+  std::map< std::string, DspParameter > GetCreateParams() const
   {
     std::cout << "GetCreateParams" << std::endl;
     return std::map< std::string, DspParameter >();
   }
 
-  DspComponent* Create( std::map< std::string, DspParameter > const& params )
+  DspComponent* Create( std::map< std::string, DspParameter > const& params ) const
   {
     std::cout << "Create" << std::endl;
     return new DspOscillator();

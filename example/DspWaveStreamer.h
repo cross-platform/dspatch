@@ -35,7 +35,7 @@ public:
   DspWaveStreamer();
   ~DspWaveStreamer();
 
-  bool LoadFile( const char* filePath );
+  bool LoadFile( char const* filePath );
   void Play();
   void Pause();
   void Stop();

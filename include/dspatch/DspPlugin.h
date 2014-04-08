@@ -43,8 +43,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DLLEXPORT DspPlugin
 {
 public:
-  virtual std::map< std::string, DspParameter > GetCreateParams();
-  virtual DspComponent* Create( std::map< std::string, DspParameter > const& params ) = 0;
+  virtual std::map< std::string, DspParameter > GetCreateParams() const;
+  virtual DspComponent* Create( std::map< std::string, DspParameter > const& params ) const = 0;
 };
 
 //=================================================================================================
@@ -60,10 +60,10 @@ public:
   DspPluginLoader( std::string const& pluginPath );
   ~DspPluginLoader();
 
-  bool IsLoaded();
+  bool IsLoaded() const;
 
-  std::map< std::string, DspParameter > GetCreateParams();
-  DspComponent* Create( std::map< std::string, DspParameter > const& params );
+  std::map< std::string, DspParameter > GetCreateParams() const;
+  DspComponent* Create( std::map< std::string, DspParameter > const& params ) const;
 
 private:
   typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();

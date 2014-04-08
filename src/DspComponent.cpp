@@ -59,7 +59,7 @@ DspComponent::~DspComponent()
 
 //=================================================================================================
 
-void DspComponent::SetCallback( Callback_t callback )
+void DspComponent::SetCallback( Callback_t const& callback )
 {
   PauseAutoTick();
   _callback = callback;
@@ -68,7 +68,7 @@ void DspComponent::SetCallback( Callback_t callback )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::SetComponentName( std::string componentName )
+void DspComponent::SetComponentName( std::string const& componentName )
 {
   _componentName = componentName;
 }
@@ -102,7 +102,7 @@ void DspComponent::DisconnectInput( unsigned short inputIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInput( std::string inputName )
+void DspComponent::DisconnectInput( std::string const& inputName )
 {
   unsigned short inputIndex;
 
@@ -118,7 +118,7 @@ void DspComponent::DisconnectInput( std::string inputName )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInput( DspComponent* inputComponent )
+void DspComponent::DisconnectInput( DspComponent const* inputComponent )
 {
   PauseAutoTick();
 
@@ -412,20 +412,6 @@ void DspComponent::ResumeAutoTick()
   }
 }
 
-//-------------------------------------------------------------------------------------------------
-
-DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex )
-{
-  return _outputBus.GetSignal( outputIndex );
-}
-
-//-------------------------------------------------------------------------------------------------
-
-DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned short threadIndex )
-{
-  return _outputBuses[threadIndex].GetSignal( outputIndex );
-}
-
 //=================================================================================================
 
 void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& )
@@ -435,7 +421,7 @@ void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::m
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::AddInput_( std::string inputName )
+bool DspComponent::AddInput_( std::string const& inputName )
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
   {
@@ -451,7 +437,7 @@ bool DspComponent::AddInput_( std::string inputName )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::AddOutput_( std::string outputName )
+bool DspComponent::AddOutput_( std::string const& outputName )
 {
   for( unsigned short i = 0; i < _outputBuses.size(); i++ )
   {
@@ -577,7 +563,7 @@ DspCircuit* DspComponent::_GetParentCircuit()
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindInput( std::string signalName, unsigned short& returnIndex ) const
+bool DspComponent::_FindInput( std::string const& signalName, unsigned short& returnIndex ) const
 {
   return _inputBus.FindSignal( signalName, returnIndex );
 }
@@ -597,7 +583,7 @@ bool DspComponent::_FindInput( unsigned short signalIndex, unsigned short& retur
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindOutput( std::string signalName, unsigned short& returnIndex ) const
+bool DspComponent::_FindOutput( std::string const& signalName, unsigned short& returnIndex ) const
 {
   return _outputBus.FindSignal( signalName, returnIndex );
 }
@@ -721,16 +707,30 @@ void DspComponent::_ThreadReset( unsigned short threadNo )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_SetInputSignal( unsigned short inputIndex, const DspSignal* newSignal )
+bool DspComponent::_SetInputSignal( unsigned short inputIndex, DspSignal const* newSignal )
 {
   return _inputBus.SetSignal( inputIndex, newSignal );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_SetInputSignal( unsigned short inputIndex, unsigned short threadIndex, const DspSignal* newSignal )
+bool DspComponent::_SetInputSignal( unsigned short inputIndex, unsigned short threadIndex, DspSignal const* newSignal )
 {
   return _inputBuses[threadIndex].SetSignal( inputIndex, newSignal );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex )
+{
+  return _outputBus.GetSignal( outputIndex );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned short threadIndex )
+{
+  return _outputBuses[threadIndex].GetSignal( outputIndex );
 }
 
 //-------------------------------------------------------------------------------------------------

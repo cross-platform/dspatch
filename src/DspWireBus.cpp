@@ -76,7 +76,7 @@ bool DspWireBus::AddWire( DspComponent* linkedComponent, unsigned short fromSign
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWireBus::RemoveWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex )
+bool DspWireBus::RemoveWire( DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex )
 {
   for( unsigned short i = 0; i < _wires.size(); i++ )
   {
