@@ -36,7 +36,7 @@ DspOscillator::DspOscillator( float startFreq, float startAmpl )
   _ampl( startAmpl ),
   _lastPos( 0 ),
   _lookupLength( 0 ),
-  _bufferSize( 512 ),
+  _bufferSize( 256 ),
   _sampleRate( 44100 )
 {
   _BuildLookup();
