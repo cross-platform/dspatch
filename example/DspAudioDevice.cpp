@@ -46,7 +46,7 @@ struct RtAudioMembers
 DspAudioDevice::DspAudioDevice()
 : _rtAudio( new RtAudioMembers() ),
 
-  _bufferSize( 512 ),
+  _bufferSize( 256 ),
   _sampleRate( 44100 ),
 
   _deviceCount( 0 ),
@@ -55,7 +55,6 @@ DspAudioDevice::DspAudioDevice()
   _gotSyncReady( true ),
 
   _streamStop( false ),
-  _isStreaming( false ),
 
   _currentDevice( 0 )
 {
@@ -164,7 +163,7 @@ unsigned short DspAudioDevice::GetDeviceCount() const
 
 bool DspAudioDevice::IsStreaming() const
 {
-  return _isStreaming;
+  return !_streamStop;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -287,31 +286,15 @@ void DspAudioDevice::_StopStream()
 {
   _streamStop = true;
 
-  for( unsigned short i = 0; i < 250; i++ )
-  {
-    _waitCondt.WakeAll();
-
-    if( _isStreaming )
-    {
-      DspThread::MsSleep( 1 );
-    }
-    else
-    {
-      break;
-    }
-  }
-
-  if( _rtAudio->audioStream.isStreamRunning() )
-  {
-    _rtAudio->audioStream.stopStream();
-  }
+  _buffersMutex.Lock();
+  _gotWaitReady = true; // set release flag
+  _waitCondt.WakeAll(); // release sync
+  _buffersMutex.Unlock();
 
   if( _rtAudio->audioStream.isStreamOpen() )
   {
     _rtAudio->audioStream.closeStream();
   }
-
-  _syncCondt.WakeAll();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -347,7 +330,6 @@ void DspAudioDevice::_StartStream()
   _rtAudio->audioStream.startStream();
 
   _streamStop = false;
-  _isStreaming = true;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -403,11 +385,11 @@ int DspAudioDevice::_DynamicCallback( void* inputBuffer, void* outputBuffer )
   }
   else
   {
-    _isStreaming = false;
+    _SyncBuffer();
+    return 1;
   }
 
   _SyncBuffer();
-
   return 0;
 }
 

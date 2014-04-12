@@ -73,7 +73,6 @@ private:
   bool _gotSyncReady;
 
   bool _streamStop;
-  bool _isStreaming;
 
   unsigned short _currentDevice;
 
