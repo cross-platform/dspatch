@@ -33,7 +33,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 DspWaveStreamer::DspWaveStreamer()
 : _waveData( 0 ),
   _isPlaying( false ),
-  _bufferSize( 512 ),
+  _bufferSize( 256 ),
   _sampleIndex( 0 ),
   _shortToFloatCoeff( 1.0f / 32767.0f )
 {
