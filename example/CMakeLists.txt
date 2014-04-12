@@ -25,12 +25,7 @@ target_link_libraries(
 
 # Definition for RtAudio Windows, using direct sound
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    add_definitions(-D__WINDOWS_DS__)
-
-    target_link_libraries(
-        ${PROJECT_NAME}
-        dsound.lib
-    )
+    add_definitions(-D__WINDOWS_WASAPI__)
     
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
