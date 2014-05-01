@@ -38,7 +38,7 @@
 */
 /************************************************************************/
 
-// RtAudio: Version 4.1.0
+// RtAudio: Version 4.1.1
 
 #include "RtAudio.h"
 #include <iostream>
@@ -402,6 +402,14 @@ double RtApi :: getStreamTime( void )
 #else
   return stream_.streamTime;
 #endif
+}
+
+void RtApi :: setStreamTime( double time )
+{
+  verifyStream();
+
+  if ( time >= 0.0 )
+    stream_.streamTime = time;
 }
 
 unsigned int RtApi :: getStreamSampleRate( void )
@@ -1682,11 +1690,12 @@ bool RtApiCore :: callbackEvent( AudioDeviceID deviceId,
         }
       }
     }
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   AudioDeviceID inputDevice;
@@ -2572,11 +2581,12 @@ bool RtApiJack :: callbackEvent( unsigned long nframes )
         memcpy( jackbuffer, &stream_.userBuffer[0][i*bufferBytes], bufferBytes );
       }
     }
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   if ( stream_.mode == INPUT || stream_.mode == DUPLEX ) {
@@ -3403,11 +3413,12 @@ bool RtApiAsio :: callbackEvent( long bufferIndex )
       }
 
     }
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   if ( stream_.mode == INPUT || stream_.mode == DUPLEX ) {
@@ -3578,20 +3589,21 @@ static const char* getAsioErrorString( ASIOError result )
 
 #if defined(__WINDOWS_WASAPI__) // Windows WASAPI API
 
+// Authored by Marcus Tomlinson <themarcustomlinson@gmail.com>, April 2014
+// - Introduces support for the Windows WASAPI API
+// - Aims to deliver bit streams to and from hardware at the lowest possible latency, via the absolute minimum buffer sizes required
+// - Provides flexible stream configuration to an otherwise strict and inflexible WASAPI interface
+// - Includes automatic internal conversion of sample rate and buffer size between hardware and the user
+
+#ifndef INITGUID
+  #define INITGUID
+#endif
 #include <audioclient.h>
 #include <avrt.h>
-#include <functiondiscoverykeys.h>
 #include <mmdeviceapi.h>
+#include <functiondiscoverykeys_devpkey.h>
 
 //=============================================================================
-
-#define EXIT_ON_ERROR( hr, errorType, errorText )\
-if ( FAILED( hr ) )\
-{\
-  errorText_ = __FUNCTION__ ": " errorText;\
-  error( errorType );\
-  goto Exit;\
-}
 
 #define SAFE_RELEASE( objectPtr )\
 if ( objectPtr )\
@@ -3763,16 +3775,14 @@ private:
 
 //-----------------------------------------------------------------------------
 
-// In order to satisfy WASAPI's buffer requirements, we need a means of converting sample rate and
-// channel counts between HW and the user. The convertBufferWasapi function is used to perform
-// these conversions between HwIn->UserIn and UserOut->HwOut during the stream callback loop.
+// In order to satisfy WASAPI's buffer requirements, we need a means of converting sample rate
+// between HW and the user. The convertBufferWasapi function is used to perform this conversion
+// between HwIn->UserIn and UserOut->HwOut during the stream callback loop.
 // This sample rate converter favors speed over quality, and works best with conversions between
-// one rate and its multiple. RtApiWasapi will not populate a device's sample rate list with rates
-// that may cause artifacts via this conversion.
+// one rate and its multiple.
 void convertBufferWasapi( char* outBuffer,
                           const char* inBuffer,
-                          const unsigned int& inChannelCount,
-                          const unsigned int& outChannelCount,
+                          const unsigned int& channelCount,
                           const unsigned int& inSampleRate,
                           const unsigned int& outSampleRate,
                           const unsigned int& inSampleCount,
@@ -3783,7 +3793,6 @@ void convertBufferWasapi( char* outBuffer,
   float sampleRatio = ( float ) outSampleRate / inSampleRate;
   float sampleStep = 1.0f / sampleRatio;
   float inSampleFraction = 0.0f;
-  unsigned int commonChannelCount = min( inChannelCount, outChannelCount );
 
   outSampleCount = ( unsigned int ) ( inSampleCount * sampleRatio );
 
@@ -3795,22 +3804,22 @@ void convertBufferWasapi( char* outBuffer,
     switch ( format )
     {
       case RTAUDIO_SINT8:
-        memcpy( &( ( char* ) outBuffer )[ outSample * outChannelCount ], &( ( char* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( char ) );
+        memcpy( &( ( char* ) outBuffer )[ outSample * channelCount ], &( ( char* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( char ) );
         break;
       case RTAUDIO_SINT16:
-        memcpy( &( ( short* ) outBuffer )[ outSample * outChannelCount ], &( ( short* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( short ) );
+        memcpy( &( ( short* ) outBuffer )[ outSample * channelCount ], &( ( short* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( short ) );
         break;
       case RTAUDIO_SINT24:
-        memcpy( &( ( S24* ) outBuffer )[ outSample * outChannelCount ], &( ( S24* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( S24 ) );
+        memcpy( &( ( S24* ) outBuffer )[ outSample * channelCount ], &( ( S24* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( S24 ) );
         break;
       case RTAUDIO_SINT32:
-        memcpy( &( ( int* ) outBuffer )[ outSample * outChannelCount ], &( ( int* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( int ) );
+        memcpy( &( ( int* ) outBuffer )[ outSample * channelCount ], &( ( int* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( int ) );
         break;
       case RTAUDIO_FLOAT32:
-        memcpy( &( ( float* ) outBuffer )[ outSample * outChannelCount ], &( ( float* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( float ) );
+        memcpy( &( ( float* ) outBuffer )[ outSample * channelCount ], &( ( float* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( float ) );
         break;
       case RTAUDIO_FLOAT64:
-        memcpy( &( ( double* ) outBuffer )[ outSample * outChannelCount ], &( ( double* ) inBuffer )[ inSample * inChannelCount ], commonChannelCount * sizeof( double ) );
+        memcpy( &( ( double* ) outBuffer )[ outSample * channelCount ], &( ( double* ) inBuffer )[ inSample * channelCount ], channelCount * sizeof( double ) );
         break;
     }
 
@@ -3847,11 +3856,10 @@ RtApiWasapi::RtApiWasapi()
 {
   // WASAPI can run either apartment or multi-threaded
   HRESULT hr = CoInitialize( NULL );
-
   if ( !FAILED( hr ) )
     coInitialized_ = true;
 
-  // instantiate device enumerator
+  // Instantiate device enumerator
   hr = CoCreateInstance( __uuidof( MMDeviceEnumerator ), NULL,
                          CLSCTX_ALL, __uuidof( IMMDeviceEnumerator ),
                          ( void** ) &deviceEnumerator_ );
@@ -3866,16 +3874,14 @@ RtApiWasapi::RtApiWasapi()
 
 RtApiWasapi::~RtApiWasapi()
 {
-  // if this object previously called CoInitialize()
-  if ( coInitialized_ ) {
-    CoUninitialize();
-  }
-
-  if ( stream_.state != STREAM_CLOSED ) {
+  if ( stream_.state != STREAM_CLOSED )
     closeStream();
-  }
 
   SAFE_RELEASE( deviceEnumerator_ );
+
+  // If this object previously called CoInitialize()
+  if ( coInitialized_ )
+    CoUninitialize();
 }
 
 //=============================================================================
@@ -3888,26 +3894,43 @@ unsigned int RtApiWasapi::getDeviceCount( void )
   IMMDeviceCollection* captureDevices = NULL;
   IMMDeviceCollection* renderDevices = NULL;
 
-  // count capture devices
+  // Count capture devices
+  errorText_.clear();
   HRESULT hr = deviceEnumerator_->EnumAudioEndpoints( eCapture, DEVICE_STATE_ACTIVE, &captureDevices );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device collection" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceCount: Unable to retrieve capture device collection.";
+    goto Exit;
+  }
 
   hr = captureDevices->GetCount( &captureDeviceCount );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device count" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceCount: Unable to retrieve capture device count.";
+    goto Exit;
+  }
 
-  // count render devices
+  // Count render devices
   hr = deviceEnumerator_->EnumAudioEndpoints( eRender, DEVICE_STATE_ACTIVE, &renderDevices );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device collection" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceCount: Unable to retrieve render device collection.";
+    goto Exit;
+  }
 
   hr = renderDevices->GetCount( &renderDeviceCount );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device count" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceCount: Unable to retrieve render device count.";
+    goto Exit;
+  }
 
 Exit:
   // release all references
   SAFE_RELEASE( captureDevices );
   SAFE_RELEASE( renderDevices );
 
-  return captureDeviceCount + renderDeviceCount;
+  if ( errorText_.empty() )
+    return captureDeviceCount + renderDeviceCount;
+
+  error( RtAudioError::DRIVER_ERROR );
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -3938,67 +3961,105 @@ RtAudio::DeviceInfo RtApiWasapi::getDeviceInfo( unsigned int device )
   // probed
   info.probed = false;
 
-  // count capture devices
+  // Count capture devices
+  errorText_.clear();
+  RtAudioError::Type errorType = RtAudioError::DRIVER_ERROR;
   HRESULT hr = deviceEnumerator_->EnumAudioEndpoints( eCapture, DEVICE_STATE_ACTIVE, &captureDevices );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device collection" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve capture device collection.";
+    goto Exit;
+  }
 
   hr = captureDevices->GetCount( &captureDeviceCount );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device count" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve capture device count.";
+    goto Exit;
+  }
 
-  // count render devices
+  // Count render devices
   hr = deviceEnumerator_->EnumAudioEndpoints( eRender, DEVICE_STATE_ACTIVE, &renderDevices );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device collection" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve render device collection.";
+    goto Exit;
+  }
 
   hr = renderDevices->GetCount( &renderDeviceCount );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device count" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve render device count.";
+    goto Exit;
+  }
 
   // validate device index
-  if ( device >= captureDeviceCount + renderDeviceCount )
-    EXIT_ON_ERROR( -1, RtAudioError::INVALID_USE, "Invalid device index" );
+  if ( device >= captureDeviceCount + renderDeviceCount ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Invalid device index.";
+    errorType = RtAudioError::INVALID_USE;
+    goto Exit;
+  }
 
   // determine whether index falls within capture or render devices
   if ( device >= renderDeviceCount ) {
     hr = captureDevices->Item( device - renderDeviceCount, &devicePtr );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device handle" );
-
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve capture device handle.";
+      goto Exit;
+    }
     isCaptureDevice = true;
   }
   else {
     hr = renderDevices->Item( device, &devicePtr );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device handle" );
-
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve render device handle.";
+      goto Exit;
+    }
     isCaptureDevice = false;
   }
 
   // get default device name
   if ( isCaptureDevice ) {
     hr = deviceEnumerator_->GetDefaultAudioEndpoint( eCapture, eConsole, &defaultDevicePtr );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve default render device handle" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve default capture device handle.";
+      goto Exit;
+    }
   }
   else {
     hr = deviceEnumerator_->GetDefaultAudioEndpoint( eRender, eConsole, &defaultDevicePtr );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve default capture device handle" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve default render device handle.";
+      goto Exit;
+    }
   }
 
   hr = defaultDevicePtr->OpenPropertyStore( STGM_READ, &defaultDevicePropStore );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to open default device property store" );
-
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to open default device property store.";
+    goto Exit;
+  }
   PropVariantInit( &defaultDeviceNameProp );
 
   hr = defaultDevicePropStore->GetValue( PKEY_Device_FriendlyName, &defaultDeviceNameProp );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve default device property: PKEY_Device_FriendlyName" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve default device property: PKEY_Device_FriendlyName.";
+    goto Exit;
+  }
 
   deviceName = defaultDeviceNameProp.pwszVal;
   defaultDeviceName = std::string( deviceName.begin(), deviceName.end() );
 
   // name
   hr = devicePtr->OpenPropertyStore( STGM_READ, &devicePropStore );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to open device property store" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to open device property store.";
+    goto Exit;
+  }
 
   PropVariantInit( &deviceNameProp );
 
   hr = devicePropStore->GetValue( PKEY_Device_FriendlyName, &deviceNameProp );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device property: PKEY_Device_FriendlyName" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve device property: PKEY_Device_FriendlyName.";
+    goto Exit;
+  }
 
   deviceName = deviceNameProp.pwszVal;
   info.name = std::string( deviceName.begin(), deviceName.end() );
@@ -4015,10 +4076,16 @@ RtAudio::DeviceInfo RtApiWasapi::getDeviceInfo( unsigned int device )
 
   // channel count
   hr = devicePtr->Activate( __uuidof( IAudioClient ), CLSCTX_ALL, NULL, ( void** ) &audioClient );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device audio client" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve device audio client.";
+    goto Exit;
+  }
 
   hr = audioClient->GetMixFormat( &deviceFormat );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device mix format" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::getDeviceInfo: Unable to retrieve device mix format.";
+    goto Exit;
+  }
 
   if ( isCaptureDevice ) {
     info.inputChannels = deviceFormat->nChannels;
@@ -4034,18 +4101,9 @@ RtAudio::DeviceInfo RtApiWasapi::getDeviceInfo( unsigned int device )
   // sample rates
   info.sampleRates.clear();
 
-  // allow support for sample rates that are multiples of the base rate
+  // allow support for all sample rates as we have a built-in sample rate converter
   for ( unsigned int i = 0; i < MAX_SAMPLE_RATES; i++ ) {
-    if ( SAMPLE_RATES[i] < deviceFormat->nSamplesPerSec ) {
-      if ( deviceFormat->nSamplesPerSec % SAMPLE_RATES[i] == 0 ) {
-        info.sampleRates.push_back( SAMPLE_RATES[i] );
-      }
-    }
-    else {
-      if ( SAMPLE_RATES[i] % deviceFormat->nSamplesPerSec == 0 ) {
-        info.sampleRates.push_back( SAMPLE_RATES[i] );
-      }
-    }
+    info.sampleRates.push_back( SAMPLE_RATES[i] );
   }
 
   // native format
@@ -4099,6 +4157,8 @@ Exit:
   CoTaskMemFree( deviceFormat );
   CoTaskMemFree( closestMatchFormat );
 
+  if ( !errorText_.empty() )
+    error( errorType );
   return info;
 }
 
@@ -4133,7 +4193,7 @@ unsigned int RtApiWasapi::getDefaultInputDevice( void )
 void RtApiWasapi::closeStream( void )
 {
   if ( stream_.state == STREAM_CLOSED ) {
-    errorText_ = "RtApiWasapi::closeStream: No open stream to close";
+    errorText_ = "RtApiWasapi::closeStream: No open stream to close.";
     error( RtAudioError::WARNING );
     return;
   }
@@ -4154,7 +4214,7 @@ void RtApiWasapi::closeStream( void )
   if ( ( ( WasapiHandle* ) stream_.apiHandle )->renderEvent )
     CloseHandle( ( ( WasapiHandle* ) stream_.apiHandle )->renderEvent );
 
-  delete stream_.apiHandle;
+  delete ( WasapiHandle* ) stream_.apiHandle;
   stream_.apiHandle = NULL;
 
   for ( int i = 0; i < 2; i++ ) {
@@ -4180,7 +4240,7 @@ void RtApiWasapi::startStream( void )
   verifyStream();
 
   if ( stream_.state == STREAM_RUNNING ) {
-    errorText_ = "RtApiWasapi::startStream: The stream is already running";
+    errorText_ = "RtApiWasapi::startStream: The stream is already running.";
     error( RtAudioError::WARNING );
     return;
   }
@@ -4189,10 +4249,10 @@ void RtApiWasapi::startStream( void )
   stream_.state = STREAM_RUNNING;
 
   // create WASAPI stream thread
-  stream_.callbackInfo.thread = ( unsigned int ) CreateThread( NULL, 0, runWasapiThread, this, CREATE_SUSPENDED, NULL );
+  stream_.callbackInfo.thread = ( ThreadHandle ) CreateThread( NULL, 0, runWasapiThread, this, CREATE_SUSPENDED, NULL );
 
   if ( !stream_.callbackInfo.thread ) {
-    errorText_ = "RtApiWasapi::startStream: Unable to instantiate callback thread";
+    errorText_ = "RtApiWasapi::startStream: Unable to instantiate callback thread.";
     error( RtAudioError::THREAD_ERROR );
   }
   else {
@@ -4208,7 +4268,7 @@ void RtApiWasapi::stopStream( void )
   verifyStream();
 
   if ( stream_.state == STREAM_STOPPED ) {
-    errorText_ = "RtApiWasapi::stopStream: The stream is already stopped";
+    errorText_ = "RtApiWasapi::stopStream: The stream is already stopped.";
     error( RtAudioError::WARNING );
     return;
   }
@@ -4228,8 +4288,9 @@ void RtApiWasapi::stopStream( void )
   if ( ( ( WasapiHandle* ) stream_.apiHandle )->captureAudioClient ) {
     HRESULT hr = ( ( WasapiHandle* ) stream_.apiHandle )->captureAudioClient->Stop();
     if ( FAILED( hr ) ) {
-      errorText_ = "RtApiWasapi::stopStream: Unable to stop capture stream";
+      errorText_ = "RtApiWasapi::stopStream: Unable to stop capture stream.";
       error( RtAudioError::DRIVER_ERROR );
+      return;
     }
   }
 
@@ -4237,18 +4298,20 @@ void RtApiWasapi::stopStream( void )
   if ( ( ( WasapiHandle* ) stream_.apiHandle )->renderAudioClient ) {
     HRESULT hr = ( ( WasapiHandle* ) stream_.apiHandle )->renderAudioClient->Stop();
     if ( FAILED( hr ) ) {
-      errorText_ = "RtApiWasapi::stopStream: Unable to stop render stream";
+      errorText_ = "RtApiWasapi::stopStream: Unable to stop render stream.";
       error( RtAudioError::DRIVER_ERROR );
+      return;
     }
   }
 
   // close thread handle
   if ( stream_.callbackInfo.thread && !CloseHandle( ( void* ) stream_.callbackInfo.thread ) ) {
-    errorText_ = "RtApiWasapi::stopStream: Unable to close callback thread";
+    errorText_ = "RtApiWasapi::stopStream: Unable to close callback thread.";
     error( RtAudioError::THREAD_ERROR );
+    return;
   }
 
-  stream_.callbackInfo.thread = NULL;
+  stream_.callbackInfo.thread = (ThreadHandle) NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -4258,7 +4321,7 @@ void RtApiWasapi::abortStream( void )
   verifyStream();
 
   if ( stream_.state == STREAM_STOPPED ) {
-    errorText_ = "RtApiWasapi::abortStream: The stream is already stopped";
+    errorText_ = "RtApiWasapi::abortStream: The stream is already stopped.";
     error( RtAudioError::WARNING );
     return;
   }
@@ -4275,8 +4338,9 @@ void RtApiWasapi::abortStream( void )
   if ( ( ( WasapiHandle* ) stream_.apiHandle )->captureAudioClient ) {
     HRESULT hr = ( ( WasapiHandle* ) stream_.apiHandle )->captureAudioClient->Stop();
     if ( FAILED( hr ) ) {
-      errorText_ = "RtApiWasapi::stopStream: Unable to stop capture stream";
+      errorText_ = "RtApiWasapi::abortStream: Unable to stop capture stream.";
       error( RtAudioError::DRIVER_ERROR );
+      return;
     }
   }
 
@@ -4284,18 +4348,20 @@ void RtApiWasapi::abortStream( void )
   if ( ( ( WasapiHandle* ) stream_.apiHandle )->renderAudioClient ) {
     HRESULT hr = ( ( WasapiHandle* ) stream_.apiHandle )->renderAudioClient->Stop();
     if ( FAILED( hr ) ) {
-      errorText_ = "RtApiWasapi::stopStream: Unable to stop render stream";
+      errorText_ = "RtApiWasapi::abortStream: Unable to stop render stream.";
       error( RtAudioError::DRIVER_ERROR );
+      return;
     }
   }
 
   // close thread handle
   if ( stream_.callbackInfo.thread && !CloseHandle( ( void* ) stream_.callbackInfo.thread ) ) {
-    errorText_ = "RtApiWasapi::stopStream: Unable to close callback thread";
+    errorText_ = "RtApiWasapi::abortStream: Unable to close callback thread.";
     error( RtAudioError::THREAD_ERROR );
+    return;
   }
 
-  stream_.callbackInfo.thread = NULL;
+  stream_.callbackInfo.thread = (ThreadHandle) NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -4313,66 +4379,109 @@ bool RtApiWasapi::probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
   IMMDeviceCollection* renderDevices = NULL;
   IMMDevice* devicePtr = NULL;
   WAVEFORMATEX* deviceFormat = NULL;
+  unsigned int bufferBytes;
+  stream_.state = STREAM_STOPPED;
 
   // create API Handle if not already created
   if ( !stream_.apiHandle )
     stream_.apiHandle = ( void* ) new WasapiHandle();
 
-  // count capture devices
+  // Count capture devices
+  errorText_.clear();
+  RtAudioError::Type errorType = RtAudioError::DRIVER_ERROR;
   HRESULT hr = deviceEnumerator_->EnumAudioEndpoints( eCapture, DEVICE_STATE_ACTIVE, &captureDevices );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device collection" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve capture device collection.";
+    goto Exit;
+  }
 
   hr = captureDevices->GetCount( &captureDeviceCount );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device count" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve capture device count.";
+    goto Exit;
+  }
 
-  // count render devices
+  // Count render devices
   hr = deviceEnumerator_->EnumAudioEndpoints( eRender, DEVICE_STATE_ACTIVE, &renderDevices );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device collection" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve render device collection.";
+    goto Exit;
+  }
 
   hr = renderDevices->GetCount( &renderDeviceCount );
-  EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device count" );
+  if ( FAILED( hr ) ) {
+    errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve render device count.";
+    goto Exit;
+  }
 
   // validate device index
-  if ( device >= captureDeviceCount + renderDeviceCount )
-    EXIT_ON_ERROR( -1, RtAudioError::INVALID_USE, "Invalid device index" );
+  if ( device >= captureDeviceCount + renderDeviceCount ) {
+    errorType = RtAudioError::INVALID_USE;
+    errorText_ = "RtApiWasapi::probeDeviceOpen: Invalid device index.";
+    goto Exit;
+  }
 
   // determine whether index falls within capture or render devices
   if ( device >= renderDeviceCount ) {
-    if ( mode != INPUT )
-      EXIT_ON_ERROR( -1, RtAudioError::INVALID_USE, "Capture device selected as output device" );
+    if ( mode != INPUT ) {
+      errorType = RtAudioError::INVALID_USE;
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Capture device selected as output device.";
+      goto Exit;
+    }
 
     // retrieve captureAudioClient from devicePtr
     IAudioClient*& captureAudioClient = ( ( WasapiHandle* ) stream_.apiHandle )->captureAudioClient;
 
     hr = captureDevices->Item( device - renderDeviceCount, &devicePtr );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture device handle" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve capture device handle.";
+      goto Exit;
+    }
 
     hr = devicePtr->Activate( __uuidof( IAudioClient ), CLSCTX_ALL,
                               NULL, ( void** ) &captureAudioClient );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device audio client" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve device audio client.";
+      goto Exit;
+    }
 
     hr = captureAudioClient->GetMixFormat( &deviceFormat );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device mix format" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve device mix format.";
+      goto Exit;
+    }
 
     stream_.nDeviceChannels[mode] = deviceFormat->nChannels;
     captureAudioClient->GetStreamLatency( ( long long* ) &stream_.latency[mode] );
   }
   else {
-    if ( mode != OUTPUT )
-      EXIT_ON_ERROR( -1, RtAudioError::INVALID_USE, "Render device selected as input device" );
+    if ( mode != OUTPUT ) {
+      errorType = RtAudioError::INVALID_USE;
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Render device selected as input device.";
+      goto Exit;
+    }
 
     // retrieve renderAudioClient from devicePtr
     IAudioClient*& renderAudioClient = ( ( WasapiHandle* ) stream_.apiHandle )->renderAudioClient;
 
     hr = renderDevices->Item( device, &devicePtr );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render device handle" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve render device handle.";
+      goto Exit;
+    }
 
     hr = devicePtr->Activate( __uuidof( IAudioClient ), CLSCTX_ALL,
                               NULL, ( void** ) &renderAudioClient );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device audio client" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve device audio client.";
+      goto Exit;
+    }
 
     hr = renderAudioClient->GetMixFormat( &deviceFormat );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device mix format" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::probeDeviceOpen: Unable to retrieve device mix format.";
+      goto Exit;
+    }
 
     stream_.nDeviceChannels[mode] = deviceFormat->nChannels;
     renderAudioClient->GetStreamLatency( ( long long* ) &stream_.latency[mode] );
@@ -4388,7 +4497,6 @@ bool RtApiWasapi::probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
   }
 
   stream_.device[mode] = device;
-  stream_.state = STREAM_STOPPED;
   stream_.doByteSwap[mode] = false;
   stream_.sampleRate = sampleRate;
   stream_.bufferSize = *bufferSize;
@@ -4406,21 +4514,25 @@ bool RtApiWasapi::probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
 
   // Set flags for buffer conversion.
   stream_.doConvertBuffer[mode] = false;
-  if ( stream_.userFormat != stream_.deviceFormat[mode] )
+  if ( stream_.userFormat != stream_.deviceFormat[mode] ||
+       stream_.nUserChannels != stream_.nDeviceChannels )
     stream_.doConvertBuffer[mode] = true;
-  if ( stream_.userInterleaved != stream_.deviceInterleaved[mode] &&
-       stream_.nUserChannels[mode] > 1 )
+  else if ( stream_.userInterleaved != stream_.deviceInterleaved[mode] &&
+            stream_.nUserChannels[mode] > 1 )
     stream_.doConvertBuffer[mode] = true;
 
   if ( stream_.doConvertBuffer[mode] )
     setConvertInfo( mode, 0 );
 
   // Allocate necessary internal buffers
-  unsigned int bufferBytes = stream_.nUserChannels[mode] * stream_.bufferSize * formatBytes( stream_.userFormat );
+  bufferBytes = stream_.nUserChannels[mode] * stream_.bufferSize * formatBytes( stream_.userFormat );
 
   stream_.userBuffer[mode] = ( char* ) calloc( bufferBytes, 1 );
-  if ( !stream_.userBuffer[mode] )
-    EXIT_ON_ERROR( -1, RtAudioError::MEMORY_ERROR, "Error allocating user buffer memory" );
+  if ( !stream_.userBuffer[mode] ) {
+    errorType = RtAudioError::MEMORY_ERROR;
+    errorText_ = "RtApiWasapi::probeDeviceOpen: Error allocating user buffer memory.";
+    goto Exit;
+  }
 
   if ( options && options->flags & RTAUDIO_SCHEDULE_REALTIME )
     stream_.callbackInfo.priority = 15;
@@ -4434,17 +4546,17 @@ bool RtApiWasapi::probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
 
 Exit:
   //clean up
-
   SAFE_RELEASE( captureDevices );
   SAFE_RELEASE( renderDevices );
   SAFE_RELEASE( devicePtr );
-
   CoTaskMemFree( deviceFormat );
 
   // if method failed, close the stream
   if ( methodResult == FAILURE )
     closeStream();
 
+  if ( !errorText_.empty() )
+    error( errorType );
   return methodResult;
 }
 
@@ -4497,8 +4609,28 @@ void RtApiWasapi::wasapiThread()
   WasapiBuffer captureBuffer;
   WasapiBuffer renderBuffer;
 
+  // declare local stream variables
+  RtAudioCallback callback = ( RtAudioCallback ) stream_.callbackInfo.callback;
+  BYTE* streamBuffer = NULL;
+  unsigned long captureFlags = 0;
+  unsigned int bufferFrameCount = 0;
+  unsigned int numFramesPadding = 0;
+  unsigned int convBufferSize = 0;
+  bool callbackPushed = false;
+  bool callbackPulled = false;
+  bool callbackStopped = false;
+  int callbackResult = 0;
+
+  // convBuffer is used to store converted buffers between WASAPI and the user
+  char* convBuffer = NULL;
+  unsigned int convBuffSize = 0;
+  unsigned int deviceBuffSize = 0;
+
+  errorText_.clear();
+  RtAudioError::Type errorType = RtAudioError::DRIVER_ERROR;
+
   // Attempt to assign "Pro Audio" characteristic to thread
-  HMODULE AvrtDll = LoadLibrary( "AVRT.dll" );
+  HMODULE AvrtDll = LoadLibrary( (LPCTSTR) "AVRT.dll" );
   if ( AvrtDll ) {
     DWORD taskIndex = 0;
     TAvSetMmThreadCharacteristicsPtr AvSetMmThreadCharacteristicsPtr = ( TAvSetMmThreadCharacteristicsPtr ) GetProcAddress( AvrtDll, "AvSetMmThreadCharacteristicsW" );
@@ -4509,7 +4641,10 @@ void RtApiWasapi::wasapiThread()
   // start capture stream if applicable
   if ( captureAudioClient ) {
     hr = captureAudioClient->GetMixFormat( &captureFormat );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device mix format" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve device mix format.";
+      goto Exit;
+    }
 
     captureSrRatio = ( ( float ) captureFormat->nSamplesPerSec / stream_.sampleRate );
 
@@ -4524,19 +4659,31 @@ void RtApiWasapi::wasapiThread()
                                            desiredBufferPeriod,
                                            captureFormat,
                                            NULL );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to initialize capture audio client" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to initialize capture audio client.";
+        goto Exit;
+      }
 
       hr = captureAudioClient->GetService( __uuidof( IAudioCaptureClient ),
                                            ( void** ) &captureClient );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture client handle" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve capture client handle.";
+        goto Exit;
+      }
 
       // configure captureEvent to trigger on every available capture buffer
       captureEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
-      if ( !captureEvent )
-        EXIT_ON_ERROR( -1, RtAudioError::SYSTEM_ERROR, "Unable to create capture event" );
+      if ( !captureEvent ) {
+        errorType = RtAudioError::SYSTEM_ERROR;
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to create capture event.";
+        goto Exit;
+      }
 
       hr = captureAudioClient->SetEventHandle( captureEvent );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to set capture event handle" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to set capture event handle.";
+        goto Exit;
+      }
 
       ( ( WasapiHandle* ) stream_.apiHandle )->captureClient = captureClient;
       ( ( WasapiHandle* ) stream_.apiHandle )->captureEvent = captureEvent;
@@ -4544,7 +4691,10 @@ void RtApiWasapi::wasapiThread()
 
     unsigned int inBufferSize = 0;
     hr = captureAudioClient->GetBufferSize( &inBufferSize );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to get capture buffer size" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to get capture buffer size.";
+      goto Exit;
+    }
 
     // scale outBufferSize according to stream->user sample rate ratio
     unsigned int outBufferSize = ( unsigned int ) ( stream_.bufferSize * captureSrRatio ) * stream_.nDeviceChannels[INPUT];
@@ -4555,17 +4705,26 @@ void RtApiWasapi::wasapiThread()
 
     // reset the capture stream
     hr = captureAudioClient->Reset();
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to reset capture stream" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to reset capture stream.";
+      goto Exit;
+    }
 
     // start the capture stream
     hr = captureAudioClient->Start();
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to start capture stream" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to start capture stream.";
+      goto Exit;
+    }
   }
 
   // start render stream if applicable
   if ( renderAudioClient ) {
     hr = renderAudioClient->GetMixFormat( &renderFormat );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve device mix format" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve device mix format.";
+      goto Exit;
+    }
 
     renderSrRatio = ( ( float ) renderFormat->nSamplesPerSec / stream_.sampleRate );
 
@@ -4580,19 +4739,31 @@ void RtApiWasapi::wasapiThread()
                                           desiredBufferPeriod,
                                           renderFormat,
                                           NULL );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to initialize render audio client" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to initialize render audio client.";
+        goto Exit;
+      }
 
       hr = renderAudioClient->GetService( __uuidof( IAudioRenderClient ),
                                           ( void** ) &renderClient );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render client handle" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve render client handle.";
+        goto Exit;
+      }
 
       // configure renderEvent to trigger on every available render buffer
       renderEvent = CreateEvent( NULL, FALSE, FALSE, NULL );
-      if ( !renderEvent )
-        EXIT_ON_ERROR( -1, RtAudioError::SYSTEM_ERROR, "Unable to create render event" );
+      if ( !renderEvent ) {
+        errorType = RtAudioError::SYSTEM_ERROR;
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to create render event.";
+        goto Exit;
+      }
 
       hr = renderAudioClient->SetEventHandle( renderEvent );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to set render event handle" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to set render event handle.";
+        goto Exit;
+      }
 
       ( ( WasapiHandle* ) stream_.apiHandle )->renderClient = renderClient;
       ( ( WasapiHandle* ) stream_.apiHandle )->renderEvent = renderEvent;
@@ -4600,7 +4771,10 @@ void RtApiWasapi::wasapiThread()
 
     unsigned int outBufferSize = 0;
     hr = renderAudioClient->GetBufferSize( &outBufferSize );
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to get render buffer size" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to get render buffer size.";
+      goto Exit;
+    }
 
     // scale inBufferSize according to user->stream sample rate ratio
     unsigned int inBufferSize = ( unsigned int ) ( stream_.bufferSize * renderSrRatio ) * stream_.nDeviceChannels[OUTPUT];
@@ -4611,46 +4785,41 @@ void RtApiWasapi::wasapiThread()
 
     // reset the render stream
     hr = renderAudioClient->Reset();
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to reset render stream" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to reset render stream.";
+      goto Exit;
+    }
 
     // start the render stream
     hr = renderAudioClient->Start();
-    EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to start render stream" );
+    if ( FAILED( hr ) ) {
+      errorText_ = "RtApiWasapi::wasapiThread: Unable to start render stream.";
+      goto Exit;
+    }
   }
 
-  // declare local stream variables
-  RtAudioCallback callback = ( RtAudioCallback ) stream_.callbackInfo.callback;
-
-  BYTE* streamBuffer = NULL;
-  unsigned long captureFlags = 0;
-
-  unsigned int bufferFrameCount = 0;
-  unsigned int numFramesPadding = 0;
-  unsigned int convBufferSize = 0;
-
-  bool callbackPushed = false;
-  bool callbackPulled = false;
-  bool callbackStopped = false;
-
-  int callbackResult = 0;
-
-  // convBuffer is used to store converted buffers between WASAPI and the user
-  unsigned int deviceBufferSize = 0;
   if ( stream_.mode == INPUT ) {
-    deviceBufferSize = ( size_t ) ( stream_.bufferSize * captureSrRatio ) * stream_.nDeviceChannels[INPUT] * formatBytes( stream_.deviceFormat[INPUT] );
+    convBuffSize = ( size_t ) ( stream_.bufferSize * captureSrRatio ) * stream_.nDeviceChannels[INPUT] * formatBytes( stream_.deviceFormat[INPUT] );
+    deviceBuffSize = stream_.bufferSize * stream_.nDeviceChannels[INPUT] * formatBytes( stream_.deviceFormat[INPUT] );
   }
   else if ( stream_.mode == OUTPUT ) {
-    deviceBufferSize = ( size_t ) ( stream_.bufferSize * renderSrRatio ) * stream_.nDeviceChannels[OUTPUT] * formatBytes( stream_.deviceFormat[OUTPUT] );
+    convBuffSize = ( size_t ) ( stream_.bufferSize * renderSrRatio ) * stream_.nDeviceChannels[OUTPUT] * formatBytes( stream_.deviceFormat[OUTPUT] );
+    deviceBuffSize = stream_.bufferSize * stream_.nDeviceChannels[OUTPUT] * formatBytes( stream_.deviceFormat[OUTPUT] );
   }
   else if ( stream_.mode == DUPLEX ) {
-    deviceBufferSize = max( ( size_t ) ( stream_.bufferSize * captureSrRatio ) * stream_.nDeviceChannels[INPUT] * formatBytes( stream_.deviceFormat[INPUT] ),
-                            ( size_t ) ( stream_.bufferSize * renderSrRatio ) * stream_.nDeviceChannels[OUTPUT] * formatBytes( stream_.deviceFormat[OUTPUT] ) );
+    convBuffSize = std::max( ( size_t ) ( stream_.bufferSize * captureSrRatio ) * stream_.nDeviceChannels[INPUT] * formatBytes( stream_.deviceFormat[INPUT] ),
+                             ( size_t ) ( stream_.bufferSize * renderSrRatio ) * stream_.nDeviceChannels[OUTPUT] * formatBytes( stream_.deviceFormat[OUTPUT] ) );
+    deviceBuffSize = std::max( stream_.bufferSize * stream_.nDeviceChannels[INPUT] * formatBytes( stream_.deviceFormat[INPUT] ),
+                               stream_.bufferSize * stream_.nDeviceChannels[OUTPUT] * formatBytes( stream_.deviceFormat[OUTPUT] ) );
   }
 
-  char* convBuffer = ( char* ) malloc( deviceBufferSize );
-  stream_.deviceBuffer = ( char* ) malloc( deviceBufferSize );
-  if ( !convBuffer || !stream_.deviceBuffer )
-      EXIT_ON_ERROR( -1, RtAudioError::MEMORY_ERROR, "Error allocating device buffer memory" );
+  convBuffer = ( char* ) malloc( convBuffSize );
+  stream_.deviceBuffer = ( char* ) malloc( deviceBuffSize );
+  if ( !convBuffer || !stream_.deviceBuffer ) {
+    errorType = RtAudioError::MEMORY_ERROR;
+    errorText_ = "RtApiWasapi::wasapiThread: Error allocating device buffer memory.";
+    goto Exit;
+  }
 
   // stream process loop
   while ( stream_.state != STREAM_STOPPING ) {
@@ -4668,11 +4837,10 @@ void RtApiWasapi::wasapiThread()
                                                    stream_.deviceFormat[INPUT] );
 
         if ( callbackPulled ) {
-          // Convert callback buffer to user sample rate and channel count
+          // Convert callback buffer to user sample rate
           convertBufferWasapi( stream_.deviceBuffer,
                                convBuffer,
                                stream_.nDeviceChannels[INPUT],
-                               stream_.nUserChannels[INPUT],
                                captureFormat->nSamplesPerSec,
                                stream_.sampleRate,
                                ( unsigned int ) ( stream_.bufferSize * captureSrRatio ),
@@ -4686,7 +4854,7 @@ void RtApiWasapi::wasapiThread()
                            stream_.convertInfo[INPUT] );
           }
           else {
-            // no conversion, simple copy deviceBuffer to userBuffer
+            // no further conversion, simple copy deviceBuffer to userBuffer
             memcpy( stream_.userBuffer[INPUT],
                     stream_.deviceBuffer,
                     stream_.bufferSize * stream_.nUserChannels[INPUT] * formatBytes( stream_.userFormat ) );
@@ -4716,26 +4884,32 @@ void RtApiWasapi::wasapiThread()
         // Handle return value from callback
         if ( callbackResult == 1 ) {
           // instantiate a thread to stop this thread
-          HANDLE threadHandle = CreateThread( NULL, 0, stopWasapiThread, this, NULL, NULL );
-
+          HANDLE threadHandle = CreateThread( NULL, 0, stopWasapiThread, this, 0, NULL );
           if ( !threadHandle ) {
-            EXIT_ON_ERROR( -1, RtAudioError::THREAD_ERROR, "Unable to instantiate stream stop thread" );
+            errorType = RtAudioError::THREAD_ERROR;
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to instantiate stream stop thread.";
+            goto Exit;
           }
           else if ( !CloseHandle( threadHandle ) ) {
-            EXIT_ON_ERROR( -1, RtAudioError::THREAD_ERROR, "Unable to close stream stop thread handle" );
+            errorType = RtAudioError::THREAD_ERROR;
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to close stream stop thread handle.";
+            goto Exit;
           }
 
           callbackStopped = true;
         }
         else if ( callbackResult == 2 ) {
           // instantiate a thread to stop this thread
-          HANDLE threadHandle = CreateThread( NULL, 0, abortWasapiThread, this, NULL, NULL );
-
+          HANDLE threadHandle = CreateThread( NULL, 0, abortWasapiThread, this, 0, NULL );
           if ( !threadHandle ) {
-            EXIT_ON_ERROR( -1, RtAudioError::THREAD_ERROR, "Unable to instantiate stream abort thread" );
+            errorType = RtAudioError::THREAD_ERROR;
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to instantiate stream abort thread.";
+            goto Exit;
           }
           else if ( !CloseHandle( threadHandle ) ) {
-            EXIT_ON_ERROR( -1, RtAudioError::THREAD_ERROR, "Unable to close stream abort thread handle" );
+            errorType = RtAudioError::THREAD_ERROR;
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to close stream abort thread handle.";
+            goto Exit;
           }
 
           callbackStopped = true;
@@ -4756,34 +4930,26 @@ void RtApiWasapi::wasapiThread()
                        stream_.userBuffer[OUTPUT],
                        stream_.convertInfo[OUTPUT] );
 
-        // Convert callback buffer to stream sample rate and channel count
-        convertBufferWasapi( convBuffer,
-                             stream_.deviceBuffer,
-                             stream_.nUserChannels[OUTPUT],
-                             stream_.nDeviceChannels[OUTPUT],
-                             stream_.sampleRate,
-                             renderFormat->nSamplesPerSec,
-                             stream_.bufferSize,
-                             convBufferSize,
-                             stream_.deviceFormat[OUTPUT] );
       }
-      else {
-        // Convert callback buffer to stream sample rate and channel count
-        convertBufferWasapi( convBuffer,
-                             stream_.userBuffer[OUTPUT],
-                             stream_.nUserChannels[OUTPUT],
-                             stream_.nDeviceChannels[OUTPUT],
-                             stream_.sampleRate,
-                             renderFormat->nSamplesPerSec,
-                             stream_.bufferSize,
-                             convBufferSize,
-                             stream_.deviceFormat[OUTPUT] );
-      }
+
+      // Convert callback buffer to stream sample rate
+      convertBufferWasapi( convBuffer,
+                           stream_.deviceBuffer,
+                           stream_.nDeviceChannels[OUTPUT],
+                           stream_.sampleRate,
+                           renderFormat->nSamplesPerSec,
+                           stream_.bufferSize,
+                           convBufferSize,
+                           stream_.deviceFormat[OUTPUT] );
 
       // Push callback buffer into outputBuffer
       callbackPushed = renderBuffer.pushBuffer( convBuffer,
                                                 convBufferSize * stream_.nDeviceChannels[OUTPUT],
                                                 stream_.deviceFormat[OUTPUT] );
+    }
+    else {
+      // if there is no render stream, set callbackPushed flag
+      callbackPushed = true;
     }
 
     // Stream Capture
@@ -4802,30 +4968,42 @@ void RtApiWasapi::wasapiThread()
       hr = captureClient->GetBuffer( &streamBuffer,
                                      &bufferFrameCount,
                                      &captureFlags, NULL, NULL );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve capture buffer" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve capture buffer.";
+        goto Exit;
+      }
 
       if ( bufferFrameCount != 0 ) {
         // Push capture buffer into inputBuffer
         if ( captureBuffer.pushBuffer( ( char* ) streamBuffer,
-                                      bufferFrameCount * stream_.nDeviceChannels[INPUT],
-                                      stream_.deviceFormat[INPUT] ) )
+                                       bufferFrameCount * stream_.nDeviceChannels[INPUT],
+                                       stream_.deviceFormat[INPUT] ) )
         {
           // Release capture buffer
           hr = captureClient->ReleaseBuffer( bufferFrameCount );
-          EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to release capture buffer" );
+          if ( FAILED( hr ) ) {
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to release capture buffer.";
+            goto Exit;
+          }
         }
         else
         {
           // Inform WASAPI that capture was unsuccessful
           hr = captureClient->ReleaseBuffer( 0 );
-          EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to release capture buffer" );
+          if ( FAILED( hr ) ) {
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to release capture buffer.";
+            goto Exit;
+          }
         }
       }
       else
       {
         // Inform WASAPI that capture was unsuccessful
         hr = captureClient->ReleaseBuffer( 0 );
-        EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to release capture buffer" );
+        if ( FAILED( hr ) ) {
+          errorText_ = "RtApiWasapi::wasapiThread: Unable to release capture buffer.";
+          goto Exit;
+        }
       }
     }
 
@@ -4844,39 +5022,57 @@ void RtApiWasapi::wasapiThread()
 
       // Get render buffer from stream
       hr = renderAudioClient->GetBufferSize( &bufferFrameCount );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render buffer size" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve render buffer size.";
+        goto Exit;
+      }
 
       hr = renderAudioClient->GetCurrentPadding( &numFramesPadding );
-      EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render buffer padding" );
+      if ( FAILED( hr ) ) {
+        errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve render buffer padding.";
+        goto Exit;
+      }
 
       bufferFrameCount -= numFramesPadding;
 
       if ( bufferFrameCount != 0 ) {
         hr = renderClient->GetBuffer( bufferFrameCount, &streamBuffer );
-        EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to retrieve render buffer" );
+        if ( FAILED( hr ) ) {
+          errorText_ = "RtApiWasapi::wasapiThread: Unable to retrieve render buffer.";
+          goto Exit;
+        }
 
         // Pull next buffer from outputBuffer
         // Fill render buffer with next buffer
         if ( renderBuffer.pullBuffer( ( char* ) streamBuffer,
-                                     bufferFrameCount * stream_.nDeviceChannels[OUTPUT],
-                                     stream_.deviceFormat[OUTPUT] ) )
+                                      bufferFrameCount * stream_.nDeviceChannels[OUTPUT],
+                                      stream_.deviceFormat[OUTPUT] ) )
         {
           // Release render buffer
           hr = renderClient->ReleaseBuffer( bufferFrameCount, 0 );
-          EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to release render buffer" );
+          if ( FAILED( hr ) ) {
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to release render buffer.";
+            goto Exit;
+          }
         }
         else
         {
           // Inform WASAPI that render was unsuccessful
           hr = renderClient->ReleaseBuffer( 0, 0 );
-          EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to release render buffer" );
+          if ( FAILED( hr ) ) {
+            errorText_ = "RtApiWasapi::wasapiThread: Unable to release render buffer.";
+            goto Exit;
+          }
         }
       }
       else
       {
         // Inform WASAPI that render was unsuccessful
         hr = renderClient->ReleaseBuffer( 0, 0 );
-        EXIT_ON_ERROR( hr, RtAudioError::DRIVER_ERROR, "Unable to release render buffer" );
+        if ( FAILED( hr ) ) {
+          errorText_ = "RtApiWasapi::wasapiThread: Unable to release render buffer.";
+          goto Exit;
+        }
       }
     }
 
@@ -4894,13 +5090,17 @@ Exit:
   CoTaskMemFree( captureFormat );
   CoTaskMemFree( renderFormat );
 
-  //delete convBuffer;
   free ( convBuffer );
 
   CoUninitialize();
 
   // update stream state
   stream_.state = STREAM_STOPPED;
+
+  if ( errorText_.empty() )
+    return;
+  else
+    error( errorType );
 }
 
 //******************** End of __WINDOWS_WASAPI__ *********************//
@@ -5860,6 +6060,8 @@ void RtApiDs :: stopStream()
 
     stream_.state = STREAM_STOPPED;
 
+    MUTEX_LOCK( &stream_.mutex );
+
     // Stop the buffer and clear memory
     LPDIRECTSOUNDBUFFER buffer = (LPDIRECTSOUNDBUFFER) handle->buffer[0];
     result = buffer->Stop();
@@ -5900,6 +6102,9 @@ void RtApiDs :: stopStream()
 
     stream_.state = STREAM_STOPPED;
 
+    if ( stream_.mode != DUPLEX )
+      MUTEX_LOCK( &stream_.mutex );
+
     result = buffer->Stop();
     if ( FAILED( result ) ) {
       errorStream_ << "RtApiDs::stopStream: error (" << getErrorString( result ) << ") stopping input buffer!";
@@ -5933,6 +6138,8 @@ void RtApiDs :: stopStream()
 
  unlock:
   timeEndPeriod( 1 ); // revert to normal scheduler frequency on lesser windows.
+  MUTEX_UNLOCK( &stream_.mutex );
+
   if ( FAILED( result ) ) error( RtAudioError::SYSTEM_ERROR );
 }
 
@@ -6018,6 +6225,12 @@ void RtApiDs :: callbackEvent()
 
   char *buffer;
   long bufferBytes;
+
+  MUTEX_LOCK( &stream_.mutex );
+  if ( stream_.state == STREAM_STOPPED ) {
+    MUTEX_UNLOCK( &stream_.mutex );
+    return;
+  }
 
   if ( buffersRolling == false ) {
     if ( stream_.mode == DUPLEX ) {
@@ -6199,11 +6412,12 @@ void RtApiDs :: callbackEvent()
     }
     nextWritePointer = ( nextWritePointer + bufferSize1 + bufferSize2 ) % dsBufferSize;
     handle->bufferPointer[0] = nextWritePointer;
+  }
 
-    if ( handle->drainCounter ) {
-      handle->drainCounter++;
-      goto unlock;
-    }
+  // Don't bother draining input
+  if ( handle->drainCounter ) {
+    handle->drainCounter++;
+    goto unlock;
   }
 
   if ( stream_.mode == INPUT || stream_.mode == DUPLEX ) {
@@ -6342,6 +6556,7 @@ void RtApiDs :: callbackEvent()
   }
 
  unlock:
+  MUTEX_UNLOCK( &stream_.mutex );
   RtApi::tickStreamTime();
 }
 
