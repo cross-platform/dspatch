@@ -40,13 +40,16 @@ class DspCircuit;
 /// Abstract base class for all DSPatch components
 
 /**
-Classes derived from DspComponent can be added to an DspCircuit and routed to and from other
+Classes derived from DspComponent can be added to a DspCircuit and routed to and from other
 DspComponents. On construction, derived classes must configure the component's IO buses by calling
-AddInput_() and AddOutput_() respectively. Derived classes must also implement the virtual method:
-Process_(). The Process_() method is a callback from the DSPatch engine that occurs when a new set
-of input signals is ready for processing. The Process_() method has 2 parameters: the input bus and
-the output bus. This method's purpose is to pull its required inputs out of the input bus, process
-these inputs, and populate the output bus with the results (see DspSignalBus).
+AddInput_() and AddOutput_() respectively, as well as populate the component's parameter map
+via AddParameter_(). Parameters are non-transient inputs and outputs such as on/off, bias, offset,
+etc. that allow for a component's behaviour to be configured via direct set/get methods. Derived
+classes must also implement the virtual method: Process_(). The Process_() method is a callback
+from the DSPatch engine that occurs when a new set of input signals is ready for processing. The
+Process_() method has 3 parameters: the input bus, the output bus and the component parameters.
+This method's purpose is to pull its required inputs out of the input bus, process these inputs,
+and populate the output bus with the results (see DspSignalBus).
 
 In order for a component to do any work it must be ticked over. This is performed by repeatedly
 calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set
@@ -57,8 +60,8 @@ is what's classified as a "pull system"). The acquired input bus is then passed 
 method. The Reset() method then informs the component that the last circuit traversal has completed
 and hence can execute the next Tick() request. A component's Tick() and Reset() methods can be
 called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a
-seperate thread will spawn, automatically calling Tick() and Reset() methods continuously (This is
-most commonly used to tick over an instance of DspCircuit).///! more info on parameters
+separate thread will spawn, automatically calling Tick() and Reset() methods continuously (This is
+most commonly used to tick over an instance of DspCircuit).
 */
 
 class DLLEXPORT DspComponent

@@ -18,7 +18,7 @@ add_library(
     ${in_hdrs}
 )
 
-# Link pthread on Unix
+# Link pthread and dl on Unix
 if(UNIX)
     target_link_libraries(
         ${PROJECT_NAME}

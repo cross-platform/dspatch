@@ -44,7 +44,7 @@ DspCircuitThread::~DspCircuitThread()
 
 //=================================================================================================
 
-void DspCircuitThread::Initialise(  std::vector< DspComponent* >* components, unsigned short threadNo )
+void DspCircuitThread::Initialise( std::vector< DspComponent* >* components, unsigned short threadNo )
 {
   _components = components;
   _threadNo = threadNo;

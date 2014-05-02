@@ -90,14 +90,31 @@ class DspOscillatorPlugin : public DspPlugin
 {
   std::map< std::string, DspParameter > GetCreateParams() const
   {
-    std::cout << "GetCreateParams" << std::endl;
-    return std::map< std::string, DspParameter >();
+    std::map< std::string, DspParameter > params;
+    params.insert( std::make_pair( "startFreq", DspParameter( DspParameter::Float ) ) );
+    params.insert( std::make_pair( "startAmpl", DspParameter( DspParameter::Float ) ) );
+    return params;
   }
 
   DspComponent* Create( std::map< std::string, DspParameter > const& params ) const
   {
-    std::cout << "Create" << std::endl;
-    return new DspOscillator();
+    float startFreq;
+    float startAmpl;
+    bool gotStartFreq = params.at( "startFreq" ).GetFloat( startFreq );
+    bool gotStartAmpl = params.at( "startAmpl" ).GetFloat( startAmpl );
+
+    if( !gotStartFreq && !gotStartAmpl)
+    {
+      return new DspOscillator();
+    }
+    else if( gotStartFreq && !gotStartAmpl)
+    {
+      return new DspOscillator( startFreq );
+    }
+    else if( gotStartFreq && gotStartAmpl)
+    {
+      return new DspOscillator( startFreq, startAmpl );
+    }
   }
 };
 
