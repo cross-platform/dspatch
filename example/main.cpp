@@ -27,7 +27,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <DspWaveStreamer.h>
 #include <DspGain.h>
 #include <DspAudioDevice.h>
-//#include <DspOscillator.h>
+#include <DspOscillator.h>
 #include <DspAdder.h>
 
 #include <stdio.h>
@@ -36,24 +36,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // This is a simple program that streams an wave out of an audio device,
 // then overlays a 1KHz oscillator when a key is pressed.
 
-#include <osc-plugin/DspOscillator.h>
-
-void Callback( DspComponent const*, DspComponent::CallbackType const&, int)
-{
-  std::cout << "callback\n";
-}
-
 int main()
 {
-  DspPluginLoader oscill( "./osc-plugin/libDspOscillator.so" );
-  std::map< std::string, DspParameter > params = oscill.GetCreateParams();
-  DspComponent* oscil = oscill.Create( params );
-  oscil->SetCallback( Callback );
-
   // 1. Stream Wave
   // ==============
 
-  // create a circuit 
+  // create a circuit
   DspCircuit circuit;
 
   // declare components to be added to the circuit
@@ -75,7 +63,7 @@ int main()
   circuit.AddComponent( gainRight );
 
   // DspWaveStreamer has an output signal named "Sample Rate" that streams the current wave's sample rate
-  // DspAudioDevice's "Sample Rate" input receives a sample rate value and updates the audio stream accordingly 
+  // DspAudioDevice's "Sample Rate" input receives a sample rate value and updates the audio stream accordingly
   circuit.ConnectOutToIn( waveStreamer, "Sample Rate", audioDevice, "Sample Rate" ); // sample rate sync
 
   // connect component output signals to respective component input signals
