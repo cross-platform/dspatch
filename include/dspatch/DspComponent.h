@@ -159,8 +159,6 @@ private:
   void _WaitForRelease( unsigned short threadNo );
   void _ReleaseThread( unsigned short threadNo );
 
-  static void _CallbackStub( DspComponent const*, CallbackType const&, int ) {}
-
 private:
   friend class DspCircuit;
   friend class DspCircuitThread;

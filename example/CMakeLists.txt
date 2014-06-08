@@ -37,7 +37,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-# Definition for RtAudio Linux, using ASLA
+# Definition for RtAudio Linux, using ALSA
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     add_definitions(-D__LINUX_ALSA__)
 
