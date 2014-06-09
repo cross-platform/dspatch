@@ -57,12 +57,15 @@ public:
     Float,
     String,
     FilePath, // this is essentially just a string, but helps when determining an appropriate user input method
-    Trigger, // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
-    List // this type acts as a vector (available items), an int (index selected), and a string (item selected)
+    List, // this type acts as a vector (available items), an int (index selected), and a string (item selected)
+    Trigger // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
   };
 
   DspParameter();
-  DspParameter( ParamType const& type, bool isInputParam );
+  DspParameter( bool isInputParam, ParamType const& type );
+  DspParameter( bool isInputParam, ParamType const& type, float const& initValue, float const& minValue = -1, float const& maxValue = -1 );
+  DspParameter( bool isInputParam, ParamType const& type, std::string const& initValue );
+  DspParameter( bool isInputParam, ParamType const& type, std::vector< std::string > const& initValue );
 
   ParamType Type() const;
   bool IsInputParam() const;
@@ -82,6 +85,7 @@ public:
   bool SetFloatRange( float const& minValue, float const& maxValue );
   bool SetString( std::string const& value );
   bool SetList( std::vector< std::string > const& value );
+
   bool SetParam( DspParameter const& param );
 
 private:

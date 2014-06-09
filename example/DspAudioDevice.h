@@ -53,6 +53,7 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
+  virtual void ParameterUpdated_( std::string const& name, DspParameter const& param );
 
 private:
   std::vector< std::vector< float > > _outputChannels;

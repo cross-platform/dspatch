@@ -34,11 +34,70 @@ DspParameter::DspParameter()
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( ParamType const& type, bool isInputParam )
+DspParameter::DspParameter( bool isInputParam, ParamType const& type )
   : _type( type ),
     _isInputParam( isInputParam ),
     _isSet( false ),
     _isRangeSet( false ) {}
+
+//-------------------------------------------------------------------------------------------------
+
+DspParameter::DspParameter( bool isInputParam, ParamType const& type, float const& initValue, float const& minValue, float const& maxValue )
+  : _type( type ),
+    _isInputParam( isInputParam ),
+    _isSet( false ),
+    _isRangeSet( false )
+{
+  if( type == Bool )
+  {
+    if( !SetBool( initValue ) )
+    {
+      _type = Null;
+    }
+  }
+  if( type == Int )
+  {
+    if( !SetIntRange( minValue, maxValue ) || !SetInt( initValue ) )
+    {
+      _type = Null;
+    }
+  }
+  else if( type == Float )
+  {
+    if( !SetFloatRange( minValue, maxValue ) || !SetFloat( initValue ) )
+    {
+      _type = Null;
+    }
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspParameter::DspParameter( bool isInputParam, ParamType const& type, std::string const& initValue )
+  : _type( type ),
+    _isInputParam( isInputParam ),
+    _isSet( false ),
+    _isRangeSet( false )
+{
+  if( !SetString( initValue ) )
+  {
+    _type = Null;
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspParameter::DspParameter( bool isInputParam, ParamType const& type, std::vector< std::string > const& initValue )
+  : _type( type ),
+    _isInputParam( isInputParam ),
+    _isSet( false ),
+    _isRangeSet( false )
+{
+  if( !SetList( initValue ) )
+  {
+    _type = Null;
+  }
+}
 
 //=================================================================================================
 
@@ -205,15 +264,17 @@ bool DspParameter::SetBool( bool const& value )
 
 bool DspParameter::SetInt( int const& value )
 {
-  if( !_isRangeSet )
-  {
-    return false;
-  }
-
   if( _type == Int || _type == List )
   {
-    _value.intValue.current = value < _value.intValue.min ? _value.intValue.min : value;
-    _value.intValue.current = value > _value.intValue.max ? _value.intValue.max : value;
+    if( _isRangeSet )
+    {
+      _value.intValue.current = value < _value.intValue.min ? _value.intValue.min : value;
+      _value.intValue.current = value > _value.intValue.max ? _value.intValue.max : value;
+    }
+    else
+    {
+      _value.intValue.current = value;
+    }
     _isSet = true;
     return true;
   }
@@ -225,6 +286,12 @@ bool DspParameter::SetInt( int const& value )
 
 bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
 {
+  if( minValue == maxValue == -1 )
+  {
+    _isRangeSet = false;
+    return true;
+  }
+
   if( _type == Int )
   {
     _value.intValue.min = minValue;
@@ -247,15 +314,17 @@ bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
 
 bool DspParameter::SetFloat( float const& value )
 {
-  if( !_isRangeSet )
-  {
-    return false;
-  }
-
   if( _type == Float )
   {
-    _value.floatValue.current = value < _value.floatValue.min ? _value.floatValue.min : value;
-    _value.floatValue.current = value > _value.floatValue.max ? _value.floatValue.max : value;
+    if( _isRangeSet )
+    {
+      _value.floatValue.current = value < _value.floatValue.min ? _value.floatValue.min : value;
+      _value.floatValue.current = value > _value.floatValue.max ? _value.floatValue.max : value;
+    }
+    else
+    {
+      _value.floatValue.current = value;
+    }
     _isSet = true;
     return true;
   }
@@ -267,6 +336,12 @@ bool DspParameter::SetFloat( float const& value )
 
 bool DspParameter::SetFloatRange( float const& minValue, float const& maxValue )
 {
+  if( minValue == maxValue == -1 )
+  {
+    _isRangeSet = false;
+    return true;
+  }
+
   if( _type == Float )
   {
     _value.floatValue.min = minValue;

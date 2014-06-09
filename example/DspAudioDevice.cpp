@@ -73,17 +73,23 @@ DspAudioDevice::DspAudioDevice()
   }
 
   _deviceCount = _rtAudio->audioStream.getDeviceCount();
-  _rtAudio->deviceList.resize( _deviceCount );
 
+  std::vector< std::string > deviceNameList;
   for( short i = 0; i < _deviceCount; i++ )
   {
-    _rtAudio->deviceList[i] = _rtAudio->audioStream.getDeviceInfo( i );
+    _rtAudio->deviceList.push_back( _rtAudio->audioStream.getDeviceInfo( i ) );
+    deviceNameList.push_back( _rtAudio->audioStream.getDeviceInfo( i ).name );
   }
 
   SetDevice( _rtAudio->audioStream.getDefaultOutputDevice() );
 
   SetBufferSize( _bufferSize );
   SetSampleRate( _sampleRate );
+
+  AddParameter_( "deviceList", DspParameter( true, DspParameter::List, deviceNameList ) );
+  AddParameter_( "isStreaming", DspParameter( false, DspParameter::Bool, false ) );
+  AddParameter_( "bufferSize", DspParameter( true, DspParameter::Int, 256 ) );
+  AddParameter_( "sampleRate", DspParameter( true, DspParameter::Int, 44100 ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -257,6 +263,13 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   _gotWaitReady = true; // set release flag
   _waitCondt.WakeAll(); // release sync
   _buffersMutex.Unlock();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspAudioDevice::ParameterUpdated_( std::string const& name, DspParameter const& param )
+{
+
 }
 
 //=================================================================================================
