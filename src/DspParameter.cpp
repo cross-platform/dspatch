@@ -26,6 +26,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
+DspParameter::DspParameter()
+  : _type( Null ),
+    _isInputParam( true ),
+    _isSet( false ),
+    _isRangeSet( false ) {}
+
+//-------------------------------------------------------------------------------------------------
+
 DspParameter::DspParameter( ParamType const& type, bool isInputParam )
   : _type( type ),
     _isInputParam( isInputParam ),
@@ -34,14 +42,14 @@ DspParameter::DspParameter( ParamType const& type, bool isInputParam )
 
 //=================================================================================================
 
-DspParameter::ParamType const DspParameter::Type() const
+DspParameter::ParamType DspParameter::Type() const
 {
   return _type;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool const DspParameter::IsInputParam() const
+bool DspParameter::IsInputParam() const
 {
   return _isInputParam;
 }
@@ -329,23 +337,34 @@ bool DspParameter::SetParam( DspParameter const& param )
     bool value;
     if( param.GetBool( value ) )
     {
-      return SetBool( value );
+      _type = param.Type();
+      _isInputParam = param.IsInputParam();
+      SetBool( value );
+      return true;
     }
   }
-  else if( param.Type() == Int || param.Type() == List )
+  else if( param.Type() == Int )
   {
-    int value;
-    if( param.GetInt( value ) )
+    int minValue, maxValue, value;
+    if( param.GetIntRange( minValue, maxValue ) && param.GetInt( value ) )
     {
-      return SetInt( value );
+      _type = param.Type();
+      _isInputParam = param.IsInputParam();
+      SetIntRange( minValue, maxValue );
+      SetInt( value );
+      return true;
     }
   }
   else if( param.Type() == Float )
   {
-    float value;
-    if( param.GetFloat( value ) )
+    float minValue, maxValue, value;
+    if( param.GetFloatRange( minValue, maxValue ) && param.GetFloat( value ) )
     {
-      return SetFloat( value );
+      _type = param.Type();
+      _isInputParam = param.IsInputParam();
+      SetFloatRange( minValue, maxValue );
+      SetFloat( value );
+      return true;
     }
   }
   else if( param.Type() == String || param.Type() == FilePath )
@@ -353,7 +372,27 @@ bool DspParameter::SetParam( DspParameter const& param )
     std::string value;
     if( param.GetString( value ) )
     {
-      return SetString( value );
+      _type = param.Type();
+      _isInputParam = param.IsInputParam();
+      SetString( value );
+      return true;
+    }
+  }
+  else if( param.Type() == Trigger )
+  {
+    _type = param.Type();
+    _isInputParam = param.IsInputParam();
+    return true;
+  }
+  else if( param.Type() == List )
+  {
+    std::vector< std::string > value;
+    if( param.GetList( value ) )
+    {
+      _type = param.Type();
+      _isInputParam = param.IsInputParam();
+      SetList( value );
+      return true;
     }
   }
 

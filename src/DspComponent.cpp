@@ -234,7 +234,7 @@ std::string DspComponent::GetParameterName( unsigned short index )
 
 bool DspComponent::GetParameter( std::string const& paramName, DspParameter& returnParam )
 {
-  bool result;
+  bool result = false;
 
   PauseAutoTick();
 
@@ -242,7 +242,6 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& ret
   {
     result = returnParam.SetParam( _parameters.at( paramName ) );
   }
-  result = false;
 
   ResumeAutoTick();
   return result;
@@ -252,7 +251,7 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& ret
 
 bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
 {
-  bool result;
+  bool result = false;
 
   PauseAutoTick();
 
@@ -268,7 +267,6 @@ bool DspComponent::SetParameter( std::string const& paramName, DspParameter cons
       result = true;
     }
   }
-  result = false;
 
   ResumeAutoTick();
   return result;
@@ -462,11 +460,11 @@ bool DspComponent::AddOutput_( std::string const& outputName )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam )
+bool DspComponent::AddParameter_( std::string const& paramName, DspParameter const& param )
 {
   if( _parameters.find( paramName ) == _parameters.end() )
   {
-    _parameters.insert( std::make_pair( paramName, DspParameter( paramType, isInputParam ) ) );
+    _parameters.insert( std::make_pair( paramName, param ) );
     if( _callback )
     {
       _callback( this, ParameterAdded, _parameters.size() - 1 );

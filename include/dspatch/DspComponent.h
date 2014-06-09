@@ -125,7 +125,7 @@ protected:
 
   bool AddInput_( std::string const& inputName = "" );
   bool AddOutput_( std::string const& outputName = "" );
-  bool AddParameter_( std::string const& paramName, DspParameter::ParamType paramType, bool isInputParam = true );
+  bool AddParameter_( std::string const& paramName, DspParameter const& param );
 
   bool RemoveInput_();
   bool RemoveOutput_();
