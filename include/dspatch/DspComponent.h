@@ -135,6 +135,13 @@ protected:
   void RemoveAllOutputs_();
   void RemoveAllParameters_();
 
+  unsigned short GetInputCount_();
+  unsigned short GetOutputCount_();
+  unsigned short GetParameterCount_();
+
+  bool GetParameter_( std::string const& paramName, DspParameter& returnParam );
+  bool SetParameter_( std::string const& paramName, DspParameter const& param );
+
 private:
   void _SetParentCircuit( DspCircuit* parentCircuit );
   DspCircuit* _GetParentCircuit();

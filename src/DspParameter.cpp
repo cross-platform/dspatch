@@ -286,7 +286,7 @@ bool DspParameter::SetInt( int const& value )
 
 bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
 {
-  if( minValue == maxValue == -1 )
+  if( minValue == maxValue && minValue == -1 )
   {
     _isRangeSet = false;
     return true;
@@ -336,7 +336,7 @@ bool DspParameter::SetFloat( float const& value )
 
 bool DspParameter::SetFloatRange( float const& minValue, float const& maxValue )
 {
-  if( minValue == maxValue == -1 )
+  if( minValue == maxValue && minValue == -1 )
   {
     _isRangeSet = false;
     return true;

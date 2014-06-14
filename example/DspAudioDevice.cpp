@@ -72,24 +72,23 @@ DspAudioDevice::DspAudioDevice()
     AddOutput_();
   }
 
-  _deviceCount = _rtAudio->audioStream.getDeviceCount();
-
   std::vector< std::string > deviceNameList;
+
+  _deviceCount = _rtAudio->audioStream.getDeviceCount();
   for( short i = 0; i < _deviceCount; i++ )
   {
     _rtAudio->deviceList.push_back( _rtAudio->audioStream.getDeviceInfo( i ) );
     deviceNameList.push_back( _rtAudio->audioStream.getDeviceInfo( i ).name );
   }
 
-  SetDevice( _rtAudio->audioStream.getDefaultOutputDevice() );
-
-  SetBufferSize( _bufferSize );
-  SetSampleRate( _sampleRate );
-
   AddParameter_( "deviceList", DspParameter( true, DspParameter::List, deviceNameList ) );
   AddParameter_( "isStreaming", DspParameter( false, DspParameter::Bool, false ) );
   AddParameter_( "bufferSize", DspParameter( true, DspParameter::Int, 256 ) );
   AddParameter_( "sampleRate", DspParameter( true, DspParameter::Int, 44100 ) );
+
+  SetDevice( _rtAudio->audioStream.getDefaultOutputDevice() );
+  SetBufferSize( _bufferSize );
+  SetSampleRate( _sampleRate );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -208,7 +207,7 @@ unsigned long DspAudioDevice::GetSampleRate() const
 
 //=================================================================================================
 
-void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
+void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& parameters )
 {
   // Wait until the sound card is ready for the next set of buffers
   // ==============================================================

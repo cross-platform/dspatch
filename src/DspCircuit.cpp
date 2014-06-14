@@ -235,7 +235,6 @@ bool DspCircuit::AddInput( std::string const& inputName )
   PauseAutoTick();
   bool result = AddInput_( inputName );
   ResumeAutoTick();
-
   return result;
 }
 
@@ -246,7 +245,6 @@ bool DspCircuit::AddOutput( std::string const& outputName )
   PauseAutoTick();
   bool result = AddOutput_( outputName );
   ResumeAutoTick();
-
   return result;
 }
 

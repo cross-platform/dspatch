@@ -52,7 +52,7 @@ public:
   unsigned long GetSampleRate() const;
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
+  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& parameters );
   virtual void ParameterUpdated_( std::string const& name, DspParameter const& param );
 
 private:
