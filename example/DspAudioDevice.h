@@ -50,11 +50,10 @@ public:
   unsigned short GetCurrentDevice() const;
   unsigned short GetDeviceCount() const;
 
-  bool IsStreaming() const;
-
   void SetBufferSize( int bufferSize );
   void SetSampleRate( int sampleRate );
 
+  bool IsStreaming() const;
   int GetBufferSize();
   int GetSampleRate();
 
@@ -76,8 +75,6 @@ private:
   DspWaitCondition _syncCondt;
   bool _gotWaitReady;
   bool _gotSyncReady;
-
-  unsigned short _currentDevice;
 
   void _WaitForBuffer();
   void _SyncBuffer();

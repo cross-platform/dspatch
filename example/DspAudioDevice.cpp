@@ -56,9 +56,7 @@ DspAudioDevice::DspAudioDevice()
   _deviceCount( 0 ),
 
   _gotWaitReady( false ),
-  _gotSyncReady( true ),
-
-  _currentDevice( 0 )
+  _gotSyncReady( true )
 {
   _outputChannels.resize( 20 );
   for( unsigned short i = 0; i < 20; i++ )
@@ -106,9 +104,9 @@ DspAudioDevice::~DspAudioDevice()
 
 bool DspAudioDevice::SetDevice( short deviceIndex )
 {
-  if( deviceIndex >= 0 && deviceIndex < ( _deviceCount ) )
+  if( deviceIndex >= 0 && deviceIndex < _deviceCount )
   {
-    _currentDevice = deviceIndex;
+    SetParameter_( pDeviceList, DspParameter( DspParameter::Int, deviceIndex ) );
 
     _StopStream();
 
@@ -156,7 +154,7 @@ unsigned short DspAudioDevice::GetDeviceOutputCount( short deviceIndex ) const
 
 unsigned short DspAudioDevice::GetCurrentDevice() const
 {
-  return _currentDevice;
+  return *GetParameter_( pDeviceList )->GetInt();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -164,13 +162,6 @@ unsigned short DspAudioDevice::GetCurrentDevice() const
 unsigned short DspAudioDevice::GetDeviceCount() const
 {
   return _deviceCount;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-bool DspAudioDevice::IsStreaming() const
-{
-  return *GetParameter_( pIsStreaming )->GetBool();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -185,6 +176,13 @@ void DspAudioDevice::SetBufferSize( int bufferSize )
 void DspAudioDevice::SetSampleRate( int sampleRate )
 {
   SetParameter( pSampleRate, DspParameter( DspParameter::Int, sampleRate ) );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspAudioDevice::IsStreaming() const
+{
+  return *GetParameter_( pIsStreaming )->GetBool();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -391,7 +389,7 @@ int DspAudioDevice::_DynamicCallback( void* inputBuffer, void* outputBuffer )
     {
       for( unsigned long i = 0; i < _outputChannels.size(); i++ )
       {
-        if( _rtAudio->deviceList[_currentDevice].outputChannels >= ( i + 1 ) )
+        if( _rtAudio->deviceList[GetCurrentDevice()].outputChannels >= ( i + 1 ) )
         {
           for( unsigned long j = 0; j < _outputChannels[i].size(); j++ )
           {
@@ -405,7 +403,7 @@ int DspAudioDevice::_DynamicCallback( void* inputBuffer, void* outputBuffer )
     {
       for( unsigned long i = 0; i < _inputChannels.size(); i++ )
       {
-        if( _rtAudio->deviceList[_currentDevice].inputChannels >= ( i + 1 ) )
+        if( _rtAudio->deviceList[GetCurrentDevice()].inputChannels >= ( i + 1 ) )
         {
           for( unsigned long j = 0; j < _inputChannels[i].size(); j++ )
           {

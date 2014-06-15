@@ -275,24 +275,25 @@ bool DspParameter::SetInt( int const& value )
 
 bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
 {
-  if( minValue == maxValue && minValue == -1 )
-  {
-    _isRangeSet = false;
-    return true;
-  }
-
   if( _type == Int )
   {
     _value.intValue.min = minValue;
     _value.intValue.max = maxValue;
 
-    _value.intValue.current = _value.intValue.current < minValue ?
-          minValue : _value.intValue.current;
+    if( minValue == maxValue && minValue == -1 )
+    {
+      _isRangeSet = false;
+    }
+    else
+    {
+      _value.intValue.current = _value.intValue.current < minValue ?
+            minValue : _value.intValue.current;
 
-    _value.intValue.current = _value.intValue.current > maxValue ?
-          maxValue : _value.intValue.current;
+      _value.intValue.current = _value.intValue.current > maxValue ?
+            maxValue : _value.intValue.current;
 
-    _isRangeSet = true;
+      _isRangeSet = true;
+    }
     return true;
   }
 
@@ -325,24 +326,25 @@ bool DspParameter::SetFloat( float const& value )
 
 bool DspParameter::SetFloatRange( float const& minValue, float const& maxValue )
 {
-  if( minValue == maxValue && minValue == -1 )
-  {
-    _isRangeSet = false;
-    return true;
-  }
-
   if( _type == Float )
   {
     _value.floatValue.min = minValue;
     _value.floatValue.max = maxValue;
 
-    _value.floatValue.current = _value.floatValue.current < minValue ?
-          minValue : _value.floatValue.current;
+    if( minValue == maxValue && minValue == -1 )
+    {
+      _isRangeSet = false;
+    }
+    else
+    {
+      _value.floatValue.current = _value.floatValue.current < minValue ?
+            minValue : _value.floatValue.current;
 
-    _value.floatValue.current = _value.floatValue.current > maxValue ?
-          maxValue : _value.floatValue.current;
+      _value.floatValue.current = _value.floatValue.current > maxValue ?
+            maxValue : _value.floatValue.current;
 
-    _isRangeSet = true;
+      _isRangeSet = true;
+    }
     return true;
   }
 
@@ -382,8 +384,11 @@ bool DspParameter::SetList( std::vector< std::string > const& value )
   if( _type == List )
   {
     _listValue = value;
+
     _value.intValue.min = 0;
     _value.intValue.max = value.size() - 1;
+    _isRangeSet = true;
+
     _value.intValue.current = 0;
     _isSet = true;
     return true;
@@ -400,9 +405,7 @@ bool DspParameter::SetParam( DspParameter const& param )
   {
     if( param.GetBool() )
     {
-      _type = param.Type();
-      SetBool( *param.GetBool() );
-      return true;
+      return SetBool( *param.GetBool() );
     }
   }
   else if( param.Type() == Int )
@@ -410,10 +413,11 @@ bool DspParameter::SetParam( DspParameter const& param )
     int minValue, maxValue;
     if( param.GetIntRange( minValue, maxValue ) && param.GetInt() )
     {
-      _type = param.Type();
-      SetIntRange( minValue, maxValue );
-      SetInt( *param.GetInt() );
-      return true;
+      return SetIntRange( minValue, maxValue ) && SetInt( *param.GetInt() );
+    }
+    else if( param.GetInt() )
+    {
+      return SetInt( *param.GetInt() );
     }
   }
   else if( param.Type() == Float )
@@ -421,34 +425,32 @@ bool DspParameter::SetParam( DspParameter const& param )
     float minValue, maxValue;
     if( param.GetFloatRange( minValue, maxValue ) && param.GetFloat() )
     {
-      _type = param.Type();
-      SetFloatRange( minValue, maxValue );
-      SetFloat( *param.GetFloat() );
-      return true;
+      return SetFloatRange( minValue, maxValue ) && SetFloat( *param.GetFloat() );
+    }
+    if( param.GetFloat() )
+    {
+      return SetFloat( *param.GetFloat() );
     }
   }
   else if( param.Type() == String || param.Type() == FilePath )
   {
-    std::string value;
     if( param.GetString() )
     {
-      _type = param.Type();
-      SetString( *param.GetString() );
-      return true;
+      return SetString( *param.GetString() );
     }
   }
   else if( param.Type() == Trigger )
   {
-    _type = param.Type();
-    return true;
+    if( _type == Trigger )
+    {
+      return true;
+    }
   }
   else if( param.Type() == List )
   {
     if( param.GetList() )
     {
-      _type = param.Type();
-      SetList( *param.GetList() );
-      return true;
+      return SetList( *param.GetList() );
     }
   }
 
