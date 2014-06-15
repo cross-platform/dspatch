@@ -45,10 +45,9 @@ DspComponents. On construction, derived classes must configure the component's I
 AddInput_() and AddOutput_() respectively, as well as populate the component's parameter map
 via AddParameter_() (see DspParameter). Derived classes must also implement the virtual method:
 Process_(). The Process_() method is a callback from the DSPatch engine that occurs when a new set
-of input signals is ready for processing. The Process_() method has 3 parameters: the input bus,
-the output bus and the component parameters. This method's purpose is to pull its required inputs
-out of the input bus, process these inputs, and populate the output bus with the results (see
-DspSignalBus).
+of input signals is ready for processing. The Process_() method has 2 parameters: the input bus,
+and the output bus. This method's purpose is to pull its required inputs out of the input bus,
+process these inputs, and populate the output bus with the results (see DspSignalBus).
 
 In order for a component to do any work it must be ticked over. This is performed by repeatedly
 calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set
