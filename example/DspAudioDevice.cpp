@@ -106,9 +106,9 @@ bool DspAudioDevice::SetDevice( short deviceIndex )
 {
   if( deviceIndex >= 0 && deviceIndex < _deviceCount )
   {
-    SetParameter_( pDeviceList, DspParameter( DspParameter::Int, deviceIndex ) );
-
     _StopStream();
+
+    SetParameter_( pDeviceList, DspParameter( DspParameter::Int, deviceIndex ) );
 
     _rtAudio->inputParams.nChannels = _rtAudio->deviceList[deviceIndex].inputChannels;
     _rtAudio->inputParams.deviceId = deviceIndex;
@@ -168,14 +168,24 @@ unsigned short DspAudioDevice::GetDeviceCount() const
 
 void DspAudioDevice::SetBufferSize( int bufferSize )
 {
-  SetParameter( pBufferSize, DspParameter( DspParameter::Int, bufferSize ) );
+  _StopStream();
+
+  SetParameter_( pBufferSize, DspParameter( DspParameter::Int, bufferSize ) );
+  for( unsigned short i = 0; i < _inputChannels.size(); i++ )
+  {
+    _inputChannels[i].resize( bufferSize );
+  }
+
+  _StartStream();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspAudioDevice::SetSampleRate( int sampleRate )
 {
-  SetParameter( pSampleRate, DspParameter( DspParameter::Int, sampleRate ) );
+  _StopStream();
+  SetParameter_( pSampleRate, DspParameter( DspParameter::Int, sampleRate ) );
+  _StartStream();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -226,7 +236,7 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   // =========================================================
   if( inputs.GetValue( 0, _outputChannels[0] ) )
   {
-    if( *GetParameter_( pBufferSize )->GetInt() != _outputChannels[0].size() &&
+    if( GetBufferSize() != _outputChannels[0].size() &&
         _outputChannels[0].size() != 0 )
     {
       SetBufferSize( _outputChannels[0].size() );
@@ -264,26 +274,16 @@ bool DspAudioDevice::ParameterUpdating_( std::string const& name, DspParameter c
 {
   if( name == pDeviceList )
   {
-    return true;
-  }
-  if( name == pIsStreaming )
-  {
-    return false;
+    return SetDevice( *param.GetInt() );
   }
   else if( name == pBufferSize )
   {
-    _StopStream();
-    for( unsigned short i = 0; i < _inputChannels.size(); i++ )
-    {
-      _inputChannels[i].resize( *param.GetInt() );
-    }
-    _StartStream();
+    SetBufferSize( *param.GetInt() );
     return true;
   }
   else if( name == pSampleRate )
   {
-    _StopStream();
-    _StartStream();
+    SetSampleRate( *param.GetInt() );
     return true;
   }
   return false;
@@ -351,7 +351,7 @@ void DspAudioDevice::_StartStream()
   _rtAudio->audioStream.openStream( outputParams,
                                     inputParams,
                                     RTAUDIO_FLOAT32,
-                                    *GetParameter_( pSampleRate )->GetInt(),
+                                    GetSampleRate(),
                                     ( unsigned int* ) GetParameter_( pBufferSize )->GetInt(),
                                     &_StaticCallback,
                                     this,
@@ -380,7 +380,7 @@ int DspAudioDevice::_DynamicCallback( void* inputBuffer, void* outputBuffer )
 {
   _WaitForBuffer();
 
-  if( *GetParameter_( pIsStreaming )->GetBool() )
+  if( IsStreaming() )
   {
     float* floatOutput = ( float* ) outputBuffer;
     float* floatInput = ( float* ) inputBuffer;
