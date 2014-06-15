@@ -28,23 +28,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 DspParameter::DspParameter()
   : _type( Null ),
-    _isInputParam( true ),
     _isSet( false ),
     _isRangeSet( false ) {}
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( bool isInputParam, ParamType const& type )
+DspParameter::DspParameter( ParamType const& type )
   : _type( type ),
-    _isInputParam( isInputParam ),
     _isSet( false ),
     _isRangeSet( false ) {}
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( bool isInputParam, ParamType const& type, float const& initValue, float const& minValue, float const& maxValue )
+DspParameter::DspParameter( ParamType const& type, float const& initValue, float const& minValue, float const& maxValue )
   : _type( type ),
-    _isInputParam( isInputParam ),
     _isSet( false ),
     _isRangeSet( false )
 {
@@ -73,9 +70,8 @@ DspParameter::DspParameter( bool isInputParam, ParamType const& type, float cons
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( bool isInputParam, ParamType const& type, std::string const& initValue )
+DspParameter::DspParameter( ParamType const& type, std::string const& initValue )
   : _type( type ),
-    _isInputParam( isInputParam ),
     _isSet( false ),
     _isRangeSet( false )
 {
@@ -87,9 +83,8 @@ DspParameter::DspParameter( bool isInputParam, ParamType const& type, std::strin
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( bool isInputParam, ParamType const& type, std::vector< std::string > const& initValue )
+DspParameter::DspParameter( ParamType const& type, std::vector< std::string > const& initValue )
   : _type( type ),
-    _isInputParam( isInputParam ),
     _isSet( false ),
     _isRangeSet( false )
 {
@@ -108,45 +103,43 @@ DspParameter::ParamType DspParameter::Type() const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::IsInputParam() const
+bool DspParameter::IsSet() const
 {
-  return _isInputParam;
+  return _isSet;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetBool( bool& returnValue ) const
+bool const* DspParameter::GetBool() const
 {
   if( !_isSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == Bool )
   {
-    returnValue = _value.boolValue;
-    return true;
+    return &_value.boolValue;
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetInt( int& returnValue ) const
+int const* DspParameter::GetInt() const
 {
   if( !_isSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == Int || _type == List )
   {
-    returnValue = _value.intValue.current;
-    return true;
+    return &_value.intValue.current;
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -170,20 +163,19 @@ bool DspParameter::GetIntRange( int& minValue, int& maxValue ) const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetFloat( float& returnValue ) const
+float const* DspParameter::GetFloat() const
 {
   if( !_isSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == Float )
   {
-    returnValue = _value.floatValue.current;
-    return true;
+    return &_value.floatValue.current;
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -207,43 +199,40 @@ bool DspParameter::GetFloatRange( float& minValue, float& maxValue ) const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetString( std::string& returnValue ) const
+std::string const* DspParameter::GetString() const
 {
   if( !_isSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == String || _type == FilePath )
   {
-    returnValue = _stringValue;
-    return true;
+    return &_stringValue;
   }
   else if( _type == List )
   {
-    returnValue = _listValue[_value.intValue.current];
-    return true;
+    return &_listValue[_value.intValue.current];
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetList( std::vector< std::string >& returnValue ) const
+std::vector< std::string > const* DspParameter::GetList() const
 {
   if( !_isSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == List )
   {
-    returnValue = _listValue;
-    return true;
+    return &_listValue;
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -409,64 +398,56 @@ bool DspParameter::SetParam( DspParameter const& param )
 {
   if( param.Type() == Bool )
   {
-    bool value;
-    if( param.GetBool( value ) )
+    if( param.GetBool() )
     {
       _type = param.Type();
-      _isInputParam = param.IsInputParam();
-      SetBool( value );
+      SetBool( *param.GetBool() );
       return true;
     }
   }
   else if( param.Type() == Int )
   {
-    int minValue, maxValue, value;
-    if( param.GetIntRange( minValue, maxValue ) && param.GetInt( value ) )
+    int minValue, maxValue;
+    if( param.GetIntRange( minValue, maxValue ) && param.GetInt() )
     {
       _type = param.Type();
-      _isInputParam = param.IsInputParam();
       SetIntRange( minValue, maxValue );
-      SetInt( value );
+      SetInt( *param.GetInt() );
       return true;
     }
   }
   else if( param.Type() == Float )
   {
-    float minValue, maxValue, value;
-    if( param.GetFloatRange( minValue, maxValue ) && param.GetFloat( value ) )
+    float minValue, maxValue;
+    if( param.GetFloatRange( minValue, maxValue ) && param.GetFloat() )
     {
       _type = param.Type();
-      _isInputParam = param.IsInputParam();
       SetFloatRange( minValue, maxValue );
-      SetFloat( value );
+      SetFloat( *param.GetFloat() );
       return true;
     }
   }
   else if( param.Type() == String || param.Type() == FilePath )
   {
     std::string value;
-    if( param.GetString( value ) )
+    if( param.GetString() )
     {
       _type = param.Type();
-      _isInputParam = param.IsInputParam();
-      SetString( value );
+      SetString( *param.GetString() );
       return true;
     }
   }
   else if( param.Type() == Trigger )
   {
     _type = param.Type();
-    _isInputParam = param.IsInputParam();
     return true;
   }
   else if( param.Type() == List )
   {
-    std::vector< std::string > value;
-    if( param.GetList( value ) )
+    if( param.GetList() )
     {
       _type = param.Type();
-      _isInputParam = param.IsInputParam();
-      SetList( value );
+      SetList( *param.GetList() );
       return true;
     }
   }

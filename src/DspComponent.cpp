@@ -232,10 +232,10 @@ std::string DspComponent::GetParameterName( unsigned short index )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::GetParameter( std::string const& paramName, DspParameter& returnParam )
+DspParameter const* DspComponent::GetParameter( std::string const& paramName )
 {
   PauseAutoTick();
-  bool result = GetParameter_( paramName, returnParam );
+  DspParameter const* result = GetParameter_( paramName );
   ResumeAutoTick();
   return result;
 }
@@ -244,8 +244,12 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& ret
 
 bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
 {
+  bool result = false;
   PauseAutoTick();
-  bool result = SetParameter_( paramName, param );
+  if( ParameterUpdating_( paramName, param ) )
+  {
+    result = SetParameter_( paramName, param );
+  }
   ResumeAutoTick();
   return result;
 }
@@ -274,7 +278,7 @@ void DspComponent::Tick()
     _outputBus.ClearAllValues();
 
     // 4. call Process_() with newly aquired inputs
-    Process_( _inputBus, _outputBus, _parameters );
+    Process_( _inputBus, _outputBus );
   }
 }
 
@@ -392,13 +396,6 @@ void DspComponent::ResumeAutoTick()
 }
 
 //=================================================================================================
-
-void DspComponent::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& )
-{
-  Process_( inputs, outputs );
-}
-
-//-------------------------------------------------------------------------------------------------
 
 bool DspComponent::AddInput_( std::string const& inputName )
 {
@@ -562,13 +559,13 @@ unsigned short DspComponent::GetParameterCount_()
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::GetParameter_( std::string const& paramName, DspParameter& returnParam )
+DspParameter const* DspComponent::GetParameter_( std::string const& paramName ) const
 {
   if( _parameters.find( paramName ) != _parameters.end() )
   {
-    return returnParam.SetParam( _parameters.at( paramName ) );
+    return &_parameters.at( paramName );
   }
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -579,7 +576,6 @@ bool DspComponent::SetParameter_( std::string const& paramName, DspParameter con
   {
     if( _parameters.at( paramName ).SetParam( param ) )
     {
-      ParameterUpdated_( paramName, param );
       if( _callback )
       {
         _callback( this, ParameterUpdated, std::distance( _parameters.begin(), _parameters.find( paramName ) ) );
@@ -744,7 +740,7 @@ void DspComponent::_ThreadTick( unsigned short threadNo )
     _WaitForRelease( threadNo );
 
     // 5. call Process_() with newly aquired inputs
-    Process_( _inputBuses[threadNo], _outputBuses[threadNo], _parameters );
+    Process_( _inputBuses[threadNo], _outputBuses[threadNo] );
 
     // 6. signal that you're done processing.
     _ReleaseThread( threadNo );

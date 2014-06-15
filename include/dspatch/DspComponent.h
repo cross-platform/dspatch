@@ -107,7 +107,7 @@ public:
   std::string GetOutputName( unsigned short index );
   std::string GetParameterName( unsigned short index );
 
-  bool GetParameter( std::string const& paramName, DspParameter& returnParam );
+  DspParameter const* GetParameter( std::string const& paramName );
   bool SetParameter( std::string const& paramName, DspParameter const& param );
 
   void Tick();
@@ -120,8 +120,7 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs ) {}
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& parameters );
-  virtual void ParameterUpdated_( std::string const& name, DspParameter const& param ) {}
+  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param ) {}
 
   bool AddInput_( std::string const& inputName = "" );
   bool AddOutput_( std::string const& outputName = "" );
@@ -139,7 +138,7 @@ protected:
   unsigned short GetOutputCount_();
   unsigned short GetParameterCount_();
 
-  bool GetParameter_( std::string const& paramName, DspParameter& returnParam );
+  DspParameter const* GetParameter_( std::string const& paramName ) const;
   bool SetParameter_( std::string const& paramName, DspParameter const& param );
 
 private:

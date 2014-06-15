@@ -34,6 +34,11 @@ struct RtAudioMembers;
 class DspAudioDevice : public DspComponent
 {
 public:
+  static std::string const pDeviceList;
+  static std::string const pIsStreaming;
+  static std::string const pBufferSize;
+  static std::string const pSampleRate;
+
   DspAudioDevice();
   ~DspAudioDevice();
 
@@ -47,22 +52,21 @@ public:
 
   bool IsStreaming() const;
 
-  void SetBufferSize( unsigned long bufferSize );
-  void SetSampleRate( unsigned long sampleRate );
-  unsigned long GetSampleRate() const;
+  void SetBufferSize( int bufferSize );
+  void SetSampleRate( int sampleRate );
+
+  int GetBufferSize();
+  int GetSampleRate();
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& parameters );
-  virtual void ParameterUpdated_( std::string const& name, DspParameter const& param );
+  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
+  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
 
 private:
   std::vector< std::vector< float > > _outputChannels;
   std::vector< std::vector< float > > _inputChannels;
 
   RtAudioMembers* _rtAudio;
-
-  unsigned long _bufferSize;
-  unsigned long _sampleRate;
 
   unsigned short _deviceCount;
 
@@ -72,8 +76,6 @@ private:
   DspWaitCondition _syncCondt;
   bool _gotWaitReady;
   bool _gotSyncReady;
-
-  bool _streamStop;
 
   unsigned short _currentDevice;
 

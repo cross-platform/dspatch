@@ -32,6 +32,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
+std::string const DspAudioDevice::pDeviceList = "deviceList";
+std::string const DspAudioDevice::pIsStreaming = "isStreaming";
+std::string const DspAudioDevice::pBufferSize = "bufferSize";
+std::string const DspAudioDevice::pSampleRate = "sampleRate";
+
+//=================================================================================================
+
 struct RtAudioMembers
 {
   std::vector< RtAudio::DeviceInfo > deviceList;
@@ -46,15 +53,10 @@ struct RtAudioMembers
 DspAudioDevice::DspAudioDevice()
 : _rtAudio( new RtAudioMembers() ),
 
-  _bufferSize( 256 ),
-  _sampleRate( 44100 ),
-
   _deviceCount( 0 ),
 
   _gotWaitReady( false ),
   _gotSyncReady( true ),
-
-  _streamStop( false ),
 
   _currentDevice( 0 )
 {
@@ -81,14 +83,14 @@ DspAudioDevice::DspAudioDevice()
     deviceNameList.push_back( _rtAudio->audioStream.getDeviceInfo( i ).name );
   }
 
-  AddParameter_( "deviceList", DspParameter( true, DspParameter::List, deviceNameList ) );
-  AddParameter_( "isStreaming", DspParameter( false, DspParameter::Bool, false ) );
-  AddParameter_( "bufferSize", DspParameter( true, DspParameter::Int, 256 ) );
-  AddParameter_( "sampleRate", DspParameter( true, DspParameter::Int, 44100 ) );
+  AddParameter_( pDeviceList, DspParameter( DspParameter::List, deviceNameList ) );
+  AddParameter_( pIsStreaming, DspParameter( DspParameter::Bool, false ) );
+  AddParameter_( pBufferSize, DspParameter( DspParameter::Int, 256 ) );
+  AddParameter_( pSampleRate, DspParameter( DspParameter::Int, 44100 ) );
 
   SetDevice( _rtAudio->audioStream.getDefaultOutputDevice() );
-  SetBufferSize( _bufferSize );
-  SetSampleRate( _sampleRate );
+  SetBufferSize( GetBufferSize() );
+  SetSampleRate( GetSampleRate() );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -168,46 +170,40 @@ unsigned short DspAudioDevice::GetDeviceCount() const
 
 bool DspAudioDevice::IsStreaming() const
 {
-  return !_streamStop;
+  return *GetParameter_( pIsStreaming )->GetBool();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspAudioDevice::SetBufferSize( unsigned long bufferSize )
+void DspAudioDevice::SetBufferSize( int bufferSize )
 {
-  _StopStream();
-
-  _bufferSize = bufferSize;
-
-  for( unsigned short i = 0; i < _inputChannels.size(); i++ )
-  {
-    _inputChannels[i].resize( _bufferSize );
-  }
-
-  _StartStream();
+  SetParameter( pBufferSize, DspParameter( DspParameter::Int, bufferSize ) );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspAudioDevice::SetSampleRate( unsigned long sampleRate )
+void DspAudioDevice::SetSampleRate( int sampleRate )
 {
-  _StopStream();
-
-  _sampleRate = sampleRate;
-
-  _StartStream();
+  SetParameter( pSampleRate, DspParameter( DspParameter::Int, sampleRate ) );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned long DspAudioDevice::GetSampleRate() const
+int DspAudioDevice::GetBufferSize()
 {
-  return _sampleRate;
+  return *GetParameter_( pBufferSize )->GetInt();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+int DspAudioDevice::GetSampleRate()
+{
+  return *GetParameter_( pSampleRate )->GetInt();
 }
 
 //=================================================================================================
 
-void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std::map< std::string, DspParameter >& parameters )
+void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 {
   // Wait until the sound card is ready for the next set of buffers
   // ==============================================================
@@ -232,7 +228,7 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std:
   // =========================================================
   if( inputs.GetValue( 0, _outputChannels[0] ) )
   {
-    if( _bufferSize != _outputChannels[0].size() &&
+    if( *GetParameter_( pBufferSize )->GetInt() != _outputChannels[0].size() &&
         _outputChannels[0].size() != 0 )
     {
       SetBufferSize( _outputChannels[0].size() );
@@ -266,9 +262,33 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs, std:
 
 //-------------------------------------------------------------------------------------------------
 
-void DspAudioDevice::ParameterUpdated_( std::string const& name, DspParameter const& param )
+bool DspAudioDevice::ParameterUpdating_( std::string const& name, DspParameter const& param )
 {
-
+  if( name == pDeviceList )
+  {
+    return true;
+  }
+  if( name == pIsStreaming )
+  {
+    return false;
+  }
+  else if( name == pBufferSize )
+  {
+    _StopStream();
+    for( unsigned short i = 0; i < _inputChannels.size(); i++ )
+    {
+      _inputChannels[i].resize( *param.GetInt() );
+    }
+    _StartStream();
+    return true;
+  }
+  else if( name == pSampleRate )
+  {
+    _StopStream();
+    _StartStream();
+    return true;
+  }
+  return false;
 }
 
 //=================================================================================================
@@ -296,7 +316,7 @@ void DspAudioDevice::_SyncBuffer()
 
 void DspAudioDevice::_StopStream()
 {
-  _streamStop = true;
+  SetParameter_( pIsStreaming, DspParameter( DspParameter::Bool, false ) );
 
   _buffersMutex.Lock();
   _gotWaitReady = true; // set release flag
@@ -333,15 +353,15 @@ void DspAudioDevice::_StartStream()
   _rtAudio->audioStream.openStream( outputParams,
                                     inputParams,
                                     RTAUDIO_FLOAT32,
-                                    _sampleRate,
-                                    ( unsigned int* ) &_bufferSize,
+                                    *GetParameter_( pSampleRate )->GetInt(),
+                                    ( unsigned int* ) GetParameter_( pBufferSize )->GetInt(),
                                     &_StaticCallback,
                                     this,
                                     &options );
 
   _rtAudio->audioStream.startStream();
 
-  _streamStop = false;
+  SetParameter_( pIsStreaming, DspParameter( DspParameter::Bool, true ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -362,7 +382,7 @@ int DspAudioDevice::_DynamicCallback( void* inputBuffer, void* outputBuffer )
 {
   _WaitForBuffer();
 
-  if( !_streamStop )
+  if( *GetParameter_( pIsStreaming )->GetBool() )
   {
     float* floatOutput = ( float* ) outputBuffer;
     float* floatInput = ( float* ) inputBuffer;

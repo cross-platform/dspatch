@@ -62,21 +62,21 @@ public:
   };
 
   DspParameter();
-  DspParameter( bool isInputParam, ParamType const& type );
-  DspParameter( bool isInputParam, ParamType const& type, float const& initValue, float const& minValue = -1, float const& maxValue = -1 );
-  DspParameter( bool isInputParam, ParamType const& type, std::string const& initValue );
-  DspParameter( bool isInputParam, ParamType const& type, std::vector< std::string > const& initValue );
+  DspParameter( ParamType const& type );
+  DspParameter( ParamType const& type, float const& initValue, float const& minValue = -1, float const& maxValue = -1 );
+  DspParameter( ParamType const& type, std::string const& initValue );
+  DspParameter( ParamType const& type, std::vector< std::string > const& initValue );
 
   ParamType Type() const;
-  bool IsInputParam() const;
+  bool IsSet() const;
 
-  bool GetBool( bool& returnValue ) const;
-  bool GetInt( int& returnValue ) const;
+  bool const* GetBool() const;
+  int const* GetInt() const;
   bool GetIntRange( int& minValue, int& maxValue ) const;
-  bool GetFloat( float& returnValue ) const;
+  float const* GetFloat() const;
   bool GetFloatRange( float& minValue, float& maxValue ) const;
-  bool GetString( std::string& returnValue ) const;
-  bool GetList( std::vector< std::string >& returnValue ) const;
+  std::string const* GetString() const;
+  std::vector< std::string > const* GetList() const;
 
   bool SetBool( bool const& value );
   bool SetInt( int const& value );
@@ -90,7 +90,6 @@ public:
 
 private:
   ParamType _type;
-  bool _isInputParam;
   bool _isSet;
   bool _isRangeSet;
 
