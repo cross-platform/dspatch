@@ -52,9 +52,6 @@ struct RtAudioMembers
 
 DspAudioDevice::DspAudioDevice()
 : _rtAudio( new RtAudioMembers() ),
-
-  _deviceCount( 0 ),
-
   _gotWaitReady( false ),
   _gotSyncReady( true )
 {
@@ -74,8 +71,7 @@ DspAudioDevice::DspAudioDevice()
 
   std::vector< std::string > deviceNameList;
 
-  _deviceCount = _rtAudio->audioStream.getDeviceCount();
-  for( short i = 0; i < _deviceCount; i++ )
+  for( short i = 0; i < _rtAudio->audioStream.getDeviceCount(); i++ )
   {
     _rtAudio->deviceList.push_back( _rtAudio->audioStream.getDeviceInfo( i ) );
     deviceNameList.push_back( _rtAudio->audioStream.getDeviceInfo( i ).name );
@@ -104,7 +100,7 @@ DspAudioDevice::~DspAudioDevice()
 
 bool DspAudioDevice::SetDevice( short deviceIndex )
 {
-  if( deviceIndex >= 0 && deviceIndex < _deviceCount )
+  if( deviceIndex >= 0 && deviceIndex < GetDeviceCount() )
   {
     _StopStream();
 
@@ -128,7 +124,7 @@ bool DspAudioDevice::SetDevice( short deviceIndex )
 
 std::string DspAudioDevice::GetDeviceName( short deviceIndex ) const
 {
-  if( deviceIndex >= 0 && deviceIndex < ( _deviceCount ) )
+  if( deviceIndex >= 0 && deviceIndex < GetDeviceCount() )
   {
     return _rtAudio->deviceList[deviceIndex].name;
   }
@@ -161,7 +157,7 @@ unsigned short DspAudioDevice::GetCurrentDevice() const
 
 unsigned short DspAudioDevice::GetDeviceCount() const
 {
-  return _deviceCount;
+  return GetParameter_( pDeviceList )->GetList()->size();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -286,10 +282,18 @@ bool DspAudioDevice::ParameterUpdating_( std::string const& name, DspParameter c
     SetSampleRate( *param.GetInt() );
     return true;
   }
+
   return false;
 }
 
 //=================================================================================================
+
+void DspAudioDevice::_SetIsStreaming( bool isStreaming )
+{
+  SetParameter_( pIsStreaming, DspParameter( DspParameter::Bool, isStreaming ) );
+}
+
+//-------------------------------------------------------------------------------------------------
 
 void DspAudioDevice::_WaitForBuffer()
 {
@@ -314,7 +318,7 @@ void DspAudioDevice::_SyncBuffer()
 
 void DspAudioDevice::_StopStream()
 {
-  SetParameter_( pIsStreaming, DspParameter( DspParameter::Bool, false ) );
+  _SetIsStreaming( false );
 
   _buffersMutex.Lock();
   _gotWaitReady = true; // set release flag
@@ -359,7 +363,7 @@ void DspAudioDevice::_StartStream()
 
   _rtAudio->audioStream.startStream();
 
-  SetParameter_( pIsStreaming, DspParameter( DspParameter::Bool, true ) );
+  _SetIsStreaming( true );
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -561,9 +561,10 @@ unsigned short DspComponent::GetParameterCount_()
 
 DspParameter const* DspComponent::GetParameter_( std::string const& paramName ) const
 {
-  if( _parameters.find( paramName ) != _parameters.end() )
+  std::map< std::string, DspParameter >::const_iterator it = _parameters.find( paramName );
+  if( it != _parameters.end() )
   {
-    return &_parameters.at( paramName );
+    return &it->second;
   }
   return NULL;
 }
@@ -572,9 +573,10 @@ DspParameter const* DspComponent::GetParameter_( std::string const& paramName ) 
 
 bool DspComponent::SetParameter_( std::string const& paramName, DspParameter const& param )
 {
-  if( _parameters.find( paramName ) != _parameters.end() )
+  std::map< std::string, DspParameter >::iterator it = _parameters.find( paramName );
+  if( it != _parameters.end() )
   {
-    if( _parameters.at( paramName ).SetParam( param ) )
+    if( it->second.SetParam( param ) )
     {
       if( _callback )
       {

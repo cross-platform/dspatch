@@ -67,8 +67,6 @@ private:
 
   RtAudioMembers* _rtAudio;
 
-  unsigned short _deviceCount;
-
   DspMutex _buffersMutex;
   DspMutex _syncMutex;
   DspWaitCondition _waitCondt;
@@ -76,6 +74,7 @@ private:
   bool _gotWaitReady;
   bool _gotSyncReady;
 
+  void _SetIsStreaming( bool isStreaming );
   void _WaitForBuffer();
   void _SyncBuffer();
 

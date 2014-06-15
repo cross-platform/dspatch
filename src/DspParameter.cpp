@@ -52,7 +52,7 @@ DspParameter::DspParameter( ParamType const& type, float const& initValue, float
       _type = Null;
     }
   }
-  if( type == Int )
+  else if( type == Int )
   {
     if( !SetIntRange( minValue, maxValue ) || !SetInt( initValue ) )
     {
