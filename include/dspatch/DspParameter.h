@@ -63,7 +63,7 @@ public:
 
   DspParameter();
   DspParameter( ParamType const& type );
-  DspParameter( ParamType const& type, float const& initValue, float const& minValue = -1, float const& maxValue = -1 );
+  DspParameter( ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair( -1, -1 ) );
   DspParameter( ParamType const& type, std::string const& initValue );
   DspParameter( ParamType const& type, std::vector< std::string > const& initValue );
 
@@ -72,17 +72,17 @@ public:
 
   bool const* GetBool() const;
   int const* GetInt() const;
-  bool GetIntRange( int& minValue, int& maxValue ) const;
+  std::pair<int, int> const* GetIntRange() const;
   float const* GetFloat() const;
-  bool GetFloatRange( float& minValue, float& maxValue ) const;
+  std::pair<float, float> const* GetFloatRange() const;
   std::string const* GetString() const;
   std::vector< std::string > const* GetList() const;
 
   bool SetBool( bool const& value );
   bool SetInt( int const& value );
-  bool SetIntRange( int const& minValue, int const& maxValue );
+  bool SetIntRange( std::pair<int, int> const& intRange );
   bool SetFloat( float const& value );
-  bool SetFloatRange( float const& minValue, float const& maxValue );
+  bool SetFloatRange( std::pair<float, float> const& floatRange );
   bool SetString( std::string const& value );
   bool SetList( std::vector< std::string > const& value );
 
@@ -93,24 +93,13 @@ private:
   bool _isSet;
   bool _isRangeSet;
 
-  union
-  {
-    bool boolValue;
+  bool _boolValue;
 
-    struct
-    {
-      int min;
-      int max;
-      int current;
-    } intValue;
+  std::pair<int, int> _intRange;
+  int _intValue;
 
-    struct
-    {
-      float min;
-      float max;
-      float current;
-    } floatValue;
-  } _value;
+  std::pair<float, float> _floatRange;
+  float _floatValue;
 
   std::string _stringValue;
   std::vector< std::string > _listValue;

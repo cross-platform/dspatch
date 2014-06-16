@@ -40,7 +40,7 @@ DspParameter::DspParameter( ParamType const& type )
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( ParamType const& type, float const& initValue, float const& minValue, float const& maxValue )
+DspParameter::DspParameter( ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange )
   : _type( type ),
     _isSet( false ),
     _isRangeSet( false )
@@ -54,14 +54,14 @@ DspParameter::DspParameter( ParamType const& type, float const& initValue, float
   }
   else if( type == Int )
   {
-    if( !SetIntRange( minValue, maxValue ) || !SetInt( initValue ) )
+    if( !SetIntRange( valueRange ) || !SetInt( initValue ) )
     {
       _type = Null;
     }
   }
   else if( type == Float )
   {
-    if( !SetFloatRange( minValue, maxValue ) || !SetFloat( initValue ) )
+    if( !SetFloatRange( valueRange ) || !SetFloat( initValue ) )
     {
       _type = Null;
     }
@@ -119,7 +119,7 @@ bool const* DspParameter::GetBool() const
 
   if( _type == Bool )
   {
-    return &_value.boolValue;
+    return &_boolValue;
   }
 
   return NULL;
@@ -136,7 +136,7 @@ int const* DspParameter::GetInt() const
 
   if( _type == Int || _type == List )
   {
-    return &_value.intValue.current;
+    return &_intValue;
   }
 
   return NULL;
@@ -144,21 +144,19 @@ int const* DspParameter::GetInt() const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetIntRange( int& minValue, int& maxValue ) const
+std::pair<int, int> const* DspParameter::GetIntRange() const
 {
   if( !_isRangeSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == Int || _type == List )
   {
-    minValue = _value.intValue.min;
-    maxValue = _value.intValue.max;
-    return true;
+    return &_intRange;
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -172,7 +170,7 @@ float const* DspParameter::GetFloat() const
 
   if( _type == Float )
   {
-    return &_value.floatValue.current;
+    return &_floatValue;
   }
 
   return NULL;
@@ -180,21 +178,19 @@ float const* DspParameter::GetFloat() const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::GetFloatRange( float& minValue, float& maxValue ) const
+std::pair<float, float> const* DspParameter::GetFloatRange() const
 {
   if( !_isRangeSet )
   {
-    return false;
+    return NULL;
   }
 
   if( _type == Float )
   {
-    minValue = _value.floatValue.min;
-    maxValue = _value.floatValue.max;
-    return true;
+    return &_floatRange;
   }
 
-  return false;
+  return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -212,7 +208,7 @@ std::string const* DspParameter::GetString() const
   }
   else if( _type == List )
   {
-    return &_listValue[_value.intValue.current];
+    return &_listValue[_intValue];
   }
 
   return NULL;
@@ -241,7 +237,7 @@ bool DspParameter::SetBool( bool const& value )
 {
   if( _type == Bool )
   {
-    _value.boolValue = value;
+    _boolValue = value;
     _isSet = true;
     return true;
   }
@@ -257,12 +253,12 @@ bool DspParameter::SetInt( int const& value )
   {
     if( _isRangeSet )
     {
-      _value.intValue.current = value < _value.intValue.min ? _value.intValue.min : value;
-      _value.intValue.current = value > _value.intValue.max ? _value.intValue.max : value;
+      _intValue = value < _intRange.first ? _intRange.first : value;
+      _intValue = value > _intRange.second ? _intRange.second : value;
     }
     else
     {
-      _value.intValue.current = value;
+      _intValue = value;
     }
     _isSet = true;
     return true;
@@ -273,25 +269,20 @@ bool DspParameter::SetInt( int const& value )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::SetIntRange( int const& minValue, int const& maxValue )
+bool DspParameter::SetIntRange( std::pair<int, int> const& intRange )
 {
   if( _type == Int )
   {
-    _value.intValue.min = minValue;
-    _value.intValue.max = maxValue;
+    _intRange = intRange;
 
-    if( minValue == maxValue && minValue == -1 )
+    if( intRange.first == intRange.second && intRange.first == -1 )
     {
       _isRangeSet = false;
     }
     else
     {
-      _value.intValue.current = _value.intValue.current < minValue ?
-            minValue : _value.intValue.current;
-
-      _value.intValue.current = _value.intValue.current > maxValue ?
-            maxValue : _value.intValue.current;
-
+      _intValue = _intValue < intRange.first ? intRange.first : _intValue;
+      _intValue = _intValue > intRange.second ?  intRange.second : _intValue;
       _isRangeSet = true;
     }
     return true;
@@ -308,12 +299,12 @@ bool DspParameter::SetFloat( float const& value )
   {
     if( _isRangeSet )
     {
-      _value.floatValue.current = value < _value.floatValue.min ? _value.floatValue.min : value;
-      _value.floatValue.current = value > _value.floatValue.max ? _value.floatValue.max : value;
+      _floatValue = value < _floatRange.first ? _floatRange.first : value;
+      _floatValue = value > _floatRange.second ? _floatRange.second : value;
     }
     else
     {
-      _value.floatValue.current = value;
+      _floatValue = value;
     }
     _isSet = true;
     return true;
@@ -324,25 +315,20 @@ bool DspParameter::SetFloat( float const& value )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspParameter::SetFloatRange( float const& minValue, float const& maxValue )
+bool DspParameter::SetFloatRange( std::pair<float, float> const& floatRange )
 {
   if( _type == Float )
   {
-    _value.floatValue.min = minValue;
-    _value.floatValue.max = maxValue;
+    _floatRange = floatRange;
 
-    if( minValue == maxValue && minValue == -1 )
+    if( floatRange.first == floatRange.second && floatRange.first == -1 )
     {
       _isRangeSet = false;
     }
     else
     {
-      _value.floatValue.current = _value.floatValue.current < minValue ?
-            minValue : _value.floatValue.current;
-
-      _value.floatValue.current = _value.floatValue.current > maxValue ?
-            maxValue : _value.floatValue.current;
-
+      _floatValue = _floatValue < floatRange.first ? floatRange.first : _floatValue;
+      _floatValue = _floatValue > floatRange.second ?  floatRange.second : _floatValue;
       _isRangeSet = true;
     }
     return true;
@@ -367,7 +353,7 @@ bool DspParameter::SetString( std::string const& value )
     {
       if( _listValue[i] == value )
       {
-        _value.intValue.current = i;
+        _intValue = i;
         _isSet = true;
         return true;
       }
@@ -385,11 +371,11 @@ bool DspParameter::SetList( std::vector< std::string > const& value )
   {
     _listValue = value;
 
-    _value.intValue.min = 0;
-    _value.intValue.max = value.size() - 1;
+    _intRange.first = 0;
+    _intRange.second = value.size() - 1;
     _isRangeSet = true;
 
-    _value.intValue.current = 0;
+    _intValue = 0;
     _isSet = true;
     return true;
   }
@@ -415,10 +401,9 @@ bool DspParameter::SetParam( DspParameter const& param )
   }
   else if( param.Type() == Int )
   {
-    int minValue, maxValue;
-    if( param.GetIntRange( minValue, maxValue ) && param.GetInt() )
+    if( param.GetIntRange() && param.GetInt() )
     {
-      return SetIntRange( minValue, maxValue ) && SetInt( *param.GetInt() );
+      return SetIntRange( *param.GetIntRange() ) && SetInt( *param.GetInt() );
     }
     else if( param.GetInt() )
     {
@@ -427,10 +412,9 @@ bool DspParameter::SetParam( DspParameter const& param )
   }
   else if( param.Type() == Float )
   {
-    float minValue, maxValue;
-    if( param.GetFloatRange( minValue, maxValue ) && param.GetFloat() )
+    if( param.GetFloatRange() && param.GetFloat() )
     {
-      return SetFloatRange( minValue, maxValue ) && SetFloat( *param.GetFloat() );
+      return SetFloatRange( *param.GetFloatRange() ) && SetFloat( *param.GetFloat() );
     }
     if( param.GetFloat() )
     {
