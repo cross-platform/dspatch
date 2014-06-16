@@ -28,7 +28,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-static const float PI = 3.1415926535897932384626433832795f;
 static const float TWOPI = 6.283185307179586476925286766559f;
 
 std::string const DspOscillator::pBufferSize = "bufferSize";
