@@ -371,6 +371,11 @@ void main()
 
 \section release_notes Release Notes
 
+\subsection v261 v.2.61 (16 June 2014)
+  - Introduced component parameters (DspParameter).
+  - Added DspComponent user callback mechanism.
+  - Code style and performance improvements.
+
 \subsection v260 v.2.60 (19 January 2014)
   - Replaced project files with more flexible CMakeLists.
   - DspWaveStreamer fix (don't assume standard type sizes).

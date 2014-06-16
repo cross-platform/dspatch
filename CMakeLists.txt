@@ -18,12 +18,11 @@ add_library(
     ${in_hdrs}
 )
 
-# Link pthread and dl on Unix
+# Link pthread on Unix
 if(UNIX)
     target_link_libraries(
         ${PROJECT_NAME}
         pthread
-        dl
     )
 endif(UNIX)
 
