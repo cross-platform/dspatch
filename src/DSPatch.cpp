@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -48,7 +48,7 @@ void DSPatch::Finalize()
 
 //=================================================================================================
 
-bool DSPatch::_IsThisGlobalCircuit( DspComponent* thisComponent )
+bool DSPatch::_IsThisGlobalCircuit( DspComponent const* thisComponent )
 {
   if( _globalCircuit != NULL )
   {
@@ -72,7 +72,7 @@ bool DSPatch::_AddGlobalComponent( DspComponent* component )
 
 //-------------------------------------------------------------------------------------------------
 
-void DSPatch::_RemoveGlobalComponent( DspComponent* component )
+void DSPatch::_RemoveGlobalComponent( DspComponent const* component )
 {
   if( _globalCircuit != NULL )
   {

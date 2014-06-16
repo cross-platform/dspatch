@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -54,16 +54,16 @@ public:
   virtual ~DspSignal();
 
   template< class ValueType >
-  bool SetValue( const ValueType& newValue );
+  bool SetValue( ValueType const& newValue );
 
   template< class ValueType >
   bool GetValue( ValueType& returnValue ) const;
 
-  bool SetSignal( const DspSignal* newSignal );
+  bool SetSignal( DspSignal const* newSignal );
 
   void ClearValue();
 
-  const std::type_info& GetSignalType() const;
+  std::type_info const& GetSignalType() const;
 
   std::string GetSignalName() const;
 
@@ -76,7 +76,7 @@ private:
 //=================================================================================================
 
 template< class ValueType >
-bool DspSignal::SetValue( const ValueType& newValue )
+bool DspSignal::SetValue( ValueType const& newValue )
 {
   _signalValue = newValue;
   _valueAvailable = true;
@@ -90,7 +90,7 @@ bool DspSignal::GetValue( ValueType& returnValue ) const
 {
   if( _valueAvailable )
   {
-    const ValueType* returnValuePtr = DspRunType::RunTypeCast< ValueType >( &_signalValue );
+    ValueType const* returnValuePtr = DspRunType::RunTypeCast< ValueType >( &_signalValue );
     if( returnValuePtr != NULL )
     {
       returnValue = *returnValuePtr;

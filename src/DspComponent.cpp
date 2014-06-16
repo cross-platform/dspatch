@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -37,7 +37,9 @@ DspComponent::DspComponent()
   _componentName( "" ),
   _isAutoTickRunning( false ),
   _isAutoTickPaused( false ),
-  _hasTicked( false )
+  _hasTicked( false ),
+  _callback( NULL ),
+  _userData( NULL )
 {
   _componentThread.Initialise( this );
 }
@@ -53,12 +55,22 @@ DspComponent::~DspComponent()
 
   StopAutoTick();
   _SetBufferCount( 0 );
-  DisconnectInputs();
+  DisconnectAllInputs();
 }
 
 //=================================================================================================
 
-void DspComponent::SetComponentName( std::string componentName )
+void DspComponent::SetCallback( Callback_t const& callback, void* userData )
+{
+  PauseAutoTick();
+  _callback = callback;
+  _userData = userData;
+  ResumeAutoTick();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::SetComponentName( std::string const& componentName )
 {
   _componentName = componentName;
 }
@@ -92,19 +104,23 @@ void DspComponent::DisconnectInput( unsigned short inputIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInput( std::string inputName )
+void DspComponent::DisconnectInput( std::string const& inputName )
 {
   unsigned short inputIndex;
+
+  PauseAutoTick();
 
   if( _FindInput( inputName, inputIndex ) )
   {
     DisconnectInput( inputIndex );
   }
+
+  ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInput( DspComponent* inputComponent )
+void DspComponent::DisconnectInput( DspComponent const* inputComponent )
 {
   PauseAutoTick();
 
@@ -123,7 +139,7 @@ void DspComponent::DisconnectInput( DspComponent* inputComponent )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInputs()
+void DspComponent::DisconnectAllInputs()
 {
   PauseAutoTick();
   _inputWires.RemoveAllWires();
@@ -132,16 +148,115 @@ void DspComponent::DisconnectInputs()
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetInputCount() const
+unsigned short DspComponent::GetInputCount()
 {
-  return _inputBus.GetSignalCount();
+  PauseAutoTick();
+  unsigned short inputCount = GetInputCount_();
+  ResumeAutoTick();
+  return inputCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetOutputCount() const
+unsigned short DspComponent::GetOutputCount()
 {
-  return _outputBus.GetSignalCount();
+  PauseAutoTick();
+  unsigned short outputCount = GetOutputCount_();
+  ResumeAutoTick();
+  return outputCount;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+unsigned short DspComponent::GetParameterCount()
+{
+  PauseAutoTick();
+  unsigned short parameterCount = GetParameterCount_();
+  ResumeAutoTick();
+  return parameterCount;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::string DspComponent::GetInputName( unsigned short index )
+{
+  std::string inputName;
+
+  PauseAutoTick();
+
+  if( index < _inputBus.GetSignalCount() )
+  {
+    inputName = _inputBus.GetSignal( index )->GetSignalName();
+  }
+  inputName = "";
+
+  ResumeAutoTick();
+  return inputName;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::string DspComponent::GetOutputName( unsigned short index )
+{
+  std::string outputName;
+
+  PauseAutoTick();
+
+  if( index < _outputBus.GetSignalCount() )
+  {
+    outputName = _outputBus.GetSignal( index )->GetSignalName();
+  }
+  outputName = "";
+
+  ResumeAutoTick();
+  return outputName;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+std::string DspComponent::GetParameterName( unsigned short index )
+{
+  std::string parameterName;
+
+  PauseAutoTick();
+
+  if( index < _parameters.size() )
+  {
+    std::map< std::string, DspParameter >::const_iterator it = _parameters.begin();
+    std::advance( it, index );
+    parameterName = it->first;
+  }
+  parameterName = "";
+
+  ResumeAutoTick();
+  return parameterName;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::GetParameter( std::string const& paramName, DspParameter& param )
+{
+  bool result = false;
+  PauseAutoTick();
+
+  DspParameter const* paramPtr = GetParameter_( paramName );
+  if( paramPtr )
+  {
+    result = param.SetParam( *paramPtr );
+  }
+
+  ResumeAutoTick();
+  return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
+{
+  PauseAutoTick();
+  bool result = ParameterUpdating_( paramName, param );
+  ResumeAutoTick();
+  return result;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -285,62 +400,197 @@ void DspComponent::ResumeAutoTick()
   }
 }
 
-//-------------------------------------------------------------------------------------------------
-
-DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex )
-{
-  return _outputBus.GetSignal( outputIndex );
-}
-
-//-------------------------------------------------------------------------------------------------
-
-DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned short threadIndex )
-{
-  return _outputBuses[threadIndex].GetSignal( outputIndex );
-}
-
 //=================================================================================================
 
-bool DspComponent::AddInput_( std::string inputName )
+bool DspComponent::AddInput_( std::string const& inputName )
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
   {
-    _inputBuses[i].AddSignal( inputName );
+    _inputBuses[i]._AddSignal( inputName );
   }
-  return _inputBus.AddSignal( inputName );
+  if( _inputBus._AddSignal( inputName ) )
+  {
+    if( _callback )
+    {
+      _callback( this, InputAdded, _inputBus.GetSignalCount() - 1, _userData );
+    }
+    return true;
+  }
+  return false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::AddOutput_( std::string outputName )
+bool DspComponent::AddOutput_( std::string const& outputName )
 {
   for( unsigned short i = 0; i < _outputBuses.size(); i++ )
   {
-    _outputBuses[i].AddSignal( outputName );
+    _outputBuses[i]._AddSignal( outputName );
   }
-  return _outputBus.AddSignal( outputName );
+  if( _outputBus._AddSignal( outputName ) )
+  {
+    if( _callback )
+    {
+      _callback( this, OutputAdded, _outputBus.GetSignalCount() - 1, _userData );
+    }
+    return true;
+  }
+  return false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::RemoveInputs_()
+bool DspComponent::AddParameter_( std::string const& paramName, DspParameter const& param )
+{
+  if( _parameters.find( paramName ) == _parameters.end() )
+  {
+    _parameters.insert( std::make_pair( paramName, param ) );
+    if( _callback )
+    {
+      _callback( this, ParameterAdded, _parameters.size() - 1, _userData );
+    }
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::RemoveInput_()
+{
+  if( _inputBus._RemoveSignal() )
+  {
+    if( _callback )
+    {
+      _callback( this, InputRemoved, _inputBus.GetSignalCount(), _userData );
+    }
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::RemoveOutput_()
+{
+  if( _outputBus._RemoveSignal() )
+  {
+    if( _callback )
+    {
+      _callback( this, OutputRemoved, _outputBus.GetSignalCount(), _userData );
+    }
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::RemoveParameter_()
+{
+  if( !_parameters.empty() )
+  {
+    _parameters.erase( _parameters.rbegin()->first );
+    if( _callback )
+    {
+      _callback( this, ParameterRemoved, _parameters.size(), _userData );
+    }
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::RemoveAllInputs_()
 {
   for( unsigned short i = 0; i < _inputBuses.size(); i++ )
   {
-    _inputBuses[i].RemoveAllSignals();
+    _inputBuses[i]._RemoveAllSignals();
   }
-  return _inputBus.RemoveAllSignals();
+  _inputBus._RemoveAllSignals();
+  if( _callback )
+  {
+    _callback( this, InputRemoved, -1, _userData );
+  }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::RemoveOutputs_()
+void DspComponent::RemoveAllOutputs_()
 {
   for( unsigned short i = 0; i < _outputBuses.size(); i++ )
   {
-    _outputBuses[i].RemoveAllSignals();
+    _outputBuses[i]._RemoveAllSignals();
   }
-  return _outputBus.RemoveAllSignals();
+  _outputBus._RemoveAllSignals();
+  if( _callback )
+  {
+    _callback( this, OutputRemoved, -1, _userData );
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspComponent::RemoveAllParameters_()
+{
+  _parameters.clear();
+  if( _callback )
+  {
+    _callback( this, ParameterRemoved, -1, _userData );
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+unsigned short DspComponent::GetInputCount_()
+{
+  return _inputBus.GetSignalCount();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+unsigned short DspComponent::GetOutputCount_()
+{
+  return _outputBus.GetSignalCount();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+unsigned short DspComponent::GetParameterCount_()
+{
+  return _parameters.size();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspParameter const* DspComponent::GetParameter_( std::string const& paramName ) const
+{
+  std::map< std::string, DspParameter >::const_iterator it = _parameters.find( paramName );
+  if( it != _parameters.end() )
+  {
+    return &it->second;
+  }
+  return NULL;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::SetParameter_( std::string const& paramName, DspParameter const& param )
+{
+  std::map< std::string, DspParameter >::iterator it = _parameters.find( paramName );
+  if( it != _parameters.end() )
+  {
+    if( it->second.SetParam( param ) )
+    {
+      if( _callback )
+      {
+        _callback( this, ParameterUpdated, std::distance( _parameters.begin(), _parameters.find( paramName ) ), _userData );
+      }
+      return true;
+    }
+  }
+  return false;
 }
 
 //=================================================================================================
@@ -373,7 +623,7 @@ DspCircuit* DspComponent::_GetParentCircuit()
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindInput( std::string signalName, unsigned short& returnIndex ) const
+bool DspComponent::_FindInput( std::string const& signalName, unsigned short& returnIndex ) const
 {
   return _inputBus.FindSignal( signalName, returnIndex );
 }
@@ -393,7 +643,7 @@ bool DspComponent::_FindInput( unsigned short signalIndex, unsigned short& retur
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindOutput( std::string signalName, unsigned short& returnIndex ) const
+bool DspComponent::_FindOutput( std::string const& signalName, unsigned short& returnIndex ) const
 {
   return _outputBus.FindSignal( signalName, returnIndex );
 }
@@ -446,12 +696,12 @@ void DspComponent::_SetBufferCount( unsigned short bufferCount )
 
     for( unsigned short j = 0; j < _inputBus.GetSignalCount(); j++ )
     {
-      _inputBuses[i].AddSignal( _inputBus.GetSignal( j )->GetSignalName() );
+      _inputBuses[i]._AddSignal( _inputBus.GetSignal( j )->GetSignalName() );
     }
 
     for( unsigned short j = 0; j < _outputBus.GetSignalCount(); j++ )
     {
-      _outputBuses[i].AddSignal( _outputBus.GetSignal( j )->GetSignalName() );
+      _outputBuses[i]._AddSignal( _outputBus.GetSignal( j )->GetSignalName() );
     }
   }
 
@@ -517,16 +767,30 @@ void DspComponent::_ThreadReset( unsigned short threadNo )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_SetInputSignal( unsigned short inputIndex, const DspSignal* newSignal )
+bool DspComponent::_SetInputSignal( unsigned short inputIndex, DspSignal const* newSignal )
 {
   return _inputBus.SetSignal( inputIndex, newSignal );
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_SetInputSignal( unsigned short inputIndex, unsigned short threadIndex, const DspSignal* newSignal )
+bool DspComponent::_SetInputSignal( unsigned short inputIndex, unsigned short threadIndex, DspSignal const* newSignal )
 {
   return _inputBuses[threadIndex].SetSignal( inputIndex, newSignal );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex )
+{
+  return _outputBus.GetSignal( outputIndex );
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspSignal* DspComponent::_GetOutputSignal( unsigned short outputIndex, unsigned short threadIndex )
+{
+  return _outputBuses[threadIndex].GetSignal( outputIndex );
 }
 
 //-------------------------------------------------------------------------------------------------

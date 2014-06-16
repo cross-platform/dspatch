@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -53,7 +53,7 @@ public:
   bool AddWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
   bool RemoveWire( unsigned short wireIndex );
-  bool RemoveWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
+  bool RemoveWire( DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
   void RemoveAllWires();
 

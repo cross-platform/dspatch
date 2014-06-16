@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -30,19 +30,34 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
+std::string const DspWaveStreamer::pFilePath = "filePath";
+std::string const DspWaveStreamer::pPlay = "play";
+std::string const DspWaveStreamer::pPause = "pause";
+std::string const DspWaveStreamer::pStop = "stop";
+std::string const DspWaveStreamer::pIsPlaying = "isPlaying";
+
+//=================================================================================================
+
 DspWaveStreamer::DspWaveStreamer()
 : _waveData( 0 ),
-  _isPlaying( false ),
   _bufferSize( 256 ),
   _sampleIndex( 0 ),
   _shortToFloatCoeff( 1.0f / 32767.0f )
 {
+  _waveFormat.Clear();
+
   _leftChannel.resize( _bufferSize );
   _rightChannel.resize( _bufferSize );
 
   AddOutput_();
   AddOutput_();
   AddOutput_( "Sample Rate" );
+
+  AddParameter_( pFilePath, DspParameter( DspParameter::FilePath, "" ) );
+  AddParameter_( pPlay, DspParameter( DspParameter::Trigger ) );
+  AddParameter_( pPause, DspParameter( DspParameter::Trigger ) );
+  AddParameter_( pStop, DspParameter( DspParameter::Trigger ) );
+  AddParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -51,9 +66,9 @@ DspWaveStreamer::~DspWaveStreamer() {}
 
 //=================================================================================================
 
-bool DspWaveStreamer::LoadFile( const char* filePath )
+bool DspWaveStreamer::LoadFile( char const* filePath )
 {
-  bool wasPlaying = _isPlaying;
+  bool wasPlaying = IsPlaying();
   Stop();
 
   if( filePath == NULL )
@@ -64,8 +79,8 @@ bool DspWaveStreamer::LoadFile( const char* filePath )
     return false;
 
   unsigned long dwFileSize = 0, dwChunkSize = 0;
-  char* dwChunkId = new char[5];
-  char* dwExtra = new char[5];
+  char dwChunkId[5];
+  char dwExtra[5];
 
   dwChunkId[4] = 0;
   dwExtra[4] = 0;
@@ -163,6 +178,7 @@ bool DspWaveStreamer::LoadFile( const char* filePath )
     Play();
   }
 
+  SetParameter_( pFilePath, DspParameter( DspParameter::FilePath, filePath ) );
   return true;
 }
 
@@ -170,14 +186,14 @@ bool DspWaveStreamer::LoadFile( const char* filePath )
 
 void DspWaveStreamer::Play()
 {
-  _isPlaying = true;
+  SetParameter_( pIsPlaying, DspParameter( DspParameter::Bool, true ) );
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspWaveStreamer::Pause()
 {
-  _isPlaying = false;
+  SetParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -187,23 +203,23 @@ void DspWaveStreamer::Stop()
   _busyMutex.Lock();
 
   _sampleIndex = 0;
-  _isPlaying = false;
+  SetParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
 
   _busyMutex.Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWaveStreamer::IsPlaying()
+bool DspWaveStreamer::IsPlaying() const
 {
-  return _isPlaying;
+  return *GetParameter_( pIsPlaying )->GetBool();
 }
 
 //=================================================================================================
 
 void DspWaveStreamer::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 {
-  if( _isPlaying && _waveData.size() > 0 )
+  if( IsPlaying() && _waveData.size() > 0 )
   {
     _busyMutex.Lock();
 
@@ -233,6 +249,33 @@ void DspWaveStreamer::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
     outputs.ClearValue( 0 );
     outputs.ClearValue( 1 );
   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspWaveStreamer::ParameterUpdating_( std::string const& name, DspParameter const& param )
+{
+  if( name == pFilePath )
+  {
+    return LoadFile( param.GetString()->c_str() );
+  }
+  else if( name == pPlay )
+  {
+    Play();
+    return true;
+  }
+  else if( name == pPause )
+  {
+    Pause();
+    return true;
+  }
+  else if( name == pStop )
+  {
+    Stop();
+    return true;
+  }
+
+  return false;
 }
 
 //=================================================================================================

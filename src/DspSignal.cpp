@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -32,11 +32,11 @@ DspSignal::DspSignal( std::string signalName )
 
 //-------------------------------------------------------------------------------------------------
 
-DspSignal::~DspSignal() {};
+DspSignal::~DspSignal() {}
 
 //=================================================================================================
 
-bool DspSignal::SetSignal( const DspSignal* newSignal )
+bool DspSignal::SetSignal( DspSignal const* newSignal )
 {
   if( newSignal != NULL )
   {

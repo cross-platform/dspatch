@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -34,36 +34,38 @@ struct RtAudioMembers;
 class DspAudioDevice : public DspComponent
 {
 public:
+  static std::string const pDeviceList; // List
+  static std::string const pIsStreaming; // Bool
+  static std::string const pBufferSize; // Int
+  static std::string const pSampleRate; // Int
+
   DspAudioDevice();
   ~DspAudioDevice();
 
   bool SetDevice( short deviceIndex );
 
-  std::string GetDeviceName( short deviceIndex );
-  unsigned short GetDeviceInputCount( short deviceIndex );
-  unsigned short GetDeviceOutputCount( short deviceIndex );
-  unsigned short GetCurrentDevice();
-  unsigned short GetDeviceCount();
+  std::string GetDeviceName( short deviceIndex ) const;
+  unsigned short GetDeviceInputCount( short deviceIndex ) const;
+  unsigned short GetDeviceOutputCount( short deviceIndex ) const;
+  unsigned short GetCurrentDevice() const;
+  unsigned short GetDeviceCount() const;
 
-  bool IsStreaming();
+  void SetBufferSize( int bufferSize );
+  void SetSampleRate( int sampleRate );
 
-  void SetBufferSize( unsigned long bufferSize );
-  void SetSampleRate( unsigned long sampleRate );
-  unsigned long GetSampleRate();
+  bool IsStreaming() const;
+  int GetBufferSize() const;
+  int GetSampleRate() const;
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
+  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
 
 private:
   std::vector< std::vector< float > > _outputChannels;
   std::vector< std::vector< float > > _inputChannels;
 
   RtAudioMembers* _rtAudio;
-
-  unsigned long _bufferSize;
-  unsigned long _sampleRate;
-
-  unsigned short _deviceCount;
 
   DspMutex _buffersMutex;
   DspMutex _syncMutex;
@@ -72,9 +74,7 @@ private:
   bool _gotWaitReady;
   bool _gotSyncReady;
 
-  bool _streamStop;
-
-  unsigned short _currentDevice;
+  void _SetIsStreaming( bool isStreaming );
 
   void _WaitForBuffer();
   void _SyncBuffer();

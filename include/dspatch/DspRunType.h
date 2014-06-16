@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -49,12 +49,12 @@ public:
   : _valueHolder( NULL ) {}
 
   template< typename ValueType >
-  DspRunType( const ValueType& value )
+  DspRunType( ValueType const& value )
   {
     _valueHolder = new _DspRtValue< ValueType >( value );
   }
 
-  DspRunType( const DspRunType& other )
+  DspRunType( DspRunType const& other )
   {
     if( other._valueHolder != NULL )
     {
@@ -78,7 +78,7 @@ public:
     return *this;
   }
 
-  void CopyFrom( const DspRunType& rhs )
+  void CopyFrom( DspRunType const& rhs )
   {
     if( _valueHolder != NULL && rhs._valueHolder != NULL &&
         _valueHolder->GetType() == rhs._valueHolder->GetType() )
@@ -92,7 +92,7 @@ public:
   }
 
   template< typename ValueType >
-  DspRunType& operator=( const ValueType& rhs )
+  DspRunType& operator=( ValueType const& rhs )
   {
     if( typeid( rhs ) == GetType() )
     {
@@ -117,7 +117,7 @@ public:
     return !_valueHolder;
   }
 
-  const std::type_info& GetType() const
+  std::type_info const& GetType() const
   {
     if( _valueHolder != NULL )
     {
@@ -143,7 +143,7 @@ public:
   }
 
   template< typename ValueType >
-  static inline const ValueType* RunTypeCast( const DspRunType* operand )
+  static inline ValueType const* RunTypeCast( DspRunType const* operand )
   {
     return RunTypeCast< ValueType >( const_cast< DspRunType* >( operand ) );
   }
@@ -155,7 +155,7 @@ private:
     virtual ~_DspRtValueHolder() {}
 
   public:
-    virtual const std::type_info& GetType() const = 0;
+    virtual std::type_info const& GetType() const = 0;
     virtual _DspRtValueHolder* GetCopy() const = 0;
     virtual void SetValue( _DspRtValueHolder* valueHolder ) = 0;
   };
@@ -164,11 +164,11 @@ private:
   class _DspRtValue : public _DspRtValueHolder
   {
   public:
-    _DspRtValue( const ValueType& value )
+    _DspRtValue( ValueType const& value )
     : value( value ) {}
 
   public:
-    virtual const std::type_info& GetType() const
+    virtual std::type_info const& GetType() const
     {
       return typeid( ValueType );
     }
@@ -187,7 +187,7 @@ private:
     ValueType value;
 
   private:
-    _DspRtValue& operator=( const _DspRtValue& ); // disable copy-assignment
+    _DspRtValue& operator=( _DspRtValue const& ); // disable copy-assignment
   };
 
 private:

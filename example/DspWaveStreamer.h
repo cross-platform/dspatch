@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -32,18 +32,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspWaveStreamer : public DspComponent
 {
 public:
+  static std::string const pFilePath; // FilePath
+  static std::string const pPlay; // Trigger
+  static std::string const pPause; // Trigger
+  static std::string const pStop; // Trigger
+  static std::string const pIsPlaying; // Bool
+
   DspWaveStreamer();
   ~DspWaveStreamer();
 
-  bool LoadFile( const char* filePath );
+  bool LoadFile( char const* filePath );
   void Play();
   void Pause();
   void Stop();
 
-  bool IsPlaying();
+  bool IsPlaying() const;
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
+  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
 
 private:
   struct WaveFormat
@@ -70,7 +77,6 @@ private:
 
   WaveFormat _waveFormat;
   std::vector< short > _waveData;
-  bool _isPlaying;
   unsigned long _bufferSize;
   unsigned long _sampleIndex;
   float _shortToFloatCoeff;

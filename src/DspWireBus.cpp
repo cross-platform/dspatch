@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -76,7 +76,7 @@ bool DspWireBus::AddWire( DspComponent* linkedComponent, unsigned short fromSign
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWireBus::RemoveWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex )
+bool DspWireBus::RemoveWire( DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex )
 {
   for( unsigned short i = 0; i < _wires.size(); i++ )
   {
@@ -101,11 +101,7 @@ bool DspWireBus::RemoveWire( unsigned short wireIndex )
     return false;
   }
 
-  for( unsigned short j = wireIndex; j < ( _wires.size() - 1 ); j++ )
-  {
-    _wires[j] = _wires[j + 1]; // shift all other elements up
-  }
-  _wires.pop_back(); // remove end item
+  _wires.erase( _wires.begin() + wireIndex );
 
   return true;
 }

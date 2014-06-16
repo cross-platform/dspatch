@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -32,29 +32,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspGain : public DspComponent
 {
 public:
+  static std::string const pGain; // Float
+
   DspGain()
-  : _gain( 1.0 )
   {
     AddInput_();
     AddOutput_();
+
+    AddParameter_( pGain, DspParameter( DspParameter::Float, 1, std::make_pair( 0, 2 ) ) );
   }
   ~DspGain() {}
 
   void SetGain( float gain )
   {
-    if( gain < 0.0 )
-    {
-      _gain = 0;
-    }
-    else
-    {
-      _gain = gain;
-    }
+    SetParameter_( pGain, DspParameter( DspParameter::Float, gain ) );
   }
 
   float GetGain() const
   {
-    return _gain;
+    return *GetParameter_( pGain )->GetFloat();
   }
 
 protected:
@@ -67,16 +63,27 @@ protected:
 
     for( unsigned long i = 0; i < _stream.size(); i++ )
     {
-      _stream[i] *= _gain;
+      _stream[i] *= GetGain();
     }
 
     outputs.SetValue( 0, _stream );
   }
 
+  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param )
+  {
+    if( name == pGain )
+    {
+      SetGain( *param.GetFloat() );
+      return true;
+    }
+    return false;
+  }
+
 private:
   std::vector< float > _stream;
-  float _gain;
 };
+
+std::string const DspGain::pGain = "gain";
 
 //=================================================================================================
 

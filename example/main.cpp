@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -38,10 +38,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 int main()
 {
-  // 1. Stream Wave
+  // 1. Stream wave
   // ==============
 
-  // create a circuit 
+  // create a circuit
   DspCircuit circuit;
 
   // declare components to be added to the circuit
@@ -53,7 +53,7 @@ int main()
   // set circuit thread count to 2
   circuit.SetThreadCount( 2 );
 
-  //// start separate thread to tick the circuit continuously ("auto-tick")
+  // start separate thread to tick the circuit continuously ("auto-tick")
   circuit.StartAutoTick();
 
   // add new components to the circuit (these methods return pointers to the new components)
@@ -63,7 +63,7 @@ int main()
   circuit.AddComponent( gainRight );
 
   // DspWaveStreamer has an output signal named "Sample Rate" that streams the current wave's sample rate
-  // DspAudioDevice's "Sample Rate" input receives a sample rate value and updates the audio stream accordingly 
+  // DspAudioDevice's "Sample Rate" input receives a sample rate value and updates the audio stream accordingly
   circuit.ConnectOutToIn( waveStreamer, "Sample Rate", audioDevice, "Sample Rate" ); // sample rate sync
 
   // connect component output signals to respective component input signals
@@ -74,17 +74,20 @@ int main()
 
   // set the gain of components gainLeft and gainRight (wave left and right channels)
   gainLeft.SetGain( 0.75 );
-  gainRight.SetGain( 0.75 );
+  gainRight.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75f ) ); // OR: gainRight.SetGain( 0.75 );
 
   // load a wave into the wave streamer and start playing the track
-  waveStreamer.LoadFile(EXAMPLE_WAV_FILE);
-  waveStreamer.Play();
+  waveStreamer.SetParameter( DspWaveStreamer::pFilePath, DspParameter( DspParameter::FilePath, EXAMPLE_WAV_FILE ) );
+  waveStreamer.SetParameter( DspWaveStreamer::pPlay, DspParameter( DspParameter::Trigger ) );
 
   // wait for key press
   getchar();
 
-  // 2. Overlay oscillator
-  // =====================
+  // 2. Stream oscillator
+  // ====================
+
+  // pause the track
+  waveStreamer.Pause();
 
   // A component input pin can only receive one signal at a time so an adders are required to combine the signals
 
@@ -110,6 +113,15 @@ int main()
   circuit.ConnectOutToIn( gainRight, 0, adder2, 0 );    // wave right channel into adder2 ch0
   circuit.ConnectOutToIn( oscillator, 0, adder2, 1 );   // oscillator output into adder2 ch1
   circuit.ConnectOutToIn( adder2, 0, audioDevice, 1 );  // adder2 output into audio device right channel
+
+  // wait for key press
+  getchar();
+
+  // 3. Overlay both streams
+  // =======================
+
+  // resume the track (via parameter)
+  waveStreamer.Play();
 
   // wait for key press
   getchar();

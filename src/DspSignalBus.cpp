@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2013 Marcus Tomlinson
+Copyright (c) 2012-2014 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -26,29 +26,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-DspSignalBus::~DspSignalBus() {};
+DspSignalBus::~DspSignalBus() {}
 
 //=================================================================================================
 
-bool DspSignalBus::AddSignal( std::string signalName )
-{
-  if( signalName != "" )
-  {
-    unsigned short signalIndex;
-    if( FindSignal( signalName, signalIndex ) ) // if the name already exists
-    {
-      return false;
-    }
-  }
-
-  _signals.push_back( DspSignal( signalName ) );
-
-  return true;
-}
-
-//-------------------------------------------------------------------------------------------------
-
-bool DspSignalBus::SetSignal( unsigned short signalIndex, const DspSignal* newSignal )
+bool DspSignalBus::SetSignal( unsigned short signalIndex, DspSignal const* newSignal )
 {
   if( signalIndex < _signals.size() && newSignal != NULL )
   {
@@ -62,7 +44,7 @@ bool DspSignalBus::SetSignal( unsigned short signalIndex, const DspSignal* newSi
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspSignalBus::SetSignal( std::string signalName, const DspSignal* newSignal )
+bool DspSignalBus::SetSignal( std::string const& signalName, DspSignal const* newSignal )
 {
   unsigned short signalIndex;
 
@@ -92,7 +74,7 @@ DspSignal* DspSignalBus::GetSignal( unsigned short signalIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-DspSignal* DspSignalBus::GetSignal( std::string signalName )
+DspSignal* DspSignalBus::GetSignal( std::string const& signalName )
 {
   unsigned short signalIndex;
 
@@ -108,11 +90,16 @@ DspSignal* DspSignalBus::GetSignal( std::string signalName )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspSignalBus::FindSignal( std::string signalName, unsigned short& returnIndex ) const
+bool DspSignalBus::FindSignal( std::string const& signalName, unsigned short& returnIndex ) const
 {
+  if( signalName == "" )
+  {
+    return false;
+  }
+
   for( unsigned short i = 0; i < _signals.size(); i++ )
   {
-    if( signalName != "" && _signals[i].GetSignalName() == signalName )
+    if( _signals[i].GetSignalName() == signalName )
     {
       returnIndex = i;
       return true;
@@ -144,13 +131,6 @@ unsigned short DspSignalBus::GetSignalCount() const
 
 //-------------------------------------------------------------------------------------------------
 
-void DspSignalBus::RemoveAllSignals()
-{
-  _signals.clear();
-}
-
-//-------------------------------------------------------------------------------------------------
-
 void DspSignalBus::ClearValue( unsigned short signalIndex )
 {
   if( signalIndex < _signals.size() )
@@ -161,7 +141,7 @@ void DspSignalBus::ClearValue( unsigned short signalIndex )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspSignalBus::ClearValue( std::string signalName )
+void DspSignalBus::ClearValue( std::string const& signalName )
 {
   unsigned short signalIndex;
 
@@ -179,6 +159,43 @@ void DspSignalBus::ClearAllValues()
   {
     _signals[i].ClearValue();
   }
+}
+
+//=================================================================================================
+
+bool DspSignalBus::_AddSignal( std::string const& signalName )
+{
+  if( signalName != "" )
+  {
+    unsigned short signalIndex;
+    if( FindSignal( signalName, signalIndex ) ) // if the name already exists
+    {
+      return false;
+    }
+  }
+
+  _signals.push_back( DspSignal( signalName ) );
+
+  return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspSignalBus::_RemoveSignal()
+{
+  if( _signals.size() > 0 )
+  {
+    _signals.pop_back();
+    return true;
+  }
+  return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspSignalBus::_RemoveAllSignals()
+{
+  _signals.clear();
 }
 
 //=================================================================================================
