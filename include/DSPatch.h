@@ -92,9 +92,10 @@ private:
   via "wires" that transfer "signals" to and from input and output "buses". For more detail on
   how DSPatch works, check out the <a href="spec_page.html"><b>DSPatch Design Specification</b></a>.
 
-  The two most important classes to consider are DspComponent and DspCircuit.  In order to route
+  The two most important classes to consider are DspComponent and DspCircuit. In order to route
   data to and from DspComponents they can either be added to an DspCircuit, where they can be
   wired together (recommended), or they can be wired directly via public DspComponent methods.
+
   The DSPatch engine takes care of data transfer between interconnected components, when data is
   ready for a component to process, a callback: "Process_()" is executed in that component. For a
   component to form part of the DSPatch framework, designers simply have to derive their
@@ -208,7 +209,7 @@ public:
   leave the parenthesis empty.
 
   Lastly, our component must implement the DspComponent virtual Process_() method. This is
-  where our component does it's work. The Process_() method provides us with 2 parameters: the
+  where our component does it's work. The Process_() method provides us with 2 arguments: the
   input bus and the output bus. It is our duty as the component designer to pull the inputs we
   require out of the input bus, process them accordingly, and populate the output bus with the
   results. Our component's process method will look something like this:
@@ -492,10 +493,10 @@ The component class will have a Tick() method responsible for acquiring its
 next set of inputs from its input wires and populating the component's input
 bus. To insure that these inputs are up-to-date, the dependent component
 first calls all of its input components' Tick() methods -hence recursively
-called in all components going backward through the circuit.  The acquired
+called in all components going backward through the circuit. The acquired
 input bus is then passed into a virtual method: Process() -it is the
 responsibility of the (derived) component creator to implement this virtual
-function. The Process() method has 2 input parameters: the input bus and the
+function. The Process() method has 2 input arguments: the input bus and the
 output bus. This method's purpose is to pull its required inputs out of the
 input bus, process these inputs, and populate the output bus with the results.
 These resultant outputs in the output bus are then acquired by dependent

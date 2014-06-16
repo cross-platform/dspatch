@@ -242,7 +242,7 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& par
   DspParameter const* paramPtr = GetParameter_( paramName );
   if( paramPtr )
   {
-    result = param.SetParam(*paramPtr);
+    result = param.SetParam( *paramPtr );
   }
 
   ResumeAutoTick();
@@ -253,12 +253,8 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& par
 
 bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
 {
-  bool result = false;
   PauseAutoTick();
-  if( ParameterUpdating_( paramName, param ) )
-  {
-    result = SetParameter_( paramName, param );
-  }
+  bool result = ParameterUpdating_( paramName, param );
   ResumeAutoTick();
   return result;
 }

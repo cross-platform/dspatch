@@ -37,12 +37,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 /**
 DspParameters are similar to DspSignals in that they provide a generic means of inputting and
 outputting data to and from DspComponents. However, unlike signals, parameters are non-transient
-inputs and outputs (such as enable/disable, bias, offset, etc.) that allow for a component's
-behaviour to be manipulated via direct set/get methods. The parameter type (ParamType) must be
-specified on construction of a DspParameter. Any type mismatches on subsequent set/get calls will
+inputs and outputs (such as enable / disable, bias, offset, etc.) that allow for a component's
+behaviour to be manipulated via direct set / get methods. The parameter type (ParamType) must be
+specified on construction of a DspParameter. Any type mismatches on subsequent set / get calls will
 immediatly return false.
 
-NOTE: Abstracting component parameters behind this generic DspParameter container allows a
+NOTE: Abstracting component parameters behind the generic DspParameter container allows a
 component to be entirely controllable via the DspComponent base class.
 */
 

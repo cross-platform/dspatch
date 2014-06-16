@@ -43,7 +43,7 @@ public:
   achieved by making calls to the base class protected methods: "AddInput_()" and "AddOutput_().
   These methods must be called once per input / output required. IO signal names are optional
   (Component IO can be referenced by either string ID or index)	and can be assigned to each
-  input / output by supplying the desired string ID as a parameter to the respective AddInput_()
+  input / output by supplying the desired string ID as an argument to the respective AddInput_()
   / AddOutput_() method call.*/
 
   DspAdder()
@@ -61,7 +61,7 @@ public:
 protected:
   //! Virtual process method inherited from DspComponent
   /*! The Process_() method is called from the DSPatch engine when a new set of component input
-  signals are ready for processing. The Process() method has 2 parameters: the input bus and the
+  signals are ready for processing. The Process() method has 2 arguments: the input bus and the
   output bus. This method's purpose is to pull its required inputs out of the input bus, process
   these inputs, and populate the output bus with the results (see DspSignalBus). */
 
