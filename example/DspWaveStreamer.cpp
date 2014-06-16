@@ -30,9 +30,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
+std::string const DspWaveStreamer::pFilePath = "filePath";
+std::string const DspWaveStreamer::pPlay = "play";
+std::string const DspWaveStreamer::pPause = "pause";
+std::string const DspWaveStreamer::pStop = "stop";
+std::string const DspWaveStreamer::pIsPlaying = "isPlaying";
+
+//=================================================================================================
+
 DspWaveStreamer::DspWaveStreamer()
 : _waveData( 0 ),
-  _isPlaying( false ),
   _bufferSize( 256 ),
   _sampleIndex( 0 ),
   _shortToFloatCoeff( 1.0f / 32767.0f )
@@ -45,6 +52,12 @@ DspWaveStreamer::DspWaveStreamer()
   AddOutput_();
   AddOutput_();
   AddOutput_( "Sample Rate" );
+
+  AddParameter_( pFilePath, DspParameter( DspParameter::FilePath, "" ) );
+  AddParameter_( pPlay, DspParameter( DspParameter::Trigger ) );
+  AddParameter_( pPause, DspParameter( DspParameter::Trigger ) );
+  AddParameter_( pStop, DspParameter( DspParameter::Trigger ) );
+  AddParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -55,7 +68,7 @@ DspWaveStreamer::~DspWaveStreamer() {}
 
 bool DspWaveStreamer::LoadFile( char const* filePath )
 {
-  bool wasPlaying = _isPlaying;
+  bool wasPlaying = IsPlaying();
   Stop();
 
   if( filePath == NULL )
@@ -165,6 +178,7 @@ bool DspWaveStreamer::LoadFile( char const* filePath )
     Play();
   }
 
+  SetParameter_( pFilePath, DspParameter( DspParameter::FilePath, filePath ) );
   return true;
 }
 
@@ -172,14 +186,14 @@ bool DspWaveStreamer::LoadFile( char const* filePath )
 
 void DspWaveStreamer::Play()
 {
-  _isPlaying = true;
+  SetParameter_( pIsPlaying, DspParameter( DspParameter::Bool, true ) );
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspWaveStreamer::Pause()
 {
-  _isPlaying = false;
+  SetParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -189,7 +203,7 @@ void DspWaveStreamer::Stop()
   _busyMutex.Lock();
 
   _sampleIndex = 0;
-  _isPlaying = false;
+  SetParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
 
   _busyMutex.Unlock();
 }
@@ -198,14 +212,14 @@ void DspWaveStreamer::Stop()
 
 bool DspWaveStreamer::IsPlaying() const
 {
-  return _isPlaying;
+  return *GetParameter_( pIsPlaying )->GetBool();
 }
 
 //=================================================================================================
 
 void DspWaveStreamer::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 {
-  if( _isPlaying && _waveData.size() > 0 )
+  if( IsPlaying() && _waveData.size() > 0 )
   {
     _busyMutex.Lock();
 
@@ -235,6 +249,33 @@ void DspWaveStreamer::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
     outputs.ClearValue( 0 );
     outputs.ClearValue( 1 );
   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspWaveStreamer::ParameterUpdating_( std::string const& name, DspParameter const& param )
+{
+  if( name == pFilePath )
+  {
+    return LoadFile( param.GetString()->c_str() );
+  }
+  else if( name == pPlay )
+  {
+    Play();
+    return true;
+  }
+  else if( name == pPause )
+  {
+    Pause();
+    return true;
+  }
+  else if( name == pStop )
+  {
+    Stop();
+    return true;
+  }
+
+  return false;
 }
 
 //=================================================================================================

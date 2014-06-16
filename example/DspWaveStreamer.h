@@ -32,6 +32,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspWaveStreamer : public DspComponent
 {
 public:
+  static std::string const pFilePath;
+  static std::string const pPlay;
+  static std::string const pPause;
+  static std::string const pStop;
+  static std::string const pIsPlaying;
+
   DspWaveStreamer();
   ~DspWaveStreamer();
 
@@ -44,6 +50,7 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
+  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
 
 private:
   struct WaveFormat
@@ -70,7 +77,6 @@ private:
 
   WaveFormat _waveFormat;
   std::vector< short > _waveData;
-  bool _isPlaying;
   unsigned long _bufferSize;
   unsigned long _sampleIndex;
   float _shortToFloatCoeff;
