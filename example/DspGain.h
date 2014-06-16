@@ -39,7 +39,7 @@ public:
     AddInput_();
     AddOutput_();
 
-    AddParameter_( pGain, DspParameter( DspParameter::Float, 1.0, std::make_pair( 0.0, 2.0 ) ) );
+    AddParameter_( pGain, DspParameter( DspParameter::Float, 1, std::make_pair( 0, 2 ) ) );
   }
   ~DspGain() {}
 

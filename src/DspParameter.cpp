@@ -40,31 +40,44 @@ DspParameter::DspParameter( ParamType const& type )
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter::DspParameter( ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange )
-  : _type( type ),
-    _isSet( false ),
-    _isRangeSet( false )
+DspParameter::DspParameter( ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange )
+: _type( type ),
+  _isSet( false ),
+  _isRangeSet( false )
 {
   if( type == Bool )
   {
-    if( !SetBool( initValue ) )
-    {
-      _type = Null;
-    }
-  }
-  else if( type == Int )
-  {
-    if( !SetIntRange( valueRange ) || !SetInt( initValue ) )
+    if( !SetBool( initValue != 0 ) )
     {
       _type = Null;
     }
   }
   else if( type == Float )
   {
-    if( !SetFloatRange( valueRange ) || !SetFloat( initValue ) )
+    if( !SetFloatRange( std::make_pair( ( float ) valueRange.first, ( float ) valueRange.second ) ) || !SetFloat( ( float ) initValue ) )
     {
       _type = Null;
     }
+  }
+  else
+  {
+    if( !SetIntRange( valueRange ) || !SetInt( initValue ) )
+    {
+      _type = Null;
+    }
+  }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+DspParameter::DspParameter( ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange )
+  : _type( type ),
+    _isSet( false ),
+    _isRangeSet( false )
+{
+  if( !SetFloatRange( valueRange ) || !SetFloat( initValue ) )
+  {
+    _type = Null;
   }
 }
 

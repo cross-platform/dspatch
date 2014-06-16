@@ -71,7 +71,7 @@ DspAudioDevice::DspAudioDevice()
 
   std::vector< std::string > deviceNameList;
 
-  for( short i = 0; i < _rtAudio->audioStream.getDeviceCount(); i++ )
+  for( unsigned int i = 0; i < _rtAudio->audioStream.getDeviceCount(); i++ )
   {
     _rtAudio->deviceList.push_back( _rtAudio->audioStream.getDeviceInfo( i ) );
     deviceNameList.push_back( _rtAudio->audioStream.getDeviceInfo( i ).name );

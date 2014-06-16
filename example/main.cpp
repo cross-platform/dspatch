@@ -74,7 +74,7 @@ int main()
 
   // set the gain of components gainLeft and gainRight (wave left and right channels)
   gainLeft.SetGain( 0.75 );
-  gainRight.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75 ) ); // OR: gainRight.SetGain( 0.75 );
+  gainRight.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75f ) ); // OR: gainRight.SetGain( 0.75 );
 
   // load a wave into the wave streamer and start playing the track
   waveStreamer.SetParameter( DspWaveStreamer::pFilePath, DspParameter( DspParameter::FilePath, EXAMPLE_WAV_FILE ) );
