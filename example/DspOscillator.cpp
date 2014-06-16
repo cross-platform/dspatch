@@ -26,25 +26,33 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <math.h>
 
+//=================================================================================================
+
 static const float PI = 3.1415926535897932384626433832795f;
 static const float TWOPI = 6.283185307179586476925286766559f;
+
+std::string const DspOscillator::pBufferSize = "bufferSize";
+std::string const DspOscillator::pSampleRate = "sampleRate";
+std::string const DspOscillator::pAmplitude = "amplitude";
+std::string const DspOscillator::pFrequency = "frequency";
 
 //=================================================================================================
 
 DspOscillator::DspOscillator( float startFreq, float startAmpl )
-: _freq( startFreq ),
-  _ampl( startAmpl ),
-  _lastPos( 0 ),
-  _lookupLength( 0 ),
-  _bufferSize( 256 ),
-  _sampleRate( 44100 )
+: _lastPos( 0 ),
+  _lookupLength( 0 )
 {
-  _BuildLookup();
-
   AddInput_( "Sample Rate" );
   AddInput_( "Buffer Size" );
 
   AddOutput_();
+
+  AddParameter_( pBufferSize, DspParameter( DspParameter::Int, 256 ) );
+  AddParameter_( pSampleRate, DspParameter( DspParameter::Int, 44100 ) );
+  AddParameter_( pAmplitude, DspParameter( DspParameter::Float, startAmpl ) );
+  AddParameter_( pFrequency, DspParameter( DspParameter::Float, startFreq ) );
+
+  _BuildLookup();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -53,9 +61,9 @@ DspOscillator::~DspOscillator() {}
 
 //=================================================================================================
 
-void DspOscillator::SetBufferSize( unsigned long bufferSize )
+void DspOscillator::SetBufferSize( int bufferSize )
 {
-  _bufferSize = bufferSize;
+  SetParameter_( pBufferSize, DspParameter( DspParameter::Int, bufferSize ) );
 
   _processMutex.Lock();
   _BuildLookup();
@@ -64,9 +72,9 @@ void DspOscillator::SetBufferSize( unsigned long bufferSize )
 
 //-------------------------------------------------------------------------------------------------
 
-void DspOscillator::SetSampleRate( unsigned long sampleRate )
+void DspOscillator::SetSampleRate( int sampleRate )
 {
-  _sampleRate = sampleRate;
+  SetParameter_( pSampleRate, DspParameter( DspParameter::Int, sampleRate ) );
 
   _processMutex.Lock();
   _BuildLookup();
@@ -77,7 +85,7 @@ void DspOscillator::SetSampleRate( unsigned long sampleRate )
 
 void DspOscillator::SetAmpl( float ampl )
 {
-  _ampl = ampl;
+  SetParameter_( pAmplitude, DspParameter( DspParameter::Float, ampl ) );
 
   _processMutex.Lock();
   _BuildLookup();
@@ -88,11 +96,39 @@ void DspOscillator::SetAmpl( float ampl )
 
 void DspOscillator::SetFreq( float freq )
 {
-  _freq = freq;
+  SetParameter_( pFrequency, DspParameter( DspParameter::Float, freq ) );
 
   _processMutex.Lock();
   _BuildLookup();
   _processMutex.Unlock();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+int DspOscillator::GetBufferSize() const
+{
+  return *GetParameter_( pBufferSize )->GetInt();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+int DspOscillator::GetSampleRate() const
+{
+  return *GetParameter_( pSampleRate )->GetInt();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+float DspOscillator::GetAmpl() const
+{
+  return *GetParameter_( pAmplitude )->GetFloat();
+}
+
+//-------------------------------------------------------------------------------------------------
+
+float DspOscillator::GetFreq() const
+{
+  return *GetParameter_( pFrequency )->GetFloat();
 }
 
 //=================================================================================================
@@ -104,10 +140,9 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   unsigned long sampleRate;
   if( inputs.GetValue( "Sample Rate", sampleRate ) )
   {
-    if( sampleRate != _sampleRate )
+    if( sampleRate != GetSampleRate() )
     {
-      _sampleRate = sampleRate;
-      _BuildLookup();
+      SetSampleRate( sampleRate );
     }
   }
 
@@ -115,10 +150,9 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   // =========================================================
   if( inputs.GetValue( "Buffer Size", _signal ) )
   {
-    if( _bufferSize != _signal.size() )
+    if( GetBufferSize() != _signal.size() )
     {
-      _bufferSize = _signal.size();
-      _BuildLookup();
+      SetBufferSize( _signal.size() );
     }
   }
 
@@ -139,21 +173,49 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   _processMutex.Unlock();
 }
 
+//-------------------------------------------------------------------------------------------------
+
+bool DspOscillator::ParameterUpdating_( std::string const& name, DspParameter const& param )
+{
+  if( name == pBufferSize )
+  {
+    SetBufferSize( *param.GetInt() );
+    return true;
+  }
+  else if( name == pSampleRate )
+  {
+    SetSampleRate( *param.GetInt() );
+    return true;
+  }
+  else if( name == pAmplitude )
+  {
+    SetAmpl( *param.GetFloat() );
+    return true;
+  }
+  else if( name == pFrequency )
+  {
+    SetFreq( *param.GetFloat() );
+    return true;
+  }
+
+  return false;
+}
+
 //=================================================================================================
 
 void DspOscillator::_BuildLookup()
 {
   float posFrac = ( float ) _lastPos / ( float ) _lookupLength;
-  float angleInc = TWOPI * _freq / _sampleRate;
+  float angleInc = TWOPI * GetFreq() / GetSampleRate();
 
-  _lookupLength = ( unsigned long ) ( ( float ) _sampleRate / _freq );
+  _lookupLength = ( unsigned long ) ( ( float ) GetSampleRate() / GetFreq() );
 
-  _signal.resize( _bufferSize );
+  _signal.resize( GetBufferSize() );
   _signalLookup.resize( _lookupLength );
 
   for( unsigned long i = 0; i < _lookupLength; i++ )
   {
-    _signalLookup[i] = sin( angleInc * i ) * _ampl;
+    _signalLookup[i] = sin( angleInc * i ) * GetAmpl();
   }
 
   _lastPos = ( unsigned long ) ( posFrac * ( float ) _lookupLength + 0.5f );	//calculate new position (round up)
