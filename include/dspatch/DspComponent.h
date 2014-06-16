@@ -71,12 +71,12 @@ public:
     OutputAdded, OutputRemoved,
     ParameterAdded, ParameterRemoved, ParameterUpdated
   };
-  typedef void( *Callback_t )( DspComponent const* component, CallbackType const& callbackType, int index );
+  typedef void( *Callback_t )( DspComponent const* component, CallbackType const& callbackType, int index, void* userData );
 
   DspComponent();
   virtual ~DspComponent();
 
-  void SetCallback( Callback_t const& callback );
+  void SetCallback( Callback_t const& callback, void* userData = NULL );
 
   void SetComponentName( std::string const& componentName );
   std::string GetComponentName() const;
@@ -195,6 +195,7 @@ private:
   std::vector< DspWaitCondition > _releaseCondts;
 
   Callback_t _callback;
+  void* _userData;
 };
 
 //=================================================================================================

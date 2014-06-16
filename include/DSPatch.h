@@ -374,7 +374,8 @@ void main()
 \subsection v261 v.2.61 (16 June 2014)
   - Introduced component parameters (DspParameter).
   - Added DspComponent user callback mechanism.
-  - Code style and performance improvements.
+  - Improved const-correctness and code style.
+  - Added ability to remove single IO pins.
 
 \subsection v260 v.2.60 (19 January 2014)
   - Replaced project files with more flexible CMakeLists.
