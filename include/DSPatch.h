@@ -370,7 +370,7 @@ void main()
 
 \n
 
-\section release_notes Release Notes
+\section changelog Changelog
 
 \subsection v261 v.2.61 (16 June 2014)
   - Introduced component parameters (DspParameter).
