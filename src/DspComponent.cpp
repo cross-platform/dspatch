@@ -232,10 +232,17 @@ std::string DspComponent::GetParameterName( unsigned short index )
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter const* DspComponent::GetParameter( std::string const& paramName )
+bool DspComponent::GetParameter( std::string const& paramName, DspParameter& param )
 {
+  bool result = false;
   PauseAutoTick();
-  DspParameter const* result = GetParameter_( paramName );
+
+  DspParameter const* paramPtr = GetParameter_( paramName );
+  if( paramPtr )
+  {
+    result = param.SetParam(*paramPtr);
+  }
+
   ResumeAutoTick();
   return result;
 }

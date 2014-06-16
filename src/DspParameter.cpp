@@ -401,6 +401,11 @@ bool DspParameter::SetList( std::vector< std::string > const& value )
 
 bool DspParameter::SetParam( DspParameter const& param )
 {
+  if( _type == Null )
+  {
+    _type = param.Type();
+  }
+
   if( param.Type() == Bool )
   {
     if( param.GetBool() )

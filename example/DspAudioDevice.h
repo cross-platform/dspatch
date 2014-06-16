@@ -54,8 +54,8 @@ public:
   void SetSampleRate( int sampleRate );
 
   bool IsStreaming() const;
-  int GetBufferSize();
-  int GetSampleRate();
+  int GetBufferSize() const;
+  int GetSampleRate() const;
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
@@ -75,6 +75,7 @@ private:
   bool _gotSyncReady;
 
   void _SetIsStreaming( bool isStreaming );
+
   void _WaitForBuffer();
   void _SyncBuffer();
 

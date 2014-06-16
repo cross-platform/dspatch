@@ -193,14 +193,14 @@ bool DspAudioDevice::IsStreaming() const
 
 //-------------------------------------------------------------------------------------------------
 
-int DspAudioDevice::GetBufferSize()
+int DspAudioDevice::GetBufferSize() const
 {
   return *GetParameter_( pBufferSize )->GetInt();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-int DspAudioDevice::GetSampleRate()
+int DspAudioDevice::GetSampleRate() const
 {
   return *GetParameter_( pSampleRate )->GetInt();
 }
