@@ -32,11 +32,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspWaveStreamer : public DspComponent
 {
 public:
-  static std::string const pFilePath;
-  static std::string const pPlay;
-  static std::string const pPause;
-  static std::string const pStop;
-  static std::string const pIsPlaying;
+  static std::string const pFilePath; // FilePath
+  static std::string const pPlay; // Trigger
+  static std::string const pPause; // Trigger
+  static std::string const pStop; // Trigger
+  static std::string const pIsPlaying; // Bool
 
   DspWaveStreamer();
   ~DspWaveStreamer();

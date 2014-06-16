@@ -34,10 +34,10 @@ struct RtAudioMembers;
 class DspAudioDevice : public DspComponent
 {
 public:
-  static std::string const pDeviceList;
-  static std::string const pIsStreaming;
-  static std::string const pBufferSize;
-  static std::string const pSampleRate;
+  static std::string const pDeviceList; // List
+  static std::string const pIsStreaming; // Bool
+  static std::string const pBufferSize; // Int
+  static std::string const pSampleRate; // Int
 
   DspAudioDevice();
   ~DspAudioDevice();

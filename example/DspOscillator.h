@@ -32,10 +32,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspOscillator : public DspComponent
 {
 public:
-  static std::string const pBufferSize;
-  static std::string const pSampleRate;
-  static std::string const pAmplitude;
-  static std::string const pFrequency;
+  static std::string const pBufferSize; // Int
+  static std::string const pSampleRate; // Int
+  static std::string const pAmplitude; // Float
+  static std::string const pFrequency; // Float
 
   DspOscillator( float startFreq = 1000.0, float startAmpl = 1.0 );
   ~DspOscillator();

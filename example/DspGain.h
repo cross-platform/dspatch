@@ -32,7 +32,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspGain : public DspComponent
 {
 public:
-  static std::string const pGain;
+  static std::string const pGain; // Float
 
   DspGain()
   {
