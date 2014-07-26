@@ -68,6 +68,12 @@ public:
   template< class ValueType >
   bool GetValue( std::string const& signalName, ValueType& returnValue ) const;
 
+  template< class ValueType >
+  ValueType const* GetValue( unsigned short signalIndex ) const;
+
+  template< class ValueType >
+  ValueType const* GetValue( std::string const& signalName ) const;
+
   void ClearValue( unsigned short signalIndex );
   void ClearValue( std::string const& signalName );
 
@@ -147,6 +153,38 @@ bool DspSignalBus::GetValue( std::string const& signalName, ValueType& returnVal
   {
     return false;
   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+template< class ValueType >
+ValueType const* DspSignalBus::GetValue( unsigned short signalIndex ) const
+{
+    if( signalIndex < _signals.size() )
+    {
+      return _signals[signalIndex].GetValue< ValueType >();
+    }
+    else
+    {
+      return NULL;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+template< class ValueType >
+ValueType const* DspSignalBus::GetValue( std::string const& signalName ) const
+{
+    unsigned short signalIndex;
+
+    if( FindSignal( signalName, signalIndex ) )
+    {
+      return _signals[signalIndex].GetValue< ValueType >();
+    }
+    else
+    {
+      return NULL;
+    }
 }
 
 //=================================================================================================

@@ -251,6 +251,16 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& par
 
 //-------------------------------------------------------------------------------------------------
 
+DspParameter const* DspComponent::GetParameter( std::string const& paramName )
+{
+    PauseAutoTick();
+    DspParameter const* result = GetParameter_( paramName );
+    ResumeAutoTick();
+    return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
 {
   PauseAutoTick();

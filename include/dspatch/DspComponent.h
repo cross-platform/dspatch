@@ -120,6 +120,7 @@ public:
   std::string GetParameterName( unsigned short index );
 
   bool GetParameter( std::string const& paramName, DspParameter& param );
+  DspParameter const* GetParameter( std::string const& paramName );
   bool SetParameter( std::string const& paramName, DspParameter const& param );
 
   void Tick();
