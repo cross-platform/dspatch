@@ -27,7 +27,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <DspWaveStreamer.h>
 #include <DspGain.h>
 #include <DspAudioDevice.h>
-#include <DspOscillator.h>
 #include <DspAdder.h>
 
 #include <stdio.h>
@@ -91,8 +90,14 @@ int main()
 
   // A component input pin can only receive one signal at a time so an adders are required to combine the signals
 
-  // declare components to be added to the circuit
-  DspOscillator oscillator( 1000.0f, 0.1f );
+  // load the oscillator plugin and create an instance of it
+  DspPluginLoader oscillPlugin( EXAMPLE_PLUGIN_FILE );
+  std::map< std::string, DspParameter > oscillParams = oscillPlugin.GetCreateParams();
+  oscillParams.at( "startFreq" ) = DspParameter( DspParameter::Float, 1000.0f );
+  oscillParams.at( "startAmpl" ) = DspParameter( DspParameter::Float, 0.1f );
+  DspComponent* oscillator = oscillPlugin.Create( oscillParams );
+
+  // declare the rest of the components to be added to the circuit
   DspAdder adder1;
   DspAdder adder2;
 
@@ -128,6 +133,9 @@ int main()
 
   // clean up DSPatch
   DSPatch::Finalize();
+
+  // clean up the oscillator pointer
+  delete oscillator;
 
   return 0;
 }

@@ -28,6 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //-------------------------------------------------------------------------------------------------
 
 #include <dspatch/DspCircuit.h>
+#include <dspatch/DspPlugin.h>
 
 //=================================================================================================
 /// System-wide DSPatch functionality

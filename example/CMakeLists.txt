@@ -1,6 +1,6 @@
 project(DSPatchExample)
 
-add_subdirectory(osc-plugin)
+add_subdirectory(oscillator-plugin)
 
 file(GLOB srcs *.cpp rtaudio/*.cpp)
 file(GLOB hdrs *.h rtaudio/*.h)
@@ -11,8 +11,9 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/rtaudio
 )
 
-# Add definition of example audio file
+# Add definitions for example audio file and oscillator plugin
 add_definitions(-DEXAMPLE_WAV_FILE="${CMAKE_CURRENT_SOURCE_DIR}/Sample.wav")
+add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator.so")
 
 add_executable(
     ${PROJECT_NAME}
