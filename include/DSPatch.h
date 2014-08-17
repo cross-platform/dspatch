@@ -383,6 +383,9 @@ int main()
 
 \section changelog Changelog
 
+\subsection v263 v.2.63 (x x x)
+  - Reformatted source code.
+
 \subsection v262 v.2.62 (17 August 2014)
   - Added alternative Get* methods returning const pointers.
   - Increased build warning level and fixed all issues.
