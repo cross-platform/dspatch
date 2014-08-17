@@ -32,38 +32,38 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspOscillator : public DspComponent
 {
 public:
-  static std::string const pBufferSize; // Int
-  static std::string const pSampleRate; // Int
-  static std::string const pAmplitude; // Float
-  static std::string const pFrequency; // Float
+    static std::string const pBufferSize;  // Int
+    static std::string const pSampleRate;  // Int
+    static std::string const pAmplitude;   // Float
+    static std::string const pFrequency;   // Float
 
-  DspOscillator( float startFreq = 1000.0, float startAmpl = 1.0 );
-  ~DspOscillator();
+    DspOscillator(float startFreq = 1000.0, float startAmpl = 1.0);
+    ~DspOscillator();
 
-  void SetBufferSize( int bufferSize );
-  void SetSampleRate( int sampleRate );
-  void SetAmpl( float ampl );
-  void SetFreq( float freq );
+    void SetBufferSize(int bufferSize);
+    void SetSampleRate(int sampleRate);
+    void SetAmpl(float ampl);
+    void SetFreq(float freq);
 
-  int GetBufferSize() const;
-  int GetSampleRate() const;
-  float GetAmpl() const;
-  float GetFreq() const;
+    int GetBufferSize() const;
+    int GetSampleRate() const;
+    float GetAmpl() const;
+    float GetFreq() const;
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
+    virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+    virtual bool ParameterUpdating_(std::string const& name, DspParameter const& param);
 
 private:
-  std::vector< float > _signalLookup;
-  std::vector< float > _signal;
+    std::vector<float> _signalLookup;
+    std::vector<float> _signal;
 
-  unsigned long _lastPos;
-  unsigned long _lookupLength;
+    unsigned long _lastPos;
+    unsigned long _lookupLength;
 
-  DspMutex _processMutex;
+    DspMutex _processMutex;
 
-  void _BuildLookup();
+    void _BuildLookup();
 };
 
 //=================================================================================================
