@@ -132,8 +132,8 @@ public:
   virtual void ResumeAutoTick();
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs ) {}
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param ) { return false; }
+  virtual void Process_( DspSignalBus&, DspSignalBus& ) {}
+  virtual bool ParameterUpdating_( std::string const&, DspParameter const& ) { return false; }
 
   bool AddInput_( std::string const& inputName = "" );
   bool AddOutput_( std::string const& outputName = "" );
