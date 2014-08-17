@@ -64,7 +64,7 @@ public:
   }
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs )
+  virtual void Process_( DspSignalBus&, DspSignalBus& outputs )
   {
     // set output as randomized true / false
     outputs.SetValue( 0, rand() % 2 == 0 );
@@ -87,7 +87,7 @@ public:
   }
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs )
+  virtual void Process_( DspSignalBus& inputs, DspSignalBus& )
   {
     // create a local stack variable to hold input value
     bool inputBool;
