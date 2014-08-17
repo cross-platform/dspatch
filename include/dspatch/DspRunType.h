@@ -96,7 +96,7 @@ public:
   {
     if( typeid( rhs ) == GetType() )
     {
-      ( ( _DspRtValue< ValueType >* ) _valueHolder )->value = rhs;
+      ( ( _DspRtValue< ValueType >* ) _valueHolder )->_value = rhs;
     }
     else
     {
@@ -134,7 +134,7 @@ public:
   {
     if( operand != NULL && operand->GetType() == typeid( ValueType ) )
     {
-      return &static_cast< DspRunType::_DspRtValue< ValueType >* >( operand->_valueHolder )->value;
+      return &static_cast< DspRunType::_DspRtValue< ValueType >* >( operand->_valueHolder )->_value;
     }
     else
     {
@@ -165,7 +165,7 @@ private:
   {
   public:
     _DspRtValue( ValueType const& value )
-    : value( value ) {}
+    : _value( value ) {}
 
   public:
     virtual std::type_info const& GetType() const
@@ -175,16 +175,16 @@ private:
 
     virtual _DspRtValueHolder* GetCopy() const
     {
-      return new _DspRtValue( value );
+      return new _DspRtValue( _value );
     }
 
     void SetValue( _DspRtValueHolder* valueHolder )
     {
-      value = ( ( _DspRtValue< ValueType >* ) valueHolder )->value;
+      _value = ( ( _DspRtValue< ValueType >* ) valueHolder )->_value;
     }
 
   public:
-    ValueType value;
+    ValueType _value;
 
   private:
     _DspRtValue& operator=( _DspRtValue const& ); // disable copy-assignment

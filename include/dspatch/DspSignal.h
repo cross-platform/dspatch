@@ -59,6 +59,9 @@ public:
   template< class ValueType >
   bool GetValue( ValueType& returnValue ) const;
 
+  template< class ValueType >
+  ValueType const* GetValue() const;
+
   bool SetSignal( DspSignal const* newSignal );
 
   void ClearValue();
@@ -105,6 +108,21 @@ bool DspSignal::GetValue( ValueType& returnValue ) const
   {
     return false; // no value available
   }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+template< class ValueType >
+ValueType const* DspSignal::GetValue() const
+{
+    if( _valueAvailable )
+    {
+      return DspRunType::RunTypeCast< ValueType >( &_signalValue );
+    }
+    else
+    {
+      return NULL; // no value available
+    }
 }
 
 //=================================================================================================

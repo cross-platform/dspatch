@@ -136,7 +136,7 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 {
   // Synchronise sample rate with the "Sample Rate" input feed
   // =========================================================
-  unsigned long sampleRate;
+  int sampleRate;
   if( inputs.GetValue( "Sample Rate", sampleRate ) )
   {
     if( sampleRate != GetSampleRate() )
@@ -149,7 +149,7 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   // =========================================================
   if( inputs.GetValue( "Buffer Size", _signal ) )
   {
-    if( GetBufferSize() != _signal.size() )
+    if( GetBufferSize() != (int) _signal.size() )
     {
       SetBufferSize( _signal.size() );
     }
