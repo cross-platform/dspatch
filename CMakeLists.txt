@@ -25,6 +25,14 @@ add_library(
     ${in_hdrs}
 )
 
+# Link pthread on Unix
+if(UNIX)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        pthread
+    )
+endif(UNIX)
+
 install(
     TARGETS ${PROJECT_NAME}
     DESTINATION lib

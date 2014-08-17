@@ -41,7 +41,7 @@ for these global scoped components to benefit from the multi threading associate
 scheduler, they are automatically added to the DSPatch global circuit when parallel processing is
 required (i.e. StartAutoTick() is called). Although global circuit operations are automatic and
 transparent to the user, if required, the user is may set the number of threads used by the global
-circuit by calling SetGlobalThreadCount(). 
+circuit by calling SetGlobalThreadCount().
 
 Lastly, the Finalize() method must be called on application exit in order for DSPatch to perform
 the necessary memory cleanup.
@@ -101,7 +101,7 @@ private:
   component to form part of the DSPatch framework, designers simply have to derive their
   component from the DspComponent base class, configure the component's IO buses, and implement
   the virtual Process_() callback method.
-  
+
 \n
 
 \section features_sec Features
@@ -371,6 +371,11 @@ void main()
 \n
 
 \section changelog Changelog
+
+\subsection v262 v.2.62 (17 August 2014)
+  - Added alternative Get* methods returning const pointers.
+  - Increased build warning level and fixed all issues.
+  - Uninitialised variable fix for DspParameter.
 
 \subsection v261 v.2.61 (16 June 2014)
   - Introduced component parameters (DspParameter).
