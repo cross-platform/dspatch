@@ -294,8 +294,11 @@ bool DspParameter::SetIntRange( std::pair<int, int> const& intRange )
     }
     else
     {
-      _intValue = _intValue < intRange.first ? intRange.first : _intValue;
-      _intValue = _intValue > intRange.second ?  intRange.second : _intValue;
+      if( _isSet )
+      {
+        _intValue = _intValue < intRange.first ? intRange.first : _intValue;
+        _intValue = _intValue > intRange.second ?  intRange.second : _intValue;
+      }
       _isRangeSet = true;
     }
     return true;
@@ -340,8 +343,11 @@ bool DspParameter::SetFloatRange( std::pair<float, float> const& floatRange )
     }
     else
     {
-      _floatValue = _floatValue < floatRange.first ? floatRange.first : _floatValue;
-      _floatValue = _floatValue > floatRange.second ?  floatRange.second : _floatValue;
+      if( _isSet )
+      {
+        _floatValue = _floatValue < floatRange.first ? floatRange.first : _floatValue;
+        _floatValue = _floatValue > floatRange.second ?  floatRange.second : _floatValue;
+      }
       _isRangeSet = true;
     }
     return true;
