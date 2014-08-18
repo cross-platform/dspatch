@@ -372,11 +372,11 @@ void main()
 
 \section changelog Changelog
 
-\subsection v262 v.2.62 (17 August 2014)
+\subsection v262 v.2.62 (18 August 2014)
   - Added alternative Get* methods returning const pointers.
   - Increased build warning level and fixed all issues.
   - Uninitialised variable fix for DspParameter.
-  - Fixed GetInput/OutputName() empty string return bug.
+  - Fixed GetInput/Output/ParameterName() empty string return bug.
 
 \subsection v261 v.2.61 (16 June 2014)
   - Introduced component parameters (DspParameter).

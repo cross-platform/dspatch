@@ -224,7 +224,6 @@ std::string DspComponent::GetParameterName( unsigned short index )
     std::advance( it, index );
     parameterName = it->first;
   }
-  parameterName = "";
 
   ResumeAutoTick();
   return parameterName;
