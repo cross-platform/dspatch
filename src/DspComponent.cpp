@@ -188,7 +188,6 @@ std::string DspComponent::GetInputName( unsigned short index )
   {
     inputName = _inputBus.GetSignal( index )->GetSignalName();
   }
-  inputName = "";
 
   ResumeAutoTick();
   return inputName;
@@ -206,7 +205,6 @@ std::string DspComponent::GetOutputName( unsigned short index )
   {
     outputName = _outputBus.GetSignal( index )->GetSignalName();
   }
-  outputName = "";
 
   ResumeAutoTick();
   return outputName;
@@ -226,7 +224,6 @@ std::string DspComponent::GetParameterName( unsigned short index )
     std::advance( it, index );
     parameterName = it->first;
   }
-  parameterName = "";
 
   ResumeAutoTick();
   return parameterName;

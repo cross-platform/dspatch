@@ -217,7 +217,7 @@ bool DspWaveStreamer::IsPlaying() const
 
 //=================================================================================================
 
-void DspWaveStreamer::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
+void DspWaveStreamer::Process_( DspSignalBus&, DspSignalBus& outputs )
 {
   if( IsPlaying() && _waveData.size() > 0 )
   {

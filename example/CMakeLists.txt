@@ -40,11 +40,16 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # Definition for RtAudio Linux, using ALSA
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    find_library(ASOUND asound)
+    if(NOT ASOUND)
+        message(FATAL_ERROR "ALSA not found (Ensure that libasound2-dev is installed)")
+    endif()
+
     add_definitions(-D__LINUX_ALSA__)
 
     target_link_libraries(
         ${PROJECT_NAME}
-        asound
+        ${ASOUND}
     )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 

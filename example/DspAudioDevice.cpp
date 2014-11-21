@@ -219,7 +219,7 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 
   // Synchronise sample rate with the "Sample Rate" input feed
   // =========================================================
-  unsigned long sampleRate;
+  int sampleRate;
   if( inputs.GetValue( "Sample Rate", sampleRate ) )
   {
     if( sampleRate != GetSampleRate() )
@@ -232,7 +232,7 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   // =========================================================
   if( inputs.GetValue( 0, _outputChannels[0] ) )
   {
-    if( GetBufferSize() != _outputChannels[0].size() &&
+    if( GetBufferSize() != (int) _outputChannels[0].size() &&
         _outputChannels[0].size() != 0 )
     {
       SetBufferSize( _outputChannels[0].size() );
@@ -356,7 +356,7 @@ void DspAudioDevice::_StartStream()
                                     inputParams,
                                     RTAUDIO_FLOAT32,
                                     GetSampleRate(),
-                                    ( unsigned int* ) GetParameter_( pBufferSize )->GetInt(),
+                                    ( unsigned int* ) const_cast< int* >( GetParameter_( pBufferSize )->GetInt() ),
                                     &_StaticCallback,
                                     this,
                                     &options );
@@ -370,9 +370,9 @@ void DspAudioDevice::_StartStream()
 
 int DspAudioDevice::_StaticCallback( void* outputBuffer,
                                      void* inputBuffer,
-                                     unsigned int nBufferFrames,
-                                     double streamTime,
-                                     unsigned int status,
+                                     unsigned int,
+                                     double,
+                                     unsigned int,
                                      void* userData )
 {
   return ( reinterpret_cast<DspAudioDevice*>( userData ) )->_DynamicCallback( inputBuffer, outputBuffer );
