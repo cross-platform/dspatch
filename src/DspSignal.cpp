@@ -26,60 +26,56 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-DspSignal::DspSignal(std::string signalName)
-    : _signalName(signalName)
-    , _valueAvailable(false)
-{
-}
+DspSignal::DspSignal( std::string signalName )
+: _signalName( signalName ),
+  _valueAvailable( false ) {}
 
 //-------------------------------------------------------------------------------------------------
 
-DspSignal::~DspSignal()
-{
-}
+DspSignal::~DspSignal() {}
 
 //=================================================================================================
 
-bool DspSignal::SetSignal(DspSignal const* newSignal)
+bool DspSignal::SetSignal( DspSignal const* newSignal )
 {
-    if (newSignal != NULL)
+  if( newSignal != NULL )
+  {
+    if( newSignal->_valueAvailable == false )
     {
-        if (newSignal->_valueAvailable == false)
-        {
-            return false;
-        }
-        else
-        {
-            _signalValue.CopyFrom(newSignal->_signalValue);
-            _valueAvailable = true;
-            return true;
-        }
+      return false;
     }
     else
     {
-        return false;
+      _signalValue.CopyFrom( newSignal->_signalValue );
+      _valueAvailable = true;
+      return true;
     }
+  }
+  else
+  {
+    return false;
+  }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspSignal::ClearValue()
 {
-    _valueAvailable = false;
+  _valueAvailable = false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 const std::type_info& DspSignal::GetSignalType() const
 {
-    return _signalValue.GetType();
+  return _signalValue.GetType();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 std::string DspSignal::GetSignalName() const
 {
-    return _signalName;
+  return _signalName;
 }
 
 //=================================================================================================

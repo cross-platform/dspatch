@@ -47,25 +47,25 @@ wire buses use to connect the circuit's IO signals to and from it's internal com
 class DLLEXPORT DspWireBus
 {
 public:
-    DspWireBus(bool isLinkedComponentReceivingSignals = false);
-    virtual ~DspWireBus();
+  DspWireBus( bool isLinkedComponentReceivingSignals = false );
+  virtual ~DspWireBus();
 
-    bool AddWire(DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex);
+  bool AddWire( DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
-    bool RemoveWire(unsigned short wireIndex);
-    bool RemoveWire(DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex);
+  bool RemoveWire( unsigned short wireIndex );
+  bool RemoveWire( DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex );
 
-    void RemoveAllWires();
+  void RemoveAllWires();
 
-    DspWire* GetWire(unsigned short wireIndex);
+  DspWire* GetWire( unsigned short wireIndex );
 
-    unsigned short GetWireCount() const;
+  unsigned short GetWireCount() const;
 
 private:
-    bool _isLinkedComponentReceivingSignals;
-    std::vector<DspWire> _wires;
+  bool _isLinkedComponentReceivingSignals;
+  std::vector< DspWire > _wires;
 };
 
 //=================================================================================================
 
-#endif  // DSPWIREBUS_H
+#endif // DSPWIREBUS_H

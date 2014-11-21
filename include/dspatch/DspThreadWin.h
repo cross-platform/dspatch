@@ -34,69 +34,65 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspThread
 {
 public:
-    DspThread()
-        : _threadHandle(NULL)
-    {
-    }
+  DspThread()
+  : _threadHandle( NULL ) {}
 
-    DspThread(DspThread const&)
-        : _threadHandle(NULL)
-    {
-    }
+  DspThread( DspThread const& )
+  : _threadHandle( NULL ) {}
 
-    virtual ~DspThread()
-    {
-        Stop();
-    }
+  virtual ~DspThread()
+  {
+    Stop();
+  }
 
-    enum Priority
-    {
-        IdlePriority = -15,
+  enum Priority
+  {
+    IdlePriority = -15,
 
-        LowestPriority = -2,
-        LowPriority = -1,
-        NormalPriority = 0,
-        HighPriority = 1,
-        HighestPriority = 2,
+    LowestPriority = -2,
+    LowPriority = -1,
+    NormalPriority = 0,
+    HighPriority = 1,
+    HighestPriority = 2,
 
-        TimeCriticalPriority = 15,
-    };
+    TimeCriticalPriority = 15,
+  };
 
-    virtual void Start(Priority priority = NormalPriority)
-    {
-        DWORD threadId;
-        _threadHandle = CreateThread(NULL, 0, _ThreadFunc, this, CREATE_SUSPENDED, &threadId);
-        SetThreadPriority(_threadHandle, priority);
-        ResumeThread(_threadHandle);
-    }
+  virtual void Start( Priority priority = NormalPriority )
+  {
+    DWORD threadId;
+    _threadHandle = CreateThread( NULL, 0, _ThreadFunc, this, CREATE_SUSPENDED, &threadId );
+    SetThreadPriority( _threadHandle, priority );
+    ResumeThread( _threadHandle );
+  }
 
-    virtual void Stop()
-    {
-        CloseHandle(_threadHandle);
-        _threadHandle = NULL;
-    }
+  virtual void Stop()
+  {
+    CloseHandle( _threadHandle );
+    _threadHandle = NULL;
+  }
 
-    static void SetPriority(Priority priority)
-    {
-        SetThreadPriority(GetCurrentThread(), priority);
-    }
+  static void SetPriority( Priority priority )
+  {
+    SetThreadPriority( GetCurrentThread(), priority );
+  }
 
-    static void MsSleep(unsigned short milliseconds)
-    {
-        Sleep(milliseconds);
-    }
+  static void MsSleep( unsigned short milliseconds )
+  {
+    Sleep( milliseconds );
+  }
 
 private:
-    static DWORD WINAPI _ThreadFunc(LPVOID pv)
-    {
-        (reinterpret_cast<DspThread*>(pv))->_Run();
-        return 0;
-    }
+  static DWORD WINAPI _ThreadFunc( LPVOID pv )
+  {
+    ( reinterpret_cast<DspThread*>( pv ) )->_Run();
+    return 0;
+  }
 
-    virtual void _Run() = 0;
+  virtual void _Run() = 0;
 
 private:
-    HANDLE _threadHandle;
+  HANDLE _threadHandle;
 };
 
 //=================================================================================================
@@ -104,33 +100,33 @@ private:
 class DspMutex
 {
 public:
-    DspMutex()
-    {
-        InitializeCriticalSection(&_cs);
-    }
+  DspMutex()
+  {
+    InitializeCriticalSection( &_cs );
+  }
 
-    DspMutex(DspMutex const&)
-    {
-        InitializeCriticalSection(&_cs);
-    }
+  DspMutex( DspMutex const& )
+  {
+    InitializeCriticalSection( &_cs );
+  }
 
-    virtual ~DspMutex()
-    {
-        DeleteCriticalSection(&_cs);
-    }
+  virtual ~DspMutex()
+  {
+    DeleteCriticalSection( &_cs );
+  }
 
-    void Lock()
-    {
-        EnterCriticalSection(&_cs);
-    }
+  void Lock()
+  {
+    EnterCriticalSection( &_cs );
+  }
 
-    void Unlock()
-    {
-        LeaveCriticalSection(&_cs);
-    }
+  void Unlock()
+  {
+    LeaveCriticalSection( &_cs );
+  }
 
 private:
-    CRITICAL_SECTION _cs;
+  CRITICAL_SECTION _cs;
 };
 
 //=================================================================================================
@@ -138,41 +134,41 @@ private:
 class DspWaitCondition
 {
 public:
-    DspWaitCondition()
-    {
-        _hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    }
+  DspWaitCondition()
+  {
+    _hEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+  }
 
-    DspWaitCondition(DspWaitCondition const&)
-    {
-        _hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    }
+  DspWaitCondition( DspWaitCondition const& )
+  {
+    _hEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
+  }
 
-    virtual ~DspWaitCondition()
-    {
-        CloseHandle(_hEvent);
-    }
+  virtual ~DspWaitCondition()
+  {
+    CloseHandle( _hEvent );
+  }
 
-    void Wait(DspMutex& mutex)
-    {
-        ResetEvent(_hEvent);
+  void Wait( DspMutex& mutex )
+  {
+    ResetEvent( _hEvent );
 
-        mutex.Unlock();
+    mutex.Unlock();
 
-        WaitForSingleObject(_hEvent, INFINITE);
+    WaitForSingleObject( _hEvent, INFINITE );
 
-        mutex.Lock();
-    }
+    mutex.Lock();
+  }
 
-    void WakeAll()
-    {
-        SetEvent(_hEvent);
-    }
+  void WakeAll()
+  {
+    SetEvent( _hEvent );
+  }
 
 private:
-    HANDLE _hEvent;
+  HANDLE _hEvent;
 };
 
 //=================================================================================================
 
-#endif  // DSPTHREADWIN_H
+#endif // DSPTHREADWIN_H

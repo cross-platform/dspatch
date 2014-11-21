@@ -50,29 +50,29 @@ the necessary memory cleanup.
 class DLLEXPORT DSPatch
 {
 public:
-    static void SetGlobalThreadCount(unsigned short threadCount);
-    static void Finalize();
+  static void SetGlobalThreadCount( unsigned short threadCount );
+  static void Finalize();
 
 private:
-    friend class DspComponent;
+  friend class DspComponent;
 
-    static bool _IsThisGlobalCircuit(DspComponent const* thisComponent);
+  static bool _IsThisGlobalCircuit( DspComponent const* thisComponent );
 
-    static bool _AddGlobalComponent(DspComponent* component);
-    static void _RemoveGlobalComponent(DspComponent const* component);
+  static bool _AddGlobalComponent( DspComponent* component );
+  static void _RemoveGlobalComponent( DspComponent const* component );
 
-    static unsigned short _GetGlobalComponentCount();
+  static unsigned short _GetGlobalComponentCount();
 
-    static void _StartGlobalAutoTick();
-    static void _StopGlobalAutoTick();
+  static void _StartGlobalAutoTick();
+  static void _StopGlobalAutoTick();
 
 private:
-    static DspCircuit* _globalCircuit;
+  static DspCircuit* _globalCircuit;
 };
 
 //=================================================================================================
 
-#endif  // DSPATCH_H
+#endif // DSPATCH_H
 
 //=================================================================================================
 
@@ -105,24 +105,15 @@ private:
 \n
 
 \section features_sec Features
-  - <b>Automatic branch synchronization</b> - The result of data diverging across parallel branches is guaranteed to
-arrive synchronized at a converging point.
-  - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which you require a circuit
-to process.
-  - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit entities and concepts, making
-code more readable and easy to understand.
-  - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back into previous component
-inputs.
-  - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling to maximize data flow
-efficiency.
-  - <b>Integrated circuits</b> - Build circuits within circuits to encapsulate complex component networks into single
-circuit components.
-  - <b>Non-threaded platform support</b> - Develop for (or port to) platforms without multi-threading support and
-process complex circuit systems in a single thread.
-  - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining steady data flow through
-the system.
-  - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time varying types allowing you to
-create more flexible, multi-purpose component processes.
+  - <b>Automatic branch synchronization</b> - The result of data diverging across parallel branches is guaranteed to arrive synchronized at a converging point.
+  - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which you require a circuit to process.
+  - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit entities and concepts, making code more readable and easy to understand.
+  - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back into previous component inputs.
+  - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling to maximize data flow efficiency.
+  - <b>Integrated circuits</b> - Build circuits within circuits to encapsulate complex component networks into single circuit components.
+  - <b>Non-threaded platform support</b> - Develop for (or port to) platforms without multi-threading support and process complex circuit systems in a single thread.
+  - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining steady data flow through the system.
+  - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time varying types allowing you to create more flexible, multi-purpose component processes.
 
 \n
 
@@ -199,17 +190,17 @@ class DspAnd : public DspComponent
 
   \code
 public:
-    // 2. Configure component IO buses
-    // ===============================
-    DspAnd()
-    {
-        // add 2 inputs
-        AddInput_("input1");
-        AddInput_("input2");
+  // 2. Configure component IO buses
+  // ===============================
+  DspAnd()
+  {
+    // add 2 inputs
+    AddInput_( "input1" );
+    AddInput_( "input2" );
 
-        // add 1 output
-        AddOutput_("output");
-    }
+    // add 1 output
+    AddOutput_( "output" );
+  }
   \endcode
 
   The string values passed into the AddInput_() and AddOutput_() method calls are signal names
@@ -225,22 +216,22 @@ public:
 
   \code
 protected:
-    // 3. Implement virtual Process_() method
-    // ======================================
-    virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
-    {
-        // create local stack variables to hold input values
-        bool bool1 = false;
-        bool bool2 = false;
+  // 3. Implement virtual Process_() method
+  // ======================================
+  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs )
+  {
+    // create local stack variables to hold input values
+    bool bool1 = false;
+    bool bool2 = false;
 
-        // get values from inputs bus ( GetValue() returns true if successful )
-        if (inputs.GetValue(0, bool1) &&  // OR inputs.GetValue( "input1", bool1 );
-            inputs.GetValue(1, bool2))    // OR inputs.GetValue( "input2", bool2 );
-        {
-            // set output as the result of bool1 AND bool2
-            outputs.SetValue(0, bool1 && bool2);  // OR outputs.SetValue( "output", bool1 && bool2 );
-        }
+    // get values from inputs bus ( GetValue() returns true if successful )
+    if( inputs.GetValue( 0, bool1 ) && //OR inputs.GetValue( "input1", bool1 );
+        inputs.GetValue( 1, bool2 ) )  //OR inputs.GetValue( "input2", bool2 );
+    {
+      // set output as the result of bool1 AND bool2
+      outputs.SetValue( 0, bool1 && bool2 ); //OR outputs.SetValue( "output", bool1 && bool2 );
     }
+  }
 };
   \endcode
 
@@ -271,29 +262,29 @@ protected:
   (receives a boolean value and outputs it to the console):
 
   \code
-int main()
+void main()
 {
-    // 1. Create a DspCircuit where we can route our components
-    // ========================================================
-    DspCircuit circuit;
+  // 1. Create a DspCircuit where we can route our components
+  // ========================================================
+  DspCircuit circuit;
 
-    // 2. Create instances of the components needed for our circuit
-    // ============================================================
-    DspRandBool randBoolGen1;
-    DspRandBool randBoolGen2;
-    DspAnd logicAnd;
-    DspPrintBool boolPrinter;
+  // 2. Create instances of the components needed for our circuit
+  // ============================================================
+  DspRandBool randBoolGen1;
+  DspRandBool randBoolGen2;
+  DspAnd logicAnd;
+  DspPrintBool boolPrinter;
   \endcode
 
   Now that we have a circuit and some components, lets add all of our components to the circuit:
 
   \code
-    // 3. Add component instances to circuit
-    // =====================================
-    circuit.AddComponent(randBoolGen1, "Bool Generator 1");
-    circuit.AddComponent(randBoolGen2, "Bool Generator 2");
-    circuit.AddComponent(logicAnd, "Logic AND");
-    circuit.AddComponent(boolPrinter, "Bool Printer");
+  // 3. Add component instances to circuit
+  // =====================================
+  circuit.AddComponent( randBoolGen1, "Bool Generator 1" );
+  circuit.AddComponent( randBoolGen2, "Bool Generator 2" );
+  circuit.AddComponent( logicAnd, "Logic AND" );
+  circuit.AddComponent( boolPrinter, "Bool Printer" );
   \endcode
 
   The string values passed into the AddComponent() method calls are component names / IDs.
@@ -306,20 +297,20 @@ int main()
   We are now ready to begin wiring the circuit:
 
   \code
-    // 4. Wire up the components inside the circuit
-    // ============================================
+  // 4. Wire up the components inside the circuit
+  // ============================================
 
-    circuit.ConnectOutToIn(randBoolGen1, 0, logicAnd, 0);
-    // OR circuit.ConnectOutToIn( "Bool Generator 1", 0, "Logic AND", 0 );
-    // OR circuit.ConnectOutToIn( "Bool Generator 1", 0, "Logic AND", "input1" );
+  circuit.ConnectOutToIn( randBoolGen1, 0, logicAnd, 0 );
+  //OR circuit.ConnectOutToIn( "Bool Generator 1", 0, "Logic AND", 0 );
+  //OR circuit.ConnectOutToIn( "Bool Generator 1", 0, "Logic AND", "input1" );
 
-    circuit.ConnectOutToIn(randBoolGen2, 0, logicAnd, 1);
-    // OR circuit.ConnectOutToIn( "Bool Generator 2", 0, "Logic AND", 1 );
-    // OR circuit.ConnectOutToIn( "Bool Generator 2", 0, "Logic AND", "input2" );
+  circuit.ConnectOutToIn( randBoolGen2, 0, logicAnd, 1 );
+  //OR circuit.ConnectOutToIn( "Bool Generator 2", 0, "Logic AND", 1 );
+  //OR circuit.ConnectOutToIn( "Bool Generator 2", 0, "Logic AND", "input2" );
 
-    circuit.ConnectOutToIn(logicAnd, 0, boolPrinter, 0);
-    // OR circuit.ConnectOutToIn( "Logic AND", 0, "Bool Printer", 0 );
-    // OR circuit.ConnectOutToIn( "Logic AND", "output", "Bool Printer", 0 );
+  circuit.ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
+  //OR circuit.ConnectOutToIn( "Logic AND", 0, "Bool Printer", 0 );
+  //OR circuit.ConnectOutToIn( "Logic AND", "output", "Bool Printer", 0 );
   \endcode
 
   The code above results in the following wiring configuration:
@@ -342,38 +333,36 @@ int main()
   decrease the number of threads use by the circuit as required during execution:
 
   \code
-    // 5. Tick the circuit
-    // ===================
+  // 5. Tick the circuit
+  // ===================
 
-    // Circuit tick method 1: Manual
-    for (unsigned short i = 0; i < 10; i++)
-    {
-        circuit.Tick();
-        circuit.Reset();
-    }
+  // Circuit tick method 1: Manual
+  for( unsigned short i = 0; i < 10; i++ )
+  {
+    circuit.Tick();
+    circuit.Reset();
+  }
 
-    // Circuit tick method 2: Automatic
-    std::cout << "Press any key to begin circuit auto-tick.";
-    getchar();
-    circuit.StartAutoTick();
+  // Circuit tick method 2: Automatic
+  std::cout << "Press any key to begin circuit auto-tick.";
+  getchar();
+  circuit.StartAutoTick();
 
-    // Increase circuit thread count for higher performance
-    getchar();
-    circuit.SetThreadCount(4);
+  // Increase circuit thread count for higher performance
+  getchar();
+  circuit.SetThreadCount( 4 );
 
-    // Press any key to quit
-    getchar();
+  // Press any key to quit
+  getchar();
   \endcode
 
   Lastly, the DSPatch::Finalize() method must be called on application exit in order for DSPatch
   to perform its own internal memory cleanup.
 
   \code
-    // 6. Clean up
-    // ===========
-    DSPatch::Finalize();
-
-    return 0;
+  // 6. Clean up
+  // ===========
+  DSPatch::Finalize();
 }
   \endcode
 

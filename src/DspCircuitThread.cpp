@@ -28,125 +28,123 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //=================================================================================================
 
 DspCircuitThread::DspCircuitThread()
-    : _components(NULL)
-    , _threadNo(0)
-    , _stop(false)
-    , _stopped(true)
-    , _gotResume(false)
-    , _gotSync(false)
-{
-}
+: _components( NULL ),
+  _threadNo( 0 ),
+  _stop( false ),
+  _stopped( true ),
+  _gotResume( false ),
+  _gotSync( false ) {}
 
 //-------------------------------------------------------------------------------------------------
 
 DspCircuitThread::~DspCircuitThread()
 {
-    Stop();
+  Stop();
 }
 
 //=================================================================================================
 
-void DspCircuitThread::Initialise(std::vector<DspComponent*>* components, unsigned short threadNo)
+void DspCircuitThread::Initialise( std::vector< DspComponent* >* components, unsigned short threadNo )
 {
-    _components = components;
-    _threadNo = threadNo;
+  _components = components;
+  _threadNo = threadNo;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuitThread::Start(Priority priority)
+void DspCircuitThread::Start( Priority priority )
 {
-    if (_stopped)
-    {
-        _stop = false;
-        _stopped = false;
-        _gotResume = false;
-        _gotSync = true;
-        DspThread::Start(priority);
-    }
+  if( _stopped )
+  {
+    _stop = false;
+    _stopped = false;
+    _gotResume = false;
+    _gotSync = true;
+    DspThread::Start( priority );
+  }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspCircuitThread::Stop()
 {
-    _stop = true;
+  _stop = true;
 
-    while (_stopped != true)
-    {
-        _syncCondt.WakeAll();
-        _resumeCondt.WakeAll();
-        MsSleep(1);
-    }
+  while( _stopped != true )
+  {
+    _syncCondt.WakeAll();
+    _resumeCondt.WakeAll();
+    MsSleep( 1 );
+  }
 
-    DspThread::Stop();
+  DspThread::Stop();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspCircuitThread::Sync()
 {
-    _resumeMutex.Lock();
+  _resumeMutex.Lock();
 
-    if (!_gotSync)  // if haven't already got sync
-    {
-        _syncCondt.Wait(_resumeMutex);  // wait for sync
-    }
+  if( !_gotSync ) // if haven't already got sync
+  {
+    _syncCondt.Wait( _resumeMutex ); // wait for sync
+  }
 
-    _resumeMutex.Unlock();
+  _resumeMutex.Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspCircuitThread::Resume()
 {
-    _resumeMutex.Lock();
+  _resumeMutex.Lock();
 
-    _gotSync = false;  // reset the sync flag
+  _gotSync = false; // reset the sync flag
 
-    _gotResume = true;  // set the resume flag
-    _resumeCondt.WakeAll();
+  _gotResume = true; // set the resume flag
+  _resumeCondt.WakeAll();
 
-    _resumeMutex.Unlock();
+  _resumeMutex.Unlock();
 }
 
 //=================================================================================================
 
 void DspCircuitThread::_Run()
 {
-    if (_components != NULL)
+  if( _components != NULL )
+  {
+    while( !_stop )
     {
-        while (!_stop)
+      _resumeMutex.Lock();
+
+      _gotSync = true; // set the sync flag
+
+      _syncCondt.WakeAll();
+
+      if( !_gotResume ) // if haven't already got resume
+      {
+        _resumeCondt.Wait( _resumeMutex ); // wait for resume
+      }
+      _gotResume = false; // reset the resume flag
+
+      _resumeMutex.Unlock();
+
+      if( !_stop )
+      {
+        for( unsigned short i = 0; i < _components->size(); i++ )
         {
-            _resumeMutex.Lock();
-
-            _gotSync = true;  // set the sync flag
-
-            _syncCondt.WakeAll();
-
-            if (!_gotResume)  // if haven't already got resume
-            {
-                _resumeCondt.Wait(_resumeMutex);  // wait for resume
-            }
-            _gotResume = false;  // reset the resume flag
-
-            _resumeMutex.Unlock();
-
-            if (!_stop)
-            {
-                for (unsigned short i = 0; i < _components->size(); i++)
-                {
-                    (*_components)[i]->_ThreadTick(_threadNo);
-                }
-                for (unsigned short i = 0; i < _components->size(); i++)
-                {
-                    (*_components)[i]->_ThreadReset(_threadNo);
-                }
-            }
+          ( *_components )[i]->_ThreadTick( _threadNo );
         }
+        for( unsigned short i = 0; i < _components->size(); i++ )
+        {
+          ( *_components )[i]->_ThreadReset( _threadNo );
+        }
+      }
     }
+  }
 
-    _stopped = true;
+  _stopped = true;
 }
 
 //=================================================================================================
