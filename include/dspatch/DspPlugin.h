@@ -43,6 +43,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DLLEXPORT DspPlugin
 {
 public:
+  virtual ~DspPlugin() {}
   virtual std::map< std::string, DspParameter > GetCreateParams() const;
   virtual DspComponent* Create( std::map< std::string, DspParameter > const& params ) const = 0;
 };
@@ -76,7 +77,7 @@ private:
 
 //=================================================================================================
 
-#define EXPORT_DSPPLUGIN( Plugin ) \
+#define EXPORT_DSPPLUGIN( Plugin )\
 extern "C"\
 {\
   std::map< std::string, DspParameter > GetCreateParams()\
