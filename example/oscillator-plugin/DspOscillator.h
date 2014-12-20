@@ -78,10 +78,10 @@ class DspOscillatorPlugin : public DspPlugin
     return params;
   }
 
-  DspComponent* Create( std::map< std::string, DspParameter > const& params ) const
+  DspComponent* Create( std::map< std::string, DspParameter >& params ) const
   {
-    float const* startFreq = params.find( "startFreq" )->second.GetFloat();
-    float const* startAmpl = params.find( "startAmpl" )->second.GetFloat();
+    float const* startFreq = params[ "startFreq" ].GetFloat();
+    float const* startAmpl = params[ "startAmpl" ].GetFloat();
 
     if( startFreq && !startAmpl )
     {

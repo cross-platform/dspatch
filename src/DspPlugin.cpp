@@ -108,7 +108,7 @@ std::map< std::string, DspParameter > DspPluginLoader::GetCreateParams() const
 
 //-------------------------------------------------------------------------------------------------
 
-DspComponent* DspPluginLoader::Create( std::map< std::string, DspParameter > const& params ) const
+DspComponent* DspPluginLoader::Create( std::map< std::string, DspParameter >& params ) const
 {
   if( _handle )
   {
