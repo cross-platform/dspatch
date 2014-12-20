@@ -55,7 +55,7 @@ public:
     HighPriority,
     HighestPriority,
 
-    TimeCriticalPriority,
+    TimeCriticalPriority
   };
 
   virtual void Start( Priority priority ) {}
