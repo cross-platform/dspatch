@@ -63,9 +63,9 @@ DspPluginLoader::DspPluginLoader( std::string const& pluginPath )
     if( !_getCreateParams || !_create )
     {
       #ifdef _WIN32
-            FreeLibrary( ( HMODULE ) _handle );
+        FreeLibrary( ( HMODULE ) _handle );
       #else
-            dlclose( _handle );
+        dlclose( _handle );
       #endif
 
       _handle = NULL;

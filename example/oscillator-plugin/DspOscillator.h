@@ -73,8 +73,8 @@ class DspOscillatorPlugin : public DspPlugin
   std::map< std::string, DspParameter > GetCreateParams() const
   {
     std::map< std::string, DspParameter > params;
-    params.insert( std::make_pair( "startFreq", DspParameter( DspParameter::Float ) ) );
-    params.insert( std::make_pair( "startAmpl", DspParameter( DspParameter::Float, 1.0f, std::make_pair( 0.0f, 1.0f ) ) ) );
+    params[ "startFreq" ] = DspParameter( DspParameter::Float );
+    params[ "startAmpl" ] = DspParameter( DspParameter::Float, 1.0f, std::make_pair( 0.0f, 1.0f ) );
     return params;
   }
 
