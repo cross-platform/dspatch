@@ -83,17 +83,17 @@ class DspOscillatorPlugin : public DspPlugin
     float const* startFreq = params.at( "startFreq" ).GetFloat();
     float const* startAmpl = params.at( "startAmpl" ).GetFloat();
 
-    if( !startFreq && !startAmpl )
-    {
-      return new DspOscillator();
-    }
-    else if( startFreq && !startAmpl )
+    if( startFreq && !startAmpl )
     {
       return new DspOscillator( *startFreq );
     }
     else if( startFreq && startAmpl )
     {
       return new DspOscillator( *startFreq, *startAmpl );
+    }
+    else
+    {
+       return new DspOscillator();
     }
   }
 };
