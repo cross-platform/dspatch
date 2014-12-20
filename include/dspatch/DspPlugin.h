@@ -31,7 +31,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <map>
 #include <string>
-#include <dlfcn.h>
 
 //=================================================================================================
 /// TODO
@@ -80,14 +79,14 @@ private:
 #define EXPORT_DSPPLUGIN( Plugin )\
 extern "C"\
 {\
-  std::map< std::string, DspParameter > GetCreateParams()\
+  DLLEXPORT std::map< std::string, DspParameter > GetCreateParams()\
   {\
     DspPlugin* plugin = new Plugin();\
     std::map< std::string, DspParameter > params  = plugin->GetCreateParams();\
     delete plugin;\
     return params;\
   }\
-  DspComponent* Create( std::map< std::string, DspParameter > const& params )\
+  DLLEXPORT DspComponent* Create( std::map< std::string, DspParameter > const& params )\
   {\
     DspPlugin* plugin = new Plugin();\
     DspComponent* component = plugin->Create( params );\

@@ -93,8 +93,8 @@ int main()
   // load the oscillator plugin and create an instance of it
   DspPluginLoader oscillPlugin( EXAMPLE_PLUGIN_FILE );
   std::map< std::string, DspParameter > oscillParams = oscillPlugin.GetCreateParams();
-  oscillParams.at( "startFreq" ) = DspParameter( DspParameter::Float, 1000.0f );
-  oscillParams.at( "startAmpl" ) = DspParameter( DspParameter::Float, 0.1f );
+  oscillParams[ "startFreq" ] = DspParameter( DspParameter::Float, 1000.0f );
+  oscillParams[ "startAmpl" ] = DspParameter( DspParameter::Float, 0.1f );
   DspComponent* oscillator = oscillPlugin.Create( oscillParams );
 
   // declare the rest of the components to be added to the circuit

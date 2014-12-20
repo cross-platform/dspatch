@@ -24,6 +24,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/DspPlugin.h>
 
+#ifdef _WIN32
+  #include <windows.h>
+#else
+  #include <dlfcn.h>
+#endif
+
 //=================================================================================================
 
 std::map< std::string, DspParameter > DspPlugin::GetCreateParams() const
@@ -37,16 +43,31 @@ DspPluginLoader::DspPluginLoader( std::string const& pluginPath )
   : _handle( NULL )
 {
   // open library
-  _handle = dlopen( pluginPath.c_str(), RTLD_NOW );
+  #ifdef _WIN32
+    _handle = LoadLibrary( pluginPath.c_str() );
+  #else
+    _handle = dlopen( pluginPath.c_str(), RTLD_NOW );
+  #endif
+  
   if( _handle )
   {
     // load symbols
-    _getCreateParams = ( GetCreateParams_t ) dlsym( _handle, "GetCreateParams" );
-    _create = ( Create_t ) dlsym( _handle, "Create" );
+    #ifdef _WIN32
+      _getCreateParams = ( GetCreateParams_t ) GetProcAddress( ( HMODULE ) _handle, "GetCreateParams" );
+      _create = ( Create_t ) GetProcAddress( ( HMODULE ) _handle, "Create" );
+    #else
+      _getCreateParams = ( GetCreateParams_t ) dlsym( _handle, "GetCreateParams" );
+      _create = ( Create_t ) dlsym( _handle, "Create" );
+    #endif
 
     if( !_getCreateParams || !_create )
     {
-      dlclose( _handle );
+      #ifdef _WIN32
+            FreeLibrary( ( HMODULE ) _handle );
+      #else
+            dlclose( _handle );
+      #endif
+
       _handle = NULL;
     }
   }
@@ -59,7 +80,11 @@ DspPluginLoader::~DspPluginLoader()
   // close library
   if( _handle )
   {
-    dlclose( _handle );
+    #ifdef _WIN32
+      FreeLibrary( ( HMODULE ) _handle );
+    #else
+      dlclose( _handle );
+    #endif
   }
 }
 
@@ -67,7 +92,7 @@ DspPluginLoader::~DspPluginLoader()
 
 bool DspPluginLoader::IsLoaded() const
 {
-  return _handle;
+  return _handle ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------------

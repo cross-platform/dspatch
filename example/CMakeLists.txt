@@ -27,8 +27,9 @@ target_link_libraries(
 
 # Definition for RtAudio Windows, using direct sound
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/$<CONFIGURATION>/DspOscillator.dll")
     add_definitions(-D__WINDOWS_WASAPI__)
-    
+
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -56,8 +57,8 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Definition for RtAudio Mac OSX, using Core Audio
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions(-D__MACOSX_CORE__)
     add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/$<CONFIGURATION>/libDspOscillator.dylib")
+    add_definitions(-D__MACOSX_CORE__)
 
     target_link_libraries(
         ${PROJECT_NAME}
