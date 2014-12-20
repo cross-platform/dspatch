@@ -1,6 +1,6 @@
 #!/bin/bash
-src_dir=$(dirname ${BASH_SOURCE[0]})
-build_dir=${src_dir}-build
+src_dir=$(dirname $(readlink -f "$0"))
+build_dir=${src_dir}/build
 
 if [ -f "/usr/bin/ninja" ] ; then
   GENERATOR="Ninja"
