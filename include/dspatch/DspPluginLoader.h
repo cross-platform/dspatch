@@ -40,7 +40,7 @@ DspPluginLoader represents exactly one DspPlugin in a host application.
 A DspPluginLoader should be constructed with the absolute path of the plugin (shared library) to be
 loaded. Once instantiated you should check that the plugin was successfully loaded by calling
 IsLoaded(). Thereafter, the contained DspComponent can be instantiated via the GetCreateParams()
-and Create() methods (For more detail on the structure of a plugin, see DspPlugin).
+and Create() methods accordingly (For more detail on the structure of a plugin, see DspPlugin).
 */
 
 class DLLEXPORT DspPluginLoader : public DspPlugin

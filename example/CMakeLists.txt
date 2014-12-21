@@ -11,7 +11,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/rtaudio
 )
 
-# Add definitions for example audio file and oscillator plugin
+# Add definition for example audio file
 add_definitions(-DEXAMPLE_WAV_FILE="${CMAKE_CURRENT_SOURCE_DIR}/Sample.wav")
 
 add_executable(
