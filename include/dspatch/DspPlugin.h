@@ -33,10 +33,33 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string>
 
 //=================================================================================================
-/// TODO
+/// Abstract base class for DSPatch component plugins
 
 /**
-///! TODO
+A DspComponent can be packaged into a shared library (.so / .dylib / .dll) and dynamically loaded
+from a DSPatch application at runtime. This allows DSPatch applications and components to be built
+and released independently of each other, resulting in a highly flexible developer (and end-user)
+experience. Now, in order for a DspComponent to be packaged into a plugin (shared library), the
+plugin needs to expose some details about itself to the outside world. This is achieved via the
+DspPlugin abstract base class.
+
+A DspComponent plugin project must contain 2 classes: 1. A class derived from DspComponent that
+implements the component logic, and 2. A class derived from DspPlugin that implements the component
+construction logic.
+
+Classes derived from DspPlugin must (at least) implement the pure virtual method: Create(). If the
+DspComponent does not require any construction parameters, Create() should simply return a pointer
+to a new instantiation of that DspComponent. If a DspComponent does require construction parameters
+to be instantiated, the derived class must also implement the virtual GetCreateParams() method.
+This method should return a map of parameter name-to-DspParameter pairs. The plugin host can then
+assign values to this parameter map and return them via the Create() call.
+
+Once both DspComponent and DspPlugin classes have been implemented, add the line
+"EXPORT_DSPPLUGIN( <plugin_class> )" anywhere after the declaration of your DspPlugin class, where
+"<plugin_class>" is the name of your DspPlugin class. Then compile the project into a shared
+library.
+
+The plugin is now ready to be loaded into a DSPatch host application (see DspPluginLoader).
 */
 
 class DLLEXPORT DspPlugin

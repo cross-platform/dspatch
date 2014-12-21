@@ -88,7 +88,7 @@ int main()
   // pause the track
   waveStreamer.Pause();
 
-  // A component input pin can only receive one signal at a time so an adders are required to combine the signals
+  // a component input pin can only receive one signal at a time so an adders are required to combine the signals
 
   // load the oscillator plugin and create an instance of it
   DspPluginLoader oscillPlugin( EXAMPLE_PLUGIN_FILE );
@@ -125,7 +125,7 @@ int main()
   // 3. Overlay both streams
   // =======================
 
-  // resume the track (via parameter)
+  // resume the track
   waveStreamer.Play();
 
   // wait for key press
