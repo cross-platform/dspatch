@@ -373,7 +373,7 @@ void main()
 
 \section changelog Changelog
 
-\subsection v263 v.2.63 (21 December 2014)
+\subsection v270 v.2.70 (21 December 2014)
   - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
   - Fixed build and install scripts.
 
