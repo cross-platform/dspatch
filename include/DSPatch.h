@@ -28,6 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //-------------------------------------------------------------------------------------------------
 
 #include <dspatch/DspCircuit.h>
+#include <dspatch/DspPluginLoader.h>
 
 //=================================================================================================
 /// System-wide DSPatch functionality
@@ -372,8 +373,8 @@ void main()
 
 \section changelog Changelog
 
-\subsection v263 v.2.63 (x x x)
-  - Reformatted source code.
+\subsection v263 v.2.63 (21 December 2014)
+  - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
 
 \subsection v262 v.2.62 (18 August 2014)
   - Added alternative Get* methods returning const pointers.

@@ -68,4 +68,38 @@ private:
 
 //=================================================================================================
 
+class DspOscillatorPlugin : public DspPlugin
+{
+  std::map< std::string, DspParameter > GetCreateParams() const
+  {
+    std::map< std::string, DspParameter > params;
+    params[ "startFreq" ] = DspParameter( DspParameter::Float );
+    params[ "startAmpl" ] = DspParameter( DspParameter::Float, 1.0f, std::make_pair( 0.0f, 1.0f ) );
+    return params;
+  }
+
+  DspComponent* Create( std::map< std::string, DspParameter >& params ) const
+  {
+    float const* startFreq = params[ "startFreq" ].GetFloat();
+    float const* startAmpl = params[ "startAmpl" ].GetFloat();
+
+    if( startFreq && startAmpl )
+    {
+      return new DspOscillator( *startFreq, *startAmpl );
+    }
+    else if( startFreq && !startAmpl )
+    {
+      return new DspOscillator( *startFreq );
+    }
+    else
+    {
+      return new DspOscillator();
+    }
+  }
+};
+
+EXPORT_DSPPLUGIN( DspOscillatorPlugin )
+
+//=================================================================================================
+
 #endif /* DSPOSCILLATOR_H */

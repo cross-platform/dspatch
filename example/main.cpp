@@ -27,7 +27,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <DspWaveStreamer.h>
 #include <DspGain.h>
 #include <DspAudioDevice.h>
-#include <DspOscillator.h>
 #include <DspAdder.h>
 
 #include <stdio.h>
@@ -73,7 +72,7 @@ int main()
   circuit.ConnectOutToIn( gainRight, 0, audioDevice, 1 );   // gain right into audio device right channel
 
   // set the gain of components gainLeft and gainRight (wave left and right channels)
-  gainLeft.SetGain( 0.75 );
+  gainLeft.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75f ) ); // OR: gainLeft.SetGain( 0.75 );
   gainRight.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75f ) ); // OR: gainRight.SetGain( 0.75 );
 
   // load a wave into the wave streamer and start playing the track
@@ -89,10 +88,16 @@ int main()
   // pause the track
   waveStreamer.Pause();
 
-  // A component input pin can only receive one signal at a time so an adders are required to combine the signals
+  // a component input pin can only receive one signal at a time so an adders are required to combine the signals
 
-  // declare components to be added to the circuit
-  DspOscillator oscillator( 1000.0f, 0.1f );
+  // load the oscillator plugin and create an instance of it
+  DspPluginLoader oscillPlugin( EXAMPLE_PLUGIN_FILE );
+  std::map< std::string, DspParameter > oscillParams = oscillPlugin.GetCreateParams();
+  oscillParams[ "startFreq" ] = DspParameter( DspParameter::Float, 1000.0f );
+  oscillParams[ "startAmpl" ] = DspParameter( DspParameter::Float, 0.1f );
+  DspComponent* oscillator = oscillPlugin.Create( oscillParams );
+
+  // declare the rest of the components to be added to the circuit
   DspAdder adder1;
   DspAdder adder2;
 
@@ -120,7 +125,7 @@ int main()
   // 3. Overlay both streams
   // =======================
 
-  // resume the track (via parameter)
+  // resume the track
   waveStreamer.Play();
 
   // wait for key press
@@ -128,6 +133,9 @@ int main()
 
   // clean up DSPatch
   DSPatch::Finalize();
+
+  // clean up the oscillator pointer
+  delete oscillator;
 
   return 0;
 }

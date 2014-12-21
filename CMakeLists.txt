@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wdisabled-optimization -Wformat=2 -Wlogical-op -Wmissing-declarations")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Winit-self")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wreorder -Wno-vla")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wswitch-default -Wno-unused -Wnon-virtual-dtor -Wshadow -Wnoexcept -Wabi")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -pedantic -Wall -Wextra -Wnon-virtual-dtor")
 
 project(DSPatch)
 
@@ -25,11 +20,12 @@ add_library(
     ${in_hdrs}
 )
 
-# Link pthread on Unix
+# Link pthread and dl on Unix
 if(UNIX)
     target_link_libraries(
         ${PROJECT_NAME}
         pthread
+        dl
     )
 endif(UNIX)
 

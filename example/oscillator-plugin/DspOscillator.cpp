@@ -149,7 +149,7 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
   // =========================================================
   if( inputs.GetValue( "Buffer Size", _signal ) )
   {
-    if( GetBufferSize() != (int) _signal.size() )
+    if( GetBufferSize() != ( int ) _signal.size() )
     {
       SetBufferSize( _signal.size() );
     }
