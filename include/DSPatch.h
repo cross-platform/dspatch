@@ -375,6 +375,7 @@ void main()
 
 \subsection v263 v.2.63 (21 December 2014)
   - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
+  - Fixed build and install scripts.
 
 \subsection v262 v.2.62 (18 August 2014)
   - Added alternative Get* methods returning const pointers.
