@@ -1,2 +1,4 @@
-*.user
+./CMakeLists.txt.user
 ./doc/html
+./doc/doxygen_sqlite3.db
+./build

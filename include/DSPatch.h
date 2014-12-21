@@ -28,6 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //-------------------------------------------------------------------------------------------------
 
 #include <dspatch/DspCircuit.h>
+#include <dspatch/DspPluginLoader.h>
 
 //=================================================================================================
 /// System-wide DSPatch functionality
@@ -106,6 +107,7 @@ private:
 
 \section features_sec Features
   - <b>Automatic branch synchronization</b> - The result of data diverging across parallel branches is guaranteed to arrive synchronized at a converging point.
+  - <b>Component plugins</b> - Package components into plugins to be dynamically loaded into DSPatch host applications.
   - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which you require a circuit to process.
   - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit entities and concepts, making code more readable and easy to understand.
   - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back into previous component inputs.
@@ -371,6 +373,10 @@ void main()
 \n
 
 \section changelog Changelog
+
+\subsection v270 v.2.70 (21 December 2014)
+  - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
+  - Fixed build and install scripts.
 
 \subsection v262 v.2.62 (18 August 2014)
   - Added alternative Get* methods returning const pointers.

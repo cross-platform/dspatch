@@ -111,7 +111,7 @@ unsigned short DspCircuit::GetThreadCount() const
 
 bool DspCircuit::AddComponent( DspComponent* component, std::string const& componentName )
 {
-  if( component != this )
+  if( component != this && component != NULL )
   {
     std::string compName = componentName;
 
