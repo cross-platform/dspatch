@@ -22,13 +22,44 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
+#ifndef DSPPLUGINLOADER_H
+#define DSPPLUGINLOADER_H
+
+//-------------------------------------------------------------------------------------------------
+
+#include <dspatch/DspComponent.h>
 #include <dspatch/DspPlugin.h>
 
-//=================================================================================================
+#include <map>
+#include <string>
 
-std::map< std::string, DspParameter > DspPlugin::GetCreateParams() const
+//=================================================================================================
+/// TODO
+
+/**
+///! TODO
+*/
+
+class DLLEXPORT DspPluginLoader : public DspPlugin
 {
-  return std::map< std::string, DspParameter >();
-}
+public:
+  DspPluginLoader( std::string const& pluginPath );
+  ~DspPluginLoader();
+
+  bool IsLoaded() const;
+
+  std::map< std::string, DspParameter > GetCreateParams() const;
+  DspComponent* Create( std::map< std::string, DspParameter >& params ) const;
+
+private:
+  typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
+  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter > const& );
+
+  void* _handle;
+  GetCreateParams_t _getCreateParams;
+  Create_t _create;
+};
 
 //=================================================================================================
+
+#endif // DSPPLUGINLOADER_H

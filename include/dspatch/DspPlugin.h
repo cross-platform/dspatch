@@ -55,9 +55,8 @@ This method should return a map of parameter name-to-DspParameter pairs. The plu
 assign values to this parameter map and return them via the Create() call.
 
 Once both DspComponent and DspPlugin classes have been implemented, add the line
-"EXPORT_DSPPLUGIN( <plugin_class> )" anywhere after the declaration of your DspPlugin class, where
-"<plugin_class>" is the name of your DspPlugin class. Then compile the project into a shared
-library.
+"EXPORT_DSPPLUGIN( MyPlugin )" anywhere after the declaration of your DspPlugin class, where
+"MyPlugin" is the name of your DspPlugin class. Then compile the project into a shared library.
 
 The plugin is now ready to be loaded into a DSPatch host application (see DspPluginLoader).
 */
@@ -68,33 +67,6 @@ public:
   virtual ~DspPlugin() {}
   virtual std::map< std::string, DspParameter > GetCreateParams() const;
   virtual DspComponent* Create( std::map< std::string, DspParameter >& params ) const = 0;
-};
-
-//=================================================================================================
-/// TODO
-
-/**
-///! TODO
-*/
-
-class DLLEXPORT DspPluginLoader : public DspPlugin
-{
-public:
-  DspPluginLoader( std::string const& pluginPath );
-  ~DspPluginLoader();
-
-  bool IsLoaded() const;
-
-  std::map< std::string, DspParameter > GetCreateParams() const;
-  DspComponent* Create( std::map< std::string, DspParameter >& params ) const;
-
-private:
-  typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
-  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter > const& );
-
-  void* _handle;
-  GetCreateParams_t _getCreateParams;
-  Create_t _create;
 };
 
 //=================================================================================================
