@@ -27,17 +27,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //-------------------------------------------------------------------------------------------------
 
-#include <dspatch/DspComponent.h>
 #include <dspatch/DspPlugin.h>
 
-#include <map>
-#include <string>
-
 //=================================================================================================
-/// TODO
+/// Plugin loader for DspPlugin host applications
 
 /**
-///! TODO
+A DspComponent packaged into a shared library (.so / .dylib / .dll) and exported via the DspPlugin
+class can be dynamically loaded from a DSPatch application at runtime using a DspPluginLoader. A
+DspPluginLoader represents exactly one DspPlugin in a host application.
+
+A DspPluginLoader should be constructed with the absolute path of the plugin (shared library) to be
+loaded. Once instantiated you should check that the plugin was successfully loaded by calling
+IsLoaded(). Thereafter, the contained DspComponent can be instantiated via the GetCreateParams()
+and Create() methods (For more detail on the structure of a plugin, see DspPlugin).
 */
 
 class DLLEXPORT DspPluginLoader : public DspPlugin
@@ -53,7 +56,7 @@ public:
 
 private:
   typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
-  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter > const& );
+  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter >& );
 
   void* _handle;
   GetCreateParams_t _getCreateParams;

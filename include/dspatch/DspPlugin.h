@@ -33,7 +33,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string>
 
 //=================================================================================================
-/// Abstract base class for DSPatch component plugins
+/// Abstract base class for DspComponent plugins
 
 /**
 A DspComponent can be packaged into a shared library (.so / .dylib / .dll) and dynamically loaded
