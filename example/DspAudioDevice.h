@@ -34,10 +34,10 @@ struct RtAudioMembers;
 class DspAudioDevice : public DspComponent
 {
 public:
-  static std::string const pDeviceList; // List
-  static std::string const pIsStreaming; // Bool
-  static std::string const pBufferSize; // Int
-  static std::string const pSampleRate; // Int
+  unsigned short pDeviceList; // List
+  unsigned short pIsStreaming; // Bool
+  unsigned short pBufferSize; // Int
+  unsigned short pSampleRate; // Int
 
   DspAudioDevice();
   ~DspAudioDevice();
@@ -59,7 +59,7 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
+  virtual bool ParameterUpdating_( unsigned short index, DspParameter const& param );
 
 private:
   std::vector< std::vector< float > > _outputChannels;

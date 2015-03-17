@@ -30,11 +30,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 static const float TWOPI = 6.283185307179586476925286766559f;
 
-std::string const DspOscillator::pBufferSize = "bufferSize";
-std::string const DspOscillator::pSampleRate = "sampleRate";
-std::string const DspOscillator::pAmplitude = "amplitude";
-std::string const DspOscillator::pFrequency = "frequency";
-
 //=================================================================================================
 
 DspOscillator::DspOscillator( float startFreq, float startAmpl )
@@ -46,10 +41,10 @@ DspOscillator::DspOscillator( float startFreq, float startAmpl )
 
   AddOutput_();
 
-  AddParameter_( pBufferSize, DspParameter( DspParameter::Int, 256 ) );
-  AddParameter_( pSampleRate, DspParameter( DspParameter::Int, 44100 ) );
-  AddParameter_( pAmplitude, DspParameter( DspParameter::Float, startAmpl ) );
-  AddParameter_( pFrequency, DspParameter( DspParameter::Float, startFreq ) );
+  pBufferSize = AddParameter_( "bufferSize", DspParameter( DspParameter::Int, 256 ) );
+  pSampleRate = AddParameter_( "sampleRate", DspParameter( DspParameter::Int, 44100 ) );
+  pAmplitude = AddParameter_( "amplitude", DspParameter( DspParameter::Float, startAmpl ) );
+  pFrequency = AddParameter_( "frequency", DspParameter( DspParameter::Float, startFreq ) );
 
   _BuildLookup();
 }
@@ -174,24 +169,24 @@ void DspOscillator::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspOscillator::ParameterUpdating_( std::string const& name, DspParameter const& param )
+bool DspOscillator::ParameterUpdating_( unsigned short index, DspParameter const& param )
 {
-  if( name == pBufferSize )
+  if( index == pBufferSize )
   {
     SetBufferSize( *param.GetInt() );
     return true;
   }
-  else if( name == pSampleRate )
+  else if( index == pSampleRate )
   {
     SetSampleRate( *param.GetInt() );
     return true;
   }
-  else if( name == pAmplitude )
+  else if( index == pAmplitude )
   {
     SetAmpl( *param.GetFloat() );
     return true;
   }
-  else if( name == pFrequency )
+  else if( index == pFrequency )
   {
     SetFreq( *param.GetFloat() );
     return true;

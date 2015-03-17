@@ -32,10 +32,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspOscillator : public DspComponent
 {
 public:
-  static std::string const pBufferSize; // Int
-  static std::string const pSampleRate; // Int
-  static std::string const pAmplitude; // Float
-  static std::string const pFrequency; // Float
+  unsigned short pBufferSize; // Int
+  unsigned short pSampleRate; // Int
+  unsigned short pAmplitude; // Float
+  unsigned short pFrequency; // Float
 
   DspOscillator( float startFreq = 1000.0, float startAmpl = 1.0 );
   ~DspOscillator();
@@ -52,7 +52,7 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
+  virtual bool ParameterUpdating_( unsigned short index, DspParameter const& param );
 
 private:
   std::vector< float > _signalLookup;

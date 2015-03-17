@@ -119,9 +119,9 @@ public:
   std::string GetOutputName( unsigned short index );
   std::string GetParameterName( unsigned short index );
 
-  bool GetParameter( std::string const& paramName, DspParameter& param );
-  DspParameter const* GetParameter( std::string const& paramName );
-  bool SetParameter( std::string const& paramName, DspParameter const& param );
+  bool GetParameter( unsigned short index, DspParameter& param );
+  DspParameter const* GetParameter( unsigned short index );
+  bool SetParameter( unsigned short index, DspParameter const& param );
 
   void Tick();
   void Reset();
@@ -133,11 +133,11 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus&, DspSignalBus& ) {}
-  virtual bool ParameterUpdating_( std::string const&, DspParameter const& ) { return false; }
+  virtual bool ParameterUpdating_( unsigned short, DspParameter const& ) { return false; }
 
   bool AddInput_( std::string const& inputName = "" );
   bool AddOutput_( std::string const& outputName = "" );
-  bool AddParameter_( std::string const& paramName, DspParameter const& param );
+  unsigned short AddParameter_( std::string const& paramName, DspParameter const& param );
 
   bool RemoveInput_();
   bool RemoveOutput_();
@@ -151,8 +151,8 @@ protected:
   unsigned short GetOutputCount_();
   unsigned short GetParameterCount_();
 
-  DspParameter const* GetParameter_( std::string const& paramName ) const;
-  bool SetParameter_( std::string const& paramName, DspParameter const& param );
+  DspParameter const* GetParameter_( unsigned short index ) const;
+  bool SetParameter_( unsigned short index, DspParameter const& param );
 
 private:
   void _SetParentCircuit( DspCircuit* parentCircuit );
@@ -191,7 +191,7 @@ private:
   std::vector< DspSignalBus > _inputBuses;
   std::vector< DspSignalBus > _outputBuses;
 
-  std::map< std::string, DspParameter > _parameters;
+  std::vector< std::pair< std::string, DspParameter > > _parameters;
 
   std::string _componentName;
   bool _isAutoTickRunning;

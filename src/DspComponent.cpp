@@ -220,9 +220,7 @@ std::string DspComponent::GetParameterName( unsigned short index )
 
   if( index < _parameters.size() )
   {
-    std::map< std::string, DspParameter >::const_iterator it = _parameters.begin();
-    std::advance( it, index );
-    parameterName = it->first;
+    parameterName = _parameters[index].first;
   }
 
   ResumeAutoTick();
@@ -231,12 +229,12 @@ std::string DspComponent::GetParameterName( unsigned short index )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::GetParameter( std::string const& paramName, DspParameter& param )
+bool DspComponent::GetParameter( unsigned short index, DspParameter& param )
 {
   bool result = false;
   PauseAutoTick();
 
-  DspParameter const* paramPtr = GetParameter_( paramName );
+  DspParameter const* paramPtr = GetParameter_( index );
   if( paramPtr )
   {
     result = param.SetParam( *paramPtr );
@@ -248,20 +246,20 @@ bool DspComponent::GetParameter( std::string const& paramName, DspParameter& par
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter const* DspComponent::GetParameter( std::string const& paramName )
+DspParameter const* DspComponent::GetParameter( unsigned short index )
 {
     PauseAutoTick();
-    DspParameter const* result = GetParameter_( paramName );
+    DspParameter const* result = GetParameter_( index );
     ResumeAutoTick();
     return result;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter( std::string const& paramName, DspParameter const& param )
+bool DspComponent::SetParameter( unsigned short index, DspParameter const& param )
 {
   PauseAutoTick();
-  bool result = ParameterUpdating_( paramName, param );
+  bool result = ParameterUpdating_( index, param );
   ResumeAutoTick();
   return result;
 }
@@ -447,18 +445,14 @@ bool DspComponent::AddOutput_( std::string const& outputName )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::AddParameter_( std::string const& paramName, DspParameter const& param )
+unsigned short DspComponent::AddParameter_( std::string const& paramName, DspParameter const& param )
 {
-  if( _parameters.find( paramName ) == _parameters.end() )
+  _parameters.push_back( std::make_pair( paramName, param ) );
+  if( _callback )
   {
-    _parameters.insert( std::make_pair( paramName, param ) );
-    if( _callback )
-    {
-      _callback( this, ParameterAdded, _parameters.size() - 1, _userData );
-    }
-    return true;
+    _callback( this, ParameterAdded, _parameters.size() - 1, _userData );
   }
-  return false;
+  return _parameters.size() - 1;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -497,7 +491,7 @@ bool DspComponent::RemoveParameter_()
 {
   if( !_parameters.empty() )
   {
-    _parameters.erase( _parameters.rbegin()->first );
+    _parameters.pop_back();
     if( _callback )
     {
       _callback( this, ParameterRemoved, _parameters.size(), _userData );
@@ -571,28 +565,26 @@ unsigned short DspComponent::GetParameterCount_()
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter const* DspComponent::GetParameter_( std::string const& paramName ) const
+DspParameter const* DspComponent::GetParameter_( unsigned short index ) const
 {
-  std::map< std::string, DspParameter >::const_iterator it = _parameters.find( paramName );
-  if( it != _parameters.end() )
+  if( index < _parameters.size() )
   {
-    return &it->second;
+    return &_parameters[index].second;
   }
   return NULL;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter_( std::string const& paramName, DspParameter const& param )
+bool DspComponent::SetParameter_( unsigned short index, DspParameter const& param )
 {
-  std::map< std::string, DspParameter >::iterator it = _parameters.find( paramName );
-  if( it != _parameters.end() )
+  if( index < _parameters.size() )
   {
-    if( it->second.SetParam( param ) )
+    if( _parameters[index].second.SetParam( param ) )
     {
       if( _callback )
       {
-        _callback( this, ParameterUpdated, std::distance( _parameters.begin(), _parameters.find( paramName ) ), _userData );
+        _callback( this, ParameterUpdated, index, _userData );
       }
       return true;
     }

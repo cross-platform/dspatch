@@ -32,11 +32,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspWaveStreamer : public DspComponent
 {
 public:
-  static std::string const pFilePath; // FilePath
-  static std::string const pPlay; // Trigger
-  static std::string const pPause; // Trigger
-  static std::string const pStop; // Trigger
-  static std::string const pIsPlaying; // Bool
+  unsigned short pFilePath; // FilePath
+  unsigned short pPlay; // Trigger
+  unsigned short pPause; // Trigger
+  unsigned short pStop; // Trigger
+  unsigned short pIsPlaying; // Bool
 
   DspWaveStreamer();
   ~DspWaveStreamer();
@@ -50,7 +50,7 @@ public:
 
 protected:
   virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
+  virtual bool ParameterUpdating_( unsigned short index, DspParameter const& param );
 
 private:
   struct WaveFormat

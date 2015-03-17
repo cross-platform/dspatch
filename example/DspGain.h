@@ -32,14 +32,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspGain : public DspComponent
 {
 public:
-  static std::string const pGain; // Float
+  unsigned short pGain; // Float
 
   DspGain()
   {
     AddInput_();
     AddOutput_();
 
-    AddParameter_( pGain, DspParameter( DspParameter::Float, 1, std::make_pair( 0, 2 ) ) );
+    pGain = AddParameter_( "gain", DspParameter( DspParameter::Float, 1, std::make_pair( 0, 2 ) ) );
   }
   ~DspGain() {}
 
@@ -69,9 +69,9 @@ protected:
     outputs.SetValue( 0, _stream );
   }
 
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param )
+  virtual bool ParameterUpdating_( unsigned short index, DspParameter const& param )
   {
-    if( name == pGain )
+    if( index == pGain )
     {
       SetGain( *param.GetFloat() );
       return true;
@@ -82,8 +82,6 @@ protected:
 private:
   std::vector< float > _stream;
 };
-
-std::string const DspGain::pGain = "gain";
 
 //=================================================================================================
 

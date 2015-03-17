@@ -30,14 +30,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-std::string const DspWaveStreamer::pFilePath = "filePath";
-std::string const DspWaveStreamer::pPlay = "play";
-std::string const DspWaveStreamer::pPause = "pause";
-std::string const DspWaveStreamer::pStop = "stop";
-std::string const DspWaveStreamer::pIsPlaying = "isPlaying";
-
-//=================================================================================================
-
 DspWaveStreamer::DspWaveStreamer()
 : _waveData( 0 ),
   _bufferSize( 256 ),
@@ -53,11 +45,11 @@ DspWaveStreamer::DspWaveStreamer()
   AddOutput_();
   AddOutput_( "Sample Rate" );
 
-  AddParameter_( pFilePath, DspParameter( DspParameter::FilePath, "" ) );
-  AddParameter_( pPlay, DspParameter( DspParameter::Trigger ) );
-  AddParameter_( pPause, DspParameter( DspParameter::Trigger ) );
-  AddParameter_( pStop, DspParameter( DspParameter::Trigger ) );
-  AddParameter_( pIsPlaying, DspParameter( DspParameter::Bool, false ) );
+  pFilePath = AddParameter_( "filePath", DspParameter( DspParameter::FilePath, "" ) );
+  pPlay = AddParameter_( "play", DspParameter( DspParameter::Trigger ) );
+  pPause = AddParameter_( "pause", DspParameter( DspParameter::Trigger ) );
+  pStop = AddParameter_( "stop", DspParameter( DspParameter::Trigger ) );
+  pIsPlaying = AddParameter_( "isPlaying", DspParameter( DspParameter::Bool, false ) );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -253,23 +245,23 @@ void DspWaveStreamer::Process_( DspSignalBus&, DspSignalBus& outputs )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWaveStreamer::ParameterUpdating_( std::string const& name, DspParameter const& param )
+bool DspWaveStreamer::ParameterUpdating_( unsigned short index, DspParameter const& param )
 {
-  if( name == pFilePath )
+  if( index == pFilePath )
   {
     return LoadFile( param.GetString()->c_str() );
   }
-  else if( name == pPlay )
+  else if( index == pPlay )
   {
     Play();
     return true;
   }
-  else if( name == pPause )
+  else if( index == pPause )
   {
     Pause();
     return true;
   }
-  else if( name == pStop )
+  else if( index == pStop )
   {
     Stop();
     return true;

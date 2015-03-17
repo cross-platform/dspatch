@@ -32,13 +32,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-std::string const DspAudioDevice::pDeviceList = "deviceList";
-std::string const DspAudioDevice::pIsStreaming = "isStreaming";
-std::string const DspAudioDevice::pBufferSize = "bufferSize";
-std::string const DspAudioDevice::pSampleRate = "sampleRate";
-
-//=================================================================================================
-
 struct RtAudioMembers
 {
   std::vector< RtAudio::DeviceInfo > deviceList;
@@ -77,10 +70,10 @@ DspAudioDevice::DspAudioDevice()
     deviceNameList.push_back( _rtAudio->audioStream.getDeviceInfo( i ).name );
   }
 
-  AddParameter_( pDeviceList, DspParameter( DspParameter::List, deviceNameList ) );
-  AddParameter_( pIsStreaming, DspParameter( DspParameter::Bool, false ) );
-  AddParameter_( pBufferSize, DspParameter( DspParameter::Int, 256 ) );
-  AddParameter_( pSampleRate, DspParameter( DspParameter::Int, 44100 ) );
+  pDeviceList = AddParameter_( "deviceList", DspParameter( DspParameter::List, deviceNameList ) );
+  pIsStreaming = AddParameter_( "isStreaming", DspParameter( DspParameter::Bool, false ) );
+  pBufferSize = AddParameter_( "bufferSize", DspParameter( DspParameter::Int, 256 ) );
+  pSampleRate = AddParameter_( "sampleRate", DspParameter( DspParameter::Int, 44100 ) );
 
   SetDevice( _rtAudio->audioStream.getDefaultOutputDevice() );
   SetBufferSize( GetBufferSize() );
@@ -266,18 +259,18 @@ void DspAudioDevice::Process_( DspSignalBus& inputs, DspSignalBus& outputs )
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspAudioDevice::ParameterUpdating_( std::string const& name, DspParameter const& param )
+bool DspAudioDevice::ParameterUpdating_( unsigned short index, DspParameter const& param )
 {
-  if( name == pDeviceList )
+  if( index == pDeviceList )
   {
     return SetDevice( *param.GetInt() );
   }
-  else if( name == pBufferSize )
+  else if( index == pBufferSize )
   {
     SetBufferSize( *param.GetInt() );
     return true;
   }
-  else if( name == pSampleRate )
+  else if( index == pSampleRate )
   {
     SetSampleRate( *param.GetInt() );
     return true;
