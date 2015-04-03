@@ -37,7 +37,7 @@ protected:
 
         // get values from inputs bus ( GetValue() returns true if successful )
         if (inputs.GetValue(0, bool1) &&  // OR inputs.GetValue( "input1", bool1 );
-            inputs.GetValue(1, bool2))  // OR inputs.GetValue( "input2", bool2 );
+            inputs.GetValue(1, bool2))    // OR inputs.GetValue( "input2", bool2 );
         {
             // set output as the result of bool1 AND bool2
             outputs.SetValue(0, bool1 && bool2);  // OR outputs.SetValue( "output", bool1 && bool2 );

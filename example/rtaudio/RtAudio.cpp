@@ -10102,7 +10102,9 @@ void RtApiPulse::callbackEvent(void)
             bytes = stream_.nDeviceChannels[OUTPUT] * stream_.bufferSize * formatBytes(stream_.deviceFormat[OUTPUT]);
         }
         else
+        {
             bytes = stream_.nUserChannels[OUTPUT] * stream_.bufferSize * formatBytes(stream_.userFormat);
+        }
 
         if (pa_simple_write(pah->s_play, pulse_out, bytes, &pa_error) < 0)
         {
@@ -10115,9 +10117,13 @@ void RtApiPulse::callbackEvent(void)
     if (stream_.mode == INPUT || stream_.mode == DUPLEX)
     {
         if (stream_.doConvertBuffer[INPUT])
+        {
             bytes = stream_.nDeviceChannels[INPUT] * stream_.bufferSize * formatBytes(stream_.deviceFormat[INPUT]);
+        }
         else
+        {
             bytes = stream_.nUserChannels[INPUT] * stream_.bufferSize * formatBytes(stream_.userFormat);
+        }
 
         if (pa_simple_read(pah->s_rec, pulse_in, bytes, &pa_error) < 0)
         {
