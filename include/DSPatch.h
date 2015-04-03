@@ -51,7 +51,7 @@ the necessary memory cleanup.
 class DLLEXPORT DSPatch
 {
 public:
-    static void SetGlobalThreadCount(unsigned short threadCount);
+    static void SetGlobalThreadCount(int threadCount);
     static void Finalize();
 
 private:
@@ -62,7 +62,7 @@ private:
     static bool _AddGlobalComponent(DspComponent* component);
     static void _RemoveGlobalComponent(DspComponent const* component);
 
-    static unsigned short _GetGlobalComponentCount();
+    static int _GetGlobalComponentCount();
 
     static void _StartGlobalAutoTick();
     static void _StopGlobalAutoTick();
@@ -348,7 +348,7 @@ void main()
     // ===================
 
     // Circuit tick method 1: Manual
-    for(unsigned short i = 0; i < 10; i++)
+    for(int i = 0; i < 10; i++)
     {
         circuit.Tick();
         circuit.Reset();

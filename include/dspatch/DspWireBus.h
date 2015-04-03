@@ -50,16 +50,16 @@ public:
     DspWireBus(bool isLinkedComponentReceivingSignals = false);
     virtual ~DspWireBus();
 
-    bool AddWire(DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex);
+    bool AddWire(DspComponent* linkedComponent, int fromSignalIndex, int toSignalIndex);
 
-    bool RemoveWire(unsigned short wireIndex);
-    bool RemoveWire(DspComponent const* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex);
+    bool RemoveWire(int wireIndex);
+    bool RemoveWire(DspComponent const* linkedComponent, int fromSignalIndex, int toSignalIndex);
 
     void RemoveAllWires();
 
-    DspWire* GetWire(unsigned short wireIndex);
+    DspWire* GetWire(int wireIndex);
 
-    unsigned short GetWireCount() const;
+    int GetWireCount() const;
 
 private:
     bool _isLinkedComponentReceivingSignals;

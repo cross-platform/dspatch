@@ -42,9 +42,9 @@ DspWireBus::~DspWireBus()
 
 //=================================================================================================
 
-bool DspWireBus::AddWire(DspComponent* linkedComponent, unsigned short fromSignalIndex, unsigned short toSignalIndex)
+bool DspWireBus::AddWire(DspComponent* linkedComponent, int fromSignalIndex, int toSignalIndex)
 {
-    for (unsigned short i = 0; i < _wires.size(); i++)
+    for (int i = 0; i < _wires.size(); i++)
     {
         if (_wires[i].linkedComponent == linkedComponent && _wires[i].fromSignalIndex == fromSignalIndex &&
             _wires[i].toSignalIndex == toSignalIndex)
@@ -53,7 +53,7 @@ bool DspWireBus::AddWire(DspComponent* linkedComponent, unsigned short fromSigna
         }
     }
 
-    for (unsigned short i = 0; i < _wires.size(); i++)
+    for (int i = 0; i < _wires.size(); i++)
     {
         if (_isLinkedComponentReceivingSignals && _wires[i].linkedComponent == linkedComponent &&
             _wires[i].toSignalIndex == toSignalIndex)  // if there's a wire to the receiving component's input already
@@ -76,10 +76,10 @@ bool DspWireBus::AddWire(DspComponent* linkedComponent, unsigned short fromSigna
 //-------------------------------------------------------------------------------------------------
 
 bool DspWireBus::RemoveWire(DspComponent const* linkedComponent,
-                            unsigned short fromSignalIndex,
-                            unsigned short toSignalIndex)
+                            int fromSignalIndex,
+                            int toSignalIndex)
 {
-    for (unsigned short i = 0; i < _wires.size(); i++)
+    for (int i = 0; i < _wires.size(); i++)
     {
         if (_wires[i].linkedComponent == linkedComponent && _wires[i].fromSignalIndex == fromSignalIndex &&
             _wires[i].toSignalIndex == toSignalIndex)
@@ -94,7 +94,7 @@ bool DspWireBus::RemoveWire(DspComponent const* linkedComponent,
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWireBus::RemoveWire(unsigned short wireIndex)
+bool DspWireBus::RemoveWire(int wireIndex)
 {
     if (wireIndex > _wires.size())
     {
@@ -110,7 +110,7 @@ bool DspWireBus::RemoveWire(unsigned short wireIndex)
 
 void DspWireBus::RemoveAllWires()
 {
-    for (unsigned short i = 0; i < _wires.size(); i++)
+    for (int i = 0; i < _wires.size(); i++)
     {
         RemoveWire(i);
     }
@@ -118,7 +118,7 @@ void DspWireBus::RemoveAllWires()
 
 //-------------------------------------------------------------------------------------------------
 
-DspWire* DspWireBus::GetWire(unsigned short wireIndex)
+DspWire* DspWireBus::GetWire(int wireIndex)
 {
     if (wireIndex < _wires.size())
     {
@@ -132,7 +132,7 @@ DspWire* DspWireBus::GetWire(unsigned short wireIndex)
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspWireBus::GetWireCount() const
+int DspWireBus::GetWireCount() const
 {
     return _wires.size();
 }
