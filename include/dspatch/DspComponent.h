@@ -32,8 +32,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspComponentThread.h>
 #include <dspatch/DspParameter.h>
 
-#include <map>
-
 class DspCircuit;
 
 //=================================================================================================
