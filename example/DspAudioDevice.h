@@ -62,8 +62,8 @@ protected:
     virtual bool ParameterUpdating_(unsigned short index, DspParameter const& param);
 
 private:
-    std::vector<std::vector<float>> _outputChannels;
-    std::vector<std::vector<float>> _inputChannels;
+    std::vector< std::vector<float> > _outputChannels;
+    std::vector< std::vector<float> > _inputChannels;
 
     RtAudioMembers* _rtAudio;
 
