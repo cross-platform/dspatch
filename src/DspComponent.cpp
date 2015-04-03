@@ -84,12 +84,12 @@ std::string DspComponent::GetComponentName() const
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::DisconnectInput(unsigned short inputIndex)
+void DspComponent::DisconnectInput(int inputIndex)
 {
     PauseAutoTick();
 
     // remove inputComponent from _inputWires
-    for (unsigned short i = 0; i < _inputWires.GetWireCount(); i++)
+    for (int i = 0; i < _inputWires.GetWireCount(); i++)
     {
         DspWire* wire = _inputWires.GetWire(i);
         if (wire->toSignalIndex == inputIndex)
@@ -106,7 +106,7 @@ void DspComponent::DisconnectInput(unsigned short inputIndex)
 
 void DspComponent::DisconnectInput(std::string const& inputName)
 {
-    unsigned short inputIndex;
+    int inputIndex;
 
     PauseAutoTick();
 
@@ -125,7 +125,7 @@ void DspComponent::DisconnectInput(DspComponent const* inputComponent)
     PauseAutoTick();
 
     // remove inputComponent from _inputWires
-    for (unsigned short i = 0; i < _inputWires.GetWireCount(); i++)
+    for (int i = 0; i < _inputWires.GetWireCount(); i++)
     {
         DspWire* wire = _inputWires.GetWire(i);
         if (wire->linkedComponent == inputComponent)
@@ -148,37 +148,37 @@ void DspComponent::DisconnectAllInputs()
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetInputCount()
+int DspComponent::GetInputCount()
 {
     PauseAutoTick();
-    unsigned short inputCount = GetInputCount_();
+    int inputCount = GetInputCount_();
     ResumeAutoTick();
     return inputCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetOutputCount()
+int DspComponent::GetOutputCount()
 {
     PauseAutoTick();
-    unsigned short outputCount = GetOutputCount_();
+    int outputCount = GetOutputCount_();
     ResumeAutoTick();
     return outputCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetParameterCount()
+int DspComponent::GetParameterCount()
 {
     PauseAutoTick();
-    unsigned short parameterCount = GetParameterCount_();
+    int parameterCount = GetParameterCount_();
     ResumeAutoTick();
     return parameterCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-std::string DspComponent::GetInputName(unsigned short index)
+std::string DspComponent::GetInputName(int index)
 {
     std::string inputName;
 
@@ -195,7 +195,7 @@ std::string DspComponent::GetInputName(unsigned short index)
 
 //-------------------------------------------------------------------------------------------------
 
-std::string DspComponent::GetOutputName(unsigned short index)
+std::string DspComponent::GetOutputName(int index)
 {
     std::string outputName;
 
@@ -212,7 +212,7 @@ std::string DspComponent::GetOutputName(unsigned short index)
 
 //-------------------------------------------------------------------------------------------------
 
-std::string DspComponent::GetParameterName(unsigned short index)
+std::string DspComponent::GetParameterName(int index)
 {
     std::string parameterName;
 
@@ -229,7 +229,7 @@ std::string DspComponent::GetParameterName(unsigned short index)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::GetParameter(unsigned short index, DspParameter& param)
+bool DspComponent::GetParameter(int index, DspParameter& param)
 {
     bool result = false;
     PauseAutoTick();
@@ -246,7 +246,7 @@ bool DspComponent::GetParameter(unsigned short index, DspParameter& param)
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter const* DspComponent::GetParameter(unsigned short index)
+DspParameter const* DspComponent::GetParameter(int index)
 {
     PauseAutoTick();
     DspParameter const* result = GetParameter_(index);
@@ -256,7 +256,7 @@ DspParameter const* DspComponent::GetParameter(unsigned short index)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter(unsigned short index, DspParameter const& param)
+bool DspComponent::SetParameter(int index, DspParameter const& param)
 {
     PauseAutoTick();
     bool result = ParameterUpdating_(index, param);
@@ -275,7 +275,7 @@ void DspComponent::Tick()
         _hasTicked = true;
 
         // 2. get outputs required from input components
-        for (unsigned short i = 0; i < _inputWires.GetWireCount(); i++)
+        for (int i = 0; i < _inputWires.GetWireCount(); i++)
         {
             DspWire* wire = _inputWires.GetWire(i);
             wire->linkedComponent->Tick();
@@ -409,7 +409,7 @@ void DspComponent::ResumeAutoTick()
 
 bool DspComponent::AddInput_(std::string const& inputName)
 {
-    for (unsigned short i = 0; i < _inputBuses.size(); i++)
+    for (int i = 0; i < _inputBuses.size(); i++)
     {
         _inputBuses[i]._AddSignal(inputName);
     }
@@ -428,7 +428,7 @@ bool DspComponent::AddInput_(std::string const& inputName)
 
 bool DspComponent::AddOutput_(std::string const& outputName)
 {
-    for (unsigned short i = 0; i < _outputBuses.size(); i++)
+    for (int i = 0; i < _outputBuses.size(); i++)
     {
         _outputBuses[i]._AddSignal(outputName);
     }
@@ -445,7 +445,7 @@ bool DspComponent::AddOutput_(std::string const& outputName)
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::AddParameter_(std::string const& paramName, DspParameter const& param)
+int DspComponent::AddParameter_(std::string const& paramName, DspParameter const& param)
 {
     _parameters.push_back(std::make_pair(paramName, param));
     if (_callback)
@@ -505,7 +505,7 @@ bool DspComponent::RemoveParameter_()
 
 void DspComponent::RemoveAllInputs_()
 {
-    for (unsigned short i = 0; i < _inputBuses.size(); i++)
+    for (int i = 0; i < _inputBuses.size(); i++)
     {
         _inputBuses[i]._RemoveAllSignals();
     }
@@ -520,7 +520,7 @@ void DspComponent::RemoveAllInputs_()
 
 void DspComponent::RemoveAllOutputs_()
 {
-    for (unsigned short i = 0; i < _outputBuses.size(); i++)
+    for (int i = 0; i < _outputBuses.size(); i++)
     {
         _outputBuses[i]._RemoveAllSignals();
     }
@@ -544,28 +544,28 @@ void DspComponent::RemoveAllParameters_()
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetInputCount_()
+int DspComponent::GetInputCount_()
 {
     return _inputBus.GetSignalCount();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetOutputCount_()
+int DspComponent::GetOutputCount_()
 {
     return _outputBus.GetSignalCount();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::GetParameterCount_()
+int DspComponent::GetParameterCount_()
 {
     return _parameters.size();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-DspParameter const* DspComponent::GetParameter_(unsigned short index) const
+DspParameter const* DspComponent::GetParameter_(int index) const
 {
     if (index < _parameters.size())
     {
@@ -576,7 +576,7 @@ DspParameter const* DspComponent::GetParameter_(unsigned short index) const
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::SetParameter_(unsigned short index, DspParameter const& param)
+bool DspComponent::SetParameter_(int index, DspParameter const& param)
 {
     if (index < _parameters.size())
     {
@@ -622,14 +622,14 @@ DspCircuit* DspComponent::_GetParentCircuit()
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindInput(std::string const& signalName, unsigned short& returnIndex) const
+bool DspComponent::_FindInput(std::string const& signalName, int& returnIndex) const
 {
     return _inputBus.FindSignal(signalName, returnIndex);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindInput(unsigned short signalIndex, unsigned short& returnIndex) const
+bool DspComponent::_FindInput(int signalIndex, int& returnIndex) const
 {
     if (signalIndex < _inputBus.GetSignalCount())
     {
@@ -642,14 +642,14 @@ bool DspComponent::_FindInput(unsigned short signalIndex, unsigned short& return
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindOutput(std::string const& signalName, unsigned short& returnIndex) const
+bool DspComponent::_FindOutput(std::string const& signalName, int& returnIndex) const
 {
     return _outputBus.FindSignal(signalName, returnIndex);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_FindOutput(unsigned short signalIndex, unsigned short& returnIndex) const
+bool DspComponent::_FindOutput(int signalIndex, int& returnIndex) const
 {
     if (signalIndex < _outputBus.GetSignalCount())
     {
@@ -662,12 +662,12 @@ bool DspComponent::_FindOutput(unsigned short signalIndex, unsigned short& retur
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::_SetBufferCount(unsigned short bufferCount)
+void DspComponent::_SetBufferCount(int bufferCount)
 {
     // _bufferCount is the current thread count / bufferCount is new thread count
 
     // delete excess _hasTickeds (if new buffer count is less than current)
-    for (long i = _bufferCount - 1; i >= (long)bufferCount; i--)
+    for (int i = _bufferCount - 1; i >= (int)bufferCount; i--)
     {
         delete _hasTickeds[i];
     }
@@ -676,7 +676,7 @@ void DspComponent::_SetBufferCount(unsigned short bufferCount)
     _hasTickeds.resize(bufferCount);
 
     // create excess _hasTickeds (if new buffer count is more than current)
-    for (unsigned short i = _bufferCount; i < bufferCount; i++)
+    for (int i = _bufferCount; i < bufferCount; i++)
     {
         _hasTickeds[i] = new bool();
     }
@@ -688,17 +688,17 @@ void DspComponent::_SetBufferCount(unsigned short bufferCount)
     _releaseMutexes.resize(bufferCount);
     _releaseCondts.resize(bufferCount);
 
-    for (unsigned short i = _bufferCount; i < bufferCount; i++)
+    for (int i = _bufferCount; i < bufferCount; i++)
     {
         *_hasTickeds[i] = false;
         _gotReleases[i] = false;
 
-        for (unsigned short j = 0; j < _inputBus.GetSignalCount(); j++)
+        for (int j = 0; j < _inputBus.GetSignalCount(); j++)
         {
             _inputBuses[i]._AddSignal(_inputBus.GetSignal(j)->GetSignalName());
         }
 
-        for (unsigned short j = 0; j < _outputBus.GetSignalCount(); j++)
+        for (int j = 0; j < _outputBus.GetSignalCount(); j++)
         {
             _outputBuses[i]._AddSignal(_outputBus.GetSignal(j)->GetSignalName());
         }
@@ -714,14 +714,14 @@ void DspComponent::_SetBufferCount(unsigned short bufferCount)
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspComponent::_GetBufferCount() const
+int DspComponent::_GetBufferCount() const
 {
     return _bufferCount;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::_ThreadTick(unsigned short threadNo)
+void DspComponent::_ThreadTick(int threadNo)
 {
     // continue only if this component has not already been ticked
     if (*_hasTickeds[threadNo] == false)
@@ -730,7 +730,7 @@ void DspComponent::_ThreadTick(unsigned short threadNo)
         *_hasTickeds[threadNo] = true;
 
         // 2. get outputs required from input components
-        for (unsigned short i = 0; i < _inputWires.GetWireCount(); i++)
+        for (int i = 0; i < _inputWires.GetWireCount(); i++)
         {
             DspWire* wire = _inputWires.GetWire(i);
             wire->linkedComponent->_ThreadTick(threadNo);
@@ -755,7 +755,7 @@ void DspComponent::_ThreadTick(unsigned short threadNo)
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::_ThreadReset(unsigned short threadNo)
+void DspComponent::_ThreadReset(int threadNo)
 {
     // clear all inputs
     _inputBuses[threadNo].ClearAllValues();
@@ -766,35 +766,35 @@ void DspComponent::_ThreadReset(unsigned short threadNo)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_SetInputSignal(unsigned short inputIndex, DspSignal const* newSignal)
+bool DspComponent::_SetInputSignal(int inputIndex, DspSignal const* newSignal)
 {
     return _inputBus.SetSignal(inputIndex, newSignal);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspComponent::_SetInputSignal(unsigned short inputIndex, unsigned short threadIndex, DspSignal const* newSignal)
+bool DspComponent::_SetInputSignal(int inputIndex, int threadIndex, DspSignal const* newSignal)
 {
     return _inputBuses[threadIndex].SetSignal(inputIndex, newSignal);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-DspSignal* DspComponent::_GetOutputSignal(unsigned short outputIndex)
+DspSignal* DspComponent::_GetOutputSignal(int outputIndex)
 {
     return _outputBus.GetSignal(outputIndex);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-DspSignal* DspComponent::_GetOutputSignal(unsigned short outputIndex, unsigned short threadIndex)
+DspSignal* DspComponent::_GetOutputSignal(int outputIndex, int threadIndex)
 {
     return _outputBuses[threadIndex].GetSignal(outputIndex);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::_WaitForRelease(unsigned short threadNo)
+void DspComponent::_WaitForRelease(int threadNo)
 {
     _releaseMutexes[threadNo].Lock();
     if (!_gotReleases[threadNo])
@@ -807,9 +807,9 @@ void DspComponent::_WaitForRelease(unsigned short threadNo)
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponent::_ReleaseThread(unsigned short threadNo)
+void DspComponent::_ReleaseThread(int threadNo)
 {
-    unsigned short nextThread = threadNo + 1;
+    int nextThread = threadNo + 1;
 
     if (nextThread >= _bufferCount)
     {

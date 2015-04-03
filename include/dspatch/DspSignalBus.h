@@ -45,36 +45,36 @@ class DLLEXPORT DspSignalBus
 public:
     virtual ~DspSignalBus();
 
-    bool SetSignal(unsigned short signalIndex, DspSignal const* newSignal);
+    bool SetSignal(int signalIndex, DspSignal const* newSignal);
     bool SetSignal(std::string const& signalName, DspSignal const* newSignal);
 
-    DspSignal* GetSignal(unsigned short signalIndex);
+    DspSignal* GetSignal(int signalIndex);
     DspSignal* GetSignal(std::string const& signalName);
 
-    bool FindSignal(std::string const& signalName, unsigned short& returnIndex) const;
-    bool FindSignal(unsigned short signalIndex, unsigned short& returnIndex) const;
+    bool FindSignal(std::string const& signalName, int& returnIndex) const;
+    bool FindSignal(int signalIndex, int& returnIndex) const;
 
-    unsigned short GetSignalCount() const;
+    int GetSignalCount() const;
 
     template <class ValueType>
-    bool SetValue(unsigned short signalIndex, ValueType const& newValue);
+    bool SetValue(int signalIndex, ValueType const& newValue);
 
     template <class ValueType>
     bool SetValue(std::string const& signalName, ValueType const& newValue);
 
     template <class ValueType>
-    bool GetValue(unsigned short signalIndex, ValueType& returnValue) const;
+    bool GetValue(int signalIndex, ValueType& returnValue) const;
 
     template <class ValueType>
     bool GetValue(std::string const& signalName, ValueType& returnValue) const;
 
     template <class ValueType>
-    ValueType const* GetValue(unsigned short signalIndex) const;
+    ValueType const* GetValue(int signalIndex) const;
 
     template <class ValueType>
     ValueType const* GetValue(std::string const& signalName) const;
 
-    void ClearValue(unsigned short signalIndex);
+    void ClearValue(int signalIndex);
     void ClearValue(std::string const& signalName);
 
     void ClearAllValues();
@@ -94,7 +94,7 @@ private:
 //=================================================================================================
 
 template <class ValueType>
-bool DspSignalBus::SetValue(unsigned short signalIndex, ValueType const& newValue)
+bool DspSignalBus::SetValue(int signalIndex, ValueType const& newValue)
 {
     if (signalIndex < _signals.size())
     {
@@ -111,7 +111,7 @@ bool DspSignalBus::SetValue(unsigned short signalIndex, ValueType const& newValu
 template <class ValueType>
 bool DspSignalBus::SetValue(std::string const& signalName, ValueType const& newValue)
 {
-    unsigned short signalIndex;
+    int signalIndex;
 
     if (FindSignal(signalName, signalIndex))
     {
@@ -126,7 +126,7 @@ bool DspSignalBus::SetValue(std::string const& signalName, ValueType const& newV
 //-------------------------------------------------------------------------------------------------
 
 template <class ValueType>
-bool DspSignalBus::GetValue(unsigned short signalIndex, ValueType& returnValue) const
+bool DspSignalBus::GetValue(int signalIndex, ValueType& returnValue) const
 {
     if (signalIndex < _signals.size())
     {
@@ -143,7 +143,7 @@ bool DspSignalBus::GetValue(unsigned short signalIndex, ValueType& returnValue) 
 template <class ValueType>
 bool DspSignalBus::GetValue(std::string const& signalName, ValueType& returnValue) const
 {
-    unsigned short signalIndex;
+    int signalIndex;
 
     if (FindSignal(signalName, signalIndex))
     {
@@ -158,7 +158,7 @@ bool DspSignalBus::GetValue(std::string const& signalName, ValueType& returnValu
 //-------------------------------------------------------------------------------------------------
 
 template <class ValueType>
-ValueType const* DspSignalBus::GetValue(unsigned short signalIndex) const
+ValueType const* DspSignalBus::GetValue(int signalIndex) const
 {
     if (signalIndex < _signals.size())
     {
@@ -175,7 +175,7 @@ ValueType const* DspSignalBus::GetValue(unsigned short signalIndex) const
 template <class ValueType>
 ValueType const* DspSignalBus::GetValue(std::string const& signalName) const
 {
-    unsigned short signalIndex;
+    int signalIndex;
 
     if (FindSignal(signalName, signalIndex))
     {
