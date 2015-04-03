@@ -47,27 +47,6 @@ DspCircuit::~DspCircuit()
 
 //=================================================================================================
 
-void DspCircuit::PauseAutoTick()
-{
-    // pause auto tick
-    DspComponent::PauseAutoTick();
-
-    // manually tick until 0
-    while (_currentThreadIndex != 0)
-    {
-        Tick();
-        Reset();
-    }
-
-    // sync all threads
-    for (size_t i = 0; i < _circuitThreads.size(); i++)
-    {
-        _circuitThreads[i].Sync();
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-
 void DspCircuit::SetThreadCount(int threadCount)
 {
     if ((size_t)threadCount != _circuitThreads.size())
@@ -355,6 +334,27 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 }
 
 //=================================================================================================
+
+void DspCircuit::_PauseAutoTick()
+{
+    // pause auto tick
+    DspComponent::_PauseAutoTick();
+
+    // manually tick until 0
+    while (_currentThreadIndex != 0)
+    {
+        Tick();
+        Reset();
+    }
+
+    // sync all threads
+    for (size_t i = 0; i < _circuitThreads.size(); i++)
+    {
+        _circuitThreads[i].Sync();
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
 
 bool DspCircuit::_FindComponent(DspComponent const* component, int& returnIndex) const
 {

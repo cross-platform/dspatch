@@ -65,8 +65,6 @@ public:
     DspCircuit(int threadCount = 0);
     ~DspCircuit();
 
-    virtual void PauseAutoTick();
-
     void SetThreadCount(int threadCount);
     int GetThreadCount() const;
 
@@ -123,13 +121,7 @@ protected:
     virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 
 private:
-    std::vector<DspComponent*> _components;
-
-    std::vector<DspCircuitThread> _circuitThreads;
-    int _currentThreadIndex;
-
-    DspWireBus _inToInWires;
-    DspWireBus _outToOutWires;
+    virtual void _PauseAutoTick();
 
     bool _FindComponent(DspComponent const* component, int& returnIndex) const;
     bool _FindComponent(DspComponent const& component, int& returnIndex) const;
@@ -138,6 +130,15 @@ private:
 
     void _DisconnectComponent(int componentIndex);
     void _RemoveComponent(int componentIndex);
+
+private:
+    std::vector<DspComponent*> _components;
+
+    std::vector<DspCircuitThread> _circuitThreads;
+    int _currentThreadIndex;
+
+    DspWireBus _inToInWires;
+    DspWireBus _outToOutWires;
 };
 
 //=================================================================================================

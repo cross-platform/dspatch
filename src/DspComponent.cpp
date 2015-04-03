@@ -366,23 +366,7 @@ void DspComponent::StopAutoTick()
 
 void DspComponent::PauseAutoTick()
 {
-    // A call to PauseAutoTick() recursively traverses it's parent circuits until it reaches the
-    // global circuit. When the global circuit is reached, it's auto-tick is paused.
-
-    // if this is the global circuit
-    if (DSPatch::_IsThisGlobalCircuit(this) && !_componentThread.IsStopped())
-    {
-        if (_isAutoTickRunning)
-        {
-            _componentThread.Pause();
-            _isAutoTickPaused = true;
-            _isAutoTickRunning = false;
-        }
-    }
-    else if (_parentCircuit != NULL)
-    {
-        _parentCircuit->PauseAutoTick();  // recursive call to find the global circuit
-    }
+    _PauseAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -606,6 +590,29 @@ bool DspComponent::SetParameter_(int index, DspParameter const& param)
 }
 
 //=================================================================================================
+
+void DspComponent::_PauseAutoTick()
+{
+    // A call to PauseAutoTick() recursively traverses it's parent circuits until it reaches the
+    // global circuit. When the global circuit is reached, it's auto-tick is paused.
+
+    // if this is the global circuit
+    if (DSPatch::_IsThisGlobalCircuit(this) && !_componentThread.IsStopped())
+    {
+        if (_isAutoTickRunning)
+        {
+            _componentThread.Pause();
+            _isAutoTickPaused = true;
+            _isAutoTickRunning = false;
+        }
+    }
+    else if (_parentCircuit != NULL)
+    {
+        _parentCircuit->PauseAutoTick();  // recursive call to find the global circuit
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
 
 void DspComponent::_SetParentCircuit(DspCircuit* parentCircuit)
 {

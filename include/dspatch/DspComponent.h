@@ -133,10 +133,10 @@ public:
     void Tick();
     void Reset();
 
-    virtual void StartAutoTick();
-    virtual void StopAutoTick();
-    virtual void PauseAutoTick();
-    virtual void ResumeAutoTick();
+    void StartAutoTick();
+    void StopAutoTick();
+    void PauseAutoTick();
+    void ResumeAutoTick();
 
 protected:
     virtual void Process_(DspSignalBus&, DspSignalBus&);
@@ -162,6 +162,8 @@ protected:
     bool SetParameter_(int index, DspParameter const& param);
 
 private:
+    virtual void _PauseAutoTick();
+
     void _SetParentCircuit(DspCircuit* parentCircuit);
     DspCircuit* _GetParentCircuit();
 

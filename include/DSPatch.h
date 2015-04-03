@@ -55,8 +55,6 @@ public:
     static void Finalize();
 
 private:
-    friend class DspComponent;
-
     static bool _IsThisGlobalCircuit(DspComponent const* thisComponent);
 
     static bool _AddGlobalComponent(DspComponent* component);
@@ -68,6 +66,8 @@ private:
     static void _StopGlobalAutoTick();
 
 private:
+    friend class DspComponent;
+
     static DspCircuit* _globalCircuit;
 };
 

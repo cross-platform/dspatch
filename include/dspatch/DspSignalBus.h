@@ -80,14 +80,14 @@ public:
     void ClearAllValues();
 
 private:
-    friend class DspComponent;
-
     bool _AddSignal(std::string const& signalName = "");
 
     bool _RemoveSignal();
     void _RemoveAllSignals();
 
 private:
+    friend class DspComponent;
+
     std::vector<DspSignal> _signals;
 };
 
