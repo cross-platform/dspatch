@@ -86,10 +86,7 @@ public:
 
     // component output to component input
     template <class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId>
-    bool ConnectOutToIn(FromComponentType& fromComponent,
-                        FromOutputId const& fromOutput,
-                        ToComponentType& toComponent,
-                        ToInputId const& toInput);
+    bool ConnectOutToIn(FromComponentType& fromComponent, FromOutputId const& fromOutput, ToComponentType& toComponent, ToInputId const& toInput);
 
     // circuit input to component input
     template <class FromInputId, class ToComponentType, class ToInputId>
@@ -101,10 +98,7 @@ public:
 
     // component output to component input
     template <class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId>
-    void DisconnectOutToIn(FromComponentType const& fromComponent,
-                           FromOutputId const& fromOutput,
-                           ToComponentType const& toComponent,
-                           ToInputId const& toInput);
+    void DisconnectOutToIn(FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToComponentType const& toComponent, ToInputId const& toInput);
 
     // circuit input to component input
     template <class FromInputId, class ToComponentType, class ToInputId>
@@ -112,9 +106,7 @@ public:
 
     // component output to circuit output
     template <class FromComponentType, class FromOutputId, class ToOutputId>
-    bool DisconnectOutToOut(FromComponentType const& fromComponent,
-                            FromOutputId const& fromOutput,
-                            ToOutputId const& toOutput);
+    bool DisconnectOutToOut(FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToOutputId const& toOutput);
 
     void DisconnectComponent(std::string const& component);
 

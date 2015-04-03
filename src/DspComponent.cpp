@@ -407,6 +407,19 @@ void DspComponent::ResumeAutoTick()
 
 //=================================================================================================
 
+void DspComponent::Process_(DspSignalBus&, DspSignalBus&)
+{
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspComponent::ParameterUpdating_(int, DspParameter const&)
+{
+    return false;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 bool DspComponent::AddInput_(std::string const& inputName)
 {
     for (size_t i = 0; i < _inputBuses.size(); i++)

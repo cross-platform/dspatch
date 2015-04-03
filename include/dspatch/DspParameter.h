@@ -63,12 +63,8 @@ public:
 
     DspParameter();
     DspParameter(ParamType const& type);
-    DspParameter(ParamType const& type,
-                 int const& initValue,
-                 std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
-    DspParameter(ParamType const& type,
-                 float const& initValue,
-                 std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
+    DspParameter(ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
+    DspParameter(ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
     DspParameter(ParamType const& type, std::string const& initValue);
     DspParameter(ParamType const& type, std::vector<std::string> const& initValue);
 
