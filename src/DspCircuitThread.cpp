@@ -46,7 +46,7 @@ DspCircuitThread::~DspCircuitThread()
 
 //=================================================================================================
 
-void DspCircuitThread::Initialise(std::vector<DspComponent*>* components, unsigned short threadNo)
+void DspCircuitThread::Initialise(std::vector<DspComponent*>* components, int threadNo)
 {
     _components = components;
     _threadNo = threadNo;
@@ -134,11 +134,11 @@ void DspCircuitThread::_Run()
 
             if (!_stop)
             {
-                for (unsigned short i = 0; i < _components->size(); i++)
+                for (int i = 0; i < _components->size(); i++)
                 {
                     (*_components)[i]->_ThreadTick(_threadNo);
                 }
-                for (unsigned short i = 0; i < _components->size(); i++)
+                for (int i = 0; i < _components->size(); i++)
                 {
                     (*_components)[i]->_ThreadReset(_threadNo);
                 }

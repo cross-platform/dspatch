@@ -60,7 +60,7 @@ public:
         AddOutput_();
 
         // seed randomizer
-        srand((unsigned int)time(NULL));
+        srand((int)time(NULL));
     }
 
 protected:

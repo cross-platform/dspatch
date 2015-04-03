@@ -65,7 +65,7 @@ public:
     DspCircuitThread();
     ~DspCircuitThread();
 
-    void Initialise(std::vector<DspComponent*>* components, unsigned short threadNo);
+    void Initialise(std::vector<DspComponent*>* components, int threadNo);
 
     void Start(Priority priority = TimeCriticalPriority);
     void Stop();
@@ -74,7 +74,7 @@ public:
 
 private:
     std::vector<DspComponent*>* _components;
-    unsigned short _threadNo;
+    int _threadNo;
     bool _stop;
     bool _stopped;
     bool _gotResume, _gotSync;
