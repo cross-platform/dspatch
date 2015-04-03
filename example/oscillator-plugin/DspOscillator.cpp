@@ -156,7 +156,7 @@ void DspOscillator::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
     if (_signalLookup.size() != 0)
     {
-        for (unsigned long i = 0; i < _signal.size(); i++)
+        for (int i = 0; i < _signal.size(); i++)
         {
             if (_lastPos >= _lookupLength)
             {
@@ -173,7 +173,7 @@ void DspOscillator::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspOscillator::ParameterUpdating_(unsigned short index, DspParameter const& param)
+bool DspOscillator::ParameterUpdating_(int index, DspParameter const& param)
 {
     if (index == pBufferSize)
     {
@@ -203,20 +203,20 @@ bool DspOscillator::ParameterUpdating_(unsigned short index, DspParameter const&
 
 void DspOscillator::_BuildLookup()
 {
-    float posFrac = (float)_lastPos / (float)_lookupLength;
+    float posFrac = _lookupLength <= 0 ? 0 : (float)_lastPos / (float)_lookupLength;
     float angleInc = TWOPI * GetFreq() / GetSampleRate();
 
-    _lookupLength = (unsigned long)((float)GetSampleRate() / GetFreq());
+    _lookupLength = (int)((float)GetSampleRate() / GetFreq());
 
     _signal.resize(GetBufferSize());
     _signalLookup.resize(_lookupLength);
 
-    for (unsigned long i = 0; i < _lookupLength; i++)
+    for (int i = 0; i < _lookupLength; i++)
     {
         _signalLookup[i] = sin(angleInc * i) * GetAmpl();
     }
 
-    _lastPos = (unsigned long)(posFrac * (float)_lookupLength + 0.5f);  // calculate new position (round up)
+    _lastPos = (int)(posFrac * (float)_lookupLength + 0.5f);  // calculate new position (round up)
 }
 
 //=================================================================================================
