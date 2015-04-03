@@ -80,9 +80,9 @@ public:
         _SetPriority(pthread_self(), priority);
     }
 
-    static void MsSleep(unsigned short milliseconds)
+    static void MsSleep(int milliseconds)
     {
-        usleep((unsigned int)milliseconds);
+        usleep(milliseconds);
     }
 
 private:

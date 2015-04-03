@@ -81,7 +81,7 @@ public:
         SetThreadPriority(GetCurrentThread(), priority);
     }
 
-    static void MsSleep(unsigned short milliseconds)
+    static void MsSleep(int milliseconds)
     {
         Sleep(milliseconds);
     }
