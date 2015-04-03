@@ -51,29 +51,29 @@ the necessary memory cleanup.
 class DLLEXPORT DSPatch
 {
 public:
-  static void SetGlobalThreadCount( unsigned short threadCount );
-  static void Finalize();
+    static void SetGlobalThreadCount(unsigned short threadCount);
+    static void Finalize();
 
 private:
-  friend class DspComponent;
+    friend class DspComponent;
 
-  static bool _IsThisGlobalCircuit( DspComponent const* thisComponent );
+    static bool _IsThisGlobalCircuit(DspComponent const* thisComponent);
 
-  static bool _AddGlobalComponent( DspComponent* component );
-  static void _RemoveGlobalComponent( DspComponent const* component );
+    static bool _AddGlobalComponent(DspComponent* component);
+    static void _RemoveGlobalComponent(DspComponent const* component);
 
-  static unsigned short _GetGlobalComponentCount();
+    static unsigned short _GetGlobalComponentCount();
 
-  static void _StartGlobalAutoTick();
-  static void _StopGlobalAutoTick();
+    static void _StartGlobalAutoTick();
+    static void _StopGlobalAutoTick();
 
 private:
-  static DspCircuit* _globalCircuit;
+    static DspCircuit* _globalCircuit;
 };
 
 //=================================================================================================
 
-#endif // DSPATCH_H
+#endif  // DSPATCH_H
 
 //=================================================================================================
 
@@ -106,16 +106,25 @@ private:
 \n
 
 \section features_sec Features
-  - <b>Automatic branch synchronization</b> - The result of data diverging across parallel branches is guaranteed to arrive synchronized at a converging point.
+  - <b>Automatic branch synchronization</b> - The result of data diverging across parallel branches is guaranteed to
+arrive synchronized at a converging point.
   - <b>Component plugins</b> - Package components into plugins to be dynamically loaded into DSPatch host applications.
-  - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which you require a circuit to process.
-  - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit entities and concepts, making code more readable and easy to understand.
-  - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back into previous component inputs.
-  - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling to maximize data flow efficiency.
-  - <b>Integrated circuits</b> - Build circuits within circuits to encapsulate complex component networks into single circuit components.
-  - <b>Non-threaded platform support</b> - Develop for (or port to) platforms without multi-threading support and process complex circuit systems in a single thread.
-  - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining steady data flow through the system.
-  - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time varying types allowing you to create more flexible, multi-purpose component processes.
+  - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which you require a circuit
+to process.
+  - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit entities and concepts, making
+code more readable and easy to understand.
+  - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back into previous component
+inputs.
+  - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling to maximize data flow
+efficiency.
+  - <b>Integrated circuits</b> - Build circuits within circuits to encapsulate complex component networks into single
+circuit components.
+  - <b>Non-threaded platform support</b> - Develop for (or port to) platforms without multi-threading support and
+process complex circuit systems in a single thread.
+  - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining steady data flow through
+the system.
+  - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time varying types allowing you to
+create more flexible, multi-purpose component processes.
 
 \n
 

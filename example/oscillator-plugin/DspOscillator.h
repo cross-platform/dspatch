@@ -32,73 +32,73 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspOscillator : public DspComponent
 {
 public:
-  unsigned short pBufferSize; // Int
-  unsigned short pSampleRate; // Int
-  unsigned short pAmplitude; // Float
-  unsigned short pFrequency; // Float
+    unsigned short pBufferSize;  // Int
+    unsigned short pSampleRate;  // Int
+    unsigned short pAmplitude;   // Float
+    unsigned short pFrequency;   // Float
 
-  DspOscillator( float startFreq = 1000.0, float startAmpl = 1.0 );
-  ~DspOscillator();
+    DspOscillator(float startFreq = 1000.0, float startAmpl = 1.0);
+    ~DspOscillator();
 
-  void SetBufferSize( int bufferSize );
-  void SetSampleRate( int sampleRate );
-  void SetAmpl( float ampl );
-  void SetFreq( float freq );
+    void SetBufferSize(int bufferSize);
+    void SetSampleRate(int sampleRate);
+    void SetAmpl(float ampl);
+    void SetFreq(float freq);
 
-  int GetBufferSize() const;
-  int GetSampleRate() const;
-  float GetAmpl() const;
-  float GetFreq() const;
+    int GetBufferSize() const;
+    int GetSampleRate() const;
+    float GetAmpl() const;
+    float GetFreq() const;
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
-  virtual bool ParameterUpdating_( unsigned short index, DspParameter const& param );
+    virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+    virtual bool ParameterUpdating_(unsigned short index, DspParameter const& param);
 
 private:
-  std::vector< float > _signalLookup;
-  std::vector< float > _signal;
+    std::vector<float> _signalLookup;
+    std::vector<float> _signal;
 
-  unsigned long _lastPos;
-  unsigned long _lookupLength;
+    unsigned long _lastPos;
+    unsigned long _lookupLength;
 
-  DspMutex _processMutex;
+    DspMutex _processMutex;
 
-  void _BuildLookup();
+    void _BuildLookup();
 };
 
 //=================================================================================================
 
 class DspOscillatorPlugin : public DspPlugin
 {
-  std::map< std::string, DspParameter > GetCreateParams() const
-  {
-    std::map< std::string, DspParameter > params;
-    params[ "startFreq" ] = DspParameter( DspParameter::Float );
-    params[ "startAmpl" ] = DspParameter( DspParameter::Float, 1.0f, std::make_pair( 0.0f, 1.0f ) );
-    return params;
-  }
+    std::map<std::string, DspParameter> GetCreateParams() const
+    {
+        std::map<std::string, DspParameter> params;
+        params["startFreq"] = DspParameter(DspParameter::Float);
+        params["startAmpl"] = DspParameter(DspParameter::Float, 1.0f, std::make_pair(0.0f, 1.0f));
+        return params;
+    }
 
-  DspComponent* Create( std::map< std::string, DspParameter >& params ) const
-  {
-    float const* startFreq = params[ "startFreq" ].GetFloat();
-    float const* startAmpl = params[ "startAmpl" ].GetFloat();
+    DspComponent* Create(std::map<std::string, DspParameter>& params) const
+    {
+        float const* startFreq = params["startFreq"].GetFloat();
+        float const* startAmpl = params["startAmpl"].GetFloat();
 
-    if( startFreq && startAmpl )
-    {
-      return new DspOscillator( *startFreq, *startAmpl );
+        if (startFreq && startAmpl)
+        {
+            return new DspOscillator(*startFreq, *startAmpl);
+        }
+        else if (startFreq && !startAmpl)
+        {
+            return new DspOscillator(*startFreq);
+        }
+        else
+        {
+            return new DspOscillator();
+        }
     }
-    else if( startFreq && !startAmpl )
-    {
-      return new DspOscillator( *startFreq );
-    }
-    else
-    {
-      return new DspOscillator();
-    }
-  }
 };
 
-EXPORT_DSPPLUGIN( DspOscillatorPlugin )
+EXPORT_DSPPLUGIN(DspOscillatorPlugin)
 
 //=================================================================================================
 
