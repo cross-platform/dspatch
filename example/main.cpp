@@ -72,9 +72,8 @@ int main()
     circuit.ConnectOutToIn(gainRight, 0, audioDevice, 1);   // gain right into audio device right channel
 
     // set the gain of components gainLeft and gainRight (wave left and right channels)
-    gainLeft.SetParameter(gainLeft.pGain, DspParameter(DspParameter::Float, 0.75f));  // OR: gainLeft.SetGain(0.75);
-    gainRight.SetParameter(gainRight.pGain,
-                           DspParameter(DspParameter::Float, 0.75f));  // OR: gainRight.SetGain(0.75);
+    gainLeft.SetParameter(gainLeft.pGain, DspParameter(DspParameter::Float, 0.75f));    // OR: gainLeft.SetGain(0.75);
+    gainRight.SetParameter(gainRight.pGain, DspParameter(DspParameter::Float, 0.75f));  // OR: gainRight.SetGain(0.75);
 
     // load a wave into the wave streamer and start playing the track
     waveStreamer.SetParameter(waveStreamer.pFilePath, DspParameter(DspParameter::FilePath, EXAMPLE_WAV_FILE));

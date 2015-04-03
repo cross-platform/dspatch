@@ -75,9 +75,7 @@ bool DspWireBus::AddWire(DspComponent* linkedComponent, int fromSignalIndex, int
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWireBus::RemoveWire(DspComponent const* linkedComponent,
-                            int fromSignalIndex,
-                            int toSignalIndex)
+bool DspWireBus::RemoveWire(DspComponent const* linkedComponent, int fromSignalIndex, int toSignalIndex)
 {
     for (size_t i = 0; i < _wires.size(); i++)
     {
