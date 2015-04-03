@@ -218,7 +218,7 @@ std::string DspComponent::GetParameterName(int index)
 
     PauseAutoTick();
 
-    if (index < _parameters.size())
+    if ((size_t)index < _parameters.size())
     {
         parameterName = _parameters[index].first;
     }
@@ -409,7 +409,7 @@ void DspComponent::ResumeAutoTick()
 
 bool DspComponent::AddInput_(std::string const& inputName)
 {
-    for (int i = 0; i < _inputBuses.size(); i++)
+    for (size_t i = 0; i < _inputBuses.size(); i++)
     {
         _inputBuses[i]._AddSignal(inputName);
     }
@@ -428,7 +428,7 @@ bool DspComponent::AddInput_(std::string const& inputName)
 
 bool DspComponent::AddOutput_(std::string const& outputName)
 {
-    for (int i = 0; i < _outputBuses.size(); i++)
+    for (size_t i = 0; i < _outputBuses.size(); i++)
     {
         _outputBuses[i]._AddSignal(outputName);
     }
@@ -505,7 +505,7 @@ bool DspComponent::RemoveParameter_()
 
 void DspComponent::RemoveAllInputs_()
 {
-    for (int i = 0; i < _inputBuses.size(); i++)
+    for (size_t i = 0; i < _inputBuses.size(); i++)
     {
         _inputBuses[i]._RemoveAllSignals();
     }
@@ -520,7 +520,7 @@ void DspComponent::RemoveAllInputs_()
 
 void DspComponent::RemoveAllOutputs_()
 {
-    for (int i = 0; i < _outputBuses.size(); i++)
+    for (size_t i = 0; i < _outputBuses.size(); i++)
     {
         _outputBuses[i]._RemoveAllSignals();
     }
@@ -567,7 +567,7 @@ int DspComponent::GetParameterCount_()
 
 DspParameter const* DspComponent::GetParameter_(int index) const
 {
-    if (index < _parameters.size())
+    if ((size_t)index < _parameters.size())
     {
         return &_parameters[index].second;
     }
@@ -578,7 +578,7 @@ DspParameter const* DspComponent::GetParameter_(int index) const
 
 bool DspComponent::SetParameter_(int index, DspParameter const& param)
 {
-    if (index < _parameters.size())
+    if ((size_t)index < _parameters.size())
     {
         if (_parameters[index].second.SetParam(param))
         {

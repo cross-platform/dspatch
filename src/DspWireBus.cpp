@@ -44,7 +44,7 @@ DspWireBus::~DspWireBus()
 
 bool DspWireBus::AddWire(DspComponent* linkedComponent, int fromSignalIndex, int toSignalIndex)
 {
-    for (int i = 0; i < _wires.size(); i++)
+    for (size_t i = 0; i < _wires.size(); i++)
     {
         if (_wires[i].linkedComponent == linkedComponent && _wires[i].fromSignalIndex == fromSignalIndex &&
             _wires[i].toSignalIndex == toSignalIndex)
@@ -53,7 +53,7 @@ bool DspWireBus::AddWire(DspComponent* linkedComponent, int fromSignalIndex, int
         }
     }
 
-    for (int i = 0; i < _wires.size(); i++)
+    for (size_t i = 0; i < _wires.size(); i++)
     {
         if (_isLinkedComponentReceivingSignals && _wires[i].linkedComponent == linkedComponent &&
             _wires[i].toSignalIndex == toSignalIndex)  // if there's a wire to the receiving component's input already
@@ -79,7 +79,7 @@ bool DspWireBus::RemoveWire(DspComponent const* linkedComponent,
                             int fromSignalIndex,
                             int toSignalIndex)
 {
-    for (int i = 0; i < _wires.size(); i++)
+    for (size_t i = 0; i < _wires.size(); i++)
     {
         if (_wires[i].linkedComponent == linkedComponent && _wires[i].fromSignalIndex == fromSignalIndex &&
             _wires[i].toSignalIndex == toSignalIndex)
@@ -96,7 +96,7 @@ bool DspWireBus::RemoveWire(DspComponent const* linkedComponent,
 
 bool DspWireBus::RemoveWire(int wireIndex)
 {
-    if (wireIndex > _wires.size())
+    if ((size_t)wireIndex > _wires.size())
     {
         return false;
     }
@@ -110,7 +110,7 @@ bool DspWireBus::RemoveWire(int wireIndex)
 
 void DspWireBus::RemoveAllWires()
 {
-    for (int i = 0; i < _wires.size(); i++)
+    for (size_t i = 0; i < _wires.size(); i++)
     {
         RemoveWire(i);
     }
@@ -120,7 +120,7 @@ void DspWireBus::RemoveAllWires()
 
 DspWire* DspWireBus::GetWire(int wireIndex)
 {
-    if (wireIndex < _wires.size())
+    if ((size_t)wireIndex < _wires.size())
     {
         return &_wires[wireIndex];
     }

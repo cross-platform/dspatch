@@ -60,7 +60,7 @@ void DspCircuit::PauseAutoTick()
     }
 
     // sync all threads
-    for (int i = 0; i < _circuitThreads.size(); i++)
+    for (size_t i = 0; i < _circuitThreads.size(); i++)
     {
         _circuitThreads[i].Sync();
     }
@@ -70,12 +70,12 @@ void DspCircuit::PauseAutoTick()
 
 void DspCircuit::SetThreadCount(int threadCount)
 {
-    if (threadCount != _circuitThreads.size())
+    if ((size_t)threadCount != _circuitThreads.size())
     {
         PauseAutoTick();
 
         // stop all threads
-        for (int i = 0; i < _circuitThreads.size(); i++)
+        for (size_t i = 0; i < _circuitThreads.size(); i++)
         {
             _circuitThreads[i].Stop();
         }
@@ -84,14 +84,14 @@ void DspCircuit::SetThreadCount(int threadCount)
         _circuitThreads.resize(threadCount);
 
         // initialise and start all threads
-        for (int i = 0; i < _circuitThreads.size(); i++)
+        for (size_t i = 0; i < _circuitThreads.size(); i++)
         {
             _circuitThreads[i].Initialise(&_components, i);
             _circuitThreads[i].Start();
         }
 
         // set all components to the new thread count
-        for (int i = 0; i < _components.size(); i++)
+        for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->_SetBufferCount(threadCount);
         }
@@ -197,7 +197,7 @@ void DspCircuit::RemoveComponent(std::string const& componentName)
 
 void DspCircuit::RemoveAllComponents()
 {
-    for (int i = 0; i < _components.size(); i++)
+    for (size_t i = 0; i < _components.size(); i++)
     {
         PauseAutoTick();
         _RemoveComponent(i--);  // size drops as one is removed
@@ -304,13 +304,13 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         }
 
         // tick all internal components
-        for (int i = 0; i < _components.size(); i++)
+        for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->Tick();
         }
 
         // reset all internal components
-        for (int i = 0; i < _components.size(); i++)
+        for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->Reset();
         }
@@ -347,7 +347,7 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
         _circuitThreads[_currentThreadIndex].Resume();  // resume thread x
 
-        if (++_currentThreadIndex >= _circuitThreads.size())  // shift to thread x+1
+        if ((size_t)++_currentThreadIndex >= _circuitThreads.size())  // shift to thread x+1
         {
             _currentThreadIndex = 0;
         }
@@ -358,7 +358,7 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 bool DspCircuit::_FindComponent(DspComponent const* component, int& returnIndex) const
 {
-    for (int i = 0; i < _components.size(); i++)
+    for (size_t i = 0; i < _components.size(); i++)
     {
         if (_components[i] == component)
         {
@@ -381,7 +381,7 @@ bool DspCircuit::_FindComponent(DspComponent const& component, int& returnIndex)
 
 bool DspCircuit::_FindComponent(std::string const& componentName, int& returnIndex) const
 {
-    for (int i = 0; i < _components.size(); i++)
+    for (size_t i = 0; i < _components.size(); i++)
     {
         if (_components[i]->GetComponentName() != "" && _components[i]->GetComponentName() == componentName)
         {
@@ -397,7 +397,7 @@ bool DspCircuit::_FindComponent(std::string const& componentName, int& returnInd
 
 bool DspCircuit::_FindComponent(int componentIndex, int& returnIndex) const
 {
-    if (componentIndex < _components.size())
+    if ((size_t)componentIndex < _components.size())
     {
         returnIndex = componentIndex;
         return true;

@@ -64,7 +64,7 @@ DspAudioDevice::DspAudioDevice()
 
     std::vector<std::string> deviceNameList;
 
-    for (int i = 0; i < _rtAudio->audioStream.getDeviceCount(); i++)
+    for (unsigned int i = 0; i < _rtAudio->audioStream.getDeviceCount(); i++)
     {
         _rtAudio->deviceList.push_back(_rtAudio->audioStream.getDeviceInfo(i));
         deviceNameList.push_back(_rtAudio->audioStream.getDeviceInfo(i).name);
@@ -160,7 +160,7 @@ void DspAudioDevice::SetBufferSize(int bufferSize)
     _StopStream();
 
     SetParameter_(pBufferSize, DspParameter(DspParameter::Int, bufferSize));
-    for (int i = 0; i < _inputChannels.size(); i++)
+    for (size_t i = 0; i < _inputChannels.size(); i++)
     {
         _inputChannels[i].resize(bufferSize);
     }
@@ -235,7 +235,7 @@ void DspAudioDevice::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
     // Retrieve incoming component buffers for the sound card to output
     // ================================================================
-    for (int i = 0; i < _outputChannels.size(); i++)
+    for (size_t i = 0; i < _outputChannels.size(); i++)
     {
         if (!inputs.GetValue(i, _outputChannels[i]))
         {
@@ -245,7 +245,7 @@ void DspAudioDevice::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
     // Retrieve incoming sound card buffers for the component to output
     // ================================================================
-    for (int i = 0; i < _inputChannels.size(); i++)
+    for (size_t i = 0; i < _inputChannels.size(); i++)
     {
         outputs.SetValue(i, _inputChannels[i]);
     }
@@ -383,11 +383,11 @@ int DspAudioDevice::_DynamicCallback(void* inputBuffer, void* outputBuffer)
 
         if (outputBuffer != NULL)
         {
-            for (int i = 0; i < _outputChannels.size(); i++)
+            for (size_t i = 0; i < _outputChannels.size(); i++)
             {
                 if (_rtAudio->deviceList[GetCurrentDevice()].outputChannels >= (i + 1))
                 {
-                    for (int j = 0; j < _outputChannels[i].size(); j++)
+                    for (size_t j = 0; j < _outputChannels[i].size(); j++)
                     {
                         *floatOutput++ = _outputChannels[i][j];
                     }
@@ -397,11 +397,11 @@ int DspAudioDevice::_DynamicCallback(void* inputBuffer, void* outputBuffer)
 
         if (inputBuffer != NULL)
         {
-            for (int i = 0; i < _inputChannels.size(); i++)
+            for (size_t i = 0; i < _inputChannels.size(); i++)
             {
                 if (_rtAudio->deviceList[GetCurrentDevice()].inputChannels >= (i + 1))
                 {
-                    for (int j = 0; j < _inputChannels[i].size(); j++)
+                    for (size_t j = 0; j < _inputChannels[i].size(); j++)
                     {
                         _inputChannels[i][j] = *floatInput++;
                     }

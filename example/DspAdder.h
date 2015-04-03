@@ -83,7 +83,7 @@ protected:
         // ensure that the 2 input buffer sizes match
         if (_stream1.size() == _stream2.size())
         {
-            for (int i = 0; i < _stream1.size(); i++)
+            for (size_t i = 0; i < _stream1.size(); i++)
             {
                 _stream1[i] += _stream2[i];  // perform addition element-by-element
             }

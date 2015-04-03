@@ -34,7 +34,7 @@ DspSignalBus::~DspSignalBus()
 
 bool DspSignalBus::SetSignal(int signalIndex, DspSignal const* newSignal)
 {
-    if (signalIndex < _signals.size() && newSignal != NULL)
+    if ((size_t)signalIndex < _signals.size() && newSignal != NULL)
     {
         return _signals[signalIndex].SetSignal(newSignal);
     }
@@ -64,7 +64,7 @@ bool DspSignalBus::SetSignal(std::string const& signalName, DspSignal const* new
 
 DspSignal* DspSignalBus::GetSignal(int signalIndex)
 {
-    if (signalIndex < _signals.size())
+    if ((size_t)signalIndex < _signals.size())
     {
         return &_signals[signalIndex];
     }
@@ -99,7 +99,7 @@ bool DspSignalBus::FindSignal(std::string const& signalName, int& returnIndex) c
         return false;
     }
 
-    for (int i = 0; i < _signals.size(); i++)
+    for (size_t i = 0; i < _signals.size(); i++)
     {
         if (_signals[i].GetSignalName() == signalName)
         {
@@ -115,7 +115,7 @@ bool DspSignalBus::FindSignal(std::string const& signalName, int& returnIndex) c
 
 bool DspSignalBus::FindSignal(int signalIndex, int& returnIndex) const
 {
-    if (signalIndex < _signals.size())
+    if ((size_t)signalIndex < _signals.size())
     {
         returnIndex = signalIndex;
         return true;
@@ -135,7 +135,7 @@ int DspSignalBus::GetSignalCount() const
 
 void DspSignalBus::ClearValue(int signalIndex)
 {
-    if (signalIndex < _signals.size())
+    if ((size_t)signalIndex < _signals.size())
     {
         return _signals[signalIndex].ClearValue();
     }
@@ -157,7 +157,7 @@ void DspSignalBus::ClearValue(std::string const& signalName)
 
 void DspSignalBus::ClearAllValues()
 {
-    for (int i = 0; i < _signals.size(); i++)
+    for (size_t i = 0; i < _signals.size(); i++)
     {
         _signals[i].ClearValue();
     }

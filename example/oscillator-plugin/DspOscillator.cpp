@@ -156,7 +156,7 @@ void DspOscillator::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
     if (_signalLookup.size() != 0)
     {
-        for (int i = 0; i < _signal.size(); i++)
+        for (size_t i = 0; i < _signal.size(); i++)
         {
             if (_lastPos >= _lookupLength)
             {

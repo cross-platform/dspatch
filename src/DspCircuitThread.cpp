@@ -134,11 +134,11 @@ void DspCircuitThread::_Run()
 
             if (!_stop)
             {
-                for (int i = 0; i < _components->size(); i++)
+                for (size_t i = 0; i < _components->size(); i++)
                 {
                     (*_components)[i]->_ThreadTick(_threadNo);
                 }
-                for (int i = 0; i < _components->size(); i++)
+                for (size_t i = 0; i < _components->size(); i++)
                 {
                     (*_components)[i]->_ThreadReset(_threadNo);
                 }

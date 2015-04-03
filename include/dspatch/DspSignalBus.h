@@ -96,7 +96,7 @@ private:
 template <class ValueType>
 bool DspSignalBus::SetValue(int signalIndex, ValueType const& newValue)
 {
-    if (signalIndex < _signals.size())
+    if ((size_t)signalIndex < _signals.size())
     {
         return _signals[signalIndex].SetValue(newValue);
     }
@@ -128,7 +128,7 @@ bool DspSignalBus::SetValue(std::string const& signalName, ValueType const& newV
 template <class ValueType>
 bool DspSignalBus::GetValue(int signalIndex, ValueType& returnValue) const
 {
-    if (signalIndex < _signals.size())
+    if ((size_t)signalIndex < _signals.size())
     {
         return _signals[signalIndex].GetValue(returnValue);
     }

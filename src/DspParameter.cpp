@@ -373,7 +373,7 @@ bool DspParameter::SetString(std::string const& value)
     }
     else if (_type == List)
     {
-        for (int i = 0; i < _listValue.size(); ++i)
+        for (size_t i = 0; i < _listValue.size(); ++i)
         {
             if (_listValue[i] == value)
             {
