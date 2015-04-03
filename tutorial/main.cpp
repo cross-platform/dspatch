@@ -28,16 +28,16 @@ int main()
     // ============================================
 
     circuit.ConnectOutToIn(randBoolGen1, 0, logicAnd, 0);
-    // OR circuit.ConnectOutToIn( "Bool Generator 1", 0, "Logic AND", 0 );
-    // OR circuit.ConnectOutToIn( "Bool Generator 1", 0, "Logic AND", "input1" );
+    // OR circuit.ConnectOutToIn("Bool Generator 1", 0, "Logic AND", 0);
+    // OR circuit.ConnectOutToIn("Bool Generator 1", 0, "Logic AND", "input1");
 
     circuit.ConnectOutToIn(randBoolGen2, 0, logicAnd, 1);
-    // OR circuit.ConnectOutToIn( "Bool Generator 2", 0, "Logic AND", 1 );
-    // OR circuit.ConnectOutToIn( "Bool Generator 2", 0, "Logic AND", "input2" );
+    // OR circuit.ConnectOutToIn("Bool Generator 2", 0, "Logic AND", 1);
+    // OR circuit.ConnectOutToIn("Bool Generator 2", 0, "Logic AND", "input2");
 
     circuit.ConnectOutToIn(logicAnd, 0, boolPrinter, 0);
-    // OR circuit.ConnectOutToIn( "Logic AND", 0, "Bool Printer", 0 );
-    // OR circuit.ConnectOutToIn( "Logic AND", "output", "Bool Printer", 0 );
+    // OR circuit.ConnectOutToIn("Logic AND", 0, "Bool Printer", 0);
+    // OR circuit.ConnectOutToIn("Logic AND", "output", "Bool Printer", 0);
 
     // 5. Tick the circuit
     // ===================

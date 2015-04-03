@@ -55,7 +55,7 @@ This method should return a map of parameter name-to-DspParameter pairs. The plu
 assign values to this parameter map and return them via the Create() call.
 
 Once both DspComponent and DspPlugin classes have been implemented, add the line
-"EXPORT_DSPPLUGIN( MyPlugin )" anywhere after the declaration of your DspPlugin class, where
+"EXPORT_DSPPLUGIN(MyPlugin)" anywhere after the declaration of your DspPlugin class, where
 "MyPlugin" is the name of your DspPlugin class. Then compile the project into a shared library.
 
 The plugin is now ready to be loaded into a DSPatch host application (see DspPluginLoader).
