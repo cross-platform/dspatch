@@ -413,6 +413,12 @@ void DspCircuit::_DisconnectComponent(int componentIndex)
     // remove component from _inputComponents and _inputWires
     _components[componentIndex]->DisconnectAllInputs();
 
+    // remove any connections this component has to other components
+    for (size_t i = 0; i < _components.size(); ++i)
+    {
+        _components[i]->DisconnectInput(_components[componentIndex]);
+    }
+
     // remove component from _inToInWires
     DspWire* wire;
     for (int i = 0; i < _inToInWires.GetWireCount(); i++)
