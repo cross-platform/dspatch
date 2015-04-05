@@ -37,6 +37,7 @@ DspComponent::DspComponent()
     , _componentName("")
     , _isAutoTickRunning(false)
     , _isAutoTickPaused(false)
+    , _pauseCount(0)
     , _hasTicked(false)
     , _callback(NULL)
     , _userData(NULL)
@@ -366,6 +367,7 @@ void DspComponent::StopAutoTick()
 
 void DspComponent::PauseAutoTick()
 {
+    ++_pauseCount;
     _PauseAutoTick();
 }
 
@@ -377,7 +379,7 @@ void DspComponent::ResumeAutoTick()
     // global circuit. When the global circuit is reached, it's auto-tick is resumed.
 
     // if this is the global circuit
-    if (DSPatch::_IsThisGlobalCircuit(this) && _isAutoTickPaused)
+    if (DSPatch::_IsThisGlobalCircuit(this) && _isAutoTickPaused && --_pauseCount == 0)
     {
         _componentThread.Resume();
         _isAutoTickPaused = false;

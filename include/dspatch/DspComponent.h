@@ -200,6 +200,7 @@ private:
     std::string _componentName;
     bool _isAutoTickRunning;
     bool _isAutoTickPaused;
+    int _pauseCount;
 
     DspWireBus _inputWires;
 
