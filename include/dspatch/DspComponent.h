@@ -78,196 +78,212 @@ most commonly used to tick over an instance of DspCircuit).
 class DLLEXPORT DspComponent
 {
 public:
-  enum CallbackType
-  {
-    InputAdded, InputRemoved,
-    OutputAdded, OutputRemoved,
-    ParameterAdded, ParameterRemoved, ParameterUpdated
-  };
-  typedef void( *Callback_t )( DspComponent const* component, CallbackType const& callbackType, int index, void* userData );
+    enum CallbackType
+    {
+        InputAdded,
+        InputRemoved,
+        OutputAdded,
+        OutputRemoved,
+        ParameterAdded,
+        ParameterRemoved,
+        ParameterUpdated
+    };
+    typedef void (*Callback_t)(DspComponent const* component,
+                               CallbackType const& callbackType,
+                               int index,
+                               void* userData);
 
-  DspComponent();
-  virtual ~DspComponent();
+    DspComponent();
+    virtual ~DspComponent();
 
-  void SetCallback( Callback_t const& callback, void* userData = NULL );
+    void SetCallback(Callback_t const& callback, void* userData = NULL);
 
-  void SetComponentName( std::string const& componentName );
-  std::string GetComponentName() const;
+    void SetComponentName(std::string const& componentName);
+    std::string GetComponentName() const;
 
-  template< class FromOutputId, class ToInputId >
-  bool ConnectInput( DspComponent* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput );
+    template <class FromOutputId, class ToInputId>
+    bool ConnectInput(DspComponent* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput);
 
-  template< class FromOutputId, class ToInputId >
-  bool ConnectInput( DspComponent& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput );
+    template <class FromOutputId, class ToInputId>
+    bool ConnectInput(DspComponent& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput);
 
-  template< class FromOutputId, class ToInputId >
-  void DisconnectInput( DspComponent const* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput );
+    template <class FromOutputId, class ToInputId>
+    void DisconnectInput(DspComponent const* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput);
 
-  template< class FromOutputId, class ToInputId >
-  void DisconnectInput( DspComponent const& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput );
+    template <class FromOutputId, class ToInputId>
+    void DisconnectInput(DspComponent const& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput);
 
-  void DisconnectInput( unsigned short inputIndex );
-  void DisconnectInput( std::string const& inputName );
-  void DisconnectInput( DspComponent const* inputComponent );
-  void DisconnectAllInputs();
+    void DisconnectInput(unsigned short inputIndex);
+    void DisconnectInput(std::string const& inputName);
+    void DisconnectInput(DspComponent const* inputComponent);
+    void DisconnectAllInputs();
 
-  unsigned short GetInputCount();
-  unsigned short GetOutputCount();
-  unsigned short GetParameterCount();
+    unsigned short GetInputCount();
+    unsigned short GetOutputCount();
+    unsigned short GetParameterCount();
 
-  std::string GetInputName( unsigned short index );
-  std::string GetOutputName( unsigned short index );
-  std::string GetParameterName( unsigned short index );
+    std::string GetInputName(unsigned short index);
+    std::string GetOutputName(unsigned short index);
+    std::string GetParameterName(unsigned short index);
 
-  bool GetParameter( unsigned short index, DspParameter& param );
-  DspParameter const* GetParameter( unsigned short index );
-  bool SetParameter( unsigned short index, DspParameter const& param );
+    bool GetParameter(unsigned short index, DspParameter& param);
+    DspParameter const* GetParameter(unsigned short index);
+    bool SetParameter(unsigned short index, DspParameter const& param);
 
-  void Tick();
-  void Reset();
+    void Tick();
+    void Reset();
 
-  virtual void StartAutoTick();
-  virtual void StopAutoTick();
-  virtual void PauseAutoTick();
-  virtual void ResumeAutoTick();
+    virtual void StartAutoTick();
+    virtual void StopAutoTick();
+    virtual void PauseAutoTick();
+    virtual void ResumeAutoTick();
 
 protected:
-  virtual void Process_( DspSignalBus&, DspSignalBus& ) {}
-  virtual bool ParameterUpdating_( unsigned short, DspParameter const& ) { return false; }
+    virtual void Process_(DspSignalBus&, DspSignalBus&)
+    {
+    }
+    virtual bool ParameterUpdating_(unsigned short, DspParameter const&)
+    {
+        return false;
+    }
 
-  bool AddInput_( std::string const& inputName = "" );
-  bool AddOutput_( std::string const& outputName = "" );
-  unsigned short AddParameter_( std::string const& paramName, DspParameter const& param );
+    bool AddInput_(std::string const& inputName = "");
+    bool AddOutput_(std::string const& outputName = "");
+    unsigned short AddParameter_(std::string const& paramName, DspParameter const& param);
 
-  bool RemoveInput_();
-  bool RemoveOutput_();
-  bool RemoveParameter_();
+    bool RemoveInput_();
+    bool RemoveOutput_();
+    bool RemoveParameter_();
 
-  void RemoveAllInputs_();
-  void RemoveAllOutputs_();
-  void RemoveAllParameters_();
+    void RemoveAllInputs_();
+    void RemoveAllOutputs_();
+    void RemoveAllParameters_();
 
-  unsigned short GetInputCount_();
-  unsigned short GetOutputCount_();
-  unsigned short GetParameterCount_();
+    unsigned short GetInputCount_();
+    unsigned short GetOutputCount_();
+    unsigned short GetParameterCount_();
 
-  DspParameter const* GetParameter_( unsigned short index ) const;
-  bool SetParameter_( unsigned short index, DspParameter const& param );
-
-private:
-  void _SetParentCircuit( DspCircuit* parentCircuit );
-  DspCircuit* _GetParentCircuit();
-
-  bool _FindInput( std::string const& signalName, unsigned short& returnIndex ) const;
-  bool _FindInput( unsigned short signalIndex, unsigned short& returnIndex ) const;
-  bool _FindOutput( std::string const& signalName, unsigned short& returnIndex ) const;
-  bool _FindOutput( unsigned short signalIndex, unsigned short& returnIndex ) const;
-
-  void _SetBufferCount( unsigned short bufferCount );
-  unsigned short _GetBufferCount() const;
-
-  void _ThreadTick( unsigned short threadNo );
-  void _ThreadReset( unsigned short threadNo );
-
-  bool _SetInputSignal( unsigned short inputIndex, DspSignal const* newSignal );
-  bool _SetInputSignal( unsigned short inputIndex, unsigned short threadIndex, DspSignal const* newSignal );
-  DspSignal* _GetOutputSignal( unsigned short outputIndex );
-  DspSignal* _GetOutputSignal( unsigned short outputIndex, unsigned short threadIndex );
-
-  void _WaitForRelease( unsigned short threadNo );
-  void _ReleaseThread( unsigned short threadNo );
+    DspParameter const* GetParameter_(unsigned short index) const;
+    bool SetParameter_(unsigned short index, DspParameter const& param);
 
 private:
-  friend class DspCircuit;
-  friend class DspCircuitThread;
+    void _SetParentCircuit(DspCircuit* parentCircuit);
+    DspCircuit* _GetParentCircuit();
 
-  DspCircuit* _parentCircuit;
+    bool _FindInput(std::string const& signalName, unsigned short& returnIndex) const;
+    bool _FindInput(unsigned short signalIndex, unsigned short& returnIndex) const;
+    bool _FindOutput(std::string const& signalName, unsigned short& returnIndex) const;
+    bool _FindOutput(unsigned short signalIndex, unsigned short& returnIndex) const;
 
-  unsigned short _bufferCount;
+    void _SetBufferCount(unsigned short bufferCount);
+    unsigned short _GetBufferCount() const;
 
-  DspSignalBus _inputBus;
-  DspSignalBus _outputBus;
+    void _ThreadTick(unsigned short threadNo);
+    void _ThreadReset(unsigned short threadNo);
 
-  std::vector< DspSignalBus > _inputBuses;
-  std::vector< DspSignalBus > _outputBuses;
+    bool _SetInputSignal(unsigned short inputIndex, DspSignal const* newSignal);
+    bool _SetInputSignal(unsigned short inputIndex, unsigned short threadIndex, DspSignal const* newSignal);
+    DspSignal* _GetOutputSignal(unsigned short outputIndex);
+    DspSignal* _GetOutputSignal(unsigned short outputIndex, unsigned short threadIndex);
 
-  std::vector< std::pair< std::string, DspParameter > > _parameters;
+    void _WaitForRelease(unsigned short threadNo);
+    void _ReleaseThread(unsigned short threadNo);
 
-  std::string _componentName;
-  bool _isAutoTickRunning;
-  bool _isAutoTickPaused;
+private:
+    friend class DspCircuit;
+    friend class DspCircuitThread;
 
-  DspWireBus _inputWires;
+    DspCircuit* _parentCircuit;
 
-  bool _hasTicked;
+    unsigned short _bufferCount;
 
-  DspComponentThread _componentThread;
+    DspSignalBus _inputBus;
+    DspSignalBus _outputBus;
 
-  std::vector< bool* > _hasTickeds; // bool pointers ensure that parallel threads will only read from this vector
-  std::vector< bool > _gotReleases; // bool pointers not used here as only 1 thread writes to this vector at a time
-  std::vector< DspMutex > _releaseMutexes;
-  std::vector< DspWaitCondition > _releaseCondts;
+    std::vector<DspSignalBus> _inputBuses;
+    std::vector<DspSignalBus> _outputBuses;
 
-  Callback_t _callback;
-  void* _userData;
+    std::vector< std::pair<std::string, DspParameter> > _parameters;
+
+    std::string _componentName;
+    bool _isAutoTickRunning;
+    bool _isAutoTickPaused;
+
+    DspWireBus _inputWires;
+
+    bool _hasTicked;
+
+    DspComponentThread _componentThread;
+
+    std::vector<bool*> _hasTickeds;  // bool pointers ensure that parallel threads will only read from this vector
+    std::vector<bool> _gotReleases;  // bool pointers not used here as only 1 thread writes to this vector at a time
+    std::vector<DspMutex> _releaseMutexes;
+    std::vector<DspWaitCondition> _releaseCondts;
+
+    Callback_t _callback;
+    void* _userData;
 };
 
 //=================================================================================================
 
-template< class FromOutputId, class ToInputId >
-bool DspComponent::ConnectInput( DspComponent* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput )
+template <class FromOutputId, class ToInputId>
+bool DspComponent::ConnectInput(DspComponent* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput)
 {
-  unsigned short fromOutputIndex;
-  unsigned short toInputIndex;
+    unsigned short fromOutputIndex;
+    unsigned short toInputIndex;
 
-  if( !fromComponent->_outputBus.FindSignal( fromOutput, fromOutputIndex ) ||
-      !_inputBus.FindSignal( toInput, toInputIndex ) )
-  {
-    return false;
-  }
+    if (!fromComponent->_outputBus.FindSignal(fromOutput, fromOutputIndex) ||
+        !_inputBus.FindSignal(toInput, toInputIndex))
+    {
+        return false;
+    }
 
-  PauseAutoTick();
-  _inputWires.AddWire( fromComponent, fromOutputIndex, toInputIndex );
-  ResumeAutoTick();
+    PauseAutoTick();
+    _inputWires.AddWire(fromComponent, fromOutputIndex, toInputIndex);
+    ResumeAutoTick();
 
-  return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-template< class FromOutputId, class ToInputId >
-bool DspComponent::ConnectInput( DspComponent& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput )
+template <class FromOutputId, class ToInputId>
+bool DspComponent::ConnectInput(DspComponent& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput)
 {
-  return ConnectInput( &fromComponent, fromOutput, toInput );
+    return ConnectInput(&fromComponent, fromOutput, toInput);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-template< class FromOutputId, class ToInputId >
-void DspComponent::DisconnectInput( DspComponent const* fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput )
+template <class FromOutputId, class ToInputId>
+void DspComponent::DisconnectInput(DspComponent const* fromComponent,
+                                   FromOutputId const& fromOutput,
+                                   ToInputId const& toInput)
 {
-  unsigned short fromOutputIndex;
-  unsigned short toInputIndex;
+    unsigned short fromOutputIndex;
+    unsigned short toInputIndex;
 
-  if( !fromComponent->_outputBus.FindSignal( fromOutput, fromOutputIndex ) ||
-      !_inputBus.FindSignal( toInput, toInputIndex ) )
-  {
-    return;
-  }
+    if (!fromComponent->_outputBus.FindSignal(fromOutput, fromOutputIndex) ||
+        !_inputBus.FindSignal(toInput, toInputIndex))
+    {
+        return;
+    }
 
-  PauseAutoTick();
-  _inputWires.RemoveWire( fromComponent, fromOutputIndex, toInputIndex );
-  ResumeAutoTick();
+    PauseAutoTick();
+    _inputWires.RemoveWire(fromComponent, fromOutputIndex, toInputIndex);
+    ResumeAutoTick();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-template< class FromOutputId, class ToInputId >
-void DspComponent::DisconnectInput( DspComponent const& fromComponent, FromOutputId const& fromOutput, ToInputId const& toInput )
+template <class FromOutputId, class ToInputId>
+void DspComponent::DisconnectInput(DspComponent const& fromComponent,
+                                   FromOutputId const& fromOutput,
+                                   ToInputId const& toInput)
 {
-  DisconnectInput( &fromComponent, fromOutput, toInput );
+    DisconnectInput(&fromComponent, fromOutput, toInput);
 }
 
 //=================================================================================================
 
-#endif // DSPCOMPONENT_H
+#endif  // DSPCOMPONENT_H

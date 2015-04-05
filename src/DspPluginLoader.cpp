@@ -25,89 +25,89 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/DspPluginLoader.h>
 
 #ifdef _WIN32
-  #include <windows.h>
+#include <windows.h>
 #else
-  #include <dlfcn.h>
+#include <dlfcn.h>
 #endif
 
 //=================================================================================================
 
-DspPluginLoader::DspPluginLoader( std::string const& pluginPath )
-  : _handle( NULL )
+DspPluginLoader::DspPluginLoader(std::string const& pluginPath)
+    : _handle(NULL)
 {
-  // open library
-  #ifdef _WIN32
-    _handle = LoadLibrary( pluginPath.c_str() );
-  #else
-    _handle = dlopen( pluginPath.c_str(), RTLD_NOW );
-  #endif
+// open library
+#ifdef _WIN32
+    _handle = LoadLibrary(pluginPath.c_str());
+#else
+    _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
+#endif
 
-  if( _handle )
-  {
-    // load symbols
-    #ifdef _WIN32
-      _getCreateParams = ( GetCreateParams_t ) GetProcAddress( ( HMODULE ) _handle, "GetCreateParams" );
-      _create = ( Create_t ) GetProcAddress( ( HMODULE ) _handle, "Create" );
-    #else
-      _getCreateParams = ( GetCreateParams_t ) dlsym( _handle, "GetCreateParams" );
-      _create = ( Create_t ) dlsym( _handle, "Create" );
-    #endif
-
-    if( !_getCreateParams || !_create )
+    if (_handle)
     {
-      #ifdef _WIN32
-        FreeLibrary( ( HMODULE ) _handle );
-      #else
-        dlclose( _handle );
-      #endif
+// load symbols
+#ifdef _WIN32
+        _getCreateParams = (GetCreateParams_t)GetProcAddress((HMODULE)_handle, "GetCreateParams");
+        _create = (Create_t)GetProcAddress((HMODULE)_handle, "Create");
+#else
+        _getCreateParams = (GetCreateParams_t)dlsym(_handle, "GetCreateParams");
+        _create = (Create_t)dlsym(_handle, "Create");
+#endif
 
-      _handle = NULL;
+        if (!_getCreateParams || !_create)
+        {
+#ifdef _WIN32
+            FreeLibrary((HMODULE)_handle);
+#else
+            dlclose(_handle);
+#endif
+
+            _handle = NULL;
+        }
     }
-  }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 DspPluginLoader::~DspPluginLoader()
 {
-  // close library
-  if( _handle )
-  {
-    #ifdef _WIN32
-      FreeLibrary( ( HMODULE ) _handle );
-    #else
-      dlclose( _handle );
-    #endif
-  }
+    // close library
+    if (_handle)
+    {
+#ifdef _WIN32
+        FreeLibrary((HMODULE)_handle);
+#else
+        dlclose(_handle);
+#endif
+    }
 }
 
 //=================================================================================================
 
 bool DspPluginLoader::IsLoaded() const
 {
-  return _handle ? true : false;
+    return _handle ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-std::map< std::string, DspParameter > DspPluginLoader::GetCreateParams() const
+std::map<std::string, DspParameter> DspPluginLoader::GetCreateParams() const
 {
-  if( _handle )
-  {
-    return _getCreateParams();
-  }
-  return std::map< std::string, DspParameter >();
+    if (_handle)
+    {
+        return _getCreateParams();
+    }
+    return std::map<std::string, DspParameter>();
 }
 
 //-------------------------------------------------------------------------------------------------
 
-DspComponent* DspPluginLoader::Create( std::map< std::string, DspParameter >& params ) const
+DspComponent* DspPluginLoader::Create(std::map<std::string, DspParameter>& params) const
 {
-  if( _handle )
-  {
-    return _create( params );
-  }
-  return NULL;
+    if (_handle)
+    {
+        return _create(params);
+    }
+    return NULL;
 }
 
 //=================================================================================================

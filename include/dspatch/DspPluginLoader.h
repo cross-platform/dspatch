@@ -46,23 +46,23 @@ and Create() methods accordingly (For more detail on the structure of a plugin, 
 class DLLEXPORT DspPluginLoader : public DspPlugin
 {
 public:
-  DspPluginLoader( std::string const& pluginPath );
-  ~DspPluginLoader();
+    DspPluginLoader(std::string const& pluginPath);
+    ~DspPluginLoader();
 
-  bool IsLoaded() const;
+    bool IsLoaded() const;
 
-  std::map< std::string, DspParameter > GetCreateParams() const;
-  DspComponent* Create( std::map< std::string, DspParameter >& params ) const;
+    std::map<std::string, DspParameter> GetCreateParams() const;
+    DspComponent* Create(std::map<std::string, DspParameter>& params) const;
 
 private:
-  typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
-  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter >& );
+    typedef std::map<std::string, DspParameter>(*GetCreateParams_t)();
+    typedef DspComponent* (*Create_t)(std::map<std::string, DspParameter>&);
 
-  void* _handle;
-  GetCreateParams_t _getCreateParams;
-  Create_t _create;
+    void* _handle;
+    GetCreateParams_t _getCreateParams;
+    Create_t _create;
 };
 
 //=================================================================================================
 
-#endif // DSPPLUGINLOADER_H
+#endif  // DSPPLUGINLOADER_H
