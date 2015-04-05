@@ -367,7 +367,6 @@ void DspComponent::StopAutoTick()
 
 void DspComponent::PauseAutoTick()
 {
-    ++_pauseCount;
     _PauseAutoTick();
 }
 
@@ -603,6 +602,7 @@ void DspComponent::_PauseAutoTick()
     {
         if (_isAutoTickRunning)
         {
+            ++_pauseCount;
             _componentThread.Pause();
             _isAutoTickPaused = true;
             _isAutoTickRunning = false;
