@@ -86,10 +86,7 @@ public:
         ParameterRemoved,
         ParameterUpdated
     };
-    typedef void (*Callback_t)(DspComponent* component,
-                               CallbackType const& callbackType,
-                               int index,
-                               void* userData);
+    typedef void (*Callback_t)(DspComponent* component, CallbackType const& callbackType, int index, void* userData);
 
     DspComponent();
     virtual ~DspComponent();
