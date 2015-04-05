@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -30,7 +30,7 @@ DspCircuit* DSPatch::_globalCircuit = new DspCircuit();
 
 //=================================================================================================
 
-void DSPatch::SetGlobalThreadCount(unsigned short threadCount)
+void DSPatch::SetGlobalThreadCount(int threadCount)
 {
     if (_globalCircuit != NULL)
     {
@@ -82,7 +82,7 @@ void DSPatch::_RemoveGlobalComponent(DspComponent const* component)
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DSPatch::_GetGlobalComponentCount()
+int DSPatch::_GetGlobalComponentCount()
 {
     if (_globalCircuit != NULL)
     {

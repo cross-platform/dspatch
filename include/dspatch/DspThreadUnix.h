@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -80,9 +80,9 @@ public:
         _SetPriority(pthread_self(), priority);
     }
 
-    static void MsSleep(unsigned short milliseconds)
+    static void MsSleep(int milliseconds)
     {
-        usleep((unsigned int)milliseconds);
+        usleep(milliseconds);
     }
 
 private:

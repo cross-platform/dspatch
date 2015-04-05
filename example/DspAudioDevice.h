@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -34,21 +34,21 @@ struct RtAudioMembers;
 class DspAudioDevice : public DspComponent
 {
 public:
-    unsigned short pDeviceList;   // List
-    unsigned short pIsStreaming;  // Bool
-    unsigned short pBufferSize;   // Int
-    unsigned short pSampleRate;   // Int
+    int pDeviceList;   // List
+    int pIsStreaming;  // Bool
+    int pBufferSize;   // Int
+    int pSampleRate;   // Int
 
     DspAudioDevice();
     ~DspAudioDevice();
 
-    bool SetDevice(short deviceIndex);
+    bool SetDevice(int deviceIndex);
 
-    std::string GetDeviceName(short deviceIndex) const;
-    unsigned short GetDeviceInputCount(short deviceIndex) const;
-    unsigned short GetDeviceOutputCount(short deviceIndex) const;
-    unsigned short GetCurrentDevice() const;
-    unsigned short GetDeviceCount() const;
+    std::string GetDeviceName(int deviceIndex) const;
+    int GetDeviceInputCount(int deviceIndex) const;
+    int GetDeviceOutputCount(int deviceIndex) const;
+    int GetCurrentDevice() const;
+    int GetDeviceCount() const;
 
     void SetBufferSize(int bufferSize);
     void SetSampleRate(int sampleRate);
@@ -59,7 +59,7 @@ public:
 
 protected:
     virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-    virtual bool ParameterUpdating_(unsigned short index, DspParameter const& param);
+    virtual bool ParameterUpdating_(int index, DspParameter const& param);
 
 private:
     std::vector< std::vector<float> > _outputChannels;

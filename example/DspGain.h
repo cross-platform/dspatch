@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -32,7 +32,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspGain : public DspComponent
 {
 public:
-    unsigned short pGain;  // Float
+    int pGain;  // Float
 
     DspGain()
     {
@@ -63,7 +63,7 @@ protected:
             _stream.assign(_stream.size(), 0);
         }
 
-        for (unsigned long i = 0; i < _stream.size(); i++)
+        for (size_t i = 0; i < _stream.size(); i++)
         {
             _stream[i] *= GetGain();
         }
@@ -71,7 +71,7 @@ protected:
         outputs.SetValue(0, _stream);
     }
 
-    virtual bool ParameterUpdating_(unsigned short index, DspParameter const& param)
+    virtual bool ParameterUpdating_(int index, DspParameter const& param)
     {
         if (index == pGain)
         {

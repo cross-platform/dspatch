@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -69,7 +69,7 @@ public:
     static void SetPriority(Priority priority)
     {
     }
-    static void MsSleep(unsigned short milliseconds)
+    static void MsSleep(int milliseconds)
     {
     }
 };

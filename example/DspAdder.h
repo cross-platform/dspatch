@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -83,7 +83,7 @@ protected:
         // ensure that the 2 input buffer sizes match
         if (_stream1.size() == _stream2.size())
         {
-            for (unsigned long i = 0; i < _stream1.size(); i++)
+            for (size_t i = 0; i < _stream1.size(); i++)
             {
                 _stream1[i] += _stream2[i];  // perform addition element-by-element
             }

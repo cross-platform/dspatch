@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -64,9 +64,7 @@ The plugin is now ready to be loaded into a DSPatch host application (see DspPlu
 class DLLEXPORT DspPlugin
 {
 public:
-    virtual ~DspPlugin()
-    {
-    }
+    virtual ~DspPlugin();
     virtual std::map<std::string, DspParameter> GetCreateParams() const;
     virtual DspComponent* Create(std::map<std::string, DspParameter>& params) const = 0;
 };
@@ -74,7 +72,8 @@ public:
 //=================================================================================================
 
 #define EXPORT_DSPPLUGIN(Plugin)                                                \
-    extern "C" {                                                                \
+extern "C"                                                                      \
+{                                                                               \
     DLLEXPORT std::map<std::string, DspParameter> GetCreateParams()             \
     {                                                                           \
         DspPlugin* plugin = new Plugin();                                       \
@@ -89,7 +88,7 @@ public:
         delete plugin;                                                          \
         return component;                                                       \
     }                                                                           \
-    }
+}
 
 //=================================================================================================
 

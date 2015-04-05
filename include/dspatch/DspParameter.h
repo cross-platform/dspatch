@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -56,19 +56,15 @@ public:
         Int,
         Float,
         String,
-        FilePath,  // this is essentially just a string, but helps when determining an appropriate user input method
-        List,    // this type acts as a vector (available items), an int (index selected), and a string (item selected)
-        Trigger  // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
+        FilePath, // this is essentially just a string, but helps when determining an appropriate user input method
+        List,     // this type acts as a vector (available items), an int (index selected), and a string (item selected)
+        Trigger   // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
     };
 
     DspParameter();
     DspParameter(ParamType const& type);
-    DspParameter(ParamType const& type,
-                 int const& initValue,
-                 std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
-    DspParameter(ParamType const& type,
-                 float const& initValue,
-                 std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
+    DspParameter(ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
+    DspParameter(ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
     DspParameter(ParamType const& type, std::string const& initValue);
     DspParameter(ParamType const& type, std::vector<std::string> const& initValue);
 

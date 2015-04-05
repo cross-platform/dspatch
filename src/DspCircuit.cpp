@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -28,7 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-DspCircuit::DspCircuit(unsigned short threadCount)
+DspCircuit::DspCircuit(int threadCount)
     : _currentThreadIndex(0)
     , _inToInWires(true)
     , _outToOutWires(false)
@@ -47,35 +47,14 @@ DspCircuit::~DspCircuit()
 
 //=================================================================================================
 
-void DspCircuit::PauseAutoTick()
+void DspCircuit::SetThreadCount(int threadCount)
 {
-    // pause auto tick
-    DspComponent::PauseAutoTick();
-
-    // manually tick until 0
-    while (_currentThreadIndex != 0)
-    {
-        Tick();
-        Reset();
-    }
-
-    // sync all threads
-    for (unsigned short i = 0; i < _circuitThreads.size(); i++)
-    {
-        _circuitThreads[i].Sync();
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-
-void DspCircuit::SetThreadCount(unsigned short threadCount)
-{
-    if (threadCount != _circuitThreads.size())
+    if ((size_t)threadCount != _circuitThreads.size())
     {
         PauseAutoTick();
 
         // stop all threads
-        for (unsigned short i = 0; i < _circuitThreads.size(); i++)
+        for (size_t i = 0; i < _circuitThreads.size(); i++)
         {
             _circuitThreads[i].Stop();
         }
@@ -84,14 +63,14 @@ void DspCircuit::SetThreadCount(unsigned short threadCount)
         _circuitThreads.resize(threadCount);
 
         // initialise and start all threads
-        for (unsigned short i = 0; i < _circuitThreads.size(); i++)
+        for (size_t i = 0; i < _circuitThreads.size(); i++)
         {
             _circuitThreads[i].Initialise(&_components, i);
             _circuitThreads[i].Start();
         }
 
         // set all components to the new thread count
-        for (unsigned short i = 0; i < _components.size(); i++)
+        for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->_SetBufferCount(threadCount);
         }
@@ -102,7 +81,7 @@ void DspCircuit::SetThreadCount(unsigned short threadCount)
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspCircuit::GetThreadCount() const
+int DspCircuit::GetThreadCount() const
 {
     return _circuitThreads.size();
 }
@@ -121,7 +100,7 @@ bool DspCircuit::AddComponent(DspComponent* component, std::string const& compon
             compName = component->GetComponentName();
         }
 
-        unsigned short componentIndex;
+        int componentIndex;
 
         if (component->_GetParentCircuit() != NULL)
         {
@@ -162,7 +141,7 @@ bool DspCircuit::AddComponent(DspComponent& component, std::string const& compon
 
 void DspCircuit::RemoveComponent(DspComponent const* component)
 {
-    unsigned short componentIndex;
+    int componentIndex;
 
     if (_FindComponent(component, componentIndex))
     {
@@ -183,7 +162,7 @@ void DspCircuit::RemoveComponent(DspComponent const& component)
 
 void DspCircuit::RemoveComponent(std::string const& componentName)
 {
-    unsigned short componentIndex;
+    int componentIndex;
 
     if (_FindComponent(componentName, componentIndex))
     {
@@ -197,7 +176,7 @@ void DspCircuit::RemoveComponent(std::string const& componentName)
 
 void DspCircuit::RemoveAllComponents()
 {
-    for (unsigned short i = 0; i < _components.size(); i++)
+    for (size_t i = 0; i < _components.size(); i++)
     {
         PauseAutoTick();
         _RemoveComponent(i--);  // size drops as one is removed
@@ -207,7 +186,7 @@ void DspCircuit::RemoveAllComponents()
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DspCircuit::GetComponentCount() const
+int DspCircuit::GetComponentCount() const
 {
     return _components.size();
 }
@@ -216,7 +195,7 @@ unsigned short DspCircuit::GetComponentCount() const
 
 void DspCircuit::DisconnectComponent(std::string const& component)
 {
-    unsigned short componentIndex;
+    int componentIndex;
 
     if (!_FindComponent(component, componentIndex))  // verify component exists
     {
@@ -296,7 +275,7 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     if (_circuitThreads.size() == 0)
     {
         // set all internal component inputs from connected circuit inputs
-        for (unsigned short i = 0; i < _inToInWires.GetWireCount(); i++)
+        for (int i = 0; i < _inToInWires.GetWireCount(); i++)
         {
             wire = _inToInWires.GetWire(i);
             signal = inputs.GetSignal(wire->fromSignalIndex);
@@ -304,19 +283,19 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         }
 
         // tick all internal components
-        for (unsigned short i = 0; i < _components.size(); i++)
+        for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->Tick();
         }
 
         // reset all internal components
-        for (unsigned short i = 0; i < _components.size(); i++)
+        for (size_t i = 0; i < _components.size(); i++)
         {
             _components[i]->Reset();
         }
 
         // set all circuit outputs from connected internal component outputs
-        for (unsigned short i = 0; i < _outToOutWires.GetWireCount(); i++)
+        for (int i = 0; i < _outToOutWires.GetWireCount(); i++)
         {
             wire = _outToOutWires.GetWire(i);
             signal = wire->linkedComponent->_GetOutputSignal(wire->fromSignalIndex);
@@ -330,7 +309,7 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         _circuitThreads[_currentThreadIndex].Sync();  // sync with thread x
 
         // set all circuit outputs from connected internal component outputs
-        for (unsigned short i = 0; i < _outToOutWires.GetWireCount(); i++)
+        for (int i = 0; i < _outToOutWires.GetWireCount(); i++)
         {
             wire = _outToOutWires.GetWire(i);
             signal = wire->linkedComponent->_GetOutputSignal(wire->fromSignalIndex, _currentThreadIndex);
@@ -338,7 +317,7 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
         }
 
         // set all internal component inputs from connected circuit inputs
-        for (unsigned short i = 0; i < _inToInWires.GetWireCount(); i++)
+        for (int i = 0; i < _inToInWires.GetWireCount(); i++)
         {
             wire = _inToInWires.GetWire(i);
             signal = inputs.GetSignal(wire->fromSignalIndex);
@@ -347,7 +326,7 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
         _circuitThreads[_currentThreadIndex].Resume();  // resume thread x
 
-        if (++_currentThreadIndex >= _circuitThreads.size())  // shift to thread x+1
+        if ((size_t)++_currentThreadIndex >= _circuitThreads.size())  // shift to thread x+1
         {
             _currentThreadIndex = 0;
         }
@@ -356,9 +335,30 @@ void DspCircuit::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
 //=================================================================================================
 
-bool DspCircuit::_FindComponent(DspComponent const* component, unsigned short& returnIndex) const
+void DspCircuit::_PauseAutoTick()
 {
-    for (unsigned short i = 0; i < _components.size(); i++)
+    // pause auto tick
+    DspComponent::_PauseAutoTick();
+
+    // manually tick until 0
+    while (_currentThreadIndex != 0)
+    {
+        Tick();
+        Reset();
+    }
+
+    // sync all threads
+    for (size_t i = 0; i < _circuitThreads.size(); i++)
+    {
+        _circuitThreads[i].Sync();
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+
+bool DspCircuit::_FindComponent(DspComponent const* component, int& returnIndex) const
+{
+    for (size_t i = 0; i < _components.size(); i++)
     {
         if (_components[i] == component)
         {
@@ -372,16 +372,16 @@ bool DspCircuit::_FindComponent(DspComponent const* component, unsigned short& r
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::_FindComponent(DspComponent const& component, unsigned short& returnIndex) const
+bool DspCircuit::_FindComponent(DspComponent const& component, int& returnIndex) const
 {
     return _FindComponent(&component, returnIndex);
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::_FindComponent(std::string const& componentName, unsigned short& returnIndex) const
+bool DspCircuit::_FindComponent(std::string const& componentName, int& returnIndex) const
 {
-    for (unsigned short i = 0; i < _components.size(); i++)
+    for (size_t i = 0; i < _components.size(); i++)
     {
         if (_components[i]->GetComponentName() != "" && _components[i]->GetComponentName() == componentName)
         {
@@ -395,9 +395,9 @@ bool DspCircuit::_FindComponent(std::string const& componentName, unsigned short
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspCircuit::_FindComponent(unsigned short componentIndex, unsigned short& returnIndex) const
+bool DspCircuit::_FindComponent(int componentIndex, int& returnIndex) const
 {
-    if (componentIndex < _components.size())
+    if ((size_t)componentIndex < _components.size())
     {
         returnIndex = componentIndex;
         return true;
@@ -408,14 +408,20 @@ bool DspCircuit::_FindComponent(unsigned short componentIndex, unsigned short& r
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::_DisconnectComponent(unsigned short componentIndex)
+void DspCircuit::_DisconnectComponent(int componentIndex)
 {
     // remove component from _inputComponents and _inputWires
     _components[componentIndex]->DisconnectAllInputs();
 
+    // remove any connections this component has to other components
+    for (size_t i = 0; i < _components.size(); ++i)
+    {
+        _components[i]->DisconnectInput(_components[componentIndex]);
+    }
+
     // remove component from _inToInWires
     DspWire* wire;
-    for (unsigned short i = 0; i < _inToInWires.GetWireCount(); i++)
+    for (int i = 0; i < _inToInWires.GetWireCount(); i++)
     {
         wire = _inToInWires.GetWire(i);
         if (wire->linkedComponent == _components[componentIndex])
@@ -425,7 +431,7 @@ void DspCircuit::_DisconnectComponent(unsigned short componentIndex)
     }
 
     // remove component from _outToOutWires
-    for (unsigned short i = 0; i < _outToOutWires.GetWireCount(); i++)
+    for (int i = 0; i < _outToOutWires.GetWireCount(); i++)
     {
         wire = _outToOutWires.GetWire(i);
         if (wire->linkedComponent == _components[componentIndex])
@@ -437,7 +443,7 @@ void DspCircuit::_DisconnectComponent(unsigned short componentIndex)
 
 //-------------------------------------------------------------------------------------------------
 
-void DspCircuit::_RemoveComponent(unsigned short componentIndex)
+void DspCircuit::_RemoveComponent(int componentIndex)
 {
     _DisconnectComponent(componentIndex);
 

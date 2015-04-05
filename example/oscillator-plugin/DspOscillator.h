@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -32,10 +32,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspOscillator : public DspComponent
 {
 public:
-    unsigned short pBufferSize;  // Int
-    unsigned short pSampleRate;  // Int
-    unsigned short pAmplitude;   // Float
-    unsigned short pFrequency;   // Float
+    int pBufferSize;  // Int
+    int pSampleRate;  // Int
+    int pAmplitude;   // Float
+    int pFrequency;   // Float
 
     DspOscillator(float startFreq = 1000.0, float startAmpl = 1.0);
     ~DspOscillator();
@@ -52,14 +52,14 @@ public:
 
 protected:
     virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
-    virtual bool ParameterUpdating_(unsigned short index, DspParameter const& param);
+    virtual bool ParameterUpdating_(int index, DspParameter const& param);
 
 private:
     std::vector<float> _signalLookup;
     std::vector<float> _signal;
 
-    unsigned long _lastPos;
-    unsigned long _lookupLength;
+    int _lastPos;
+    int _lookupLength;
 
     DspMutex _processMutex;
 

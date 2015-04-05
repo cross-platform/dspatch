@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -33,37 +33,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //=================================================================================================
 
 DspPluginLoader::DspPluginLoader(std::string const& pluginPath)
-    : _handle(NULL)
+    : _pluginPath(pluginPath)
+    , _handle(NULL)
 {
-// open library
-#ifdef _WIN32
-    _handle = LoadLibrary(pluginPath.c_str());
-#else
-    _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
-#endif
+    _LoadPlugin(_pluginPath);
+}
 
-    if (_handle)
-    {
-// load symbols
-#ifdef _WIN32
-        _getCreateParams = (GetCreateParams_t)GetProcAddress((HMODULE)_handle, "GetCreateParams");
-        _create = (Create_t)GetProcAddress((HMODULE)_handle, "Create");
-#else
-        _getCreateParams = (GetCreateParams_t)dlsym(_handle, "GetCreateParams");
-        _create = (Create_t)dlsym(_handle, "Create");
-#endif
+//-------------------------------------------------------------------------------------------------
 
-        if (!_getCreateParams || !_create)
-        {
-#ifdef _WIN32
-            FreeLibrary((HMODULE)_handle);
-#else
-            dlclose(_handle);
-#endif
+DspPluginLoader::DspPluginLoader(DspPluginLoader const& other)
+    : _pluginPath(other._pluginPath)
+    , _handle(NULL)
+{
+    _LoadPlugin(_pluginPath);
+}
 
-            _handle = NULL;
-        }
-    }
+//-------------------------------------------------------------------------------------------------
+
+DspPluginLoader& DspPluginLoader::operator=(const DspPluginLoader& other)
+{
+    _pluginPath = other._pluginPath;
+    _handle = NULL;
+    _LoadPlugin(_pluginPath);
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -108,6 +100,47 @@ DspComponent* DspPluginLoader::Create(std::map<std::string, DspParameter>& param
         return _create(params);
     }
     return NULL;
+}
+
+//=================================================================================================
+
+DspPluginLoader::DspPluginLoader()
+{
+}
+
+//-------------------------------------------------------------------------------------------------
+
+void DspPluginLoader::_LoadPlugin(std::string const& pluginPath)
+{
+    // open library
+    #ifdef _WIN32
+        _handle = LoadLibrary(pluginPath.c_str());
+    #else
+        _handle = dlopen(pluginPath.c_str(), RTLD_NOW);
+    #endif
+
+        if (_handle)
+        {
+    // load symbols
+    #ifdef _WIN32
+            _getCreateParams = (GetCreateParams_t)GetProcAddress((HMODULE)_handle, "GetCreateParams");
+            _create = (Create_t)GetProcAddress((HMODULE)_handle, "Create");
+    #else
+            _getCreateParams = (GetCreateParams_t)dlsym(_handle, "GetCreateParams");
+            _create = (Create_t)dlsym(_handle, "Create");
+    #endif
+
+            if (!_getCreateParams || !_create)
+            {
+    #ifdef _WIN32
+                FreeLibrary((HMODULE)_handle);
+    #else
+                dlclose(_handle);
+    #endif
+
+                _handle = NULL;
+            }
+        }
 }
 
 //=================================================================================================

@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -62,13 +62,11 @@ component's Tick() and Reset() methods.
 class DLLEXPORT DspCircuit : public DspComponent
 {
 public:
-    DspCircuit(unsigned short threadCount = 0);
+    DspCircuit(int threadCount = 0);
     ~DspCircuit();
 
-    virtual void PauseAutoTick();
-
-    void SetThreadCount(unsigned short threadCount);
-    unsigned short GetThreadCount() const;
+    void SetThreadCount(int threadCount);
+    int GetThreadCount() const;
 
     bool AddComponent(DspComponent* component, std::string const& componentName = "");
     bool AddComponent(DspComponent& component, std::string const& componentName = "");
@@ -82,14 +80,11 @@ public:
     template <class ComponentType>
     ComponentType* GetComponent(std::string const& componentName);
 
-    unsigned short GetComponentCount() const;
+    int GetComponentCount() const;
 
     // component output to component input
     template <class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId>
-    bool ConnectOutToIn(FromComponentType& fromComponent,
-                        FromOutputId const& fromOutput,
-                        ToComponentType& toComponent,
-                        ToInputId const& toInput);
+    bool ConnectOutToIn(FromComponentType& fromComponent, FromOutputId const& fromOutput, ToComponentType& toComponent, ToInputId const& toInput);
 
     // circuit input to component input
     template <class FromInputId, class ToComponentType, class ToInputId>
@@ -101,10 +96,7 @@ public:
 
     // component output to component input
     template <class FromComponentType, class FromOutputId, class ToComponentType, class ToInputId>
-    void DisconnectOutToIn(FromComponentType const& fromComponent,
-                           FromOutputId const& fromOutput,
-                           ToComponentType const& toComponent,
-                           ToInputId const& toInput);
+    void DisconnectOutToIn(FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToComponentType const& toComponent, ToInputId const& toInput);
 
     // circuit input to component input
     template <class FromInputId, class ToComponentType, class ToInputId>
@@ -112,9 +104,7 @@ public:
 
     // component output to circuit output
     template <class FromComponentType, class FromOutputId, class ToOutputId>
-    bool DisconnectOutToOut(FromComponentType const& fromComponent,
-                            FromOutputId const& fromOutput,
-                            ToOutputId const& toOutput);
+    bool DisconnectOutToOut(FromComponentType const& fromComponent, FromOutputId const& fromOutput, ToOutputId const& toOutput);
 
     void DisconnectComponent(std::string const& component);
 
@@ -131,21 +121,24 @@ protected:
     virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
 
 private:
+    virtual void _PauseAutoTick();
+
+    bool _FindComponent(DspComponent const* component, int& returnIndex) const;
+    bool _FindComponent(DspComponent const& component, int& returnIndex) const;
+    bool _FindComponent(std::string const& componentName, int& returnIndex) const;
+    bool _FindComponent(int componentIndex, int& returnIndex) const;
+
+    void _DisconnectComponent(int componentIndex);
+    void _RemoveComponent(int componentIndex);
+
+private:
     std::vector<DspComponent*> _components;
 
     std::vector<DspCircuitThread> _circuitThreads;
-    unsigned short _currentThreadIndex;
+    int _currentThreadIndex;
 
     DspWireBus _inToInWires;
     DspWireBus _outToOutWires;
-
-    bool _FindComponent(DspComponent const* component, unsigned short& returnIndex) const;
-    bool _FindComponent(DspComponent const& component, unsigned short& returnIndex) const;
-    bool _FindComponent(std::string const& componentName, unsigned short& returnIndex) const;
-    bool _FindComponent(unsigned short componentIndex, unsigned short& returnIndex) const;
-
-    void _DisconnectComponent(unsigned short componentIndex);
-    void _RemoveComponent(unsigned short componentIndex);
 };
 
 //=================================================================================================
@@ -153,7 +146,7 @@ private:
 template <class ComponentType>
 ComponentType* DspCircuit::GetComponent(std::string const& componentName)
 {
-    unsigned short componentIndex;
+    int componentIndex;
 
     if (_FindComponent(componentName, componentIndex))
     {
@@ -173,8 +166,8 @@ bool DspCircuit::ConnectOutToIn(FromComponentType& fromComponent,
                                 ToComponentType& toComponent,
                                 ToInputId const& toInput)
 {
-    unsigned short fromComponentIndex;
-    unsigned short toComponentIndex;
+    int fromComponentIndex;
+    int toComponentIndex;
 
     // only interconnect components that have been added to this system
     if (!_FindComponent(fromComponent, fromComponentIndex) || !_FindComponent(toComponent, toComponentIndex))
@@ -196,9 +189,9 @@ bool DspCircuit::ConnectOutToIn(FromComponentType& fromComponent,
 template <class FromInputId, class ToComponentType, class ToInputId>
 bool DspCircuit::ConnectInToIn(FromInputId const& fromInput, ToComponentType& toComponent, ToInputId const& toInput)
 {
-    unsigned short fromInputIndex;
-    unsigned short toComponentIndex;
-    unsigned short toInputIndex;
+    int fromInputIndex;
+    int toComponentIndex;
+    int toInputIndex;
 
     // only interconnect components that have been added to this system
     if (!_FindInput(fromInput, fromInputIndex) || !_FindComponent(toComponent, toComponentIndex) ||
@@ -223,9 +216,9 @@ bool DspCircuit::ConnectOutToOut(FromComponentType& fromComponent,
                                  FromOutputId const& fromOutput,
                                  ToOutputId const& toOutput)
 {
-    unsigned short fromComponentIndex;
-    unsigned short fromOutputIndex;
-    unsigned short toOutputIndex;
+    int fromComponentIndex;
+    int fromOutputIndex;
+    int toOutputIndex;
 
     // only interconnect components that have been added to this system
     if (!_FindComponent(fromComponent, fromComponentIndex) ||
@@ -252,8 +245,8 @@ void DspCircuit::DisconnectOutToIn(FromComponentType const& fromComponent,
                                    ToComponentType const& toComponent,
                                    ToInputId const& toInput)
 {
-    unsigned short fromComponentIndex;
-    unsigned short toComponentIndex;
+    int fromComponentIndex;
+    int toComponentIndex;
 
     // only interconnect components that have been added to this system
     if (!_FindComponent(fromComponent, fromComponentIndex) || !_FindComponent(toComponent, toComponentIndex))
@@ -275,9 +268,9 @@ bool DspCircuit::DisconnectInToIn(FromInputId const& fromInput,
                                   ToComponentType const& toComponent,
                                   ToInputId const& toInput)
 {
-    unsigned short fromInputIndex;
-    unsigned short toComponentIndex;
-    unsigned short toInputIndex;
+    int fromInputIndex;
+    int toComponentIndex;
+    int toInputIndex;
 
     // only interconnect components that have been added to this system
     if (!_FindInput(fromInput, fromInputIndex) || !_FindComponent(toComponent, toComponentIndex) ||
@@ -302,9 +295,9 @@ bool DspCircuit::DisconnectOutToOut(FromComponentType const& fromComponent,
                                     FromOutputId const& fromOutput,
                                     ToOutputId const& toOutput)
 {
-    unsigned short fromComponentIndex;
-    unsigned short fromOutputIndex;
-    unsigned short toOutputIndex;
+    int fromComponentIndex;
+    int fromOutputIndex;
+    int toOutputIndex;
 
     // only interconnect components that have been added to this system
     if (!_FindComponent(fromComponent, fromComponentIndex) ||

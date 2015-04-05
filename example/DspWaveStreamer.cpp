@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -76,7 +76,7 @@ bool DspWaveStreamer::LoadFile(char const* filePath)
         return false;
     }
 
-    unsigned long dwFileSize = 0, dwChunkSize = 0;
+    int dwFileSize = 0, dwChunkSize = 0;
     char dwChunkId[5];
     char dwExtra[5];
 
@@ -109,7 +109,7 @@ bool DspWaveStreamer::LoadFile(char const* filePath)
 
     // look for 'fmt ' chunk id
     bool bFilledFormat = false;
-    for (unsigned long i = 12; i < dwFileSize;)
+    for (int i = 12; i < dwFileSize;)
     {
         inFile.seekg(i, std::ios::beg);
         inFile.read(dwChunkId, 4);
@@ -144,7 +144,7 @@ bool DspWaveStreamer::LoadFile(char const* filePath)
 
     // look for 'data' chunk id
     bool bFilledData = false;
-    for (unsigned long i = 12; i < dwFileSize;)
+    for (int i = 12; i < dwFileSize;)
     {
         inFile.seekg(i, std::ios::beg);
         inFile.read(dwChunkId, 4);
@@ -221,14 +221,14 @@ void DspWaveStreamer::Process_(DspSignalBus&, DspSignalBus& outputs)
     {
         _busyMutex.Lock();
 
-        unsigned short index = 0;
-        for (unsigned short i = 0; i < _bufferSize * 2; i += 2)
+        int index = 0;
+        for (int i = 0; i < _bufferSize * 2; i += 2)
         {
             _leftChannel[index++] = (float)_waveData[_sampleIndex + i] * _shortToFloatCoeff;
         }
 
         index = 0;
-        for (unsigned short i = 1; i < _bufferSize * 2; i += 2)
+        for (int i = 1; i < _bufferSize * 2; i += 2)
         {
             _rightChannel[index++] = (float)_waveData[_sampleIndex + i] * _shortToFloatCoeff;
         }
@@ -251,7 +251,7 @@ void DspWaveStreamer::Process_(DspSignalBus&, DspSignalBus& outputs)
 
 //-------------------------------------------------------------------------------------------------
 
-bool DspWaveStreamer::ParameterUpdating_(unsigned short index, DspParameter const& param)
+bool DspWaveStreamer::ParameterUpdating_(int index, DspParameter const& param)
 {
     if (index == pFilePath)
     {

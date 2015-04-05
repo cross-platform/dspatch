@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -373,7 +373,7 @@ bool DspParameter::SetString(std::string const& value)
     }
     else if (_type == List)
     {
-        for (unsigned short i = 0; i < _listValue.size(); ++i)
+        for (size_t i = 0; i < _listValue.size(); ++i)
         {
             if (_listValue[i] == value)
             {
