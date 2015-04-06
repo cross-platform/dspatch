@@ -65,7 +65,7 @@ class DLLEXPORT DspPlugin
 {
 public:
     virtual ~DspPlugin();
-    virtual std::map<std::string, DspParameter> GetCreateParams() const;
+    virtual std::map<std::string, DspParameter> GetCreateParams() const = 0;
     virtual DspComponent* Create(std::map<std::string, DspParameter>& params) const = 0;
 };
 
