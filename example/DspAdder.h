@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -38,67 +38,69 @@ output 1 of the component output bus. */
 class DspAdder : public DspComponent
 {
 public:
-  //! Component constructor
-  /*! When a component is constructed, it's input and output buses must be configured. This is
-  achieved by making calls to the base class protected methods: "AddInput_()" and "AddOutput_().
-  These methods must be called once per input / output required. IO signal names are optional
-  (Component IO can be referenced by either string ID or index)	and can be assigned to each
-  input / output by supplying the desired string ID as an argument to the respective AddInput_()
-  / AddOutput_() method call.*/
+    //! Component constructor
+    /*! When a component is constructed, it's input and output buses must be configured. This is
+    achieved by making calls to the base class protected methods: "AddInput_()" and "AddOutput_().
+    These methods must be called once per input / output required. IO signal names are optional
+    (Component IO can be referenced by either string ID or index) and can be assigned to each
+    input / output by supplying the desired string ID as an argument to the respective AddInput_()
+    / AddOutput_() method call.*/
 
-  DspAdder()
-  {
-    // add 2 inputs
-    AddInput_( "Input1" );
-    AddInput_( "Input2" );
+    DspAdder()
+    {
+        // add 2 inputs
+        AddInput_("Input1");
+        AddInput_("Input2");
 
-    // add 1 output
-    AddOutput_( "Output1" );
-  }
+        // add 1 output
+        AddOutput_("Output1");
+    }
 
-  ~DspAdder() {}
+    ~DspAdder()
+    {
+    }
 
 protected:
-  //! Virtual process method inherited from DspComponent
-  /*! The Process_() method is called from the DSPatch engine when a new set of component input
-  signals are ready for processing. The Process() method has 2 arguments: the input bus and the
-  output bus. This method's purpose is to pull its required inputs out of the input bus, process
-  these inputs, and populate the output bus with the results (see DspSignalBus). */
+    //! Virtual process method inherited from DspComponent
+    /*! The Process_() method is called from the DSPatch engine when a new set of component input
+    signals are ready for processing. The Process() method has 2 arguments: the input bus and the
+    output bus. This method's purpose is to pull its required inputs out of the input bus, process
+    these inputs, and populate the output bus with the results (see DspSignalBus). */
 
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs )
-  {
-    // get input values from inputs bus (GetValue() returns true if successful)
-    if( !inputs.GetValue( 0, _stream1 ) )
+    virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     {
-      _stream1.assign( _stream1.size(), 0 ); // clear buffer if no input received
-    }
-    // do the same to the 2nd input buffer
-    if( !inputs.GetValue( 1, _stream2 ) )
-    {
-      _stream2.assign( _stream2.size(), 0 );
-    }
+        // get input values from inputs bus (GetValue() returns true if successful)
+        if (!inputs.GetValue(0, _stream1))
+        {
+            _stream1.assign(_stream1.size(), 0);  // clear buffer if no input received
+        }
+        // do the same to the 2nd input buffer
+        if (!inputs.GetValue(1, _stream2))
+        {
+            _stream2.assign(_stream2.size(), 0);
+        }
 
-    // ensure that the 2 input buffer sizes match
-    if( _stream1.size() == _stream2.size() )
-    {
-      for( unsigned long i = 0; i < _stream1.size(); i++ )
-      {
-        _stream1[i] += _stream2[i]; // perform addition element-by-element
-      }
-      outputs.SetValue( 0, _stream1 ); // set output 1
+        // ensure that the 2 input buffer sizes match
+        if (_stream1.size() == _stream2.size())
+        {
+            for (size_t i = 0; i < _stream1.size(); i++)
+            {
+                _stream1[i] += _stream2[i];  // perform addition element-by-element
+            }
+            outputs.SetValue(0, _stream1);  // set output 1
+        }
+        // if input sizes don't match
+        else
+        {
+            outputs.ClearValue(0);  // clear the output
+        }
     }
-      // if input sizes don't match
-    else
-    {
-      outputs.ClearValue( 0 ); // clear the output
-    }
-  }
 
 private:
-  std::vector< float > _stream1;
-  std::vector< float > _stream2;
+    std::vector<float> _stream1;
+    std::vector<float> _stream2;
 };
 
 //=================================================================================================
 
-#endif // DSPADDER_H
+#endif  // DSPADDER_H

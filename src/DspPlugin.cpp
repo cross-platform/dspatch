@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -26,9 +26,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 //=================================================================================================
 
-std::map< std::string, DspParameter > DspPlugin::GetCreateParams() const
+DspPlugin::~DspPlugin()
 {
-  return std::map< std::string, DspParameter >();
 }
 
 //=================================================================================================

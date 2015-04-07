@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -30,86 +30,86 @@ DspCircuit* DSPatch::_globalCircuit = new DspCircuit();
 
 //=================================================================================================
 
-void DSPatch::SetGlobalThreadCount( unsigned short threadCount )
+void DSPatch::SetGlobalThreadCount(int threadCount)
 {
-  if( _globalCircuit != NULL )
-  {
-    _globalCircuit->SetThreadCount( threadCount );
-  }
+    if (_globalCircuit != NULL)
+    {
+        _globalCircuit->SetThreadCount(threadCount);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DSPatch::Finalize()
 {
-  delete _globalCircuit;
-  _globalCircuit = NULL;
+    delete _globalCircuit;
+    _globalCircuit = NULL;
 }
 
 //=================================================================================================
 
-bool DSPatch::_IsThisGlobalCircuit( DspComponent const* thisComponent )
+bool DSPatch::_IsThisGlobalCircuit(DspComponent const* thisComponent)
 {
-  if( _globalCircuit != NULL )
-  {
-    return _globalCircuit == thisComponent;
-  }
+    if (_globalCircuit != NULL)
+    {
+        return _globalCircuit == thisComponent;
+    }
 
-  return false;
+    return false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-bool DSPatch::_AddGlobalComponent( DspComponent* component )
+bool DSPatch::_AddGlobalComponent(DspComponent* component)
 {
-  if( _globalCircuit != NULL )
-  {
-    return _globalCircuit->AddComponent( component );
-  }
+    if (_globalCircuit != NULL)
+    {
+        return _globalCircuit->AddComponent(component);
+    }
 
-  return false;
+    return false;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DSPatch::_RemoveGlobalComponent( DspComponent const* component )
+void DSPatch::_RemoveGlobalComponent(DspComponent const* component)
 {
-  if( _globalCircuit != NULL )
-  {
-    return _globalCircuit->RemoveComponent( component );
-  }
+    if (_globalCircuit != NULL)
+    {
+        return _globalCircuit->RemoveComponent(component);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-unsigned short DSPatch::_GetGlobalComponentCount()
+int DSPatch::_GetGlobalComponentCount()
 {
-  if( _globalCircuit != NULL )
-  {
-    return _globalCircuit->GetComponentCount();
-  }
+    if (_globalCircuit != NULL)
+    {
+        return _globalCircuit->GetComponentCount();
+    }
 
-  return 0;
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DSPatch::_StartGlobalAutoTick()
 {
-  if( _globalCircuit != NULL )
-  {
-    _globalCircuit->StartAutoTick();
-  }
+    if (_globalCircuit != NULL)
+    {
+        _globalCircuit->StartAutoTick();
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DSPatch::_StopGlobalAutoTick()
 {
-  if( _globalCircuit != NULL )
-  {
-    _globalCircuit->StopAutoTick();
-  }
+    if (_globalCircuit != NULL)
+    {
+        _globalCircuit->StopAutoTick();
+    }
 }
 
 //=================================================================================================

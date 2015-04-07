@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -49,82 +49,82 @@ audio buffer: array of byte / int / float).
 class DLLEXPORT DspSignal
 {
 public:
-  DspSignal( std::string signalName = "" );
+    DspSignal(std::string signalName = "");
 
-  virtual ~DspSignal();
+    virtual ~DspSignal();
 
-  template< class ValueType >
-  bool SetValue( ValueType const& newValue );
+    template <class ValueType>
+    bool SetValue(ValueType const& newValue);
 
-  template< class ValueType >
-  bool GetValue( ValueType& returnValue ) const;
+    template <class ValueType>
+    bool GetValue(ValueType& returnValue) const;
 
-  template< class ValueType >
-  ValueType const* GetValue() const;
+    template <class ValueType>
+    ValueType const* GetValue() const;
 
-  bool SetSignal( DspSignal const* newSignal );
+    bool SetSignal(DspSignal const* newSignal);
 
-  void ClearValue();
+    void ClearValue();
 
-  std::type_info const& GetSignalType() const;
+    std::type_info const& GetSignalType() const;
 
-  std::string GetSignalName() const;
+    std::string GetSignalName() const;
 
 private:
-  DspRunType _signalValue;
-  std::string _signalName;
-  bool _valueAvailable;
+    DspRunType _signalValue;
+    std::string _signalName;
+    bool _valueAvailable;
 };
 
 //=================================================================================================
 
-template< class ValueType >
-bool DspSignal::SetValue( ValueType const& newValue )
+template <class ValueType>
+bool DspSignal::SetValue(ValueType const& newValue)
 {
-  _signalValue = newValue;
-  _valueAvailable = true;
-  return true;
+    _signalValue = newValue;
+    _valueAvailable = true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-template< class ValueType >
-bool DspSignal::GetValue( ValueType& returnValue ) const
+template <class ValueType>
+bool DspSignal::GetValue(ValueType& returnValue) const
 {
-  if( _valueAvailable )
-  {
-    ValueType const* returnValuePtr = DspRunType::RunTypeCast< ValueType >( &_signalValue );
-    if( returnValuePtr != NULL )
+    if (_valueAvailable)
     {
-      returnValue = *returnValuePtr;
-      return true;
+        ValueType const* returnValuePtr = DspRunType::RunTypeCast<ValueType>(&_signalValue);
+        if (returnValuePtr != NULL)
+        {
+            returnValue = *returnValuePtr;
+            return true;
+        }
+        else
+        {
+            return false;  // incorrect type matching
+        }
     }
     else
     {
-      return false; // incorrect type matching
+        return false;  // no value available
     }
-  }
-  else
-  {
-    return false; // no value available
-  }
 }
 
 //-------------------------------------------------------------------------------------------------
 
-template< class ValueType >
+template <class ValueType>
 ValueType const* DspSignal::GetValue() const
 {
-    if( _valueAvailable )
+    if (_valueAvailable)
     {
-      return DspRunType::RunTypeCast< ValueType >( &_signalValue );
+        return DspRunType::RunTypeCast<ValueType>(&_signalValue);
     }
     else
     {
-      return NULL; // no value available
+        return NULL;  // no value available
     }
 }
 
 //=================================================================================================
 
-#endif // DSPSIGNAL_H
+#endif  // DSPSIGNAL_H

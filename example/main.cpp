@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -37,107 +37,107 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 int main()
 {
-  // 1. Stream wave
-  // ==============
+    // 1. Stream wave
+    // ==============
 
-  // create a circuit
-  DspCircuit circuit;
+    // create a circuit
+    DspCircuit circuit;
 
-  // declare components to be added to the circuit
-  DspWaveStreamer waveStreamer;
-  DspAudioDevice audioDevice;
-  DspGain gainLeft;
-  DspGain gainRight;
+    // declare components to be added to the circuit
+    DspWaveStreamer waveStreamer;
+    DspAudioDevice audioDevice;
+    DspGain gainLeft;
+    DspGain gainRight;
 
-  // set circuit thread count to 2
-  circuit.SetThreadCount( 2 );
+    // set circuit thread count to 2
+    circuit.SetThreadCount(2);
 
-  // start separate thread to tick the circuit continuously ("auto-tick")
-  circuit.StartAutoTick();
+    // start separate thread to tick the circuit continuously ("auto-tick")
+    circuit.StartAutoTick();
 
-  // add new components to the circuit (these methods return pointers to the new components)
-  circuit.AddComponent( waveStreamer );
-  circuit.AddComponent( audioDevice );
-  circuit.AddComponent( gainLeft );
-  circuit.AddComponent( gainRight );
+    // add new components to the circuit (these methods return pointers to the new components)
+    circuit.AddComponent(waveStreamer);
+    circuit.AddComponent(audioDevice);
+    circuit.AddComponent(gainLeft);
+    circuit.AddComponent(gainRight);
 
-  // DspWaveStreamer has an output signal named "Sample Rate" that streams the current wave's sample rate
-  // DspAudioDevice's "Sample Rate" input receives a sample rate value and updates the audio stream accordingly
-  circuit.ConnectOutToIn( waveStreamer, "Sample Rate", audioDevice, "Sample Rate" ); // sample rate sync
+    // DspWaveStreamer has an output signal named "Sample Rate" that streams the current wave's sample rate
+    // DspAudioDevice's "Sample Rate" input receives a sample rate value and updates the audio stream accordingly
+    circuit.ConnectOutToIn(waveStreamer, "Sample Rate", audioDevice, "Sample Rate");  // sample rate sync
 
-  // connect component output signals to respective component input signals
-  circuit.ConnectOutToIn( waveStreamer, 0, gainLeft, 0 );   // wave left channel into gain left
-  circuit.ConnectOutToIn( waveStreamer, 1, gainRight, 0 );  // wave right channel into gain right
-  circuit.ConnectOutToIn( gainLeft, 0, audioDevice, 0 );    // gain left into audio device left channel
-  circuit.ConnectOutToIn( gainRight, 0, audioDevice, 1 );   // gain right into audio device right channel
+    // connect component output signals to respective component input signals
+    circuit.ConnectOutToIn(waveStreamer, 0, gainLeft, 0);   // wave left channel into gain left
+    circuit.ConnectOutToIn(waveStreamer, 1, gainRight, 0);  // wave right channel into gain right
+    circuit.ConnectOutToIn(gainLeft, 0, audioDevice, 0);    // gain left into audio device left channel
+    circuit.ConnectOutToIn(gainRight, 0, audioDevice, 1);   // gain right into audio device right channel
 
-  // set the gain of components gainLeft and gainRight (wave left and right channels)
-  gainLeft.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75f ) ); // OR: gainLeft.SetGain( 0.75 );
-  gainRight.SetParameter( DspGain::pGain, DspParameter( DspParameter::Float, 0.75f ) ); // OR: gainRight.SetGain( 0.75 );
+    // set the gain of components gainLeft and gainRight (wave left and right channels)
+    gainLeft.SetParameter(gainLeft.pGain, DspParameter(DspParameter::Float, 0.75f));    // OR: gainLeft.SetGain(0.75);
+    gainRight.SetParameter(gainRight.pGain, DspParameter(DspParameter::Float, 0.75f));  // OR: gainRight.SetGain(0.75);
 
-  // load a wave into the wave streamer and start playing the track
-  waveStreamer.SetParameter( DspWaveStreamer::pFilePath, DspParameter( DspParameter::FilePath, EXAMPLE_WAV_FILE ) );
-  waveStreamer.SetParameter( DspWaveStreamer::pPlay, DspParameter( DspParameter::Trigger ) );
+    // load a wave into the wave streamer and start playing the track
+    waveStreamer.SetParameter(waveStreamer.pFilePath, DspParameter(DspParameter::FilePath, EXAMPLE_WAV_FILE));
+    waveStreamer.SetParameter(waveStreamer.pPlay, DspParameter(DspParameter::Trigger));
 
-  // wait for key press
-  getchar();
+    // wait for key press
+    getchar();
 
-  // 2. Stream oscillator
-  // ====================
+    // 2. Stream oscillator
+    // ====================
 
-  // pause the track
-  waveStreamer.Pause();
+    // pause the track
+    waveStreamer.Pause();
 
-  // a component input pin can only receive one signal at a time so an adders are required to combine the signals
+    // a component input pin can only receive one signal at a time so an adders are required to combine the signals
 
-  // load the oscillator plugin and create an instance of it
-  DspPluginLoader oscillPlugin( EXAMPLE_PLUGIN_FILE );
-  std::map< std::string, DspParameter > oscillParams = oscillPlugin.GetCreateParams();
-  oscillParams[ "startFreq" ] = DspParameter( DspParameter::Float, 1000.0f );
-  oscillParams[ "startAmpl" ] = DspParameter( DspParameter::Float, 0.1f );
-  DspComponent* oscillator = oscillPlugin.Create( oscillParams );
+    // load the oscillator plugin and create an instance of it
+    DspPluginLoader oscillPlugin(EXAMPLE_PLUGIN_FILE);
+    std::map<std::string, DspParameter> oscillParams = oscillPlugin.GetCreateParams();
+    oscillParams["startFreq"] = DspParameter(DspParameter::Float, 1000.0f);
+    oscillParams["startAmpl"] = DspParameter(DspParameter::Float, 0.1f);
+    DspComponent* oscillator = oscillPlugin.Create(oscillParams);
 
-  // declare the rest of the components to be added to the circuit
-  DspAdder adder1;
-  DspAdder adder2;
+    // declare the rest of the components to be added to the circuit
+    DspAdder adder1;
+    DspAdder adder2;
 
-  // add new components to the circuit
-  circuit.AddComponent( oscillator );
-  circuit.AddComponent( adder1 );
-  circuit.AddComponent( adder2 );
+    // add new components to the circuit
+    circuit.AddComponent(oscillator);
+    circuit.AddComponent(adder1);
+    circuit.AddComponent(adder2);
 
-  // DspOscillator's "Sample Rate" / "Buffer Size" input values are used to re-build its wave table accordingly
-  circuit.ConnectOutToIn( waveStreamer, "Sample Rate", oscillator, "Sample Rate" ); // sample rate sync
-  circuit.ConnectOutToIn( waveStreamer, 0, oscillator, "Buffer Size" );             // buffer size sync
+    // DspOscillator's "Sample Rate" / "Buffer Size" input values are used to re-build its wave table accordingly
+    circuit.ConnectOutToIn(waveStreamer, "Sample Rate", oscillator, "Sample Rate");  // sample rate sync
+    circuit.ConnectOutToIn(waveStreamer, 0, oscillator, "Buffer Size");              // buffer size sync
 
-  // connect component output signals to respective component input signals
-  circuit.ConnectOutToIn( gainLeft, 0, adder1, 0 );     // wave left channel into adder1 ch0
-  circuit.ConnectOutToIn( oscillator, 0, adder1, 1 );   // oscillator output into adder1 ch1
-  circuit.ConnectOutToIn( adder1, 0, audioDevice, 0 );  // adder1 output into audio device left channel
+    // connect component output signals to respective component input signals
+    circuit.ConnectOutToIn(gainLeft, 0, adder1, 0);     // wave left channel into adder1 ch0
+    circuit.ConnectOutToIn(oscillator, 0, adder1, 1);   // oscillator output into adder1 ch1
+    circuit.ConnectOutToIn(adder1, 0, audioDevice, 0);  // adder1 output into audio device left channel
 
-  circuit.ConnectOutToIn( gainRight, 0, adder2, 0 );    // wave right channel into adder2 ch0
-  circuit.ConnectOutToIn( oscillator, 0, adder2, 1 );   // oscillator output into adder2 ch1
-  circuit.ConnectOutToIn( adder2, 0, audioDevice, 1 );  // adder2 output into audio device right channel
+    circuit.ConnectOutToIn(gainRight, 0, adder2, 0);    // wave right channel into adder2 ch0
+    circuit.ConnectOutToIn(oscillator, 0, adder2, 1);   // oscillator output into adder2 ch1
+    circuit.ConnectOutToIn(adder2, 0, audioDevice, 1);  // adder2 output into audio device right channel
 
-  // wait for key press
-  getchar();
+    // wait for key press
+    getchar();
 
-  // 3. Overlay both streams
-  // =======================
+    // 3. Overlay both streams
+    // =======================
 
-  // resume the track
-  waveStreamer.Play();
+    // resume the track
+    waveStreamer.Play();
 
-  // wait for key press
-  getchar();
+    // wait for key press
+    getchar();
 
-  // clean up DSPatch
-  DSPatch::Finalize();
+    // clean up DSPatch
+    DSPatch::Finalize();
 
-  // clean up the oscillator pointer
-  delete oscillator;
+    // clean up the oscillator pointer
+    delete oscillator;
 
-  return 0;
+    return 0;
 }
 
 //=================================================================================================

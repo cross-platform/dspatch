@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -46,23 +46,30 @@ and Create() methods accordingly (For more detail on the structure of a plugin, 
 class DLLEXPORT DspPluginLoader : public DspPlugin
 {
 public:
-  DspPluginLoader( std::string const& pluginPath );
-  ~DspPluginLoader();
+    DspPluginLoader(std::string const& pluginPath);
+    DspPluginLoader(DspPluginLoader const& other);
+    DspPluginLoader& operator=(const DspPluginLoader& other);
+    ~DspPluginLoader();
 
-  bool IsLoaded() const;
+    bool IsLoaded() const;
 
-  std::map< std::string, DspParameter > GetCreateParams() const;
-  DspComponent* Create( std::map< std::string, DspParameter >& params ) const;
+    std::map<std::string, DspParameter> GetCreateParams() const;
+    DspComponent* Create(std::map<std::string, DspParameter>& params) const;
 
 private:
-  typedef std::map< std::string, DspParameter >( *GetCreateParams_t )();
-  typedef DspComponent*( *Create_t )( std::map< std::string, DspParameter >& );
+    DspPluginLoader();
+    void _LoadPlugin(std::string const& pluginPath);
 
-  void* _handle;
-  GetCreateParams_t _getCreateParams;
-  Create_t _create;
+private:
+    typedef std::map<std::string, DspParameter>(*GetCreateParams_t)();
+    typedef DspComponent* (*Create_t)(std::map<std::string, DspParameter>&);
+
+    std::string _pluginPath;
+    void* _handle;
+    GetCreateParams_t _getCreateParams;
+    Create_t _create;
 };
 
 //=================================================================================================
 
-#endif // DSPPLUGINLOADER_H
+#endif  // DSPPLUGINLOADER_H

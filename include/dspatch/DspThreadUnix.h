@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -35,79 +35,81 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspThread
 {
 public:
-  DspThread()
-  : _threadAttatched( false ) {}
-
-  virtual ~DspThread()
-  {
-    Stop();
-  }
-
-  enum Priority
-  {
-    IdlePriority,
-
-    LowestPriority,
-    LowPriority,
-    NormalPriority,
-    HighPriority,
-    HighestPriority,
-
-    TimeCriticalPriority
-  };
-
-  virtual void Start( Priority priority = NormalPriority )
-  {
-    pthread_create( &_thread, NULL, _ThreadFunc, this );
-    _threadAttatched = true;
-
-    _SetPriority( _thread, priority );
-  }
-
-  virtual void Stop()
-  {
-    if( _threadAttatched )
+    DspThread()
+        : _threadAttatched(false)
     {
-      pthread_detach( _thread );
-      _threadAttatched = false;
     }
-  }
 
-  static void SetPriority( Priority priority )
-  {
-    _SetPriority( pthread_self(), priority );
-  }
+    virtual ~DspThread()
+    {
+        Stop();
+    }
 
-  static void MsSleep( unsigned short milliseconds )
-  {
-    usleep( ( unsigned int ) milliseconds );
-  }
+    enum Priority
+    {
+        IdlePriority,
+
+        LowestPriority,
+        LowPriority,
+        NormalPriority,
+        HighPriority,
+        HighestPriority,
+
+        TimeCriticalPriority
+    };
+
+    virtual void Start(Priority priority = NormalPriority)
+    {
+        pthread_create(&_thread, NULL, _ThreadFunc, this);
+        _threadAttatched = true;
+
+        _SetPriority(_thread, priority);
+    }
+
+    virtual void Stop()
+    {
+        if (_threadAttatched)
+        {
+            pthread_detach(_thread);
+            _threadAttatched = false;
+        }
+    }
+
+    static void SetPriority(Priority priority)
+    {
+        _SetPriority(pthread_self(), priority);
+    }
+
+    static void MsSleep(int milliseconds)
+    {
+        usleep(milliseconds);
+    }
 
 private:
-  static void* _ThreadFunc( void* pv )
-  {
-    ( reinterpret_cast<DspThread*>( pv ) )->_Run();
-    return NULL;
-  }
+    static void* _ThreadFunc(void* pv)
+    {
+        (reinterpret_cast<DspThread*>(pv))->_Run();
+        return NULL;
+    }
 
-  virtual void _Run() = 0;
+    virtual void _Run() = 0;
 
-  static void _SetPriority( pthread_t threadID, Priority priority )
-  {
-    int policy;
-    struct sched_param param;
+    static void _SetPriority(pthread_t threadID, Priority priority)
+    {
+        int policy;
+        struct sched_param param;
 
-    pthread_getschedparam( threadID, &policy, &param );
+        pthread_getschedparam(threadID, &policy, &param);
 
-    policy = SCHED_FIFO;
-    param.sched_priority = ( ( priority - IdlePriority ) * ( 99 - 1 ) / TimeCriticalPriority ) + 1;
+        policy = SCHED_FIFO;
+        param.sched_priority = ((priority - IdlePriority) * (99 - 1) / TimeCriticalPriority) + 1;
 
-    pthread_setschedparam( threadID, policy, &param );
-  }
+        pthread_setschedparam(threadID, policy, &param);
+    }
 
 private:
-  pthread_t _thread;
-  bool _threadAttatched;
+    pthread_t _thread;
+    bool _threadAttatched;
 };
 
 //=================================================================================================
@@ -115,30 +117,30 @@ private:
 class DspMutex
 {
 public:
-  DspMutex()
-  {
-    pthread_mutex_init( &_mutex, NULL );
-  }
+    DspMutex()
+    {
+        pthread_mutex_init(&_mutex, NULL);
+    }
 
-  virtual ~DspMutex()
-  {
-    pthread_mutex_destroy( &_mutex );
-  }
+    virtual ~DspMutex()
+    {
+        pthread_mutex_destroy(&_mutex);
+    }
 
-  void Lock()
-  {
-    pthread_mutex_lock( &_mutex );
-  }
+    void Lock()
+    {
+        pthread_mutex_lock(&_mutex);
+    }
 
-  void Unlock()
-  {
-    pthread_mutex_unlock( &_mutex );
-  }
+    void Unlock()
+    {
+        pthread_mutex_unlock(&_mutex);
+    }
 
 private:
-  friend class DspWaitCondition;
+    friend class DspWaitCondition;
 
-  pthread_mutex_t _mutex;
+    pthread_mutex_t _mutex;
 };
 
 //=================================================================================================
@@ -146,30 +148,30 @@ private:
 class DspWaitCondition
 {
 public:
-  DspWaitCondition()
-  {
-    pthread_cond_init( &_cond, NULL );
-  }
+    DspWaitCondition()
+    {
+        pthread_cond_init(&_cond, NULL);
+    }
 
-  virtual ~DspWaitCondition()
-  {
-    pthread_cond_destroy( &_cond );
-  }
+    virtual ~DspWaitCondition()
+    {
+        pthread_cond_destroy(&_cond);
+    }
 
-  void Wait( DspMutex& mutex )
-  {
-    pthread_cond_wait( &_cond, &( mutex._mutex ) );
-  }
+    void Wait(DspMutex& mutex)
+    {
+        pthread_cond_wait(&_cond, &(mutex._mutex));
+    }
 
-  void WakeAll()
-  {
-    pthread_cond_broadcast( &_cond );
-  }
+    void WakeAll()
+    {
+        pthread_cond_broadcast(&_cond);
+    }
 
 private:
-  pthread_cond_t _cond;
+    pthread_cond_t _cond;
 };
 
 //=================================================================================================
 
-#endif // DSPTHREADUNIX_H
+#endif  // DSPTHREADUNIX_H

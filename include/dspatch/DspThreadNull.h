@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -41,27 +41,37 @@ from the public enumeration: Priority.
 class DspThread
 {
 public:
-  DspThread() {}
+    DspThread()
+    {
+    }
 
-  virtual ~DspThread() {}
+    virtual ~DspThread()
+    {
+    }
 
-  enum Priority
-  {
-    IdlePriority,
+    enum Priority
+    {
+        IdlePriority,
 
-    LowestPriority,
-    LowPriority,
-    NormalPriority,
-    HighPriority,
-    HighestPriority,
+        LowestPriority,
+        LowPriority,
+        NormalPriority,
+        HighPriority,
+        HighestPriority,
 
-    TimeCriticalPriority
-  };
+        TimeCriticalPriority
+    };
 
-  virtual void Start( Priority priority ) {}
-  virtual void Stop();
-  static void SetPriority( Priority priority ) {}
-  static void MsSleep( unsigned short milliseconds ) {}
+    virtual void Start(Priority priority)
+    {
+    }
+    virtual void Stop();
+    static void SetPriority(Priority priority)
+    {
+    }
+    static void MsSleep(int milliseconds)
+    {
+    }
 };
 
 //=================================================================================================
@@ -76,12 +86,20 @@ will wait at the Lock() method call until the thread that owns the mutex calls U
 class DspMutex
 {
 public:
-  DspMutex() {}
+    DspMutex()
+    {
+    }
 
-  virtual ~DspMutex() {}
+    virtual ~DspMutex()
+    {
+    }
 
-  static void Lock() {}
-  static void Unlock() {}
+    static void Lock()
+    {
+    }
+    static void Unlock()
+    {
+    }
 };
 
 //=================================================================================================
@@ -96,14 +114,22 @@ This is used to synchronize actions between threads.
 class DspWaitCondition
 {
 public:
-  DspWaitCondition() {}
+    DspWaitCondition()
+    {
+    }
 
-  virtual ~DspWaitCondition() {}
+    virtual ~DspWaitCondition()
+    {
+    }
 
-  static void Wait( DspMutex& mutex ) {}
-  static void WakeAll() {}
+    static void Wait(DspMutex& mutex)
+    {
+    }
+    static void WakeAll()
+    {
+    }
 };
 
 //=================================================================================================
 
-#endif // DSPTHREADNULL_H
+#endif  // DSPTHREADNULL_H

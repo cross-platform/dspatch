@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -32,59 +32,59 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 class DspGain : public DspComponent
 {
 public:
-  static std::string const pGain; // Float
+    int pGain;  // Float
 
-  DspGain()
-  {
-    AddInput_();
-    AddOutput_();
+    DspGain()
+    {
+        AddInput_();
+        AddOutput_();
 
-    AddParameter_( pGain, DspParameter( DspParameter::Float, 1, std::make_pair( 0, 2 ) ) );
-  }
-  ~DspGain() {}
+        pGain = AddParameter_("gain", DspParameter(DspParameter::Float, 1, std::make_pair(0, 2)));
+    }
+    ~DspGain()
+    {
+    }
 
-  void SetGain( float gain )
-  {
-    SetParameter_( pGain, DspParameter( DspParameter::Float, gain ) );
-  }
+    void SetGain(float gain)
+    {
+        SetParameter_(pGain, DspParameter(DspParameter::Float, gain));
+    }
 
-  float GetGain() const
-  {
-    return *GetParameter_( pGain )->GetFloat();
-  }
+    float GetGain() const
+    {
+        return *GetParameter_(pGain)->GetFloat();
+    }
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs )
-  {
-    if( !inputs.GetValue( 0, _stream ) )
+    virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs)
     {
-      _stream.assign( _stream.size(), 0 );
+        if (!inputs.GetValue(0, _stream))
+        {
+            _stream.assign(_stream.size(), 0);
+        }
+
+        for (size_t i = 0; i < _stream.size(); i++)
+        {
+            _stream[i] *= GetGain();
+        }
+
+        outputs.SetValue(0, _stream);
     }
 
-    for( unsigned long i = 0; i < _stream.size(); i++ )
+    virtual bool ParameterUpdating_(int index, DspParameter const& param)
     {
-      _stream[i] *= GetGain();
+        if (index == pGain)
+        {
+            SetGain(*param.GetFloat());
+            return true;
+        }
+        return false;
     }
-
-    outputs.SetValue( 0, _stream );
-  }
-
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param )
-  {
-    if( name == pGain )
-    {
-      SetGain( *param.GetFloat() );
-      return true;
-    }
-    return false;
-  }
 
 private:
-  std::vector< float > _stream;
+    std::vector<float> _stream;
 };
-
-std::string const DspGain::pGain = "gain";
 
 //=================================================================================================
 
-#endif // DSPGAIN_H
+#endif  // DSPGAIN_H

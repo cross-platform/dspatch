@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -24,20 +24,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #ifdef _WIN32
 
-  #define DLLEXPORT __declspec(dllexport)
-  #include <dspatch/DspThreadWin.h>
+#define DLLEXPORT __declspec(dllexport)
+#include <dspatch/DspThreadWin.h>
 
-  #pragma warning(disable:4251) // disable class needs to have dll-interface warning
-  #pragma warning(disable:4275) // disable non dll-interface class used as base warning
+#pragma warning(disable : 4251)  // disable class needs to have dll-interface warning
+#pragma warning(disable : 4275)  // disable non dll-interface class used as base warning
 
 #elif DSP_NOTHREADS
 
-  #define DLLEXPORT
-  #include <dspatch/DspThreadNull.h>
+#define DLLEXPORT
+#include <dspatch/DspThreadNull.h>
 
 #else
 
-  #define DLLEXPORT
-  #include <dspatch/DspThreadUnix.h>
+#define DLLEXPORT
+#include <dspatch/DspThreadUnix.h>
 
 #endif

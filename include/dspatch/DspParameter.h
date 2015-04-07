@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -49,63 +49,63 @@ component to be entirely controllable via the DspComponent base class.
 class DLLEXPORT DspParameter
 {
 public:
-  enum ParamType
-  {
-    Null,
-    Bool,
-    Int,
-    Float,
-    String,
-    FilePath, // this is essentially just a string, but helps when determining an appropriate user input method
-    List, // this type acts as a vector (available items), an int (index selected), and a string (item selected)
-    Trigger // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
-  };
+    enum ParamType
+    {
+        Null,
+        Bool,
+        Int,
+        Float,
+        String,
+        FilePath, // this is essentially just a string, but helps when determining an appropriate user input method
+        List,     // this type acts as a vector (available items), an int (index selected), and a string (item selected)
+        Trigger   // this type has no value, SetParam(triggerParam) simply represents a trigger. E.g. a button press
+    };
 
-  DspParameter();
-  DspParameter( ParamType const& type );
-  DspParameter( ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange = std::make_pair( -1, -1 ) );
-  DspParameter( ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair( -1.0f, -1.0f ) );
-  DspParameter( ParamType const& type, std::string const& initValue );
-  DspParameter( ParamType const& type, std::vector< std::string > const& initValue );
+    DspParameter();
+    DspParameter(ParamType const& type);
+    DspParameter(ParamType const& type, int const& initValue, std::pair<int, int> const& valueRange = std::make_pair(-1, -1));
+    DspParameter(ParamType const& type, float const& initValue, std::pair<float, float> const& valueRange = std::make_pair(-1.0f, -1.0f));
+    DspParameter(ParamType const& type, std::string const& initValue);
+    DspParameter(ParamType const& type, std::vector<std::string> const& initValue);
 
-  ParamType Type() const;
-  bool IsSet() const;
+    ParamType Type() const;
+    bool IsSet() const;
 
-  bool const* GetBool() const;
-  int const* GetInt() const;
-  std::pair<int, int> const* GetIntRange() const;
-  float const* GetFloat() const;
-  std::pair<float, float> const* GetFloatRange() const;
-  std::string const* GetString() const;
-  std::vector< std::string > const* GetList() const;
+    bool const* GetBool() const;
+    int const* GetInt() const;
+    std::pair<int, int> const* GetIntRange() const;
+    float const* GetFloat() const;
+    std::pair<float, float> const* GetFloatRange() const;
+    std::string const* GetString() const;
+    std::vector<std::string> const* GetList() const;
 
-  bool SetBool( bool const& value );
-  bool SetInt( int const& value );
-  bool SetIntRange( std::pair<int, int> const& intRange );
-  bool SetFloat( float const& value );
-  bool SetFloatRange( std::pair<float, float> const& floatRange );
-  bool SetString( std::string const& value );
-  bool SetList( std::vector< std::string > const& value );
+    bool SetBool(bool const& value);
+    bool SetInt(int const& value);
+    bool SetIntRange(std::pair<int, int> const& intRange);
+    bool SetFloat(float const& value);
+    bool SetFloatRange(std::pair<float, float> const& floatRange);
+    bool SetString(std::string const& value);
+    bool SetList(std::vector<std::string> const& value);
 
-  bool SetParam( DspParameter const& param );
+    bool SetParam(DspParameter const& param);
 
 private:
-  ParamType _type;
-  bool _isSet;
-  bool _isRangeSet;
+    ParamType _type;
+    bool _isSet;
+    bool _isRangeSet;
 
-  bool _boolValue;
+    bool _boolValue;
 
-  std::pair<int, int> _intRange;
-  int _intValue;
+    std::pair<int, int> _intRange;
+    int _intValue;
 
-  std::pair<float, float> _floatRange;
-  float _floatValue;
+    std::pair<float, float> _floatRange;
+    float _floatValue;
 
-  std::string _stringValue;
-  std::vector< std::string > _listValue;
+    std::string _stringValue;
+    std::vector<std::string> _listValue;
 };
 
 //=================================================================================================
 
-#endif // DSPPARAMETER_H
+#endif  // DSPPARAMETER_H

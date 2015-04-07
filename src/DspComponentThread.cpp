@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -28,108 +28,110 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //=================================================================================================
 
 DspComponentThread::DspComponentThread()
-: _component( NULL ),
-  _stop( false ),
-  _pause( false ),
-  _stopped( true ) {}
+    : _component(NULL)
+    , _stop(false)
+    , _pause(false)
+    , _stopped(true)
+{
+}
 
 //-------------------------------------------------------------------------------------------------
 
 DspComponentThread::~DspComponentThread()
 {
-  Stop();
+    Stop();
 }
 
 //=================================================================================================
 
-void DspComponentThread::Initialise( DspComponent* component )
+void DspComponentThread::Initialise(DspComponent* component)
 {
-  _component = component;
+    _component = component;
 }
 
 //-------------------------------------------------------------------------------------------------
 
 bool DspComponentThread::IsStopped() const
 {
-  return _stopped;
+    return _stopped;
 }
 
 //-------------------------------------------------------------------------------------------------
 
-void DspComponentThread::Start( Priority priority )
+void DspComponentThread::Start(Priority priority)
 {
-  if( _stopped )
-  {
-    _stop = false;
-    _stopped = false;
-    _pause = false;
-    DspThread::Start( priority );
-  }
+    if (_stopped)
+    {
+        _stop = false;
+        _stopped = false;
+        _pause = false;
+        DspThread::Start(priority);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspComponentThread::Stop()
 {
-  _stop = true;
+    _stop = true;
 
-  while( _stopped != true )
-  {
-    _pauseCondt.WakeAll();
-    _resumeCondt.WakeAll();
-    MsSleep( 1 );
-  }
+    while (_stopped != true)
+    {
+        _pauseCondt.WakeAll();
+        _resumeCondt.WakeAll();
+        MsSleep(1);
+    }
 
-  DspThread::Stop();
+    DspThread::Stop();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspComponentThread::Pause()
 {
-  _resumeMutex.Lock();
+    _resumeMutex.Lock();
 
-  _pause = true;
-  _pauseCondt.Wait( _resumeMutex ); // wait for resume
-  _pause = false;
+    _pause = true;
+    _pauseCondt.Wait(_resumeMutex);  // wait for resume
+    _pause = false;
 
-  _resumeMutex.Unlock();
+    _resumeMutex.Unlock();
 }
 
 //-------------------------------------------------------------------------------------------------
 
 void DspComponentThread::Resume()
 {
-  _resumeMutex.Lock();
-  _resumeCondt.WakeAll();
-  _resumeMutex.Unlock();
+    _resumeMutex.Lock();
+    _resumeCondt.WakeAll();
+    _resumeMutex.Unlock();
 }
 
 //=================================================================================================
 
 void DspComponentThread::_Run()
 {
-  if( _component != NULL )
-  {
-    while( !_stop )
+    if (_component != NULL)
     {
-      _component->Tick();
-      _component->Reset();
+        while (!_stop)
+        {
+            _component->Tick();
+            _component->Reset();
 
-      if( _pause )
-      {
-        _resumeMutex.Lock();
+            if (_pause)
+            {
+                _resumeMutex.Lock();
 
-        _pauseCondt.WakeAll();
+                _pauseCondt.WakeAll();
 
-        _resumeCondt.Wait( _resumeMutex ); // wait for resume
+                _resumeCondt.Wait(_resumeMutex);  // wait for resume
 
-        _resumeMutex.Unlock();
-      }
+                _resumeMutex.Unlock();
+            }
+        }
     }
-  }
 
-  _stopped = true;
+    _stopped = true;
 }
 
 //=================================================================================================

@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -55,7 +55,7 @@ This method should return a map of parameter name-to-DspParameter pairs. The plu
 assign values to this parameter map and return them via the Create() call.
 
 Once both DspComponent and DspPlugin classes have been implemented, add the line
-"EXPORT_DSPPLUGIN( MyPlugin )" anywhere after the declaration of your DspPlugin class, where
+"EXPORT_DSPPLUGIN(MyPlugin)" anywhere after the declaration of your DspPlugin class, where
 "MyPlugin" is the name of your DspPlugin class. Then compile the project into a shared library.
 
 The plugin is now ready to be loaded into a DSPatch host application (see DspPluginLoader).
@@ -64,32 +64,32 @@ The plugin is now ready to be loaded into a DSPatch host application (see DspPlu
 class DLLEXPORT DspPlugin
 {
 public:
-  virtual ~DspPlugin() {}
-  virtual std::map< std::string, DspParameter > GetCreateParams() const;
-  virtual DspComponent* Create( std::map< std::string, DspParameter >& params ) const = 0;
+    virtual ~DspPlugin();
+    virtual std::map<std::string, DspParameter> GetCreateParams() const = 0;
+    virtual DspComponent* Create(std::map<std::string, DspParameter>& params) const = 0;
 };
 
 //=================================================================================================
 
-#define EXPORT_DSPPLUGIN( Plugin )\
-extern "C"\
-{\
-  DLLEXPORT std::map< std::string, DspParameter > GetCreateParams()\
-  {\
-    DspPlugin* plugin = new Plugin();\
-    std::map< std::string, DspParameter > params  = plugin->GetCreateParams();\
-    delete plugin;\
-    return params;\
-  }\
-  DLLEXPORT DspComponent* Create( std::map< std::string, DspParameter >& params )\
-  {\
-    DspPlugin* plugin = new Plugin();\
-    DspComponent* component = plugin->Create( params );\
-    delete plugin;\
-    return component;\
-  }\
+#define EXPORT_DSPPLUGIN(Plugin)                                                \
+extern "C"                                                                      \
+{                                                                               \
+    DLLEXPORT std::map<std::string, DspParameter> GetCreateParams()             \
+    {                                                                           \
+        DspPlugin* plugin = new Plugin();                                       \
+        std::map<std::string, DspParameter> params = plugin->GetCreateParams(); \
+        delete plugin;                                                          \
+        return params;                                                          \
+    }                                                                           \
+    DLLEXPORT DspComponent* Create(std::map<std::string, DspParameter>& params) \
+    {                                                                           \
+        DspPlugin* plugin = new Plugin();                                       \
+        DspComponent* component = plugin->Create(params);                       \
+        delete plugin;                                                          \
+        return component;                                                       \
+    }                                                                           \
 }
 
 //=================================================================================================
 
-#endif // DSPPLUGIN_H
+#endif  // DSPPLUGIN_H

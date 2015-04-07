@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2014 Marcus Tomlinson
+Copyright (c) 2012-2015 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -34,64 +34,64 @@ struct RtAudioMembers;
 class DspAudioDevice : public DspComponent
 {
 public:
-  static std::string const pDeviceList; // List
-  static std::string const pIsStreaming; // Bool
-  static std::string const pBufferSize; // Int
-  static std::string const pSampleRate; // Int
+    int pDeviceList;   // List
+    int pIsStreaming;  // Bool
+    int pBufferSize;   // Int
+    int pSampleRate;   // Int
 
-  DspAudioDevice();
-  ~DspAudioDevice();
+    DspAudioDevice();
+    ~DspAudioDevice();
 
-  bool SetDevice( short deviceIndex );
+    bool SetDevice(int deviceIndex);
 
-  std::string GetDeviceName( short deviceIndex ) const;
-  unsigned short GetDeviceInputCount( short deviceIndex ) const;
-  unsigned short GetDeviceOutputCount( short deviceIndex ) const;
-  unsigned short GetCurrentDevice() const;
-  unsigned short GetDeviceCount() const;
+    std::string GetDeviceName(int deviceIndex) const;
+    int GetDeviceInputCount(int deviceIndex) const;
+    int GetDeviceOutputCount(int deviceIndex) const;
+    int GetCurrentDevice() const;
+    int GetDeviceCount() const;
 
-  void SetBufferSize( int bufferSize );
-  void SetSampleRate( int sampleRate );
+    void SetBufferSize(int bufferSize);
+    void SetSampleRate(int sampleRate);
 
-  bool IsStreaming() const;
-  int GetBufferSize() const;
-  int GetSampleRate() const;
+    bool IsStreaming() const;
+    int GetBufferSize() const;
+    int GetSampleRate() const;
 
 protected:
-  virtual void Process_( DspSignalBus& inputs, DspSignalBus& outputs );
-  virtual bool ParameterUpdating_( std::string const& name, DspParameter const& param );
+    virtual void Process_(DspSignalBus& inputs, DspSignalBus& outputs);
+    virtual bool ParameterUpdating_(int index, DspParameter const& param);
 
 private:
-  std::vector< std::vector< float > > _outputChannels;
-  std::vector< std::vector< float > > _inputChannels;
+    std::vector< std::vector<float> > _outputChannels;
+    std::vector< std::vector<float> > _inputChannels;
 
-  RtAudioMembers* _rtAudio;
+    RtAudioMembers* _rtAudio;
 
-  DspMutex _buffersMutex;
-  DspMutex _syncMutex;
-  DspWaitCondition _waitCondt;
-  DspWaitCondition _syncCondt;
-  bool _gotWaitReady;
-  bool _gotSyncReady;
+    DspMutex _buffersMutex;
+    DspMutex _syncMutex;
+    DspWaitCondition _waitCondt;
+    DspWaitCondition _syncCondt;
+    bool _gotWaitReady;
+    bool _gotSyncReady;
 
-  void _SetIsStreaming( bool isStreaming );
+    void _SetIsStreaming(bool isStreaming);
 
-  void _WaitForBuffer();
-  void _SyncBuffer();
+    void _WaitForBuffer();
+    void _SyncBuffer();
 
-  void _StopStream();
-  void _StartStream();
+    void _StopStream();
+    void _StartStream();
 
-  static int _StaticCallback( void* outputBuffer,
-                              void* inputBuffer,
-                              unsigned int nBufferFrames,
-                              double streamTime,
-                              unsigned int status,
-                              void* userData );
+    static int _StaticCallback(void* outputBuffer,
+                               void* inputBuffer,
+                               unsigned int nBufferFrames,
+                               double streamTime,
+                               unsigned int status,
+                               void* userData);
 
-  int _DynamicCallback( void* inputBuffer, void* outputBuffer );
+    int _DynamicCallback(void* inputBuffer, void* outputBuffer);
 };
 
 //-------------------------------------------------------------------------------------------------
 
-#endif // DSPAUDIODEVICE_H
+#endif  // DSPAUDIODEVICE_H
