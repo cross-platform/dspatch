@@ -80,6 +80,8 @@ private:
 /**
 
 \mainpage Welcome!
+    <i><b>** NOTE **</b> : A graphical tool for creating and routing DSPatch circuits can be found
+    <a href="http://sourceforge.net/p/dspatcher"><b>here</b></a>.</i>
 
 \section intro_sec Introduction
     DSPatch, pronounced "dispatch", is a powerful C++ flow-based programming library that allows
@@ -383,6 +385,13 @@ void main()
 \n
 
 \section changelog Changelog
+
+\subsection v300 v.3.00 (07 April 2015)
+    - Reference parameters by index for better performance.
+    - Cleaned up code formatting and class interfaces.
+    - DisconnectComponent fixed to also remove outgoing wires.
+    - ResumeAutoTick() resumes only once called for every PauseAutoTick().
+    - Updates to support DSPatcher (http://sourceforge.net/p/dspatcher)
 
 \subsection v270 v.2.70 (21 December 2014)
     - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
