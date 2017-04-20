@@ -1,6 +1,8 @@
 # DSPatch
 C++ cross-platform, object-oriented, flow-based programming library
 
+Webite: http://flowbasedprogramming.com/DSPatch/index.html
+
 ** NOTE ** : A graphical tool for creating and routing DSPatch circuits can be found here (https://github.com/MarcusTomlinson/DSPatcher).
 
 DSPatch, pronounced "dispatch", is a powerful C++ flow-based programming library that allows you to create and route (or "patch") high performance data processing circuits. DSPatch is not limited to any particular type of circuit or signal, its generic object-oriented API allows you to create almost any system imaginable, from simple logic circuits to high performance audio process chains and electronics simulation. DSPatch's simple framework makes development quick and easy, allowing you to hit the ground running on every project.
