@@ -1,7 +1,7 @@
 # DSPatch
 C++ cross-platform, object-oriented, flow-based programming library
 
-Webite: http://flowbasedprogramming.com/DSPatch/index.html
+Webite: http://flowbasedprogramming.com
 
 ** NOTE ** : A graphical tool for creating and routing DSPatch circuits can be found here (https://github.com/MarcusTomlinson/DSPatcher).
 
