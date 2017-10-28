@@ -1,6 +1,7 @@
 language: cpp
 
 before_script:
+    - apt install libasound2-dev
     - mkdir build
     - cd build
     - cmake ..
