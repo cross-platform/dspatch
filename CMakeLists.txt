@@ -51,4 +51,4 @@ if(${BUILD_EXAMPLES})
     add_subdirectory(tutorial)
 endif(${BUILD_EXAMPLES})
 
-add_subdirectory(doc)
+add_subdirectory(docs)
