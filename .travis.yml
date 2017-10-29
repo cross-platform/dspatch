@@ -1,0 +1,33 @@
+language: cpp
+
+os:
+    - linux
+    - osx
+
+before_script:
+    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+           sudo apt-get install doxygen libasound2-dev;
+       fi'
+    - mkdir build
+    - cd build
+    - cmake ..
+
+script:
+    - make all
+
+after_success:
+    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+           mkdir push;
+           cd push;
+           git init;
+           git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git;
+           git checkout -b build/$TRAVIS_PULL_REQUEST_BRANCH;
+           git pull origin build/$TRAVIS_PULL_REQUEST_BRANCH;
+           rm -rf ./*;
+           cp ../*.so ./;
+           cp -r ../docs/html ./docs;
+           git add -A;
+           git commit -m "bump";
+           git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH;
+       fi'
+
