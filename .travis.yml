@@ -1,5 +1,9 @@
 language: cpp
 
+os:
+    - linux
+    - osx
+
 before_script:
     - sudo apt-get install libasound2-dev
     - mkdir build
@@ -8,3 +12,4 @@ before_script:
 
 script:
     - make
+    - make test
