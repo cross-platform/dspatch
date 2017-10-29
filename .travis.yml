@@ -5,7 +5,7 @@ os:
     - osx
 
 before_script:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libasound2-dev ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install doxygen libasound2-dev ; fi
     - mkdir build
     - cd build
     - cmake ..
