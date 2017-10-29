@@ -18,5 +18,5 @@ after_success:
     - git checkout -b build
     - git add -A
     - git commit -m "update"
-    - git remote add origin https://github.com/MarcusTomlinson/DSPatch.git
+    - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
     - git push -f --set-upstream origin build
