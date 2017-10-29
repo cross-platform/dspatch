@@ -5,11 +5,10 @@ os:
     - osx
 
 before_script:
-    - sudo apt-get install libasound2-dev
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install libasound2-dev ; fi
     - mkdir build
     - cd build
     - cmake ..
 
 script:
     - make
-    - make test
