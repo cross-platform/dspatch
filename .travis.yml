@@ -5,7 +5,9 @@ os:
     - osx
 
 before_script:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install doxygen libasound2-dev; fi
+    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+           sudo apt-get install doxygen libasound2-dev;
+       fi'
     - mkdir build
     - cd build
     - cmake ..
@@ -14,15 +16,18 @@ script:
     - make all
 
 after_success:
-    - mkdir push
-    - cd push
-    - git init
-    - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
-    - git checkout -b build
-    - git pull origin build
-    - rm -rf ./*
-    - cp ../*.so ./
-    - cp -r ../docs/html ./docs
-    - git add -A
-    - git commit -m "push"
-    - git push --set-upstream origin build
+    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+           mkdir push;
+           cd push;
+           git init;
+           git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git;
+           git checkout -b build;
+           git pull origin build;
+           rm -rf ./*;
+           cp ../*.so ./;
+           cp -r ../docs/html ./docs;
+           git add -A;
+           git commit -m "push";
+           git push --set-upstream origin build;
+       fi'
+
