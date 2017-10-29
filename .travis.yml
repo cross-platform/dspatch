@@ -27,7 +27,7 @@ after_success:
            cp ../*.so ./;
            cp -r ../docs/html ./docs;
            git add -A;
-           git commit -m "push";
+           git commit -m "bump";
            git push --set-upstream origin build;
        fi'
 
