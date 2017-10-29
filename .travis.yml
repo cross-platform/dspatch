@@ -12,3 +12,11 @@ before_script:
 
 script:
     - make all
+
+after_success:
+    - git init
+    - git checkout -b build
+    - git add -A
+    - git commit -m "update"
+    - git remote add origin https://github.com/MarcusTomlinson/DSPatch.git
+    - git push -f --set-upstream origin build
