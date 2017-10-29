@@ -16,6 +16,7 @@ script:
 after_success:
     - mkdir push
     - cd push
+    - cp ../libDSPatch.so ./
     - cp -r ../docs/html ./docs
     - git init
     - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
