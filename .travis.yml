@@ -16,11 +16,13 @@ script:
 after_success:
     - mkdir push
     - cd push
-    - cp ../*.so ./
-    - cp -r ../docs/html ./docs
     - git init
     - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
-    - git checkout -b $TRAVIS_PULL_REQUEST_BRANCH-build
+    - git checkout -b build
+    - git pull origin build
+    - rm -rf ./*
+    - cp ../*.so ./
+    - cp -r ../docs/html ./docs
     - git add -A
     - git commit -m "update"
-    - git push -f --set-upstream origin $TRAVIS_PULL_REQUEST_BRANCH-build
+    - git push --set-upstream origin build
