@@ -214,7 +214,7 @@ void DspAudioDevice::Process_(DspSignalBus& inputs, DspSignalBus& outputs)
 
     // Synchronise sample rate with the "Sample Rate" input feed
     // =========================================================
-    int sampleRate;
+    unsigned long sampleRate;
     if (inputs.GetValue("Sample Rate", sampleRate))
     {
         if (sampleRate != GetSampleRate())
