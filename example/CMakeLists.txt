@@ -1,4 +1,4 @@
-project(DSPatchExample)
+project(Example)
 
 add_subdirectory(oscillator-plugin)
 
@@ -27,15 +27,23 @@ target_link_libraries(
 
 # Definition for RtAudio Windows, using direct sound
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/$<CONFIGURATION>/DspOscillator.dll")
+    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator.dll")
     add_definitions(-D__WINDOWS_WASAPI__)
 
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/DSPatch.dll
-        ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>
+        ${CMAKE_BINARY_DIR}/libDSPatch.dll
+        ${CMAKE_CURRENT_BINARY_DIR}
     )
+
+    target_link_libraries(
+        ${PROJECT_NAME}
+        ksuser
+        mfplat
+        mfuuid
+        wmcodecdspuuid
+     )
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # Definition for RtAudio Linux, using ALSA
