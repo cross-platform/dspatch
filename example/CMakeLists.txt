@@ -1,4 +1,4 @@
-project(Example)
+project(DSPatchExample)
 
 add_subdirectory(oscillator-plugin)
 
