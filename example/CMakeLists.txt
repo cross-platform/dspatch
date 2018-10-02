@@ -48,7 +48,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 # Definition for RtAudio Linux, using ALSA
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator.so")
+    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator-Plugin.so")
     add_definitions(-D__LINUX_ALSA__)
 
     find_library(ASOUND asound)
@@ -64,7 +64,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Definition for RtAudio Mac OSX, using Core Audio
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/$<CONFIGURATION>/libDspOscillator.dylib")
+    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator-Plugin.dylib")
     add_definitions(-D__MACOSX_CORE__)
 
     target_link_libraries(
