@@ -27,7 +27,7 @@ target_link_libraries(
 
 # Definition for RtAudio Windows, using direct sound
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator.dll")
+    add_definitions(-DEXAMPLE_PLUGIN_FILE="${CMAKE_CURRENT_BINARY_DIR}/oscillator-plugin/libDspOscillator-Plugin.dll")
     add_definitions(-D__WINDOWS_WASAPI__)
 
     add_custom_command(
