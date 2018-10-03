@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,68 +22,70 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPCIRCUITTHREAD_H
-#define DSPCIRCUITTHREAD_H
+#pragma once
 
-//-------------------------------------------------------------------------------------------------
+#include <dspatch/Component.h>
 
-#include <vector>
+#include <internal/Thread.h>
 
-#include <dspatch/DspThread.h>
+namespace DSPatch
+{
+namespace internal
+{
 
-class DspComponent;
-
-//=================================================================================================
 /// Thread class for ticking and reseting circuit components
 
 /**
-A DspCircuitThread is responsible for ticking and reseting all components in a DspCircuit.
-On construction, a reference to the vector of circuit components must be provided for the thread
-_Run() method to loop through. Each DspCircuitThread has a thread number (threadNo), which also
-can be provided on construction. When creating multiple DspCircuitThreads, each thread must have
-their own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This
-thread number corresponds with the DspComponent's buffer number when calling it's ThreadTick() and
-ThreadReset() methods in the DspCircuitThread's component loop. Hence, for every circuit thread
+A CircuitThread is responsible for ticking and reseting all components within a Circuit. Upon
+initialisation, a reference to the vector of circuit components must be provided for the thread
+Run_() method to loop through. Each CircuitThread has a thread number (threadNo), which is also
+provided upon initialisation. When creating multiple CircuitThreads, each thread must have their
+own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This thread
+number corresponds with the Component's buffer number when calling it's ThreadTick() and
+ThreadReset() methods in the CircuitThread's component loop. Hence, for every circuit thread
 created, each component's buffer count within that circuit must be incremented to match.
 
-The Resume() method causes the DspCircuitThread to tick and reset all circuit components once,
-after which the thread will wait until instructed to resume again. As each component is done
-processing it hands over control to the next waiting circuit thread, therefore, from an external
-control loop (I.e. DspCircuit's Process_() method) we simply loop through our array of
-DspCircuitThreads calling Resume() on each. If a circuit thread is busy processing, a call to
-Resume() will block momentarily until processing is complete, then begin the next iteration
-immediately upon unblocking the calling thread.
+The Resume() method causes the CircuitThread to tick and reset all circuit components once, after
+which the thread will wait until instructed to resume again. As each component is done processing
+it hands over control to the next waiting circuit thread, therefore, from an external control loop
+(I.e. Circuit's Process_() method) we simply loop through our array of CircuitThreads calling
+Resume() on each. If a circuit thread is busy processing, a call to Resume() will block momentarily
+until processing is complete, then begin the next iteration immediately upon unblocking the calling
+thread.
 
 The Sync() method, when called, will block the calling thread until the circuit thread is done
 processing. If the circuit thread is already awaiting the next Resume() request, this method will
 return immediately.
 */
 
-class DLLEXPORT DspCircuitThread : public DspThread
+class CircuitThread final : public Thread
 {
 public:
-    DspCircuitThread();
-    ~DspCircuitThread();
+    NONCOPYABLE( CircuitThread );
+    DEFINE_PTRS( CircuitThread );
 
-    void Initialise(std::vector<DspComponent*>* components, int threadNo);
+    CircuitThread();
+    virtual ~CircuitThread() override;
 
-    void Start(Priority priority = TimeCriticalPriority);
-    void Stop();
+    void Initialise( std::shared_ptr<std::vector<DSPatch::Component::SPtr>> const& components, int threadNo );
+
+    void Start( Priority priority = HighestPriority ) override;
+    void Stop() override;
     void Sync();
     void Resume();
 
 private:
-    std::vector<DspComponent*>* _components;
+    virtual void Run_() override;
+
+private:
+    std::weak_ptr<std::vector<DSPatch::Component::SPtr>> _components;
     int _threadNo;
     bool _stop;
     bool _stopped;
     bool _gotResume, _gotSync;
-    DspMutex _resumeMutex;
-    DspWaitCondition _resumeCondt, _syncCondt;
-
-    virtual void _Run();
+    std::mutex _resumeMutex;
+    std::condition_variable _resumeCondt, _syncCondt;
 };
 
-//=================================================================================================
-
-#endif  // DSPCIRCUITTHREAD_H
+} // namespace internal
+} // namespace DSPatch

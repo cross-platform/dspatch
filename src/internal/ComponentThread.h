@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,51 +22,58 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPCOMPONENTTHREAD_H
-#define DSPCOMPONENTTHREAD_H
+#pragma once
 
-//-------------------------------------------------------------------------------------------------
+#include <dspatch/Common.h>
+#include <dspatch/Component.h>
 
-#include <dspatch/DspThread.h>
+#include <internal/Thread.h>
 
-class DspComponent;
+namespace DSPatch
+{
+namespace internal
+{
 
-//=================================================================================================
 /// Thread class for ticking and reseting a single component
 
 /**
-A DspComponentThread is responsible for ticking and reseting a single component continuously in
-a separate free-running thread. On construction, a reference to the component must be provided for
-the DspThread's _Run() method to use. Once Start() has been called, the thread will begin
-repeatedly executing the _Run() method. On each thread iteration, DspComponentThread simply calls
-the reference component's Tick() and Reset() methods. The Pause() method causes DspComponentThread
-to wait until instructed to Resume() again.
+A ComponentThread is responsible for ticking and reseting a single component continuously in a
+free-running thread. Upon initialisation, a reference to the component must be provided for the
+Thread's Run_() method to use. Once Start() has been called, the thread will begin repeatedly
+executing the Run_() method. On each thread iteration, ComponentThread simply calls the reference
+component's Tick() and Reset() methods.
+
+The Pause() method causes ComponentThread to wait until instructed to Resume() again.
 */
 
-class DLLEXPORT DspComponentThread : public DspThread
+class ComponentThread final : public Thread
 {
 public:
-    DspComponentThread();
-    ~DspComponentThread();
+    NONCOPYABLE( ComponentThread );
 
-    void Initialise(DspComponent* component);
+    ComponentThread();
+    virtual ~ComponentThread() override;
+
+    void Initialise( std::shared_ptr<DSPatch::Component> const& component );
+
+    bool IsInitialised() const;
     bool IsStopped() const;
 
-    void Start(Priority priority = TimeCriticalPriority);
-    void Stop();
+    void Start( Priority priority = HighestPriority ) override;
+    void Stop() override;
     void Pause();
     void Resume();
 
 private:
-    DspComponent* _component;
+    virtual void Run_() override;
+
+private:
+    std::weak_ptr<DSPatch::Component> _component;
     bool _stop, _pause;
     bool _stopped;
-    DspMutex _resumeMutex;
-    DspWaitCondition _resumeCondt, _pauseCondt;
-
-    virtual void _Run();
+    std::mutex _resumeMutex;
+    std::condition_variable _resumeCondt, _pauseCondt;
 };
 
-//=================================================================================================
-
-#endif  // DSPCOMPONENTTHREAD_H
+} // namespace internal
+} // namespace DSPatch

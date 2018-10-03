@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,83 +22,72 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPSIGNALBUS_H
-#define DSPSIGNALBUS_H
+#pragma once
 
-//-------------------------------------------------------------------------------------------------
+#include <dspatch/Signal.h>
 
-#include <dspatch/DspSignal.h>
+namespace DSPatch
+{
 
-//=================================================================================================
-/// DspSignal container
+namespace internal
+{
+    class SignalBus;
+}
+
+/// Signal container
 
 /**
-A DspSignalBus contains DspSignals (see DspSignal). Via the Process_() method, a DspComponent
-receives signals into it's "inputs" DspSignalBus and provides signals to it's "outputs"
-DspSignalBus. Although DspSignals can be acquired from a DspSignalBus, the DspSignalBus class
-provides public getters and setters for manipulating it's internal DspSignal values directly,
-abstracting the need to retrieve and interface with the contained DspSignals themself.
+A SignalBus contains Signals (see Signal). Via the Process_() method, a Component receives signals
+into it's "inputs" SignalBus and provides signals to it's "outputs" SignalBus. The SignalBus class
+provides public getters and setters for manipulating it's internal Signal values directly,
+abstracting the need to retrieve and interface with the contained Signals themself.
 */
 
-class DLLEXPORT DspSignalBus
+class DLLEXPORT SignalBus final
 {
 public:
-    virtual ~DspSignalBus();
+    DEFINE_PTRS( SignalBus );
 
-    bool SetSignal(int signalIndex, DspSignal const* newSignal);
-    bool SetSignal(std::string const& signalName, DspSignal const* newSignal);
+    SignalBus();
+    SignalBus( SignalBus const& );
+    virtual ~SignalBus();
 
-    DspSignal* GetSignal(int signalIndex);
-    DspSignal* GetSignal(std::string const& signalName);
-
-    bool FindSignal(std::string const& signalName, int& returnIndex) const;
-    bool FindSignal(int signalIndex, int& returnIndex) const;
-
+    void SetSignalCount( int signalCount );
     int GetSignalCount() const;
 
     template <class ValueType>
-    bool SetValue(int signalIndex, ValueType const& newValue);
+    ValueType* GetValue( int signalIndex ) const;
 
     template <class ValueType>
-    bool SetValue(std::string const& signalName, ValueType const& newValue);
+    bool SetValue( int signalIndex, ValueType const& newValue );
 
-    template <class ValueType>
-    bool GetValue(int signalIndex, ValueType& returnValue) const;
-
-    template <class ValueType>
-    bool GetValue(std::string const& signalName, ValueType& returnValue) const;
-
-    template <class ValueType>
-    ValueType const* GetValue(int signalIndex) const;
-
-    template <class ValueType>
-    ValueType const* GetValue(std::string const& signalName) const;
-
-    void ClearValue(int signalIndex);
-    void ClearValue(std::string const& signalName);
+    bool SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int fromSignalIndex );
 
     void ClearAllValues();
 
 private:
-    bool _AddSignal(std::string const& signalName = "");
+    // Private methods required by Circuit & Component
 
-    bool _RemoveSignal();
-    void _RemoveAllSignals();
+    Signal::SPtr _GetSignal( int signalIndex ) const;
+    bool _SetSignal( int signalIndex, Signal::SPtr const& newSignal );
+    bool _MoveSignal( int signalIndex, Signal::SPtr const& newSignal );
 
 private:
-    friend class DspComponent;
+    friend class Circuit;
+    friend class Component;
 
-    std::vector<DspSignal> _signals;
+    std::vector<Signal::SPtr> _signals;
+
+    std::unique_ptr<internal::SignalBus> p;
 };
 
-//=================================================================================================
-
 template <class ValueType>
-bool DspSignalBus::SetValue(int signalIndex, ValueType const& newValue)
+bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
 {
-    if ((size_t)signalIndex < _signals.size())
+    if ( ( size_t ) signalIndex < _signals.size() )
     {
-        return _signals[signalIndex].SetValue(newValue);
+        _signals[signalIndex]->SetValue( newValue );
+        return true;
     }
     else
     {
@@ -106,87 +95,17 @@ bool DspSignalBus::SetValue(int signalIndex, ValueType const& newValue)
     }
 }
 
-//-------------------------------------------------------------------------------------------------
-
 template <class ValueType>
-bool DspSignalBus::SetValue(std::string const& signalName, ValueType const& newValue)
+ValueType* SignalBus::GetValue( int signalIndex ) const
 {
-    int signalIndex;
-
-    if (FindSignal(signalName, signalIndex))
+    if ( ( size_t ) signalIndex < _signals.size() )
     {
-        return _signals[signalIndex].SetValue(newValue);
+        return _signals[signalIndex]->GetValue<ValueType>();
     }
     else
     {
-        return false;
+        return nullptr;
     }
 }
 
-//-------------------------------------------------------------------------------------------------
-
-template <class ValueType>
-bool DspSignalBus::GetValue(int signalIndex, ValueType& returnValue) const
-{
-    if ((size_t)signalIndex < _signals.size())
-    {
-        return _signals[signalIndex].GetValue(returnValue);
-    }
-    else
-    {
-        return false;
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template <class ValueType>
-bool DspSignalBus::GetValue(std::string const& signalName, ValueType& returnValue) const
-{
-    int signalIndex;
-
-    if (FindSignal(signalName, signalIndex))
-    {
-        return _signals[signalIndex].GetValue(returnValue);
-    }
-    else
-    {
-        return false;
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template <class ValueType>
-ValueType const* DspSignalBus::GetValue(int signalIndex) const
-{
-    if (signalIndex < _signals.size())
-    {
-        return _signals[signalIndex].GetValue<ValueType>();
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-//-------------------------------------------------------------------------------------------------
-
-template <class ValueType>
-ValueType const* DspSignalBus::GetValue(std::string const& signalName) const
-{
-    int signalIndex;
-
-    if (FindSignal(signalName, signalIndex))
-    {
-        return _signals[signalIndex].GetValue<ValueType>();
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-//=================================================================================================
-
-#endif  // DSPSIGNALBUS_H
+} // namespace DSPatch

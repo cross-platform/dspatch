@@ -7,12 +7,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -pedantic -Wall -Wextra -
 
 project(DSPatch)
 
-file(GLOB srcs src/*.cpp)
-file(GLOB hdrs include/*.h)
-file(GLOB in_hdrs include/dspatch/*.h)
+file(GLOB hdrs include/*.h src/internal/*.h)
+file(GLOB srcs src/*.cpp src/internal/*.cpp)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 # Build shared (LGPL)
@@ -20,7 +20,6 @@ add_library(
     ${PROJECT_NAME} SHARED
     ${srcs}
     ${hdrs}
-    ${in_hdrs}
 )
 
 # Link pthread and dl on Unix
@@ -32,26 +31,5 @@ if(UNIX)
     )
 endif(UNIX)
 
-install(
-    TARGETS ${PROJECT_NAME}
-    DESTINATION lib
-)
-
-install(
-    FILES ${hdrs}
-    DESTINATION include
-)
-
-install(
-    FILES ${in_hdrs}
-    DESTINATION include/dspatch
-)
-
-option(BUILD_EXAMPLES "Build Examples" ON)
-
-if(${BUILD_EXAMPLES})
-    add_subdirectory(example)
-    add_subdirectory(tutorial)
-endif(${BUILD_EXAMPLES})
-
 add_subdirectory(docs)
+add_subdirectory(tutorial)

@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,29 +22,36 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPTHREADWIN_H
-#define DSPTHREADWIN_H
-
-//-------------------------------------------------------------------------------------------------
+#pragma once
 
 #include <windows.h>
 
-//=================================================================================================
+namespace DSPatch
+{
+namespace internal
+{
 
-class DspThread
+/// Cross-platform, object-oriented thread
+
+/**
+A class that is required to run actions in a parallel thread can be derived from Thread in order to
+inherit multi-threading abilities. The Start() method initiates a parallel thread and executes the
+protected virtual Run_() method in that thread. The derived class must override this Run_() method
+with one that executes the required parallel actions. Upon construction, the priority for the
+created thread may be selected from the public enumeration: Priority.
+*/
+
+class Thread
 {
 public:
-    DspThread()
-        : _threadHandle(NULL)
+    NONCOPYABLE( Thread );
+
+    Thread()
+        : _threadHandle( nullptr )
     {
     }
 
-    DspThread(DspThread const&)
-        : _threadHandle(NULL)
-    {
-    }
-
-    virtual ~DspThread()
+    virtual ~Thread()
     {
         Stop();
     }
@@ -62,117 +69,33 @@ public:
         TimeCriticalPriority = 15
     };
 
-    virtual void Start(Priority priority = NormalPriority)
+    virtual void Start( Priority priority = NormalPriority )
     {
         DWORD threadId;
-        _threadHandle = CreateThread(NULL, 0, _ThreadFunc, this, CREATE_SUSPENDED, &threadId);
-        SetThreadPriority(_threadHandle, priority);
-        ResumeThread(_threadHandle);
+        _threadHandle = CreateThread( nullptr, 0, _ThreadFunc, this, CREATE_SUSPENDED, &threadId );
+        SetThreadPriority( _threadHandle, priority );
+        ResumeThread( _threadHandle );
     }
 
     virtual void Stop()
     {
-        CloseHandle(_threadHandle);
-        _threadHandle = NULL;
+        CloseHandle( _threadHandle );
+        _threadHandle = nullptr;
     }
 
-    static void SetPriority(Priority priority)
-    {
-        SetThreadPriority(GetCurrentThread(), priority);
-    }
-
-    static void MsSleep(int milliseconds)
-    {
-        Sleep(milliseconds);
-    }
+protected:
+    virtual void Run_() = 0;
 
 private:
-    static DWORD WINAPI _ThreadFunc(LPVOID pv)
+    static DWORD WINAPI _ThreadFunc( LPVOID pv )
     {
-        (reinterpret_cast<DspThread*>(pv))->_Run();
+        ( reinterpret_cast<Thread*>( pv ) )->Run_();
         return 0;
     }
-
-    virtual void _Run() = 0;
 
 private:
     HANDLE _threadHandle;
 };
 
-//=================================================================================================
-
-class DspMutex
-{
-public:
-    DspMutex()
-    {
-        InitializeCriticalSection(&_cs);
-    }
-
-    DspMutex(DspMutex const&)
-    {
-        InitializeCriticalSection(&_cs);
-    }
-
-    virtual ~DspMutex()
-    {
-        DeleteCriticalSection(&_cs);
-    }
-
-    void Lock()
-    {
-        EnterCriticalSection(&_cs);
-    }
-
-    void Unlock()
-    {
-        LeaveCriticalSection(&_cs);
-    }
-
-private:
-    CRITICAL_SECTION _cs;
-};
-
-//=================================================================================================
-
-class DspWaitCondition
-{
-public:
-    DspWaitCondition()
-    {
-        _hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    }
-
-    DspWaitCondition(DspWaitCondition const&)
-    {
-        _hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    }
-
-    virtual ~DspWaitCondition()
-    {
-        CloseHandle(_hEvent);
-    }
-
-    void Wait(DspMutex& mutex)
-    {
-        ResetEvent(_hEvent);
-
-        mutex.Unlock();
-
-        WaitForSingleObject(_hEvent, INFINITE);
-
-        mutex.Lock();
-    }
-
-    void WakeAll()
-    {
-        SetEvent(_hEvent);
-    }
-
-private:
-    HANDLE _hEvent;
-};
-
-//=================================================================================================
-
-#endif  // DSPTHREADWIN_H
+} // namespace internal
+} // namespace DSPatch

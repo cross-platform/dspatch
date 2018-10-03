@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,35 +22,78 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include <dspatch/DspSignal.h>
+#include <dspatch/Signal.h>
 
-//=================================================================================================
+using namespace DSPatch;
 
-DspSignal::DspSignal(std::string signalName)
-    : _signalName(signalName)
-    , _valueAvailable(false)
+namespace DSPatch
 {
-}
-
-//-------------------------------------------------------------------------------------------------
-
-DspSignal::~DspSignal()
+namespace internal
 {
-}
-
-//=================================================================================================
-
-bool DspSignal::SetSignal(DspSignal const* newSignal)
-{
-    if (newSignal != NULL)
+    class Signal
     {
-        if (newSignal->_valueAvailable == false)
+    public:
+        int deps = 0;
+        int depsServiced = 0;
+    };
+}
+}
+
+Signal::Signal()
+    : _valueAvailable( false )
+    , p( new internal::Signal() )
+{
+}
+
+Signal::~Signal()
+{
+}
+
+bool Signal::SetSignal( Signal::SPtr const& newSignal )
+{
+    if ( newSignal != nullptr )
+    {
+        if ( newSignal->_valueAvailable == false )
         {
             return false;
         }
         else
         {
-            _signalValue.CopyFrom(newSignal->_signalValue);
+            if ( newSignal->p->depsServiced == newSignal->p->deps - 1 )
+            {
+                // This is the incoming signal's last dependent, so we move it.
+                newSignal->_signalValue.MoveTo( _signalValue );
+                newSignal->_valueAvailable = false;
+            }
+            else
+            {
+                _signalValue.CopyFrom( newSignal->_signalValue );
+            }
+
+            _valueAvailable = true;
+            ++newSignal->p->depsServiced;
+            return true;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Signal::MoveSignal( Signal::SPtr const& newSignal )
+{
+    if ( newSignal != nullptr )
+    {
+        if ( newSignal->_valueAvailable == false )
+        {
+            return false;
+        }
+        else
+        {
+            newSignal->_signalValue.MoveTo( _signalValue );
+            newSignal->_valueAvailable = false;
+
             _valueAvailable = true;
             return true;
         }
@@ -61,25 +104,28 @@ bool DspSignal::SetSignal(DspSignal const* newSignal)
     }
 }
 
-//-------------------------------------------------------------------------------------------------
-
-void DspSignal::ClearValue()
+void Signal::ClearValue()
 {
     _valueAvailable = false;
+    p->depsServiced = 0;
 }
 
-//-------------------------------------------------------------------------------------------------
-
-const std::type_info& DspSignal::GetSignalType() const
+int Signal::Deps() const
 {
-    return _signalValue.GetType();
+    return p->deps;
 }
 
-//-------------------------------------------------------------------------------------------------
-
-std::string DspSignal::GetSignalName() const
+void Signal::IncDeps()
 {
-    return _signalName;
+    ++p->deps;
 }
 
-//=================================================================================================
+void Signal::DecDeps()
+{
+    --p->deps;
+}
+
+void Signal::SetDeps( int deps )
+{
+    p->deps = deps;
+}

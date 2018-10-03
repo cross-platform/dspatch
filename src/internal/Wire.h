@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,37 +22,38 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPWIRE_H
-#define DSPWIRE_H
+#pragma once
 
-//-------------------------------------------------------------------------------------------------
+namespace DSPatch
+{
 
-class DspComponent;
+class Component;
 
-//=================================================================================================
+namespace internal
+{
+
 /// Connection between two components
 
 /**
-DspComponents process and transfer data between each other in the form of signals via
-interconnecting "wires". Each wire contains references to the linked component, the source output
-signal, and the destination input signal. The DspWire struct simply stores these references for use
-in retrieving and providing signals across component connections.
+Components process and transfer data between each other in the form of signals via interconnected
+"wires". Each wire contains references to the linked component, the source output signal, and the
+destination input signal. The Wire struct simply stores these references for use in retrieving and
+providing signals across component connections.
 */
 
-struct DspWire
+struct Wire final
 {
-    DspWire(DspComponent* newLinkedComponent, int newFromSignalIndex, int newToSignalIndex)
-        : linkedComponent(newLinkedComponent)
-        , fromSignalIndex(newFromSignalIndex)
-        , toSignalIndex(newToSignalIndex)
+    Wire( std::shared_ptr<DSPatch::Component> const& newLinkedComponent, int newFromSignalIndex, int newToSignalIndex )
+        : linkedComponent( newLinkedComponent )
+        , fromSignalIndex( newFromSignalIndex )
+        , toSignalIndex( newToSignalIndex )
     {
     }
 
-    DspComponent* linkedComponent;
+    std::shared_ptr<DSPatch::Component> linkedComponent;
     int fromSignalIndex;
     int toSignalIndex;
 };
 
-//=================================================================================================
-
-#endif  // DSPWIRE_H
+} // namespace internal
+} // namespace DSPatch

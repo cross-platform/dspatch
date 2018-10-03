@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,116 +22,99 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include <dspatch/DspComponentThread.h>
-#include <dspatch/DspComponent.h>
+#include <internal/ComponentThread.h>
 
-//=================================================================================================
+#include <thread>
 
-DspComponentThread::DspComponentThread()
-    : _component(NULL)
-    , _stop(false)
-    , _pause(false)
-    , _stopped(true)
+using namespace DSPatch::internal;
+
+ComponentThread::ComponentThread()
+    : _stop( false )
+    , _pause( false )
+    , _stopped( true )
 {
 }
 
-//-------------------------------------------------------------------------------------------------
-
-DspComponentThread::~DspComponentThread()
+ComponentThread::~ComponentThread()
 {
     Stop();
 }
 
-//=================================================================================================
-
-void DspComponentThread::Initialise(DspComponent* component)
+void ComponentThread::Initialise( DSPatch::Component::SPtr const& component )
 {
     _component = component;
 }
 
-//-------------------------------------------------------------------------------------------------
+bool ComponentThread::IsInitialised() const
+{
+    return _component.lock() != nullptr;
+}
 
-bool DspComponentThread::IsStopped() const
+bool ComponentThread::IsStopped() const
 {
     return _stopped;
 }
 
-//-------------------------------------------------------------------------------------------------
-
-void DspComponentThread::Start(Priority priority)
+void ComponentThread::Start( Priority priority )
 {
-    if (_stopped)
+    if ( _stopped )
     {
         _stop = false;
         _stopped = false;
         _pause = false;
-        DspThread::Start(priority);
+        Thread::Start( priority );
     }
 }
 
-//-------------------------------------------------------------------------------------------------
-
-void DspComponentThread::Stop()
+void ComponentThread::Stop()
 {
     _stop = true;
 
-    while (_stopped != true)
+    while ( _stopped != true )
     {
-        _pauseCondt.WakeAll();
-        _resumeCondt.WakeAll();
-        MsSleep(1);
+        _pauseCondt.notify_one();
+        _resumeCondt.notify_one();
+        std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
     }
 
-    DspThread::Stop();
+    Thread::Stop();
 }
 
-//-------------------------------------------------------------------------------------------------
-
-void DspComponentThread::Pause()
+void ComponentThread::Pause()
 {
-    _resumeMutex.Lock();
+    std::unique_lock<std::mutex> lock( _resumeMutex );
 
     _pause = true;
-    _pauseCondt.Wait(_resumeMutex);  // wait for resume
+    _pauseCondt.wait( lock );  // wait for resume
     _pause = false;
-
-    _resumeMutex.Unlock();
 }
 
-//-------------------------------------------------------------------------------------------------
-
-void DspComponentThread::Resume()
+void ComponentThread::Resume()
 {
-    _resumeMutex.Lock();
-    _resumeCondt.WakeAll();
-    _resumeMutex.Unlock();
+    _resumeMutex.lock();
+    _resumeCondt.notify_one();
+    _resumeMutex.unlock();
 }
 
-//=================================================================================================
-
-void DspComponentThread::_Run()
+void ComponentThread::Run_()
 {
-    if (_component != NULL)
+    if ( _component.lock() != nullptr )
     {
-        while (!_stop)
+        while ( !_stop )
         {
-            _component->Tick();
-            _component->Reset();
+            _component.lock()->Tick();
+            _component.lock()->Reset();
 
-            if (_pause)
+            if ( _pause )
             {
-                _resumeMutex.Lock();
+                std::unique_lock<std::mutex> lock( _resumeMutex );
 
-                _pauseCondt.WakeAll();
+                _pauseCondt.notify_one();
 
-                _resumeCondt.Wait(_resumeMutex);  // wait for resume
-
-                _resumeMutex.Unlock();
+                _resumeCondt.wait( lock );  // wait for resume
             }
         }
     }
 
     _stopped = true;
 }
-
-//=================================================================================================

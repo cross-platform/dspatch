@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,109 +22,83 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#ifndef DSPSIGNAL_H
-#define DSPSIGNAL_H
+#pragma once
 
-//-------------------------------------------------------------------------------------------------
+#include <dspatch/Common.h>
+#include <dspatch/RunType.h>
 
-#include <string>
 #include <vector>
 
-#include <dspatch/DspRunType.h>
-#include <dspatch/DspThread.h>
+namespace DSPatch
+{
 
-//=================================================================================================
+namespace internal
+{
+    class Signal;
+}
+
 /// Value container used to carry data between components
 
 /**
-DspComponents process and transfer data between each other in the form of "signals" via
-interconnecting wires. The DspSignal class holds a single value that can be dynamically typed at
-runtime. Furthermore, a DspSignal has the ability to change it's data type at any point during
-program execution. This is designed such that a signal bus can hold any number of different typed
-variables, as well as to allow for a variable to dynamically change it's type when needed -this can
-be useful for inputs that accept a number of different data types (E.g. Varying sample size in an
-audio buffer: array of byte / int / float).
+Components process and transfer data between each other in the form of "signals" via interconnected
+wires. The Signal class holds a single value that can be dynamically typed at runtime. Furthermore,
+a Signal has the ability to change it's data type at any point during program execution. This is
+designed such that a signal bus can hold any number of different typed variables, as well as to
+allow for a variable to dynamically change it's type when needed - this can be useful for inputs
+that accept a number of different data types (E.g. Varying sample size in an audio buffer: array of
+byte / int / float).
 */
 
-class DLLEXPORT DspSignal
+class DLLEXPORT Signal final
 {
 public:
-    DspSignal(std::string signalName = "");
+    NONCOPYABLE( Signal );
+    DEFINE_PTRS( Signal );
 
-    virtual ~DspSignal();
-
-    template <class ValueType>
-    bool SetValue(ValueType const& newValue);
-
-    template <class ValueType>
-    bool GetValue(ValueType& returnValue) const;
+    Signal();
+    virtual ~Signal();
 
     template <class ValueType>
-    ValueType const* GetValue() const;
+    void SetValue( ValueType const& newValue );
 
-    bool SetSignal(DspSignal const* newSignal);
+    template <class ValueType>
+    ValueType* GetValue();
+
+    bool SetSignal( Signal::SPtr const& newSignal );
+    bool MoveSignal( Signal::SPtr const& newSignal );
 
     void ClearValue();
 
-    std::type_info const& GetSignalType() const;
-
-    std::string GetSignalName() const;
+    int Deps() const;
+    void IncDeps();
+    void DecDeps();
+    void SetDeps( int deps );
 
 private:
-    DspRunType _signalValue;
-    std::string _signalName;
+    RunType _signalValue;
     bool _valueAvailable;
+
+    std::unique_ptr<internal::Signal> p;
 };
 
-//=================================================================================================
-
 template <class ValueType>
-bool DspSignal::SetValue(ValueType const& newValue)
+void Signal::SetValue( ValueType const& newValue )
 {
     _signalValue = newValue;
     _valueAvailable = true;
-    return true;
 }
 
-//-------------------------------------------------------------------------------------------------
-
 template <class ValueType>
-bool DspSignal::GetValue(ValueType& returnValue) const
+ValueType* Signal::GetValue()
 {
-    if (_valueAvailable)
+    if ( _valueAvailable )
     {
-        ValueType const* returnValuePtr = DspRunType::RunTypeCast<ValueType>(&_signalValue);
-        if (returnValuePtr != NULL)
-        {
-            returnValue = *returnValuePtr;
-            return true;
-        }
-        else
-        {
-            return false;  // incorrect type matching
-        }
+        return RunType::RunTypeCast<ValueType>( &_signalValue );
     }
     else
     {
-        return false;  // no value available
+        return nullptr;  // no value available
     }
 }
 
-//-------------------------------------------------------------------------------------------------
-
-template <class ValueType>
-ValueType const* DspSignal::GetValue() const
-{
-    if (_valueAvailable)
-    {
-        return DspRunType::RunTypeCast<ValueType>(&_signalValue);
-    }
-    else
-    {
-        return NULL;  // no value available
-    }
-}
-
-//=================================================================================================
-
-#endif  // DSPSIGNAL_H
+} // namespace DSPatch

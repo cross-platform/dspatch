@@ -1,6 +1,6 @@
 /************************************************************************
 DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
-Copyright (c) 2012-2015 Marcus Tomlinson
+Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -22,12 +22,29 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include <dspatch/DspPlugin.h>
+#pragma once
 
-//=================================================================================================
+#include <memory>
 
-DspPlugin::~DspPlugin()
-{
-}
+#define NONCOPYABLE( classname )                      \
+    classname( classname const& ) = delete;           \
+    classname& operator=( classname const& ) = delete
 
-//=================================================================================================
+#define DEFINE_PTRS( classname )                      \
+    using SPtr = std::shared_ptr<classname>;          \
+    using SCPtr = std::shared_ptr<classname const>;   \
+    using UPtr = std::unique_ptr<classname>;          \
+    using UCPtr = std::unique_ptr<classname const>
+
+#ifdef _WIN32
+
+#define DLLEXPORT __declspec(dllexport)
+
+#pragma warning(disable : 4251)  // disable class needs to have dll-interface warning
+#pragma warning(disable : 4275)  // disable non dll-interface class used as base warning
+
+#else
+
+#define DLLEXPORT
+
+#endif
