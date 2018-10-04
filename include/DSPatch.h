@@ -253,7 +253,8 @@ int main()
 
     That's it! Enjoy using DSPatch!
 
-    (<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder in the DSPatch root directory).
+    (<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder
+    in the DSPatch root directory).
 
 \n
 
@@ -497,4 +498,3 @@ The Component Thread simply ticks a single component over and over. As the
 Circuit class inherits from Component, we can use its Component Thread to
 "auto-tick" the circuit in order to free up the main application thread for
 control.*/
-

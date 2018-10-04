@@ -1,8 +1,8 @@
 #include <DSPatch.h>
 
-#include <time.h>
 #include <iostream>
 #include <stdlib.h>
+#include <time.h>
 
 namespace DSPatch
 {
@@ -37,7 +37,7 @@ protected:
         auto bool2 = inputs.GetValue<bool>( 1 );
 
         // check first that our component has received valid inputs
-        if( bool1 && bool2 )
+        if ( bool1 && bool2 )
         {
             // set the output as the result of bool1 AND bool2
             outputs.SetValue( 0, *bool1 && *bool2 );
@@ -104,4 +104,4 @@ protected:
     }
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch

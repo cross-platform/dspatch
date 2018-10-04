@@ -97,5 +97,5 @@ private:
     HANDLE _threadHandle;
 };
 
-} // namespace internal
-} // namespace DSPatch
+}  // namespace internal
+}  // namespace DSPatch

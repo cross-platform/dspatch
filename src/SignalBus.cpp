@@ -30,11 +30,13 @@ namespace DSPatch
 {
 namespace internal
 {
-    class SignalBus
-    {
-    };
-}
-}
+
+class SignalBus
+{
+};
+
+}  // namespace internal
+}  // namespace DSPatch
 
 SignalBus::SignalBus()
     : p( new internal::SignalBus() )
@@ -71,7 +73,7 @@ bool SignalBus::SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int
 {
     auto newSignal = fromSignalBus._GetSignal( fromSignalIndex );
 
-    if ( ( size_t ) toSignalIndex < _signals.size() && newSignal != nullptr )
+    if ( (size_t)toSignalIndex < _signals.size() && newSignal != nullptr )
     {
         return _signals[toSignalIndex]->MoveSignal( newSignal );
     }
@@ -91,7 +93,7 @@ void SignalBus::ClearAllValues()
 
 Signal::SPtr SignalBus::_GetSignal( int signalIndex ) const
 {
-    if ( ( size_t ) signalIndex < _signals.size() )
+    if ( (size_t)signalIndex < _signals.size() )
     {
         return _signals[signalIndex];
     }
@@ -103,7 +105,7 @@ Signal::SPtr SignalBus::_GetSignal( int signalIndex ) const
 
 bool SignalBus::_SetSignal( int signalIndex, Signal::SPtr const& newSignal )
 {
-    if ( ( size_t ) signalIndex < _signals.size() && newSignal != nullptr )
+    if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
     {
         return _signals[signalIndex]->SetSignal( newSignal );
     }
@@ -115,7 +117,7 @@ bool SignalBus::_SetSignal( int signalIndex, Signal::SPtr const& newSignal )
 
 bool SignalBus::_MoveSignal( int signalIndex, Signal::SPtr const& newSignal )
 {
-    if ( ( size_t ) signalIndex < _signals.size() && newSignal != nullptr )
+    if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
     {
         return _signals[signalIndex]->MoveSignal( newSignal );
     }

@@ -87,5 +87,5 @@ private:
     std::condition_variable _resumeCondt, _syncCondt;
 };
 
-} // namespace internal
-} // namespace DSPatch
+}  // namespace internal
+}  // namespace DSPatch

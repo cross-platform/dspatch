@@ -33,7 +33,7 @@ namespace DSPatch
 
 namespace internal
 {
-    class Plugin;
+class Plugin;
 }
 
 /// Componenet plugin loader
@@ -66,4 +66,4 @@ private:
     std::unique_ptr<internal::Plugin> p;
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch

@@ -35,9 +35,9 @@ class Circuit;
 
 namespace internal
 {
-    class Component;
-    class CircuitThread;
-}
+class Component;
+class CircuitThread;
+}  // namespace internal
 
 /// Abstract base class for DSPatch components
 
@@ -119,4 +119,4 @@ private:
     std::unique_ptr<internal::Component> p;
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch

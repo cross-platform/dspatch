@@ -34,7 +34,7 @@ namespace DSPatch
 
 namespace internal
 {
-    class Signal;
+class Signal;
 }
 
 /// Value container used to carry data between components
@@ -101,4 +101,4 @@ ValueType* Signal::GetValue()
     }
 }
 
-} // namespace DSPatch
+}  // namespace DSPatch

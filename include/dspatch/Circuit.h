@@ -31,7 +31,7 @@ namespace DSPatch
 
 namespace internal
 {
-    class Circuit;
+class Circuit;
 }
 
 /// Workspace for adding and routing components
@@ -108,4 +108,4 @@ private:
     std::unique_ptr<internal::Circuit> p;
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch

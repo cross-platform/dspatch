@@ -112,5 +112,5 @@ private:
     bool _threadAttatched;
 };
 
-} // namespace internal
-} // namespace DSPatch
+}  // namespace internal
+}  // namespace DSPatch

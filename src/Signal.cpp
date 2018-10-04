@@ -30,14 +30,16 @@ namespace DSPatch
 {
 namespace internal
 {
-    class Signal
-    {
-    public:
-        int deps = 0;
-        int depsServiced = 0;
-    };
-}
-}
+
+class Signal
+{
+public:
+    int deps = 0;
+    int depsServiced = 0;
+};
+
+}  // namespace internal
+}  // namespace DSPatch
 
 Signal::Signal()
     : _valueAvailable( false )

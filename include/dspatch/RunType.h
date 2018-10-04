@@ -78,8 +78,7 @@ public:
 
     void CopyFrom( RunType const& rhs )
     {
-        if ( _valueHolder != nullptr && rhs._valueHolder != nullptr &&
-             _valueHolder->GetType() == rhs._valueHolder->GetType() )
+        if ( _valueHolder != nullptr && rhs._valueHolder != nullptr && _valueHolder->GetType() == rhs._valueHolder->GetType() )
         {
             _valueHolder->SetValue( rhs._valueHolder );
         }
@@ -94,7 +93,7 @@ public:
     {
         if ( typeid( ValueType ) == GetType() )
         {
-            ( ( _RtValue<ValueType>* )_valueHolder )->_value = rhs;
+            ( (_RtValue<ValueType>*)_valueHolder )->_value = rhs;
         }
         else
         {
@@ -172,7 +171,7 @@ private:
 
         void SetValue( _RtValueHolder* valueHolder )
         {
-            _value = ( ( _RtValue<ValueType>* )valueHolder )->_value;
+            _value = ( (_RtValue<ValueType>*)valueHolder )->_value;
         }
 
     public:
@@ -187,4 +186,4 @@ private:
     _RtValueHolder* _valueHolder;
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch

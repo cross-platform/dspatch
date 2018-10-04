@@ -35,46 +35,48 @@ namespace DSPatch
 {
 namespace internal
 {
-    class Component
+
+class Component
+{
+public:
+    Component()
+        : bufferCount( 0 )
+        , isAutoTickRunning( false )
+        , isAutoTickPaused( false )
+        , pauseCount( 0 )
+        , hasTicked( false )
+        , componentThread( new ComponentThread )
     {
-    public:
-        Component()
-            : bufferCount( 0 )
-            , isAutoTickRunning( false )
-            , isAutoTickPaused( false )
-            , pauseCount( 0 )
-            , hasTicked( false )
-            , componentThread( new ComponentThread )
-        {
-        }
+    }
 
-        void WaitForRelease( int threadNo );
-        void ReleaseThread( int threadNo );
+    void WaitForRelease( int threadNo );
+    void ReleaseThread( int threadNo );
 
-        std::weak_ptr<DSPatch::Circuit> parentCircuit;
+    std::weak_ptr<DSPatch::Circuit> parentCircuit;
 
-        int bufferCount;
+    int bufferCount;
 
-        std::vector<DSPatch::SignalBus> inputBuses;
-        std::vector<DSPatch::SignalBus> outputBuses;
+    std::vector<DSPatch::SignalBus> inputBuses;
+    std::vector<DSPatch::SignalBus> outputBuses;
 
-        bool isAutoTickRunning;
-        bool isAutoTickPaused;
-        int pauseCount;
+    bool isAutoTickRunning;
+    bool isAutoTickPaused;
+    int pauseCount;
 
-        std::vector<Wire> inputWires;
+    std::vector<Wire> inputWires;
 
-        bool hasTicked;
+    bool hasTicked;
 
-        std::unique_ptr<internal::ComponentThread> componentThread;
+    std::unique_ptr<internal::ComponentThread> componentThread;
 
-        std::vector<std::unique_ptr<bool>> hasTickeds;  // bool pointers ensure that parallel threads will only read from this vector
-        std::vector<bool> gotReleases;  // bool pointers not used here as only 1 thread writes to this vector at a time
-        std::vector<std::unique_ptr<std::mutex>> releaseMutexes;
-        std::vector<std::unique_ptr<std::condition_variable>> releaseCondts;
-    };
-}
-}
+    std::vector<std::unique_ptr<bool>> hasTickeds;  // bool pointers ensure that parallel threads will only read from this vector
+    std::vector<bool> gotReleases;                  // bool pointers not used here as only 1 thread writes to this vector at a time
+    std::vector<std::unique_ptr<std::mutex>> releaseMutexes;
+    std::vector<std::unique_ptr<std::condition_variable>> releaseCondts;
+};
+
+}  // namespace internal
+}  // namespace DSPatch
 
 Component::Component()
     : p( new internal::Component() )
@@ -208,8 +210,7 @@ void Component::ResumeAutoTick()
 
 bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput )
 {
-    if ( fromOutput >= fromComponent->p->outputBuses[0].GetSignalCount() ||
-         toInput >= p->inputBuses[0].GetSignalCount() )
+    if ( fromOutput >= fromComponent->p->outputBuses[0].GetSignalCount() || toInput >= p->inputBuses[0].GetSignalCount() )
     {
         return false;
     }
@@ -394,8 +395,7 @@ int Component::_GetBufferCount()
 
 bool Component::_MoveInputSignal( int bufferIndex, int signalIndex, Signal::SPtr const& signal )
 {
-    if ( ( size_t ) bufferIndex < p->inputBuses.size() &&
-         signalIndex < p->inputBuses[bufferIndex].GetSignalCount() )
+    if ( (size_t)bufferIndex < p->inputBuses.size() && signalIndex < p->inputBuses[bufferIndex].GetSignalCount() )
     {
         p->inputBuses[bufferIndex]._MoveSignal( signalIndex, signal );
         return true;
@@ -405,8 +405,7 @@ bool Component::_MoveInputSignal( int bufferIndex, int signalIndex, Signal::SPtr
 
 Signal::SPtr Component::_GetOutputSignal( int bufferIndex, int signalIndex )
 {
-    if ( ( size_t ) bufferIndex < p->inputBuses.size() &&
-         signalIndex < p->outputBuses[bufferIndex].GetSignalCount() )
+    if ( (size_t)bufferIndex < p->inputBuses.size() && signalIndex < p->outputBuses[bufferIndex].GetSignalCount() )
     {
         return p->outputBuses[bufferIndex]._GetSignal( signalIndex );
     }

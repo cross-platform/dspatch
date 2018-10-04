@@ -36,25 +36,27 @@ namespace DSPatch
 {
 namespace internal
 {
-    class Plugin
+
+class Plugin
+{
+public:
+    Plugin( std::string const& pluginPath )
+        : pluginPath( pluginPath )
     {
-    public:
-        Plugin( std::string const& pluginPath )
-            : pluginPath( pluginPath )
-        {
-            LoadPlugin( pluginPath );
-        }
+        LoadPlugin( pluginPath );
+    }
 
-        void LoadPlugin( std::string const& pluginPath );
+    void LoadPlugin( std::string const& pluginPath );
 
-        typedef DSPatch::Component::SPtr ( *Create_t )();
+    typedef DSPatch::Component::SPtr ( *Create_t )();
 
-        std::string pluginPath;
-        void* handle = nullptr;
-        Create_t create;
-    };
-}
-}
+    std::string pluginPath;
+    void* handle = nullptr;
+    Create_t create;
+};
+
+}  // namespace internal
+}  // namespace DSPatch
 
 Plugin::Plugin( std::string const& pluginPath )
     : p( new internal::Plugin( pluginPath ) )
@@ -80,7 +82,7 @@ Plugin::~Plugin()
     if ( p->handle )
     {
 #ifdef _WIN32
-        FreeLibrary( ( HMODULE )p->handle );
+        FreeLibrary( (HMODULE)p->handle );
 #else
         dlclose( p->handle );
 #endif
@@ -114,15 +116,15 @@ void internal::Plugin::LoadPlugin( std::string const& pluginPath )
     {
         // load symbols
 #ifdef _WIN32
-        create = ( Create_t )GetProcAddress( ( HMODULE )handle, "Create" );
+        create = (Create_t)GetProcAddress( (HMODULE)handle, "Create" );
 #else
-        create = ( Create_t )dlsym( handle, "Create" );
+        create = (Create_t)dlsym( handle, "Create" );
 #endif
 
         if ( !create )
         {
 #ifdef _WIN32
-            FreeLibrary( ( HMODULE )handle );
+            FreeLibrary( (HMODULE)handle );
 #else
             dlclose( handle );
 #endif

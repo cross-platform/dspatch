@@ -31,7 +31,7 @@ namespace DSPatch
 
 namespace internal
 {
-    class SignalBus;
+class SignalBus;
 }
 
 /// Signal container
@@ -84,7 +84,7 @@ private:
 template <class ValueType>
 bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
 {
-    if ( ( size_t ) signalIndex < _signals.size() )
+    if ( (size_t)signalIndex < _signals.size() )
     {
         _signals[signalIndex]->SetValue( newValue );
         return true;
@@ -98,7 +98,7 @@ bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
 template <class ValueType>
 ValueType* SignalBus::GetValue( int signalIndex ) const
 {
-    if ( ( size_t ) signalIndex < _signals.size() )
+    if ( (size_t)signalIndex < _signals.size() )
     {
         return _signals[signalIndex]->GetValue<ValueType>();
     }
@@ -108,4 +108,4 @@ ValueType* SignalBus::GetValue( int signalIndex ) const
     }
 }
 
-} // namespace DSPatch
+}  // namespace DSPatch

@@ -33,42 +33,44 @@ namespace DSPatch
 {
 namespace internal
 {
-    class IoComponent : public DSPatch::Component
+
+class IoComponent : public DSPatch::Component
+{
+    virtual void Process_( DSPatch::SignalBus const& inputs, DSPatch::SignalBus& outputs ) override
     {
-        virtual void Process_( DSPatch::SignalBus const& inputs, DSPatch::SignalBus& outputs ) override
+        for ( int i = 0; i < inputs.GetSignalCount(); ++i )
         {
-            for ( int i = 0; i < inputs.GetSignalCount(); ++i )
-            {
-                // this component sits between the circuit's I/O and internal component I/O
-                // it simply passes its incoming signals through to its outputs
-                outputs.SetValue( i, inputs, i );
-            }
+            // this component sits between the circuit's I/O and internal component I/O
+            // it simply passes its incoming signals through to its outputs
+            outputs.SetValue( i, inputs, i );
         }
-    };
+    }
+};
 
-    class Circuit
+class Circuit
+{
+public:
+    Circuit()
+        : components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
+        , currentThreadIndex( 0 )
+        , inputComp( std::make_shared<IoComponent>() )
+        , outputComp( std::make_shared<IoComponent>() )
     {
-    public:
-        Circuit()
-            : components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
-            , currentThreadIndex( 0 )
-            , inputComp( std::make_shared<IoComponent>() )
-            , outputComp( std::make_shared<IoComponent>() )
-        {
-        }
+    }
 
-        bool FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const;
+    bool FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const;
 
-        std::shared_ptr<std::vector<DSPatch::Component::SPtr>> components;
+    std::shared_ptr<std::vector<DSPatch::Component::SPtr>> components;
 
-        std::vector<std::unique_ptr<internal::CircuitThread>> circuitThreads;
-        int currentThreadIndex;
+    std::vector<std::unique_ptr<internal::CircuitThread>> circuitThreads;
+    int currentThreadIndex;
 
-        IoComponent::SPtr inputComp;
-        IoComponent::SPtr outputComp;
-    };
-}
-}
+    IoComponent::SPtr inputComp;
+    IoComponent::SPtr outputComp;
+};
+
+}  // namespace internal
+}  // namespace DSPatch
 
 Circuit::Circuit( int threadCount )
     : p( new internal::Circuit() )
@@ -126,7 +128,7 @@ void Circuit::SetOutputCount( int outputCount )
 
 void Circuit::SetThreadCount( int threadCount )
 {
-    if ( ( size_t ) threadCount != p->circuitThreads.size() )
+    if ( (size_t)threadCount != p->circuitThreads.size() )
     {
         PauseAutoTick();
 
@@ -241,8 +243,7 @@ bool Circuit::ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOut
 {
     int toComponentIndex;
     int fromComponentIndex;
-    if ( p->FindComponent( fromComponent, fromComponentIndex ) &&
-         p->FindComponent( toComponent, toComponentIndex ) )
+    if ( p->FindComponent( fromComponent, fromComponentIndex ) && p->FindComponent( toComponent, toComponentIndex ) )
     {
         return ConnectOutToIn( fromComponentIndex, fromOutput, toComponentIndex, toInput );
     }
@@ -274,7 +275,7 @@ bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPt
 
 bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput )
 {
-    if ( ( size_t ) fromComponent >= p->components->size() || ( size_t ) toComponent >= p->components->size() )
+    if ( (size_t)fromComponent >= p->components->size() || (size_t)toComponent >= p->components->size() )
     {
         return false;
     }
@@ -299,7 +300,7 @@ bool Circuit::ConnectInToIn( int fromInput, Component::SCPtr const& toComponent,
 
 bool Circuit::ConnectInToIn( int fromInput, int toComponent, int toInput )
 {
-    if ( ( size_t ) toComponent >= p->components->size() )
+    if ( (size_t)toComponent >= p->components->size() )
     {
         return false;
     }
@@ -326,7 +327,7 @@ bool Circuit::ConnectOutToOut( Component::SCPtr const& fromComponent, int fromOu
 
 bool Circuit::ConnectOutToOut( int fromComponent, int fromOutput, int toOutput )
 {
-    if ( ( size_t ) fromComponent >= p->components->size() )
+    if ( (size_t)fromComponent >= p->components->size() )
     {
         return false;
     }
@@ -407,7 +408,7 @@ void Circuit::Process_( SignalBus const& inputs, SignalBus& outputs )
 
         p->circuitThreads[p->currentThreadIndex]->Resume();  // resume thread x
 
-        if ( ( size_t )++p->currentThreadIndex >= p->circuitThreads.size() )  // shift to thread x+1
+        if ( (size_t)++p->currentThreadIndex >= p->circuitThreads.size() )  // shift to thread x+1
         {
             p->currentThreadIndex = 0;
         }

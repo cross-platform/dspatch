@@ -26,31 +26,31 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <memory>
 
-#define NONCOPYABLE( classname )                      \
-    classname( classname const& ) = delete;           \
+#define NONCOPYABLE( classname )            \
+    classname( classname const& ) = delete; \
     classname& operator=( classname const& ) = delete
 
-#define DEFINE_PTRS( classname )                      \
-    using SPtr = std::shared_ptr<classname>;          \
-    using SCPtr = std::shared_ptr<classname const>;   \
-    using UPtr = std::unique_ptr<classname>;          \
+#define DEFINE_PTRS( classname )                    \
+    using SPtr = std::shared_ptr<classname>;        \
+    using SCPtr = std::shared_ptr<classname const>; \
+    using UPtr = std::unique_ptr<classname>;        \
     using UCPtr = std::unique_ptr<classname const>
 
-#define EXPORT_PLUGIN( classname, ... )                    \
-extern "C"                                                 \
-{                                                          \
-    DLLEXPORT Component::SPtr Create()                     \
-    {                                                      \
-        return std::make_shared<classname>( __VA_ARGS__ ); \
-    }                                                      \
-}
+#define EXPORT_PLUGIN( classname, ... )                        \
+    extern "C"                                                 \
+    {                                                          \
+        DLLEXPORT Component::SPtr Create()                     \
+        {                                                      \
+            return std::make_shared<classname>( __VA_ARGS__ ); \
+        }                                                      \
+    }
 
 #ifdef _WIN32
 
-#define DLLEXPORT __declspec(dllexport)
+#define DLLEXPORT __declspec( dllexport )
 
-#pragma warning(disable : 4251)  // disable class needs to have dll-interface warning
-#pragma warning(disable : 4275)  // disable non dll-interface class used as base warning
+#pragma warning( disable : 4251 )  // disable class needs to have dll-interface warning
+#pragma warning( disable : 4275 )  // disable non dll-interface class used as base warning
 
 #else
 

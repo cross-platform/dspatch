@@ -55,5 +55,5 @@ struct Wire final
     int toSignalIndex;
 };
 
-} // namespace internal
-} // namespace DSPatch
+}  // namespace internal
+}  // namespace DSPatch

@@ -75,5 +75,5 @@ private:
     std::condition_variable _resumeCondt, _pauseCondt;
 };
 
-} // namespace internal
-} // namespace DSPatch
+}  // namespace internal
+}  // namespace DSPatch
