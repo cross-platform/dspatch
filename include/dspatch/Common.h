@@ -36,6 +36,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     using UPtr = std::unique_ptr<classname>;          \
     using UCPtr = std::unique_ptr<classname const>
 
+#define EXPORT_PLUGIN( classname, ... )                    \
+extern "C"                                                 \
+{                                                          \
+    DLLEXPORT Component::SPtr Create()                     \
+    {                                                      \
+        return std::make_shared<classname>( __VA_ARGS__ ); \
+    }                                                      \
+}
+
 #ifdef _WIN32
 
 #define DLLEXPORT __declspec(dllexport)
