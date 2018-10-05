@@ -73,6 +73,9 @@ public:
     std::vector<bool> gotReleases;                  // bool pointers not used here as only 1 thread writes to this vector at a time
     std::vector<std::unique_ptr<std::mutex>> releaseMutexes;
     std::vector<std::unique_ptr<std::condition_variable>> releaseCondts;
+
+    std::vector<std::string> inputNames;
+    std::vector<std::string> outputNames;
 };
 
 }  // namespace internal
@@ -225,7 +228,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     // update source signal's dependent count
     for ( size_t i = 0; i < fromComponent->p->outputBuses.size(); i++ )
     {
-        fromComponent->p->outputBuses[i]._GetSignal( fromOutput )->IncDeps();
+        fromComponent->p->outputBuses[i]._GetSignal( fromOutput )->_IncDeps();
     }
 
     ResumeAutoTick();
@@ -248,7 +251,7 @@ void Component::DisconnectInput( int inputNo )
             // update source signal's dependent count
             for ( size_t i = 0; i < wire.linkedComponent->p->outputBuses.size(); i++ )
             {
-                wire.linkedComponent->p->outputBuses[i]._GetSignal( wire.fromSignalIndex )->DecDeps();
+                wire.linkedComponent->p->outputBuses[i]._GetSignal( wire.fromSignalIndex )->_DecDeps();
             }
         }
     }
@@ -286,22 +289,50 @@ void Component::DisconnectAllInputs()
     ResumeAutoTick();
 }
 
-void Component::SetInputCount_( int inputCount )
+int Component::GetInputCount() const
 {
+    return p->inputBuses[0].GetSignalCount();
+}
+
+int Component::GetOutputCount() const
+{
+    return p->outputBuses[0].GetSignalCount();
+}
+
+std::string Component::GetInputName( int inputNo ) const
+{
+    if ( inputNo < (int)p->inputNames.size() )
+    {
+        return p->inputNames[inputNo];
+    }
+    return "";
+}
+
+std::string Component::GetOutputName( int outputNo ) const
+{
+    if ( outputNo < (int)p->outputNames.size() )
+    {
+        return p->outputNames[outputNo];
+    }
+    return "";
+}
+
+void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
+{
+    p->inputNames = inputNames;
     for ( size_t i = 0; i < p->inputBuses.size(); i++ )
     {
         p->inputBuses[i].SetSignalCount( inputCount );
     }
-    p->inputBuses[0].SetSignalCount( inputCount );
 }
 
-void Component::SetOutputCount_( int outputCount )
+void Component::SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames )
 {
+    p->outputNames = outputNames;
     for ( size_t i = 0; i < p->outputBuses.size(); i++ )
     {
         p->outputBuses[i].SetSignalCount( outputCount );
     }
-    p->outputBuses[0].SetSignalCount( outputCount );
 }
 
 void Component::_SetParentCircuit( Circuit::SPtr const& parentCircuit )
@@ -371,12 +402,12 @@ void Component::_SetBufferCount( int bufferCount )
         for ( int j = 0; j < p->inputBuses[0].GetSignalCount(); ++j )
         {
             // update source signal's dependent count
-            p->inputBuses[i]._GetSignal( j )->SetDeps( p->inputBuses[0]._GetSignal( j )->Deps() );
+            p->inputBuses[i]._GetSignal( j )->_SetDeps( p->inputBuses[0]._GetSignal( j )->_Deps() );
         }
         for ( int j = 0; j < p->outputBuses[0].GetSignalCount(); ++j )
         {
             // update source signal's dependent count
-            p->outputBuses[i]._GetSignal( j )->SetDeps( p->outputBuses[0]._GetSignal( j )->Deps() );
+            p->outputBuses[i]._GetSignal( j )->_SetDeps( p->outputBuses[0]._GetSignal( j )->_Deps() );
         }
     }
 

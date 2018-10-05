@@ -63,19 +63,6 @@ Plugin::Plugin( std::string const& pluginPath )
 {
 }
 
-Plugin::Plugin( Plugin const& other )
-    : p( new internal::Plugin( other.p->pluginPath ) )
-{
-}
-
-Plugin& Plugin::operator=( const Plugin& other )
-{
-    p->pluginPath = other.p->pluginPath;
-    p->handle = other.p->handle;
-    p->create = other.p->create;
-    return *this;
-}
-
 Plugin::~Plugin()
 {
     // close library

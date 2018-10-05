@@ -25,6 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #pragma once
 
 #include <dspatch/Circuit.h>
+#include <dspatch/Plugin.h>
 
 /**
 

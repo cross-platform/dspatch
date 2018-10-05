@@ -69,12 +69,17 @@ public:
 
     void ClearValue();
 
-    int Deps() const;
-    void IncDeps();
-    void DecDeps();
-    void SetDeps( int deps );
+private:
+    // Private methods required by Component
+
+    int _Deps() const;
+    void _IncDeps();
+    void _DecDeps();
+    void _SetDeps( int deps );
 
 private:
+    friend class Component;
+
     RunType _signalValue;
     bool _valueAvailable;
 

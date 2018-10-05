@@ -112,22 +112,22 @@ void Signal::ClearValue()
     p->depsServiced = 0;
 }
 
-int Signal::Deps() const
+int Signal::_Deps() const
 {
     return p->deps;
 }
 
-void Signal::IncDeps()
+void Signal::_IncDeps()
 {
     ++p->deps;
 }
 
-void Signal::DecDeps()
+void Signal::_DecDeps()
 {
     --p->deps;
 }
 
-void Signal::SetDeps( int deps )
+void Signal::_SetDeps( int deps )
 {
     p->deps = deps;
 }

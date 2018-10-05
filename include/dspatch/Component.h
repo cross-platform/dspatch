@@ -89,11 +89,17 @@ public:
     void DisconnectInput( Component::SCPtr const& fromComponent );
     void DisconnectAllInputs();
 
+    int GetInputCount() const;
+    int GetOutputCount() const;
+
+    std::string GetInputName( int inputNo ) const;
+    std::string GetOutputName( int outputNo ) const;
+
 protected:
     virtual void Process_( SignalBus const&, SignalBus& ) = 0;
 
-    void SetInputCount_( int inputCount );
-    void SetOutputCount_( int outputCount );
+    void SetInputCount_( int inputCount, std::vector<std::string> const& inputNames = {} );
+    void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
 
 private:
     // Private methods required by Circuit

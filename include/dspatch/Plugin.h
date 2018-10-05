@@ -51,11 +51,10 @@ Thereafter, the contained component can be instantiated (mutiple times) via the 
 class DLLEXPORT Plugin final
 {
 public:
+    DEFINE_PTRS( Plugin );
+    NONCOPYABLE( Plugin );
+
     Plugin( std::string const& pluginPath );
-
-    Plugin( Plugin const& other );
-    Plugin& operator=( Plugin const& other );
-
     ~Plugin();
 
     bool IsLoaded() const;
