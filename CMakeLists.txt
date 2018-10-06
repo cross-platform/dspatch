@@ -33,4 +33,5 @@ if(UNIX)
 endif(UNIX)
 
 add_subdirectory(docs)
+add_subdirectory(tests)
 add_subdirectory(tutorial)
