@@ -1,5 +1,5 @@
 /************************************************************************
-DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
+DSPatch - C++ Flow-Based Programming Framework
 Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
@@ -36,12 +36,12 @@ namespace internal
 class Plugin;
 }
 
-/// Componenet plugin loader
+/// Component plugin loader
 
 /**
 A component, packaged into a shared library (.so / .dylib / .dll) and exported via the
 EXPORT_PLUGIN macro, can be dynamically loaded into a host application using the Plugin class. Each
-Plugin object represents one component class.
+Plugin object represents one Component class.
 
 A Plugin should be constructed with the absolute path of the plugin (shared library) to be loaded.
 Once instantiated you should check that the plugin was successfully loaded by calling IsLoaded().

@@ -1,5 +1,5 @@
 /************************************************************************
-DSPatch - Cross-Platform, Object-Oriented, Flow-Based Programming Library
+DSPatch - C++ Flow-Based Programming Framework
 Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
@@ -78,9 +78,21 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 \n
 
-\section install_sec Getting Started
+\section start_sec Getting Started
+    1. <a href="https://cmake.org/download/"><b>Install CMake</b></a>
+    2. <a href="https://github.com/MarcusTomlinson/DSPatch"><b>Download DSPatch</b></a>
+    3. Build DSPatch:
+        - <b>cd <path/to/dspatch>
+        - mkdir build
+        - cd build
+        - cmake ..
+        - make</b>
+    4. \ref tutorial_sec "Read the tutorials"
+    5. <a href="annotated.html"><b>Read the docs</b></a>
 
 \n
+
+\section tutorial_sec Tutorials
 
 \subsection create_component 1. Creating a component
     In order to create a new component, we must derive our component class from the
@@ -145,8 +157,8 @@ protected:
 };
     \endcode
 
-    And that's it! Our component is now ready to form part of a DSPatch circuit. Next we'll
-    look at how we can add our component to a circuit and route it to and from other components.
+    Our component is now ready to form part of a DSPatch circuit. Next we'll look at how we can add
+    our component to a circuit and route it to and from other components.
 
 \n
 
@@ -261,15 +273,21 @@ int main()
 
 \section changelog Changelog
 
-\subsection v400 v.4.00 (03 October 2018)
+\subsection v400 v.4.00 (06 October 2018)
     - Major C++14 refactor.
+    - Moved audio-related example components to the <a href="https://github.com/MarcusTomlinson/DSPatchables">DSPatchables</a> project.
+    - Removed overly complex Parameter concept.
+    - Removed the horrid "Global Circuit", along with DSPatch::Finalize().
+    - Greatly simplified component plugins.
+    - Optimised signal transfer by moving rather than copying where possible.
+    - Added unit tests.
 
 \subsection v300 v.3.00 (07 April 2015)
     - Reference parameters by index for better performance.
     - Cleaned up code formatting and class interfaces.
     - DisconnectComponent fixed to also remove outgoing wires.
     - ResumeAutoTick() resumes only once called for every PauseAutoTick().
-    - Updates to support DSPatcher (http://sourceforge.net/p/dspatcher)
+    - Updates to support <a href="https://github.com/MarcusTomlinson/DSPatcher">DSPatcher</a>.
 
 \subsection v270 v.2.70 (21 December 2014)
     - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
