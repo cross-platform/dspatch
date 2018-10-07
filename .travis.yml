@@ -9,10 +9,10 @@ matrix:
     env: PLATFORM="linux-clang" CMakeArgs=""
     compiler: clang
   - os: osx
-    env: PLATFORM="linux-gcc" CMakeArgs=""
+    env: PLATFORM="osx-gcc" CMakeArgs=""
     compiler: gcc
   - os: osx
-    env: PLATFORM="linux-clang" CMakeArgs=""
+    env: PLATFORM="osx-clang" CMakeArgs=""
     compiler: clang
   - os: linux
     env: PLATFORM="windows-x86" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
