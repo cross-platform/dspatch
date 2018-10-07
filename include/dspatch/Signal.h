@@ -27,6 +27,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <dspatch/Common.h>
 #include <dspatch/RunType.h>
 
+#include <string>
 #include <vector>
 
 namespace DSPatch
