@@ -46,7 +46,7 @@ after_success:
     - cp -r ../../include ./include
     - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../*.so ./; fi
     - if [ $TRAVIS_OS_NAME = osx ]; then cp ../*.dylib ./; fi
-    - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.a ./; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.a ./; cp ../*.def ./; fi
     - git add -A
     - git commit -m "bump"
     - git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
