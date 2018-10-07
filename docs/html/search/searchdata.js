@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "dw",
-  1: "d",
+  0: "cdprstw",
+  1: "cprstw",
   2: "dw"
 };
 

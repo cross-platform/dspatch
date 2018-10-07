@@ -1,23 +1,28 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -pedantic -Wall -Wextra -Wnon-virtual-dtor")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-return-type-c-linkage -Wno-gnu-zero-variadic-macro-arguments -Wno-vla-extension")
 
 project(DSPatch)
 
-file(GLOB srcs src/*.cpp)
-file(GLOB hdrs include/*.h)
-file(GLOB in_hdrs include/dspatch/*.h)
+enable_testing()
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
+file(GLOB hdrs include/*.h include/dspatch/*.h src/internal/*.h)
+file(GLOB srcs src/*.cpp src/internal/*.cpp)
 
 # Build shared (LGPL)
 add_library(
     ${PROJECT_NAME} SHARED
     ${srcs}
     ${hdrs}
-    ${in_hdrs}
 )
 
 # Link pthread and dl on Unix
@@ -29,26 +34,6 @@ if(UNIX)
     )
 endif(UNIX)
 
-install(
-    TARGETS ${PROJECT_NAME}
-    DESTINATION lib
-)
-
-install(
-    FILES ${hdrs}
-    DESTINATION include
-)
-
-install(
-    FILES ${in_hdrs}
-    DESTINATION include/dspatch
-)
-
-option(BUILD_EXAMPLES "Build Examples" ON)
-
-if(${BUILD_EXAMPLES})
-    add_subdirectory(example)
-    add_subdirectory(tutorial)
-endif(${BUILD_EXAMPLES})
-
 add_subdirectory(docs)
+add_subdirectory(tests)
+add_subdirectory(tutorial)

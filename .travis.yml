@@ -1,33 +1,52 @@
 language: cpp
 
-os:
-    - linux
-    - osx
+matrix:
+  include:
+  - os: linux
+    env: PLATFORM="linux-gcc" CMakeArgs=""
+    compiler: gcc
+  - os: linux
+    env: PLATFORM="linux-clang" CMakeArgs=""
+    compiler: clang
+  - os: osx
+    env: PLATFORM="osx-gcc" CMakeArgs=""
+    compiler: gcc
+  - os: osx
+    env: PLATFORM="osx-clang" CMakeArgs=""
+    compiler: clang
+  - os: linux
+    env: PLATFORM="windows-gcc-x86" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
+    compiler: gcc
+  - os: linux
+    env: PLATFORM="windows-gcc-x64" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=i686-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=i686-w64-mingw32-g++"
+    compiler: gcc
+
+install:
+- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install doxygen; fi
+- if [ $TRAVIS_OS_NAME = osx ]; then brew install doxygen || (brew update && brew install doxygen); fi
+- if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then unset CXX; unset CC; sudo apt-get install gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 g++-mingw-w64-i686 g++-mingw-w64-x86-64; fi
 
 before_script:
-    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-           sudo apt-get install doxygen libasound2-dev;
-       fi'
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake $CMakeArgs ..
 
 script:
     - make all
+    - if [ ! -n "$CMakeArgs" ]; then make test; fi
 
 after_success:
-    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-           mkdir push;
-           cd push;
-           git init;
-           git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git;
-           git checkout -b build/$TRAVIS_PULL_REQUEST_BRANCH;
-           git pull origin build/$TRAVIS_PULL_REQUEST_BRANCH;
-           rm -rf ./*;
-           cp ../*.so ./;
-           cp -r ../docs/html ./docs;
-           git add -A;
-           git commit -m "bump";
-           git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH;
-       fi'
-
+    - mkdir push
+    - cd push
+    - git init
+    - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
+    - git checkout -b build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
+    - git pull origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
+    - rm -rf ./*
+    - cp -r ../../include ./include
+    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../*.so ./; fi
+    - if [ $TRAVIS_OS_NAME = osx ]; then cp ../*.dylib ./; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.a ./; fi
+    - git add -A
+    - git commit -m "bump"
+    - git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
