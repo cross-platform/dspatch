@@ -79,16 +79,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 \n
 
 \section start_sec Getting Started
-    1. <a href="https://cmake.org/download/"><b>Install CMake</b></a>
-    2. <a href="https://github.com/MarcusTomlinson/DSPatch"><b>Download DSPatch</b></a>
-    3. Build DSPatch:
-        - <b>cd <path/to/dspatch>
-        - mkdir build
-        - cd build
-        - cmake ..
-        - make</b>
-    4. \ref tutorial_sec "Read the tutorials"
-    5. <a href="annotated.html"><b>Read the docs</b></a>
+    1. Download DSPatch:
+        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/linux-gcc.zip"><b>Binaries (Linux)</b></a>
+        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/osx-gcc.zip"><b>Binaries (MacOS)</b></a>
+        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/windows-gcc-x86.zip"><b>Binaries (Windows x86)</b></a>
+        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/windows-gcc-x64.zip"><b>Binaries (Windows x64)</b></a>
+        - <a href="https://github.com/MarcusTomlinson/DSPatch"><b>Source Code (Cross-Platform)</b></a>
+    2. \ref tutorial_sec "Read the tutorials"
+    3. <a href="https://github.com/MarcusTomlinson/DSPatchables"><b>Browse some example components</b></a>
+    4. <a href="annotated.html"><b>Refer to the API docs</b></a>
 
 \n
 
@@ -280,7 +279,7 @@ int main()
     - Removed the horrid "Global Circuit", along with DSPatch::Finalize().
     - Greatly simplified component plugins.
     - Optimised signal transfer by moving rather than copying where possible.
-    - Added unit tests.
+    - Added CI and unit tests.
 
 \subsection v300 v.3.00 (07 April 2015)
     - Reference parameters by index for better performance.
