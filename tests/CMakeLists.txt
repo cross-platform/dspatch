@@ -6,7 +6,7 @@ include_directories(
 )
 
 file(GLOB srcs *.cpp)
-file(GLOB hdrs components/*.h)
+file(GLOB hdrs *.hpp components/*.h)
 
 add_executable(
     ${PROJECT_NAME}
@@ -19,14 +19,21 @@ target_link_libraries(
     DSPatch
 )
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if(WIN32)
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/libDSPatch.dll
+        ${CMAKE_CURRENT_BINARY_DIR}/../libDSPatch.dll
         ${CMAKE_CURRENT_BINARY_DIR}
     )
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+    add_custom_command(
+        TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/app.exe.manifest
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.exe.manifest
+    )
+endif(WIN32)
 
 add_test(
     ${PROJECT_NAME}

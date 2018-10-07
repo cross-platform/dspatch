@@ -49,9 +49,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define DLLEXPORT __declspec( dllexport )
 
-#pragma warning( disable : 4251 )  // disable class needs to have dll-interface warning
-#pragma warning( disable : 4275 )  // disable non dll-interface class used as base warning
-
 #else
 
 #define DLLEXPORT
