@@ -3,33 +3,33 @@ language: cpp
 matrix:
   include:
   - os: linux
-    env: HOST=""
+    env: CMakeArgs=""
     compiler: gcc
   - os: linux
-    env: HOST=""
+    env: CMakeArgs=""
     compiler: clang
   - os: osx
-    env: HOST=""
+    env: CMakeArgs=""
     compiler: gcc
   - os: osx
-    env: HOST=""
+    env: CMakeArgs=""
     compiler: clang
   - os: linux
-    env: HOST="--host=i686-w64-mingw32"
+    env: CMakeArgs="-D CMAKE_C_COMPILER=x86-64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=x86-64-w64-mingw32-g++ -D CMAKE_SYSTEM_NAME=Windows"
     compiler: gcc
   - os: linux
-    env: HOST="--host=x86_64-w64-mingw32"
+    env: CMakeArgs="-D CMAKE_C_COMPILER=i686-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=i686-w64-mingw32-g++ -D CMAKE_SYSTEM_NAME=Windows"
     compiler: gcc
 
 install:
-- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install doxygen g++-mingw-w64-i686 g++-mingw-w64-x86-64; fi
+- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install doxygen gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 g++-mingw-w64-i686 g++-mingw-w64-x86-64; fi
 - if [ $TRAVIS_OS_NAME = osx ]; then brew install doxygen || (brew update && brew install doxygen); fi
 #- if [ -n "$HOST" ]; then unset CXX; unset CC; fi
 
 before_script:
     - mkdir build
     - cd build
-    - cmake ..
+    - cmake $CMakeArgs ..
 
 script:
     - make all
