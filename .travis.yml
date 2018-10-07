@@ -48,4 +48,4 @@ after_success:
     - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.lib ./; fi
     - git add -A
     - git commit -m "bump"
-    - git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH
+    - git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
