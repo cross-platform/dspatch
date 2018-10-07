@@ -15,10 +15,10 @@ matrix:
     env: CMakeArgs=""
     compiler: clang
   - os: linux
-    env: CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=/usr/bin/x86-64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=/usr/bin/x86-64-w64-mingw32-g++"
+    env: CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
     compiler: gcc
   - os: linux
-    env: CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=/usr/bin/i686-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=/usr/bin/i686-w64-mingw32-g++"
+    env: CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=i686-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=i686-w64-mingw32-g++"
     compiler: gcc
 
 install:
