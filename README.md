@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/MarcusTomlinson/DSPatch.svg?branch=master)](https://travis-ci.org/MarcusTomlinson/DSPatch)
+
 # DSPatch
 C++ Flow-Based Programming Framework
 
