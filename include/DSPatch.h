@@ -273,7 +273,7 @@ int main()
 
 \section changelog Changelog
 
-\subsection v400 v.4.00 (06 October 2018)
+\subsection v400 v.4.00 (07 October 2018)
     - Major C++14 refactor.
     - Moved audio-related example components to the <a href="https://github.com/MarcusTomlinson/DSPatchables">DSPatchables</a> project.
     - Removed overly complex Parameter concept.
