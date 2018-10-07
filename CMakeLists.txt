@@ -28,7 +28,7 @@ add_library(
 if(MINGW)
     SET_TARGET_PROPERTIES(
         ${PROJECT_NAME} PROPERTIES
-        LINK_FLAGS "--output-def, ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.def"
+        LINK_FLAGS "-Wl,--output-def,${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.def"
     )
 endif(MINGW)
 
