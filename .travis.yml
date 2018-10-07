@@ -1,13 +1,32 @@
 language: cpp
 
-os:
-    - linux
-    - osx
+matrix:
+  include:
+  - os: linux
+    env: HOST=""
+    compiler: gcc
+  - os: linux
+    env: HOST=""
+    compiler: clang
+  - os: osx
+    env: HOST=""
+    compiler: gcc
+  - os: osx
+    env: HOST=""
+    compiler: clang
+  - os: linux
+    env: HOST="--host=i686-w64-mingw32"
+    compiler: gcc
+  - os: linux
+    env: HOST="--host=x86_64-w64-mingw32"
+    compiler: gcc
+
+install:
+- if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install doxygen g++-mingw-w64-i686 g++-mingw-w64-x86-64; fi
+- if [ $TRAVIS_OS_NAME = osx ]; then brew install doxygen || (brew update && brew install doxygen); fi
+#- if [ -n "$HOST" ]; then unset CXX; unset CC; fi
 
 before_script:
-    - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-           sudo apt-get install doxygen libasound2-dev;
-       fi'
     - mkdir build
     - cd build
     - cmake ..
