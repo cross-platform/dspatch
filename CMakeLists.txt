@@ -25,6 +25,13 @@ add_library(
     ${hdrs}
 )
 
+if(MINGW)
+    SET_TARGET_PROPERTIES(
+        ${PROJECT_NAME} PROPERTIES
+        LINK_FLAGS "-Wl,--output-def,${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.def"
+    )
+endif(MINGW)
+
 # Link pthread and dl on Unix
 if(UNIX)
     target_link_libraries(
