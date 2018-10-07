@@ -24,7 +24,7 @@ matrix:
 install:
 - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install doxygen gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 g++-mingw-w64-i686 g++-mingw-w64-x86-64; fi
 - if [ $TRAVIS_OS_NAME = osx ]; then brew install doxygen || (brew update && brew install doxygen); fi
-- if [ -n "$HOST" ]; then unset CXX; unset CC; fi
+- if [ -n "$CMakeArgs" ]; then unset CXX; unset CC; fi
 
 before_script:
     - mkdir build
