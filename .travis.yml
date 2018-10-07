@@ -15,10 +15,10 @@ matrix:
     env: PLATFORM="osx-clang" CMakeArgs=""
     compiler: clang
   - os: linux
-    env: PLATFORM="windows-x86" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
+    env: PLATFORM="windows-gcc-x86" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++"
     compiler: gcc
   - os: linux
-    env: PLATFORM="windows-x64" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=i686-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=i686-w64-mingw32-g++"
+    env: PLATFORM="windows-gcc-x64" CMakeArgs="-D CMAKE_SYSTEM_NAME=Windows -D CMAKE_C_COMPILER=i686-w64-mingw32-gcc -D CMAKE_CXX_COMPILER=i686-w64-mingw32-g++"
     compiler: gcc
 
 install:
@@ -33,7 +33,7 @@ before_script:
 
 script:
     - make all
-    - make test
+    - if [ ! -n "$CMakeArgs" ]; then make test; fi
 
 after_success:
     - mkdir push
@@ -43,7 +43,7 @@ after_success:
     - git checkout -b build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
     - git pull origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
     - rm -rf ./*
-    - if [ $TRAVIS_OS_NAME = linux ]; then cp ../*.so ./; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../*.so ./; fi
     - if [ $TRAVIS_OS_NAME = osx ]; then cp ../*.dylib ./; fi
     - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.lib ./; fi
     - git add -A
