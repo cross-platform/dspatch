@@ -27,13 +27,24 @@ install:
 - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then unset CXX; unset CC; sudo apt-get install gcc-mingw-w64-i686 gcc-mingw-w64-x86-64 g++-mingw-w64-i686 g++-mingw-w64-x86-64; fi
 
 before_script:
-    - mkdir build
-    - cd build
-    - cmake $CMakeArgs ..
+    - mkdir debug
+    - cd debug
+    - cmake $CMakeArgs -D CMAKE_BUILD_TYPE=Debug ..
+    - cd ..
+    - mkdir release
+    - cd release
+    - cmake $CMakeArgs -D CMAKE_BUILD_TYPE=Release ..
+    - cd ..
 
 script:
+    - cd debug
     - make all
     - if [ ! -n "$CMakeArgs" ]; then make test; fi
+    - cd ..
+    - cd release
+    - make all
+    - if [ ! -n "$CMakeArgs" ]; then make test; fi
+    - cd ..
 
 after_success:
     - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
@@ -44,10 +55,15 @@ after_success:
     - git checkout -b build/$BRANCH/$PLATFORM
     - git pull origin build/$BRANCH/$PLATFORM
     - rm -rf ./*
-    - cp -r ../../include ./include
-    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../*.so ./; fi
-    - if [ $TRAVIS_OS_NAME = osx ]; then cp ../*.dylib ./; fi
-    - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.a ./; fi
+    - mkdir debug
+    - mkdir release
+    - cp -r ../include ./include
+    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../debug/*.so ./debug/; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../release/*.so ./release/; fi
+    - if [ $TRAVIS_OS_NAME = osx ]; then cp ../debug/*.dylib ./debug/; fi
+    - if [ $TRAVIS_OS_NAME = osx ]; then cp ../release/*.dylib ./release/; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../debug/*.dll ./debug/; cp ../debug/*.a ./debug/; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../release/*.dll ./release/; cp ../release/*.a ./release/; fi
     - git add -A
-    - git commit -m "bump"
+    - git commit -m $TRAVIS_COMMIT
     - git push --set-upstream origin build/$BRANCH/$PLATFORM
