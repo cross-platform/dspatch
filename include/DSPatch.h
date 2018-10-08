@@ -80,11 +80,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 \section start_sec Getting Started
     1. Download DSPatch:
-        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/linux-gcc.zip"><b>Binaries (Linux)</b></a>
-        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/osx-gcc.zip"><b>Binaries (MacOS)</b></a>
-        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/windows-gcc-x86.zip"><b>Binaries (Windows x86)</b></a>
-        - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/v4/windows-gcc-x64.zip"><b>Binaries (Windows x64)</b></a>
-        - <a href="https://github.com/MarcusTomlinson/DSPatch"><b>Source Code (Cross-Platform)</b></a>
+        - Binaries (Linux):
+            - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> -
+<a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/linux-clang.zip"><b>Clang</b></a>
+        - Binaries (MacOS):
+            - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> -
+<a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/osx-clang.zip"><b>Clang</b></a>
+        - Binaries (Windows):
+            - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> -
+<a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a>
+        - Source Code:
+            - <a href="https://github.com/MarcusTomlinson/DSPatch"><b>GitHub</b></a>
     2. \ref tutorial_sec "Read the tutorials"
     3. <a href="https://github.com/MarcusTomlinson/DSPatchables"><b>Browse some example components</b></a>
     4. <a href="annotated.html"><b>Refer to the API docs</b></a>
