@@ -65,5 +65,5 @@ after_success:
     - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../debug/*.dll ./debug/; cp ../debug/*.a ./debug/; fi
     - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../release/*.dll ./release/; cp ../release/*.a ./release/; fi
     - git add -A
-    - git commit -m $TRAVIS_COMMIT_MESSAGE
+    - git commit -m "$TRAVIS_COMMIT_MESSAGE"
     - git push --set-upstream origin build/$BRANCH/$PLATFORM
