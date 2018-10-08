@@ -1,5 +1,5 @@
 /************************************************************************
-DSPatch - C++ Flow-Based Programming Framework
+DSPatch - The C++ Flow-Based Programming Framework
 Copyright (c) 2012-2018 Marcus Tomlinson
 
 This file is part of DSPatch.
