@@ -447,7 +447,7 @@ TEST_CASE( "WiringTest" )
     auto pass_s1 = std::make_shared<PassThrough>();
     circuit->AddComponent( pass_s1 );
 
-    circuit->ConnectOutToIn( pass_s1, 0, probe, 0 );
+    circuit->ConnectOutToIn( pass_s1, 0, probe_id, 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 
     circuit->ConnectOutToIn( counter, 0, pass_s1, 0 );

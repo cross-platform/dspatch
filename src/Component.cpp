@@ -249,9 +249,9 @@ void Component::DisconnectInput( int inputNo )
             p->inputWires.erase( p->inputWires.begin() + i );
 
             // update source signal's dependent count
-            for ( size_t i = 0; i < wire.linkedComponent->p->outputBuses.size(); i++ )
+            for ( size_t j = 0; j < wire.linkedComponent->p->outputBuses.size(); j++ )
             {
-                wire.linkedComponent->p->outputBuses[i]._GetSignal( wire.fromSignalIndex )->_DecDeps();
+                wire.linkedComponent->p->outputBuses[j]._GetSignal( wire.fromSignalIndex )->_DecDeps();
             }
         }
     }

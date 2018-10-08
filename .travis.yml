@@ -36,12 +36,13 @@ script:
     - if [ ! -n "$CMakeArgs" ]; then make test; fi
 
 after_success:
+    - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
     - mkdir push
     - cd push
     - git init
     - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
-    - git checkout -b build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
-    - git pull origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
+    - git checkout -b build/$BRANCH/$PLATFORM
+    - git pull origin build/$BRANCH/$PLATFORM
     - rm -rf ./*
     - cp -r ../../include ./include
     - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../*.so ./; fi
@@ -49,4 +50,4 @@ after_success:
     - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../*.dll ./; cp ../*.a ./; fi
     - git add -A
     - git commit -m "bump"
-    - git push --set-upstream origin build/$TRAVIS_PULL_REQUEST_BRANCH/$PLATFORM
+    - git push --set-upstream origin build/$BRANCH/$PLATFORM

@@ -41,7 +41,6 @@ class Plugin
 {
 public:
     Plugin( std::string const& pluginPath )
-        : pluginPath( pluginPath )
     {
         LoadPlugin( pluginPath );
     }
@@ -50,7 +49,6 @@ public:
 
     typedef DSPatch::Component::SPtr ( *Create_t )();
 
-    std::string pluginPath;
     void* handle = nullptr;
     Create_t create;
 };

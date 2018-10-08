@@ -20,12 +20,21 @@ target_link_libraries(
 )
 
 if(WIN32)
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_BINARY_DIR}/../libDSPatch.dll
-        ${CMAKE_CURRENT_BINARY_DIR}
-    )
+    if(MSVC)
+        add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/DSPatch.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>
+        )
+    else()
+        add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_BINARY_DIR}/../libDSPatch.dll
+            ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    endif(MSVC)
 
     add_custom_command(
         TARGET ${PROJECT_NAME} POST_BUILD
