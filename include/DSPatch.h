@@ -32,7 +32,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 \mainpage The C++ Flow-Based Programming Framework
 
 \section intro_sec Introduction
-    DSPatch, pronounced "dispatch", is a powerful C++ flow-based programming framework. DSPatch is
+    DSPatch, pronounced "dispatch", is a powerful C++
+    <a href="http://www.jpaulmorrison.com/fbp/">flow-based programming</a> framework. DSPatch is
     not limited to any particular domain or data type, its generic, object-oriented API allows you
     to create almost any system imaginable, from simple logic circuits to high performance audio
     process chains.
@@ -92,7 +93,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
         - Source Code:
             - <a href="https://github.com/MarcusTomlinson/DSPatch"><b>GitHub</b></a>
     2. \ref tutorial_sec "Read the tutorials"
-    3. <a href="https://github.com/MarcusTomlinson/DSPatchables"><b>Browse some example components</b></a>
+    3. <a href="https://github.com/MarcusTomlinson/DSPatchables/tree/master/Components"><b>Browse some example components</b></a>
     4. <a href="annotated.html"><b>Refer to the API docs</b></a>
 
 \n
@@ -212,7 +213,7 @@ int main()
     circuit->AddComponent( randBoolGen1 );
     circuit->AddComponent( randBoolGen2 );
     circuit->AddComponent( logicAnd );
-    circuit->AddComponent( boolPrinter );
+_   circuit->AddComponent( boolPrinter );
     \endcode
 
     We are now ready to begin wiring the circuit:
@@ -222,7 +223,7 @@ int main()
     // ============================================
     circuit->ConnectOutToIn( randBoolGen1, 0, logicAnd, 0 );
     circuit->ConnectOutToIn( randBoolGen2, 0, logicAnd, 1 );
-    circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
+_   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     \endcode
 
     The code above results in the following wiring configuration:
