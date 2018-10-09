@@ -39,9 +39,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define EXPORT_PLUGIN( classname, ... )                        \
     extern "C"                                                 \
     {                                                          \
-        DLLEXPORT Component::SPtr Create()                     \
+        DLLEXPORT Component* Create()                          \
         {                                                      \
-            return std::make_shared<classname>( __VA_ARGS__ ); \
+            return new classname( __VA_ARGS__ );               \
         }                                                      \
     }
 

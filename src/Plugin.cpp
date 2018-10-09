@@ -47,7 +47,7 @@ public:
 
     void LoadPlugin( std::string const& pluginPath );
 
-    typedef DSPatch::Component::SPtr ( *Create_t )();
+    typedef DSPatch::Component* ( *Create_t )();
 
     void* handle = nullptr;
     Create_t create;
@@ -83,7 +83,7 @@ Component::SPtr Plugin::Create() const
 {
     if ( p->handle )
     {
-        return p->create();
+        return Component::SPtr( p->create() );
     }
     return nullptr;
 }
