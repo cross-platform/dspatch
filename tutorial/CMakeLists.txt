@@ -27,19 +27,22 @@ if(WIN32)
             ${CMAKE_CURRENT_BINARY_DIR}/../$<CONFIGURATION>/DSPatch.dll
             ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIGURATION>
         )
-    else()
+    endif(MSVC)
+
+    if(MINGW)
         add_custom_command(
             TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${CMAKE_CURRENT_BINARY_DIR}/../libDSPatch.dll
             ${CMAKE_CURRENT_BINARY_DIR}
         )
-    endif(MSVC)
 
-    add_custom_command(
-        TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/../app.exe.manifest
-        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.exe.manifest
-    )
+        add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/../app.exe.manifest
+            ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.exe.manifest
+        )
+    endif(MINGW)
+
 endif(WIN32)
