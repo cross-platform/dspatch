@@ -2,7 +2,7 @@ var indexSectionsWithContent =
 {
   0: "cdprstw",
   1: "cprstw",
-  2: "dw"
+  2: "dt"
 };
 
 var indexSectionNames =

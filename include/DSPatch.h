@@ -29,7 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 /**
 
-\mainpage Welcome!
+\mainpage The C++ Flow-Based Programming Framework
 
 \section intro_sec Introduction
     DSPatch, pronounced "dispatch", is a powerful C++ flow-based programming framework. DSPatch is
