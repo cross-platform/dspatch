@@ -18,6 +18,6 @@ DSPatch, pronounced "dispatch", is a powerful C++ flow-based programming framewo
 
 *See also:*
 
-DSPatcher (https://github.com/MarcusTomlinson/DSPatcher) is a cross-platform graphical tool for building DSPatch circuits.
+DSPatcher (https://github.com/MarcusTomlinson/DSPatcher): A cross-platform graphical tool for building DSPatch circuits.
 
-DSPatchables (https://github.com/MarcusTomlinson/DSPatchables) is a DSPatch component repository.
+DSPatchables (https://github.com/MarcusTomlinson/DSPatchables): A DSPatch component repository.
