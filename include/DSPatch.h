@@ -228,10 +228,14 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
 
     The code above results in the following wiring configuration:
     \code
-                                   ___________
-    ["Bool Generator 1"] 0 ---> 0 |           |
-                                  |"Logic AND"| 0 ---> 0 ["Bool Printer"]
-    ["Bool Generator 2"] 0 ---> 1 |___________|
+      ______________            __________
+     |              |          |          |
+     | randBoolGen1 |-0 ===> 0-|          |           _____________
+     |______________|          |          |          |             |
+      ______________           | logicAnd |-0 ===> 0-| boolPrinter |
+     |              |          |          |          |_____________|
+     | randBoolGen2 |-0 ===> 1-|          |
+     |______________|          |__________|
     _
     \endcode
 
