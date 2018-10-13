@@ -283,7 +283,7 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
 
 \section changelog Changelog
 
-\subsection v400 v.4.00 (07 October 2018)
+\subsection v400 v.4.00 (09 October 2018)
     - Major C++14 refactor.
     - Moved audio-related example components to the <a href="https://github.com/MarcusTomlinson/DSPatchables">DSPatchables</a> project.
     - Removed overly complex Parameter concept.
