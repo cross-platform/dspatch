@@ -15,6 +15,9 @@ cmake ..
 make
 ```
 
+- *`cmake ..` will auto-detect your IDE / compiler. To manually select one, use `cmake -G`.*
+- *When building for an IDE, instead of `make`, simply open the cmake generated project file.*
+
 DSPatch, pronounced "dispatch", is a powerful C++ flow-based programming framework. DSPatch is not limited to any particular domain or data type, its generic, object-oriented API allows you to create almost any system imaginable, from simple logic circuits to high performance audio process chains.
 
 *See also:*
