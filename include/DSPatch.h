@@ -59,12 +59,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     - <b>Automatic branch synchronization</b> - The result of data diverging across parallel
     branches is guaranteed to arrive synchronized at a converging point.
     - <b>Component plugins</b> - Package components into plugins to be dynamically loaded into
-    DSPatch host applications.
+    other host applications.
     - <b>Cross-platform</b> - DSPatch is built and tested daily on Linux, Mac and Windows.
     <a href="https://www.youtube.com/watch?v=u3A9x9bpbdo"><b>Here</b></a> we see DSPatch running
     flawlessly on a BeagleBone!
-    - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which
-    you require a circuit to process.
     - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit
     entities and concepts, making code more readable and easy to understand.
     - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back
@@ -79,6 +77,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     varying types allowing you to create more flexible, multi-purpose component processes.
     - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
     steady data flow through the system.
+    - <b>Run-time thread count adjustment</b> - Specify at run-time, the number of threads in which
+    you require a circuit to process.
 
 \n
 
@@ -89,7 +89,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
         - Binaries (Linux):
             - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> -
 <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/linux-clang.zip"><b>Clang</b></a>
-        - Binaries (MacOS):
+        - Binaries (Mac):
             - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> -
 <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/osx-clang.zip"><b>Clang</b></a>
         - Binaries (Windows):
