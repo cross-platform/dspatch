@@ -30,4 +30,4 @@ private:
     int _count;
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch

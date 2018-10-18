@@ -1,0 +1,111 @@
+v.4.00 (09 October 2018)
+    - Major C++14 refactor.
+    - Moved audio-related example components to the DSPatchables project.
+    - Removed overly complex Parameter concept.
+    - Removed the horrid "Global Circuit", along with DSPatch::Finalize().
+    - Greatly simplified component plugins.
+    - Optimised signal transfer by moving rather than copying where possible.
+    - Added CI and unit tests.
+
+v.3.00 (07 April 2015)
+    - Reference parameters by index for better performance.
+    - Cleaned up code formatting and class interfaces.
+    - DisconnectComponent fixed to also remove outgoing wires.
+    - ResumeAutoTick() resumes only once called for every PauseAutoTick().
+    - Updates to support DSPatcher.
+
+v.2.70 (21 December 2014)
+    - Added support for DspComponent plugins (DspPlugin + DspPluginLoader).
+    - Fixed build and install scripts.
+
+v.2.62 (18 August 2014)
+    - Added alternative Get* methods returning const pointers.
+    - Increased build warning level and fixed all issues.
+    - Uninitialised variable fix for DspParameter.
+    - Fixed GetInput/Output/ParameterName() empty string return bug.
+
+v.2.61 (16 June 2014)
+    - Introduced component parameters (DspParameter).
+    - Added DspComponent user callback mechanism.
+    - Improved const-correctness and code style.
+    - Added ability to remove single IO pins.
+
+v.2.60 (19 January 2014)
+    - Replaced project files with more flexible CMakeLists.
+    - DspWaveStreamer fix (don't assume standard type sizes).
+    - Reduced size of distributable.
+
+v.2.51 (13 September 2013)
+    - Fixed Unix thread detach error.
+    - Improved overall encapsulation.
+    - Replaced "Clear" with "Remove" for I/O removal.
+
+v.2.50 (14 July 2013)
+    - Reduced size of distributable.
+    - Removed closed source dependency from example project.
+    - Added Linux makefiles.
+
+v.2.43 (30 June 2013)
+    - Simplified platform selection macros.
+
+v.2.42 (24 June 2013)
+    - Added vs2008 and vs2010 versions of dspdemo.
+    - Code style and performance improvements.
+
+v.2.41 (07 February 2013)
+    - Fixed VS2010 dspdemo linker errors.
+
+v.2.40 (04 February 2013)
+    - Optimized DspRunType.
+    - Added Stop() method to DspThread.
+    - Reduced pointer dereferencing and temporaries.
+
+v.2.33 (01 February 2013)
+    - Signal reading / writing optimized.
+    - Code cleaned up and re-formatted.
+
+v.2.32 (24 January 2013)
+    - Reduced component thread mutex locking.
+    - Fixed DspCircuit AddInput() run-time error.
+    - Documentation updates.
+
+v.2.31 (19 December 2012)
+    - Improved synchronization in AddComponent().
+    - Component routing upgraded to template methods.
+
+v.2.30 (15 December 2012)
+    - Circuit routing simplified.
+    - Completed "circuit-less" component processing.
+    - Component names now optional.
+    - DspCircuit no longer deletes external memory.
+    - Optimized circuit-in-circuit processing.
+
+v.2.2 (08 December 2012)
+    - A component can no longer exist in multiple circuits.
+    - Added coding tutorials
+    - Cleaned up project directory structure.
+    - Comments and documentation updates.
+    - Resolved component / circuit thread count clash.
+
+v.2.1 (06 November 2012)
+    - Removed DspSafePointer class.
+    - Greatly improved overall performance.
+    - Added commenting for doxygen.
+
+v.2.0 (02 November 2012)
+    - Re-licensed DSPatch to LGPL.
+    - Added support for non-threaded platforms.
+    - Circuit routing upgraded to more flexible template methods.
+
+v.1.2 (20 October 2012)
+    - Ported to Unix-based OS's.
+    - Completed circuit-in-circuit logic.
+
+v.1.1 (17 October 2012)
+    - Various bug fixes.
+    - Added 2 more components to the dspdemo project.
+    - Optimized threaded circuit processing.
+    - AddComponent() updated to accept pre-constructed DspComponents.
+
+v.1.0 (14 October 2012)
+    - Extracted routing engine behind "Crosstalk" to form: "DSPatch".

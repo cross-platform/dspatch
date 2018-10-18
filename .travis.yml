@@ -57,8 +57,10 @@ after_success:
     - rm -rf ./*
     - mkdir debug
     - mkdir release
+    - cp ../CHANGES ./
+    - cp ../LICENSE ./
+    - cp ../README.md ./
     - cp -r ../include ./include
-    - cp -r ../LGPLv3.txt ./LGPLv3.txt
     - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../debug/*.so ./debug/; fi
     - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../release/*.so ./release/; fi
     - if [ $TRAVIS_OS_NAME = osx ]; then cp ../debug/*.dylib ./debug/; fi

@@ -20,7 +20,7 @@ protected:
         if ( in )
         {
             *in += _increment;
-            outputs.SetValue( 0, inputs, 0 ); // pass the adjusted signal through (no copy)
+            outputs.SetValue( 0, inputs, 0 );  // pass the adjusted signal through (no copy)
         }
         // else set no output
     }
@@ -29,4 +29,4 @@ private:
     int _increment;
 };
 
-} // namespace DSPatch
+}  // namespace DSPatch
