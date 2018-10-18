@@ -59,7 +59,6 @@ after_success:
     - mkdir release
     - cp ../CHANGES ./
     - cp ../LICENSE ./
-    - cp ../README.md ./
     - cp -r ../include ./include
     - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../debug/*.so ./debug/; fi
     - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../release/*.so ./release/; fi
