@@ -60,6 +60,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     branches is guaranteed to arrive synchronized at a converging point.
     - <b>Component plugins</b> - Package components into plugins to be dynamically loaded into
     DSPatch host applications.
+    - <b>Cross-platform</b> - DSPatch is built and tested daily on Linux, Mac and Windows.
+    <a href="https://www.youtube.com/watch?v=u3A9x9bpbdo"><b>Here</b></a> we see DSPatch running
+    flawlessly on a BeagleBone!
     - <b>Dynamic thread count adjustment</b> - Specify at run-time, the number of threads in which
     you require a circuit to process.
     - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit
@@ -72,15 +75,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     networks into single circuit components.
     - <b>Optimised signal transfers</b> - Wherever possible, data between components is transfered
     via move rather than copy.
-    - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
-    steady data flow through the system.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time
     varying types allowing you to create more flexible, multi-purpose component processes.
+    - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
+    steady data flow through the system.
 
 \n
 
 \section start_sec Getting Started
     1. Download DSPatch:
+        - Source Code:
+            - <a href="https://github.com/MarcusTomlinson/DSPatch"><b>GitHub</b></a>
         - Binaries (Linux):
             - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> -
 <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/linux-clang.zip"><b>Clang</b></a>
@@ -90,8 +95,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
         - Binaries (Windows):
             - <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> -
 <a href="https://github.com/MarcusTomlinson/DSPatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a>
-        - Source Code:
-            - <a href="https://github.com/MarcusTomlinson/DSPatch"><b>GitHub</b></a>
     2. \ref tutorial_sec "Read the tutorials"
     3. <a href="https://github.com/MarcusTomlinson/DSPatchables/tree/master/Components"><b>Browse some example components</b></a>
     4. <a href="annotated.html"><b>Refer to the API docs</b></a>
@@ -277,7 +280,7 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     That's it! Enjoy using DSPatch!
 
     (<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder
-    in the DSPatch root directory).
+    in the <a href="https://github.com/MarcusTomlinson/DSPatch"><b>DSPatch root directory</b></a>).
 
 \page spec_page DSPatch Design Specification
 
