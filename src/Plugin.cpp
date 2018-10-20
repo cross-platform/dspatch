@@ -24,6 +24,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Plugin.h>
 
+#include <string>
+
 #ifdef _WIN32
 #include <windows.h>
 #else
