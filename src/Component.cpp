@@ -28,6 +28,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <internal/Wire.h>
 
+#include <string>
+
 using namespace DSPatch;
 
 namespace DSPatch
