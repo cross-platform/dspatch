@@ -69,8 +69,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     into previous component inputs.
     - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling
     to maximize data flow efficiency.
-    - <b>Integrated circuits</b> - Build circuits within circuits to encapsulate complex component
-    networks into single circuit components.
     - <b>Optimised signal transfers</b> - Wherever possible, data between components is transfered
     via move rather than copy.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time
@@ -292,8 +290,7 @@ component has 2 signal buses, on one end of the component there are inputs
 (the "input bus"), and on the other end there are outputs (the "output bus").
 Components within the circuit are connected to each other via wires. Each
 wire carries a signal from one component's output to another component's
-input. A circuit can also comprise of interconnected circuits - in this case
-a circuit acts as a component within another circuit.
+input.
 
 ______________________________________________________________________________
 

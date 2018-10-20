@@ -117,9 +117,6 @@ private:
     void _SetBufferCount( int bufferCount );
     int _GetBufferCount();
 
-    bool _MoveInputSignal( int bufferIndex, int signalIndex, Signal::SPtr const& signal );
-    Signal::SPtr _GetOutputSignal( int bufferIndex, int signalIndex );
-
     // Private methods required by CircuitThread
 
     void _ThreadTick( int threadNo );

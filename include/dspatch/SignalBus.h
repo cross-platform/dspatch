@@ -71,10 +71,8 @@ private:
 
     Signal::SPtr _GetSignal( int signalIndex ) const;
     bool _SetSignal( int signalIndex, Signal::SPtr const& newSignal );
-    bool _MoveSignal( int signalIndex, Signal::SPtr const& newSignal );
 
 private:
-    friend class Circuit;
     friend class Component;
 
     std::vector<Signal::SPtr> _signals;

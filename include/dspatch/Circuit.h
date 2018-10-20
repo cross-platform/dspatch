@@ -38,9 +38,7 @@ class Circuit;
 
 /**
 Components can be added to a Circuit and routed to and from other Components. ConnectOutToIn and
-DisconnectOutToIn provide a means of routing component outputs to other component inputs, while
-ConnectInToIn / DisconnectInToIn and ConnectOutToOut / DisconnectOutToOut route the circuit's IO
-signals to and from it's internal components.
+DisconnectOutToIn provide a means of routing component outputs to component inputs.
 
 *N.B. Each component input can only accept one wire at a time. When a wire is connected to an input
 that already has a connected wire, that wire is replaced with the new one. One output, on the other
@@ -53,7 +51,6 @@ adjusted at runtime, allowing the user to increase / decrease the number of thre
 during execution.
 
 Circuit is derived from Component and therefore inherits all Component behavior. This means that a
-Circuit can be added to, and routed within another Circuit as a component. This also means a
 circuit object needs to be Tick()ed and Reset()ed as a component (see Component). The Circuit
 Process_() method simply runs through it's internal array of components and calls each component's
 Tick() and Reset() methods.
@@ -69,9 +66,6 @@ public:
     virtual ~Circuit();
 
     virtual void PauseAutoTick() override;
-
-    void SetInputCount( int inputCount );
-    void SetOutputCount( int outputCount );
 
     void SetThreadCount( int threadCount );
     int GetThreadCount() const;
@@ -90,19 +84,11 @@ public:
     bool ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput );
 
-    // Circuit input to component input
-    bool ConnectInToIn( int fromInput, Component::SCPtr const& toComponent, int toInput );
-    bool ConnectInToIn( int fromInput, int toComponent, int toInput );
-
-    // Component output to circuit output
-    bool ConnectOutToOut( Component::SCPtr const& fromComponent, int fromOutput, int toOutput );
-    bool ConnectOutToOut( int fromComponent, int fromOutput, int toOutput );
-
     void DisconnectComponent( Component::SCPtr const& component );
     void DisconnectComponent( int componentIndex );
 
 protected:
-    virtual void Process_( SignalBus const& inputs, SignalBus& outputs ) override;
+    virtual void Process_( SignalBus const&, SignalBus& ) override;
 
 private:
     std::unique_ptr<internal::Circuit> p;

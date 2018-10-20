@@ -34,27 +34,12 @@ namespace DSPatch
 namespace internal
 {
 
-class IoComponent : public DSPatch::Component
-{
-    virtual void Process_( DSPatch::SignalBus const& inputs, DSPatch::SignalBus& outputs ) override
-    {
-        for ( int i = 0; i < inputs.GetSignalCount(); ++i )
-        {
-            // this component sits between the circuit's I/O and internal component I/O
-            // it simply passes its incoming signals through to its outputs
-            outputs.SetValue( i, inputs, i );
-        }
-    }
-};
-
 class Circuit
 {
 public:
     Circuit()
         : components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
         , currentThreadIndex( 0 )
-        , inputComp( std::make_shared<IoComponent>() )
-        , outputComp( std::make_shared<IoComponent>() )
     {
     }
 
@@ -64,9 +49,6 @@ public:
 
     std::vector<std::unique_ptr<internal::CircuitThread>> circuitThreads;
     int currentThreadIndex;
-
-    IoComponent::SPtr inputComp;
-    IoComponent::SPtr outputComp;
 };
 
 }  // namespace internal
@@ -104,31 +86,9 @@ void Circuit::PauseAutoTick()
     }
 }
 
-void Circuit::SetInputCount( int inputCount )
-{
-    PauseAutoTick();
-    SetInputCount_( inputCount );
-
-    p->inputComp->SetInputCount_( inputCount );
-    p->inputComp->SetOutputCount_( inputCount );
-
-    ResumeAutoTick();
-}
-
-void Circuit::SetOutputCount( int outputCount )
-{
-    PauseAutoTick();
-    SetOutputCount_( outputCount );
-
-    p->outputComp->SetInputCount_( outputCount );
-    p->outputComp->SetOutputCount_( outputCount );
-
-    ResumeAutoTick();
-}
-
 void Circuit::SetThreadCount( int threadCount )
 {
-    if ( _GetParentCircuit() == nullptr && (size_t)threadCount != p->circuitThreads.size() )
+    if ( (size_t)threadCount != p->circuitThreads.size() )
     {
         PauseAutoTick();
 
@@ -169,7 +129,7 @@ int Circuit::GetThreadCount() const
 
 int Circuit::AddComponent( Component::SPtr const& component )
 {
-    if ( component.get() != this && component != nullptr )
+    if ( !std::dynamic_pointer_cast<Circuit>( component ) && component.get() != this && component != nullptr )
     {
         int componentIndex;
 
@@ -180,13 +140,6 @@ int Circuit::AddComponent( Component::SPtr const& component )
         else if ( p->FindComponent( component, componentIndex ) )
         {
             return componentIndex;  // if the component is already in the array
-        }
-
-        // if the component being added is an integrated circuit, set it's thread count to 0
-        auto circuitComponent = std::dynamic_pointer_cast<Circuit>( component );
-        if ( circuitComponent != nullptr )
-        {
-            circuitComponent->SetThreadCount( 0 );
         }
 
         // components within the circuit need to have as many buffers as there are threads in the circuit
@@ -294,60 +247,6 @@ bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, int toComponent
     return result;
 }
 
-bool Circuit::ConnectInToIn( int fromInput, Component::SCPtr const& toComponent, int toInput )
-{
-    int toComponentIndex;
-    if ( p->FindComponent( toComponent, toComponentIndex ) )
-    {
-        return ConnectInToIn( fromInput, toComponentIndex, toInput );
-    }
-
-    return false;
-}
-
-bool Circuit::ConnectInToIn( int fromInput, int toComponent, int toInput )
-{
-    if ( (size_t)toComponent >= p->components->size() )
-    {
-        return false;
-    }
-
-    PauseAutoTick();
-
-    ( *p->components )[toComponent]->ConnectInput( p->inputComp, fromInput, toInput );
-
-    ResumeAutoTick();
-
-    return true;
-}
-
-bool Circuit::ConnectOutToOut( Component::SCPtr const& fromComponent, int fromOutput, int toOutput )
-{
-    int fromComponentIndex;
-    if ( p->FindComponent( fromComponent, fromComponentIndex ) )
-    {
-        return ConnectOutToOut( fromComponentIndex, fromOutput, toOutput );
-    }
-
-    return false;
-}
-
-bool Circuit::ConnectOutToOut( int fromComponent, int fromOutput, int toOutput )
-{
-    if ( (size_t)fromComponent >= p->components->size() )
-    {
-        return false;
-    }
-
-    PauseAutoTick();
-
-    p->outputComp->ConnectInput( ( *p->components )[fromComponent], fromOutput, toOutput );
-
-    ResumeAutoTick();
-
-    return true;
-}
-
 void Circuit::DisconnectComponent( Component::SCPtr const& component )
 {
     int componentIndex;
@@ -374,37 +273,22 @@ void Circuit::DisconnectComponent( int componentIndex )
     ResumeAutoTick();
 }
 
-void Circuit::Process_( SignalBus const& inputs, SignalBus& outputs )
+void Circuit::Process_( SignalBus const&, SignalBus& )
 {
     // process in a single thread if this circuit has no threads
     // =========================================================
     if ( p->circuitThreads.size() == 0 )
     {
-        // set all internal component inputs from connected circuit inputs
-        for ( int i = 0; i < inputs.GetSignalCount(); ++i )
-        {
-            p->inputComp->_MoveInputSignal( 0, i, inputs._GetSignal( i ) );
-        }
-
         // tick all internal components
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
             ( *p->components )[i]->Tick();
         }
-        p->outputComp->Tick();
 
         // reset all internal components
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
             ( *p->components )[i]->Reset();
-        }
-        p->inputComp->Reset();
-        p->outputComp->Reset();
-
-        // set all circuit outputs from connected internal component outputs
-        for ( int i = 0; i < outputs.GetSignalCount(); ++i )
-        {
-            outputs._MoveSignal( i, p->outputComp->_GetOutputSignal( 0, i ) );
         }
     }
     // process in multiple threads if this circuit has threads

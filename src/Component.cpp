@@ -243,7 +243,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     // update source signal's dependent count
     for ( size_t i = 0; i < fromComponent->p->outputBuses.size(); i++ )
     {
-        fromComponent->p->outputBuses[i]._GetSignal( fromOutput )->_IncDeps();
+        fromComponent->p->outputBuses[i]._GetSignal( fromOutput )->IncDeps();
     }
 
     ResumeAutoTick();
@@ -266,7 +266,7 @@ void Component::DisconnectInput( int inputNo )
             // update source signal's dependent count
             for ( size_t j = 0; j < wire.linkedComponent->p->outputBuses.size(); j++ )
             {
-                wire.linkedComponent->p->outputBuses[j]._GetSignal( wire.fromSignalIndex )->_DecDeps();
+                wire.linkedComponent->p->outputBuses[j]._GetSignal( wire.fromSignalIndex )->DecDeps();
             }
         }
     }
@@ -410,12 +410,12 @@ void Component::_SetBufferCount( int bufferCount )
         for ( int j = 0; j < p->inputBuses[0].GetSignalCount(); ++j )
         {
             // update source signal's dependent count
-            p->inputBuses[i]._GetSignal( j )->_SetDeps( p->inputBuses[0]._GetSignal( j )->_Deps() );
+            p->inputBuses[i]._GetSignal( j )->SetDeps( p->inputBuses[0]._GetSignal( j )->Deps() );
         }
         for ( int j = 0; j < p->outputBuses[0].GetSignalCount(); ++j )
         {
             // update source signal's dependent count
-            p->outputBuses[i]._GetSignal( j )->_SetDeps( p->outputBuses[0]._GetSignal( j )->_Deps() );
+            p->outputBuses[i]._GetSignal( j )->SetDeps( p->outputBuses[0]._GetSignal( j )->Deps() );
         }
     }
 
@@ -430,25 +430,6 @@ void Component::_SetBufferCount( int bufferCount )
 int Component::_GetBufferCount()
 {
     return p->inputBuses.size();
-}
-
-bool Component::_MoveInputSignal( int bufferIndex, int signalIndex, Signal::SPtr const& signal )
-{
-    if ( (size_t)bufferIndex < p->inputBuses.size() && signalIndex < p->inputBuses[bufferIndex].GetSignalCount() )
-    {
-        p->inputBuses[bufferIndex]._MoveSignal( signalIndex, signal );
-        return true;
-    }
-    return false;
-}
-
-Signal::SPtr Component::_GetOutputSignal( int bufferIndex, int signalIndex )
-{
-    if ( (size_t)bufferIndex < p->inputBuses.size() && signalIndex < p->outputBuses[bufferIndex].GetSignalCount() )
-    {
-        return p->outputBuses[bufferIndex]._GetSignal( signalIndex );
-    }
-    return nullptr;
 }
 
 void Component::_ThreadTick( int threadNo )

@@ -114,15 +114,3 @@ bool SignalBus::_SetSignal( int signalIndex, Signal::SPtr const& newSignal )
         return false;
     }
 }
-
-bool SignalBus::_MoveSignal( int signalIndex, Signal::SPtr const& newSignal )
-{
-    if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
-    {
-        return _signals[signalIndex]->MoveSignal( newSignal );
-    }
-    else
-    {
-        return false;
-    }
-}
