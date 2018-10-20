@@ -72,7 +72,14 @@ public:
     NONCOPYABLE( Component );
     DEFINE_PTRS( Component );
 
+    enum class ProcessOrder
+    {
+        InOrder,
+        OutOfOrder
+    };
+
     Component();
+    Component( ProcessOrder processOrder );
     virtual ~Component();
 
     void Tick();

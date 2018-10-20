@@ -39,18 +39,27 @@ namespace internal
 class Component
 {
 public:
-    Component()
-        : bufferCount( 0 )
+    enum class TickStatus
+    {
+        NotTicked,
+        TickStarted
+    };
+
+    Component( DSPatch::Component::ProcessOrder processOrder )
+        : processOrder( processOrder )
+        , bufferCount( 0 )
         , isAutoTickRunning( false )
         , isAutoTickPaused( false )
         , pauseCount( 0 )
-        , hasTicked( false )
+        , tickStatus( TickStatus::NotTicked )
         , componentThread( new ComponentThread )
     {
     }
 
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
+
+    const DSPatch::Component::ProcessOrder processOrder;
 
     std::weak_ptr<DSPatch::Circuit> parentCircuit;
 
@@ -65,12 +74,13 @@ public:
 
     std::vector<Wire> inputWires;
 
-    bool hasTicked;
+    TickStatus tickStatus;
 
     std::unique_ptr<internal::ComponentThread> componentThread;
 
-    std::vector<std::unique_ptr<bool>> hasTickeds;  // bool pointers ensure that parallel threads will only read from this vector
-    std::vector<bool> gotReleases;                  // bool pointers not used here as only 1 thread writes to this vector at a time
+    std::vector<TickStatus> tickStatuses;
+    std::vector<bool> gotReleases;  // bool pointers ensure that parallel threads will only read from this vector
+                                    // bool pointers are not used here as only 1 thread writes to this vector at a time
     std::vector<std::unique_ptr<std::mutex>> releaseMutexes;
     std::vector<std::unique_ptr<std::condition_variable>> releaseCondts;
 
@@ -82,7 +92,12 @@ public:
 }  // namespace DSPatch
 
 Component::Component()
-    : p( new internal::Component() )
+    : Component( ProcessOrder::InOrder )
+{
+}
+
+Component::Component( ProcessOrder processOrder )
+    : p( new internal::Component( processOrder ) )
 {
     p->inputBuses.resize( 1 );
     p->outputBuses.resize( 1 );
@@ -103,10 +118,10 @@ Component::~Component()
 void Component::Tick()
 {
     // continue only if this component has not already been ticked
-    if ( !p->hasTicked )
+    if ( p->tickStatus == internal::Component::TickStatus::NotTicked )
     {
-        // 1. set hasTicked flag
-        p->hasTicked = true;
+        // 1. set tickStatus
+        p->tickStatus = internal::Component::TickStatus::TickStarted;
 
         // 2. get outputs required from input components
         for ( size_t i = 0; i < p->inputWires.size(); i++ )
@@ -131,8 +146,8 @@ void Component::Reset()
     // clear all inputs
     p->inputBuses[0].ClearAllValues();
 
-    // reset hasTicked flag
-    p->hasTicked = false;
+    // reset tickStatus
+    p->tickStatus = internal::Component::TickStatus::NotTicked;
 }
 
 void Component::StartAutoTick()
@@ -186,7 +201,7 @@ void Component::PauseAutoTick()
     {
         currentParent->PauseAutoTick();
     }
-    else if ( !p->componentThread->IsStopped() && p->isAutoTickRunning )
+    else if ( !p->componentThread->IsStopped() )
     {
         ++p->pauseCount;
         p->componentThread->Pause();
@@ -369,14 +384,7 @@ void Component::_SetBufferCount( int bufferCount )
 {
     // p->bufferCount is the current thread count / bufferCount is new thread count
 
-    // resize local buffer array
-    p->hasTickeds.resize( bufferCount );
-
-    // create excess hasTickeds (if new buffer count is more than current)
-    for ( int i = p->bufferCount; i < bufferCount; i++ )
-    {
-        p->hasTickeds[i] = std::unique_ptr<bool>( new bool() );
-    }
+    p->tickStatuses.resize( bufferCount );
 
     p->inputBuses.resize( bufferCount == 0 ? 1 : bufferCount );
     p->outputBuses.resize( bufferCount == 0 ? 1 : bufferCount );
@@ -393,7 +401,7 @@ void Component::_SetBufferCount( int bufferCount )
             p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
         }
 
-        *p->hasTickeds[i] = false;
+        p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
         p->gotReleases[i] = false;
 
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
@@ -446,10 +454,10 @@ Signal::SPtr Component::_GetOutputSignal( int bufferIndex, int signalIndex )
 void Component::_ThreadTick( int threadNo )
 {
     // continue only if this component has not already been ticked
-    if ( *p->hasTickeds[threadNo] == false )
+    if ( p->tickStatuses[threadNo] == internal::Component::TickStatus::NotTicked )
     {
-        // 1. set hasTicked flag
-        *p->hasTickeds[threadNo] = true;
+        // 1. set tickStatus
+        p->tickStatuses[threadNo] = internal::Component::TickStatus::TickStarted;
 
         // 2. get outputs required from input components
         for ( size_t i = 0; i < p->inputWires.size(); i++ )
@@ -464,14 +472,22 @@ void Component::_ThreadTick( int threadNo )
         // 3. clear all outputs
         p->outputBuses[threadNo].ClearAllValues();
 
-        // 4. wait for your turn to process.
-        p->WaitForRelease( threadNo );
+        if ( p->processOrder == ProcessOrder::InOrder )
+        {
+            // 4. wait for your turn to process.
+            p->WaitForRelease( threadNo );
 
-        // 5. call Process_() with newly aquired inputs
-        Process_( p->inputBuses[threadNo], p->outputBuses[threadNo] );
+            // 5. call Process_() with newly aquired inputs
+            Process_( p->inputBuses[threadNo], p->outputBuses[threadNo] );
 
-        // 6. signal that you're done processing.
-        p->ReleaseThread( threadNo );
+            // 6. signal that you're done processing.
+            p->ReleaseThread( threadNo );
+        }
+        else
+        {
+            // 4. call Process_() with newly aquired inputs
+            Process_( p->inputBuses[threadNo], p->outputBuses[threadNo] );
+        }
     }
 }
 
@@ -480,8 +496,8 @@ void Component::_ThreadReset( int threadNo )
     // clear all inputs
     p->inputBuses[threadNo].ClearAllValues();
 
-    // reset hasTicked flag
-    *p->hasTickeds[threadNo] = false;
+    // reset tickStatus
+    p->tickStatuses[threadNo] = internal::Component::TickStatus::NotTicked;
 }
 
 void internal::Component::WaitForRelease( int threadNo )

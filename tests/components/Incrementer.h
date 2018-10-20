@@ -7,7 +7,8 @@ class Incrementer : public Component
 {
 public:
     Incrementer( int increment = 1 )
-        : _increment( increment )
+        : Component( ProcessOrder::OutOfOrder )
+        , _increment( increment )
     {
         SetInputCount_( 1 );
         SetOutputCount_( 1 );

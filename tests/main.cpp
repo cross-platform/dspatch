@@ -93,12 +93,11 @@ TEST_CASE( "ParallelTest" )
     circuit->ConnectOutToIn( inc_p4, 0, probe, 3 );
     circuit->ConnectOutToIn( inc_p5, 0, probe, 4 );
 
-    // Tick the circuit 100 times
-    for ( int i = 0; i < 100; ++i )
-    {
-        circuit->Tick();
-        circuit->Reset();
-    }
+    // Tick the circuit for 1s with 3 threads
+    circuit->SetThreadCount( 3 );
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
+    circuit->StopAutoTick();
 }
 
 TEST_CASE( "IntegratedParallelTest" )

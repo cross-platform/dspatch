@@ -62,16 +62,19 @@ void CircuitThread::Start( Priority priority )
 
 void CircuitThread::Stop()
 {
-    _stop = true;
-
-    while ( _stopped != true )
+    if ( !_stopped )
     {
-        _syncCondt.notify_one();
-        _resumeCondt.notify_one();
-        std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-    }
+        _stop = true;
 
-    Thread::Stop();
+        while ( _stopped != true )
+        {
+            _syncCondt.notify_one();
+            _resumeCondt.notify_one();
+            std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+        }
+
+        Thread::Stop();
+    }
 }
 
 void CircuitThread::Sync()
@@ -86,14 +89,12 @@ void CircuitThread::Sync()
 
 void CircuitThread::Resume()
 {
-    _resumeMutex.lock();
+    std::lock_guard<std::mutex> lock( _resumeMutex );
 
     _gotSync = false;  // reset the sync flag
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_one();
-
-    _resumeMutex.unlock();
 }
 
 void CircuitThread::Run_()
