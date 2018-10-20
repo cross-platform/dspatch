@@ -24,8 +24,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #pragma once
 
+#include <dspatch/Circuit.h>
 #include <dspatch/Common.h>
-#include <dspatch/Component.h>
 
 #include <internal/Thread.h>
 
@@ -46,15 +46,15 @@ component's Tick() and Reset() methods.
 The Pause() method causes ComponentThread to wait until instructed to Resume() again.
 */
 
-class ComponentThread final : public Thread
+class AutoTickThread final : public Thread
 {
 public:
-    NONCOPYABLE( ComponentThread );
+    NONCOPYABLE( AutoTickThread );
 
-    ComponentThread();
-    virtual ~ComponentThread() override;
+    AutoTickThread();
+    virtual ~AutoTickThread() override;
 
-    void Initialise( std::shared_ptr<DSPatch::Component> const& component );
+    void Initialise( std::shared_ptr<DSPatch::Circuit> const& circuit );
 
     bool IsInitialised() const;
     bool IsStopped() const;
@@ -68,7 +68,7 @@ private:
     virtual void Run_() override;
 
 private:
-    std::weak_ptr<DSPatch::Component> _component;
+    std::weak_ptr<DSPatch::Circuit> _circuit;
     bool _stop, _pause;
     bool _stopped;
     std::mutex _resumeMutex;

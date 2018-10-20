@@ -26,6 +26,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Signal.h>
 
+#include <vector>
+
 namespace DSPatch
 {
 
@@ -67,7 +69,7 @@ public:
     void ClearAllValues();
 
 private:
-    // Private methods required by Circuit & Component
+    // Private methods required by Component
 
     Signal::SPtr _GetSignal( int signalIndex ) const;
     bool _SetSignal( int signalIndex, Signal::SPtr const& newSignal );

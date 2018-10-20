@@ -24,6 +24,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #pragma once
 
+#include <pthread.h>
+
 namespace DSPatch
 {
 namespace internal

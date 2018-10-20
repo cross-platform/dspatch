@@ -26,8 +26,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Component.h>
 
-#include <map>
-
 namespace DSPatch
 {
 

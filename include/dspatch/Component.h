@@ -66,7 +66,7 @@ StartAutoTick(), a separate thread will spawn, automatically calling Tick() and 
 continuously (This is most commonly used to tick over an instance of Circuit).
 */
 
-class DLLEXPORT Component : public std::enable_shared_from_this<Component>
+class DLLEXPORT Component
 {
 public:
     NONCOPYABLE( Component );
@@ -78,17 +78,8 @@ public:
         OutOfOrder
     };
 
-    Component();
-    Component( ProcessOrder processOrder );
+    Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
-
-    void Tick();
-    void Reset();
-
-    virtual void StartAutoTick();
-    virtual void StopAutoTick();
-    virtual void PauseAutoTick();
-    virtual void ResumeAutoTick();
 
     bool ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput );
 
@@ -111,16 +102,13 @@ protected:
 private:
     // Private methods required by Circuit
 
-    void _SetParentCircuit( std::shared_ptr<Circuit> const& parentCircuit );
-    std::shared_ptr<Circuit const> _GetParentCircuit();
-
     void _SetBufferCount( int bufferCount );
     int _GetBufferCount();
 
     // Private methods required by CircuitThread
 
-    void _ThreadTick( int threadNo );
-    void _ThreadReset( int threadNo );
+    void _Tick( int bufferNo );
+    void _Reset( int bufferNo );
 
 private:
     friend class Circuit;

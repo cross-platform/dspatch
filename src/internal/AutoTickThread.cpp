@@ -22,40 +22,42 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include <internal/ComponentThread.h>
+#include <internal/AutoTickThread.h>
+
+#include <dspatch/Circuit.h>
 
 #include <thread>
 
 using namespace DSPatch::internal;
 
-ComponentThread::ComponentThread()
+AutoTickThread::AutoTickThread()
     : _stop( false )
     , _pause( false )
     , _stopped( true )
 {
 }
 
-ComponentThread::~ComponentThread()
+AutoTickThread::~AutoTickThread()
 {
     Stop();
 }
 
-void ComponentThread::Initialise( DSPatch::Component::SPtr const& component )
+void AutoTickThread::Initialise( DSPatch::Circuit::SPtr const& circuit )
 {
-    _component = component;
+    _circuit = circuit;
 }
 
-bool ComponentThread::IsInitialised() const
+bool AutoTickThread::IsInitialised() const
 {
-    return _component.lock() != nullptr;
+    return _circuit.lock() != nullptr;
 }
 
-bool ComponentThread::IsStopped() const
+bool AutoTickThread::IsStopped() const
 {
     return _stopped;
 }
 
-void ComponentThread::Start( Priority priority )
+void AutoTickThread::Start( Priority priority )
 {
     if ( _stopped )
     {
@@ -66,7 +68,7 @@ void ComponentThread::Start( Priority priority )
     }
 }
 
-void ComponentThread::Stop()
+void AutoTickThread::Stop()
 {
     if ( !_stopped )
     {
@@ -83,7 +85,7 @@ void ComponentThread::Stop()
     }
 }
 
-void ComponentThread::Pause()
+void AutoTickThread::Pause()
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
@@ -94,7 +96,7 @@ void ComponentThread::Pause()
     }
 }
 
-void ComponentThread::Resume()
+void AutoTickThread::Resume()
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
@@ -105,14 +107,13 @@ void ComponentThread::Resume()
     }
 }
 
-void ComponentThread::Run_()
+void AutoTickThread::Run_()
 {
-    if ( _component.lock() != nullptr )
+    if ( _circuit.lock() != nullptr )
     {
         while ( !_stop )
         {
-            _component.lock()->Tick();
-            _component.lock()->Reset();
+            _circuit.lock()->Tick();
 
             if ( _pause )
             {

@@ -56,19 +56,14 @@ Process_() method simply runs through it's internal array of components and call
 Tick() and Reset() methods.
 */
 
-class DLLEXPORT Circuit final : public Component
+class DLLEXPORT Circuit final : public std::enable_shared_from_this<Circuit>
 {
 public:
     NONCOPYABLE( Circuit );
     DEFINE_PTRS( Circuit );
 
-    Circuit( int threadCount = 0 );
+    Circuit();
     virtual ~Circuit();
-
-    virtual void PauseAutoTick() override;
-
-    void SetThreadCount( int threadCount );
-    int GetThreadCount() const;
 
     int AddComponent( Component::SPtr const& component );
 
@@ -78,7 +73,6 @@ public:
 
     int GetComponentCount() const;
 
-    // Component output to component input
     bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
     bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, int toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
@@ -87,8 +81,15 @@ public:
     void DisconnectComponent( Component::SCPtr const& component );
     void DisconnectComponent( int componentIndex );
 
-protected:
-    virtual void Process_( SignalBus const&, SignalBus& ) override;
+    void SetThreadCount( int threadCount );
+    int GetThreadCount() const;
+
+    void Tick();
+
+    void StartAutoTick();
+    void StopAutoTick();
+    void PauseAutoTick();
+    void ResumeAutoTick();
 
 private:
     std::unique_ptr<internal::Circuit> p;

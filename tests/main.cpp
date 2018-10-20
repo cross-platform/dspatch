@@ -57,7 +57,6 @@ TEST_CASE( "SerialTest" )
     for ( int i = 0; i < 100; ++i )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 }
 
@@ -149,7 +148,6 @@ TEST_CASE( "BranchSyncTest" )
     for ( int i = 0; i < 100; ++i )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 }
 
@@ -175,7 +173,6 @@ TEST_CASE( "FeedbackTest" )
     for ( int i = 0; i < 100; ++i )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 }
 
@@ -196,7 +193,6 @@ TEST_CASE( "NoOutputTest" )
     for ( int i = 0; i < 100; ++i )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 }
 
@@ -217,7 +213,6 @@ TEST_CASE( "ChangingOutputTest" )
     for ( int i = 0; i < 100; ++i )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 }
 
@@ -333,7 +328,7 @@ TEST_CASE( "WiringTest" )
     circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
 
     // Tick the circuit for 0.5s with 1 thread
-    probe->StartAutoTick();  // can start an auto-tick from any circuit component
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 
     // Re-wire
@@ -366,5 +361,5 @@ TEST_CASE( "WiringTest" )
     circuit->ConnectOutToIn( pass_s1, 0, pass_s2, 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 500 ) );
 
-    pass_s2->StopAutoTick();  // can stop an auto-tick from any circuit component
+    circuit->StopAutoTick();
 }

@@ -24,6 +24,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Circuit.h>
 
+#include <internal/AutoTickThread.h>
 #include <internal/CircuitThread.h>
 #include <internal/Wire.h>
 
@@ -38,12 +39,22 @@ class Circuit
 {
 public:
     Circuit()
-        : components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
+        : isAutoTickRunning( false )
+        , isAutoTickPaused( false )
+        , pauseCount( 0 )
+        , autoTickThread( new AutoTickThread )
+        , components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
         , currentThreadIndex( 0 )
     {
     }
 
     bool FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const;
+
+    bool isAutoTickRunning;
+    bool isAutoTickPaused;
+    int pauseCount;
+
+    std::unique_ptr<internal::AutoTickThread> autoTickThread;
 
     std::shared_ptr<std::vector<DSPatch::Component::SPtr>> components;
 
@@ -54,10 +65,9 @@ public:
 }  // namespace internal
 }  // namespace DSPatch
 
-Circuit::Circuit( int threadCount )
+Circuit::Circuit()
     : p( new internal::Circuit() )
 {
-    SetThreadCount( threadCount );
 }
 
 Circuit::~Circuit()
@@ -67,83 +77,18 @@ Circuit::~Circuit()
     RemoveAllComponents();
 }
 
-void Circuit::PauseAutoTick()
-{
-    // pause auto tick
-    Component::PauseAutoTick();
-
-    // manually tick until 0
-    while ( p->currentThreadIndex != 0 )
-    {
-        Tick();
-        Reset();
-    }
-
-    // sync all threads
-    for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
-    {
-        p->circuitThreads[i]->Sync();
-    }
-}
-
-void Circuit::SetThreadCount( int threadCount )
-{
-    if ( (size_t)threadCount != p->circuitThreads.size() )
-    {
-        PauseAutoTick();
-
-        // stop all threads
-        for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
-        {
-            p->circuitThreads[i]->Stop();
-        }
-
-        // resize thread array
-        p->circuitThreads.resize( threadCount );
-
-        // initialise and start all threads
-        for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
-        {
-            if ( !p->circuitThreads[i] )
-            {
-                p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
-            }
-            p->circuitThreads[i]->Initialise( p->components, i );
-            p->circuitThreads[i]->Start();
-        }
-
-        // set all components to the new thread count
-        for ( size_t i = 0; i < p->components->size(); i++ )
-        {
-            ( *p->components )[i]->_SetBufferCount( threadCount );
-        }
-
-        ResumeAutoTick();
-    }
-}
-
-int Circuit::GetThreadCount() const
-{
-    return p->circuitThreads.size();
-}
-
 int Circuit::AddComponent( Component::SPtr const& component )
 {
-    if ( !std::dynamic_pointer_cast<Circuit>( component ) && component.get() != this && component != nullptr )
+    if ( component != nullptr )
     {
         int componentIndex;
 
-        if ( component->_GetParentCircuit() != nullptr && component->_GetParentCircuit() != shared_from_this() )
-        {
-            return -1;  // if the component is already part of this or another circuit
-        }
-        else if ( p->FindComponent( component, componentIndex ) )
+        if ( p->FindComponent( component, componentIndex ) )
         {
             return componentIndex;  // if the component is already in the array
         }
 
         // components within the circuit need to have as many buffers as there are threads in the circuit
-        component->_SetParentCircuit( std::static_pointer_cast<Circuit>( shared_from_this() ) );
         component->_SetBufferCount( p->circuitThreads.size() );
 
         PauseAutoTick();
@@ -172,13 +117,7 @@ void Circuit::RemoveComponent( int componentIndex )
 
     DisconnectComponent( componentIndex );
 
-    // set the removed component's parent circuit to nullptr
-    if ( ( *p->components )[componentIndex]->_GetParentCircuit() != nullptr )
-    {
-        ( *p->components )[componentIndex]->_SetParentCircuit( nullptr );
-    }
-    // setting a component's parent to nullptr (above) calls _RemoveComponent (hence the following code will run)
-    else if ( p->components->size() != 0 )
+    if ( p->components->size() != 0 )
     {
         p->components->erase( p->components->begin() + componentIndex );
     }
@@ -273,7 +212,48 @@ void Circuit::DisconnectComponent( int componentIndex )
     ResumeAutoTick();
 }
 
-void Circuit::Process_( SignalBus const&, SignalBus& )
+void Circuit::SetThreadCount( int threadCount )
+{
+    if ( (size_t)threadCount != p->circuitThreads.size() )
+    {
+        PauseAutoTick();
+
+        // stop all threads
+        for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
+        {
+            p->circuitThreads[i]->Stop();
+        }
+
+        // resize thread array
+        p->circuitThreads.resize( threadCount );
+
+        // initialise and start all threads
+        for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
+        {
+            if ( !p->circuitThreads[i] )
+            {
+                p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
+            }
+            p->circuitThreads[i]->Initialise( p->components, i );
+            p->circuitThreads[i]->Start();
+        }
+
+        // set all components to the new thread count
+        for ( size_t i = 0; i < p->components->size(); i++ )
+        {
+            ( *p->components )[i]->_SetBufferCount( threadCount );
+        }
+
+        ResumeAutoTick();
+    }
+}
+
+int Circuit::GetThreadCount() const
+{
+    return p->circuitThreads.size();
+}
+
+void Circuit::Tick()
 {
     // process in a single thread if this circuit has no threads
     // =========================================================
@@ -282,13 +262,13 @@ void Circuit::Process_( SignalBus const&, SignalBus& )
         // tick all internal components
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
-            ( *p->components )[i]->Tick();
+            ( *p->components )[i]->_Tick( 0 );
         }
 
         // reset all internal components
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
-            ( *p->components )[i]->Reset();
+            ( *p->components )[i]->_Reset( 0 );
         }
     }
     // process in multiple threads if this circuit has threads
@@ -303,6 +283,70 @@ void Circuit::Process_( SignalBus const&, SignalBus& )
         {
             p->currentThreadIndex = 0;
         }
+    }
+}
+
+void Circuit::StartAutoTick()
+{
+    if ( p->autoTickThread->IsStopped() )
+    {
+        if ( !p->autoTickThread->IsInitialised() )
+        {
+            p->autoTickThread->Initialise( shared_from_this() );
+        }
+
+        p->autoTickThread->Start();
+
+        p->isAutoTickRunning = true;
+        p->isAutoTickPaused = false;
+    }
+    else
+    {
+        ResumeAutoTick();
+    }
+}
+
+void Circuit::StopAutoTick()
+{
+    if ( !p->autoTickThread->IsStopped() )
+    {
+        p->autoTickThread->Stop();
+
+        p->isAutoTickRunning = false;
+        p->isAutoTickPaused = false;
+    }
+}
+
+void Circuit::PauseAutoTick()
+{
+    if ( !p->autoTickThread->IsStopped() )
+    {
+        ++p->pauseCount;
+        p->autoTickThread->Pause();
+        p->isAutoTickPaused = true;
+        p->isAutoTickRunning = false;
+    }
+
+    // manually tick until 0
+    while ( p->currentThreadIndex != 0 )
+    {
+        Tick();
+    }
+
+    // sync all threads
+    for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
+    {
+        p->circuitThreads[i]->Sync();
+    }
+}
+
+void Circuit::ResumeAutoTick()
+{
+    if ( p->isAutoTickPaused && --p->pauseCount == 0 )
+    {
+        p->autoTickThread->Resume();
+        p->isAutoTickPaused = false;
+        p->isAutoTickRunning = true;
     }
 }
 

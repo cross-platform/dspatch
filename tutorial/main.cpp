@@ -36,7 +36,6 @@ int main()
     for ( int i = 0; i < 10; i++ )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 
     // Circuit tick method 2: Automatic
