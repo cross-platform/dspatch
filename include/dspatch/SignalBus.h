@@ -46,10 +46,11 @@ abstracting the need to retrieve and interface with the contained Signals themse
 class DLLEXPORT SignalBus final
 {
 public:
+    NONCOPYABLE( SignalBus );
     DEFINE_PTRS( SignalBus );
 
     SignalBus();
-    SignalBus( SignalBus const& );
+    SignalBus( SignalBus&& );
     virtual ~SignalBus();
 
     void SetSignalCount( int signalCount );

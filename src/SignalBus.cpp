@@ -43,7 +43,7 @@ SignalBus::SignalBus()
 {
 }
 
-SignalBus::SignalBus( SignalBus const& rhs )
+SignalBus::SignalBus( SignalBus&& rhs )
 {
     _signals = rhs._signals;
 }
