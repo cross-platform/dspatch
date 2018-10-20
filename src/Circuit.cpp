@@ -128,7 +128,7 @@ void Circuit::SetOutputCount( int outputCount )
 
 void Circuit::SetThreadCount( int threadCount )
 {
-    if ( (size_t)threadCount != p->circuitThreads.size() )
+    if ( _GetParentCircuit() == nullptr && (size_t)threadCount != p->circuitThreads.size() )
     {
         PauseAutoTick();
 

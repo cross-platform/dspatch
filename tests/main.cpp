@@ -179,6 +179,8 @@ TEST_CASE( "IntegratedParallelTest" )
     circuit->AddComponent( probe );
 
     REQUIRE( ic->GetThreadCount() == 0 );
+    ic->SetThreadCount( 2 );
+    REQUIRE( ic->GetThreadCount() == 0 );
 
     circuit->ConnectOutToIn( counter, 0, ic, 0 );
     circuit->ConnectOutToIn( counter, 0, ic, 1 );

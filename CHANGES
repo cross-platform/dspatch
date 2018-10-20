@@ -1,5 +1,6 @@
 v.4.10 (dd mmmm yyyy)
     - Allow out-of-order component processes.
+    - Fixed threaded integrated circuit crash.
 
 v.4.00 (09 October 2018)
     - Major C++14 refactor.
