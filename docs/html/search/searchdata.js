@@ -1,7 +1,7 @@
 var indexSectionsWithContent =
 {
-  0: "acdprstw",
-  1: "acprstw",
+  0: "cdprstw",
+  1: "cprstw",
   2: "dt"
 };
 

@@ -1,6 +1,6 @@
-v.4.10 (dd mmmm yyyy)
+v.4.10 (27 October 2018)
     - Allow out-of-order component processes.
-    - Scrap the integrated circuits concept.
+    - Fixed threaded integrated circuit bugs.
 
 v.4.00 (09 October 2018)
     - Major C++14 refactor.
