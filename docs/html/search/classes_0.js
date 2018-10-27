@@ -1,7 +1,4 @@
 var searchData=
 [
-  ['circuit',['Circuit',['../class_d_s_patch_1_1_circuit.html',1,'DSPatch']]],
-  ['circuitthread',['CircuitThread',['../class_d_s_patch_1_1internal_1_1_circuit_thread.html',1,'DSPatch::internal']]],
-  ['component',['Component',['../class_d_s_patch_1_1_component.html',1,'DSPatch']]],
-  ['componentthread',['ComponentThread',['../class_d_s_patch_1_1internal_1_1_component_thread.html',1,'DSPatch::internal']]]
+  ['autotickthread',['AutoTickThread',['../class_d_s_patch_1_1internal_1_1_auto_tick_thread.html',1,'DSPatch::internal']]]
 ];

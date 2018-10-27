@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['plugin',['Plugin',['../class_d_s_patch_1_1_plugin.html',1,'DSPatch']]]
+  ['dspatch_20design_20specification',['DSPatch Design Specification',['../spec_page.html',1,'']]]
 ];
