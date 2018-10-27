@@ -57,7 +57,7 @@ public:
 
     std::shared_ptr<std::vector<DSPatch::Component::SPtr>> components;
 
-    std::vector<std::unique_ptr<internal::CircuitThread>> circuitThreads;
+    std::vector<internal::CircuitThread::UPtr> circuitThreads;
     int currentThreadIndex;
 };
 

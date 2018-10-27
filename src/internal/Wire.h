@@ -24,6 +24,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #pragma once
 
+#include <dspatch/Component.h>
+
 namespace DSPatch
 {
 
@@ -43,14 +45,14 @@ providing signals across component connections.
 
 struct Wire final
 {
-    Wire( std::shared_ptr<DSPatch::Component> const& newLinkedComponent, int newFromSignalIndex, int newToSignalIndex )
+    Wire( DSPatch::Component::SPtr const& newLinkedComponent, int newFromSignalIndex, int newToSignalIndex )
         : linkedComponent( newLinkedComponent )
         , fromSignalIndex( newFromSignalIndex )
         , toSignalIndex( newToSignalIndex )
     {
     }
 
-    std::shared_ptr<DSPatch::Component> linkedComponent;
+    DSPatch::Component::SPtr linkedComponent;
     int fromSignalIndex;
     int toSignalIndex;
 };

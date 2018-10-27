@@ -54,7 +54,7 @@ public:
     AutoTickThread();
     virtual ~AutoTickThread() override;
 
-    void Initialise( std::shared_ptr<DSPatch::Circuit> const& circuit );
+    void Initialise( DSPatch::Circuit::SPtr const& circuit );
 
     bool IsInitialised() const;
     bool IsStopped() const;
