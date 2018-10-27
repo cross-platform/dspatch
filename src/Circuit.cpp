@@ -42,7 +42,6 @@ public:
         : isAutoTickRunning( false )
         , isAutoTickPaused( false )
         , pauseCount( 0 )
-        , autoTickThread( new AutoTickThread )
         , components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
         , currentThreadIndex( 0 )
     {
@@ -54,7 +53,7 @@ public:
     bool isAutoTickPaused;
     int pauseCount;
 
-    std::unique_ptr<internal::AutoTickThread> autoTickThread;
+    internal::AutoTickThread autoTickThread;
 
     std::shared_ptr<std::vector<DSPatch::Component::SPtr>> components;
 
@@ -288,14 +287,14 @@ void Circuit::Tick()
 
 void Circuit::StartAutoTick()
 {
-    if ( p->autoTickThread->IsStopped() )
+    if ( p->autoTickThread.IsStopped() )
     {
-        if ( !p->autoTickThread->IsInitialised() )
+        if ( !p->autoTickThread.IsInitialised() )
         {
-            p->autoTickThread->Initialise( shared_from_this() );
+            p->autoTickThread.Initialise( shared_from_this() );
         }
 
-        p->autoTickThread->Start();
+        p->autoTickThread.Start();
 
         p->isAutoTickRunning = true;
         p->isAutoTickPaused = false;
@@ -308,9 +307,9 @@ void Circuit::StartAutoTick()
 
 void Circuit::StopAutoTick()
 {
-    if ( !p->autoTickThread->IsStopped() )
+    if ( !p->autoTickThread.IsStopped() )
     {
-        p->autoTickThread->Stop();
+        p->autoTickThread.Stop();
 
         p->isAutoTickRunning = false;
         p->isAutoTickPaused = false;
@@ -319,10 +318,10 @@ void Circuit::StopAutoTick()
 
 void Circuit::PauseAutoTick()
 {
-    if ( !p->autoTickThread->IsStopped() )
+    if ( !p->autoTickThread.IsStopped() )
     {
         ++p->pauseCount;
-        p->autoTickThread->Pause();
+        p->autoTickThread.Pause();
         p->isAutoTickPaused = true;
         p->isAutoTickRunning = false;
     }
@@ -344,7 +343,7 @@ void Circuit::ResumeAutoTick()
 {
     if ( p->isAutoTickPaused && --p->pauseCount == 0 )
     {
-        p->autoTickThread->Resume();
+        p->autoTickThread.Resume();
         p->isAutoTickPaused = false;
         p->isAutoTickRunning = true;
     }
