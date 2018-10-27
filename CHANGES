@@ -1,3 +1,7 @@
+v.4.10 (27 October 2018)
+    - Allow out-of-order component processes.
+    - Fixed threaded integrated circuit bugs.
+
 v.4.00 (09 October 2018)
     - Major C++14 refactor.
     - Moved audio-related example components to the DSPatchables project.

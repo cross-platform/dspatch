@@ -128,7 +128,7 @@ void Circuit::SetOutputCount( int outputCount )
 
 void Circuit::SetThreadCount( int threadCount )
 {
-    if ( (size_t)threadCount != p->circuitThreads.size() )
+    if ( _GetParentCircuit() == nullptr && (size_t)threadCount != p->circuitThreads.size() )
     {
         PauseAutoTick();
 
@@ -175,11 +175,18 @@ int Circuit::AddComponent( Component::SPtr const& component )
 
         if ( component->_GetParentCircuit() != nullptr && component->_GetParentCircuit() != shared_from_this() )
         {
-            return -1;  // if the component is already part of another circuit
+            return -1;  // if the component is already part of this or another circuit
         }
         else if ( p->FindComponent( component, componentIndex ) )
         {
             return componentIndex;  // if the component is already in the array
+        }
+
+        // if the component being added is an integrated circuit, set it's thread count to 0
+        auto circuitComponent = std::dynamic_pointer_cast<Circuit>( component );
+        if ( circuitComponent != nullptr )
+        {
+            circuitComponent->SetThreadCount( 0 );
         }
 
         // components within the circuit need to have as many buffers as there are threads in the circuit

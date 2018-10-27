@@ -68,32 +68,41 @@ void ComponentThread::Start( Priority priority )
 
 void ComponentThread::Stop()
 {
-    _stop = true;
-
-    while ( _stopped != true )
+    if ( !_stopped )
     {
-        _pauseCondt.notify_one();
-        _resumeCondt.notify_one();
-        std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-    }
+        _stop = true;
 
-    Thread::Stop();
+        while ( _stopped != true )
+        {
+            _pauseCondt.notify_one();
+            _resumeCondt.notify_one();
+            std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+        }
+
+        Thread::Stop();
+    }
 }
 
 void ComponentThread::Pause()
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
-    _pause = true;
-    _pauseCondt.wait( lock );  // wait for resume
-    _pause = false;
+    if ( !_pause )
+    {
+        _pause = true;
+        _pauseCondt.wait( lock );  // wait for resume
+    }
 }
 
 void ComponentThread::Resume()
 {
-    _resumeMutex.lock();
-    _resumeCondt.notify_one();
-    _resumeMutex.unlock();
+    std::unique_lock<std::mutex> lock( _resumeMutex );
+
+    if ( _pause )
+    {
+        _resumeCondt.notify_one();
+        _pause = false;
+    }
 }
 
 void ComponentThread::Run_()
