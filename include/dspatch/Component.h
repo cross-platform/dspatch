@@ -31,12 +31,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 namespace DSPatch
 {
 
-class Circuit;
-
 namespace internal
 {
 class Component;
-class CircuitThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -93,6 +90,12 @@ public:
     std::string GetInputName( int inputNo ) const;
     std::string GetOutputName( int outputNo ) const;
 
+    void SetBufferCount( int bufferCount );
+    int GetBufferCount();
+
+    void Tick( int bufferNo );
+    void Reset( int bufferNo );
+
 protected:
     virtual void Process_( SignalBus const&, SignalBus& ) = 0;
 
@@ -100,20 +103,6 @@ protected:
     void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
 
 private:
-    // Private methods required by Circuit
-
-    void _SetBufferCount( int bufferCount );
-    int _GetBufferCount();
-
-    // Private methods required by CircuitThread
-
-    void _Tick( int bufferNo );
-    void _Reset( int bufferNo );
-
-private:
-    friend class Circuit;
-    friend class internal::CircuitThread;
-
     std::unique_ptr<internal::Component> p;
 };
 

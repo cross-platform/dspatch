@@ -88,7 +88,7 @@ int Circuit::AddComponent( Component::SPtr const& component )
         }
 
         // components within the circuit need to have as many buffers as there are threads in the circuit
-        component->_SetBufferCount( p->circuitThreads.size() );
+        component->SetBufferCount( p->circuitThreads.size() );
 
         PauseAutoTick();
         p->components->push_back( component );
@@ -240,7 +240,7 @@ void Circuit::SetThreadCount( int threadCount )
         // set all components to the new thread count
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
-            ( *p->components )[i]->_SetBufferCount( threadCount );
+            ( *p->components )[i]->SetBufferCount( threadCount );
         }
 
         ResumeAutoTick();
@@ -261,13 +261,13 @@ void Circuit::Tick()
         // tick all internal components
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
-            ( *p->components )[i]->_Tick( 0 );
+            ( *p->components )[i]->Tick( 0 );
         }
 
         // reset all internal components
         for ( size_t i = 0; i < p->components->size(); i++ )
         {
-            ( *p->components )[i]->_Reset( 0 );
+            ( *p->components )[i]->Reset( 0 );
         }
     }
     // process in multiple threads if this circuit has threads

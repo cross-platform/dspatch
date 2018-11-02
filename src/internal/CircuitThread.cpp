@@ -123,11 +123,11 @@ void CircuitThread::_Run()
             {
                 for ( size_t i = 0; i < _components.lock()->size(); i++ )
                 {
-                    ( *_components.lock() )[i]->_Tick( _threadNo );
+                    ( *_components.lock() )[i]->Tick( _threadNo );
                 }
                 for ( size_t i = 0; i < _components.lock()->size(); i++ )
                 {
-                    ( *_components.lock() )[i]->_Reset( _threadNo );
+                    ( *_components.lock() )[i]->Reset( _threadNo );
                 }
             }
         }

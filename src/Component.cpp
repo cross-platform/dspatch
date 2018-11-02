@@ -65,8 +65,7 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<TickStatus> tickStatuses;
-    std::vector<bool> gotReleases;  // bool pointers ensure that parallel threads will only read from this vector
-                                    // bool pointers are not used here as only 1 thread writes to this vector at a time
+    std::vector<bool> gotReleases;
     std::vector<std::unique_ptr<std::mutex>> releaseMutexes;
     std::vector<std::unique_ptr<std::condition_variable>> releaseCondts;
 
@@ -80,7 +79,7 @@ public:
 Component::Component( ProcessOrder processOrder )
     : p( new internal::Component( processOrder ) )
 {
-    _SetBufferCount( 1 );
+    SetBufferCount( 1 );
 }
 
 Component::~Component()
@@ -178,25 +177,7 @@ std::string Component::GetOutputName( int outputNo ) const
     return "";
 }
 
-void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
-{
-    p->inputNames = inputNames;
-    for ( size_t i = 0; i < p->inputBuses.size(); i++ )
-    {
-        p->inputBuses[i].SetSignalCount( inputCount );
-    }
-}
-
-void Component::SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames )
-{
-    p->outputNames = outputNames;
-    for ( size_t i = 0; i < p->outputBuses.size(); i++ )
-    {
-        p->outputBuses[i].SetSignalCount( outputCount );
-    }
-}
-
-void Component::_SetBufferCount( int bufferCount )
+void Component::SetBufferCount( int bufferCount )
 {
     // p->bufferCount is the current thread count / bufferCount is new thread count
 
@@ -245,13 +226,18 @@ void Component::_SetBufferCount( int bufferCount )
     p->bufferCount = bufferCount;
 }
 
-int Component::_GetBufferCount()
+int Component::GetBufferCount()
 {
     return p->inputBuses.size();
 }
 
-void Component::_Tick( int bufferNo )
+void Component::Tick( int bufferNo )
 {
+    if ( bufferNo >= p->bufferCount )
+    {
+        return;
+    }
+
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
     {
@@ -262,7 +248,7 @@ void Component::_Tick( int bufferNo )
         for ( size_t i = 0; i < p->inputWires.size(); i++ )
         {
             auto wire = p->inputWires[i];
-            wire.linkedComponent->_Tick( bufferNo );
+            wire.linkedComponent->Tick( bufferNo );
 
             auto signal = wire.linkedComponent->p->outputBuses[bufferNo]._GetSignal( wire.fromSignalIndex );
             p->inputBuses[bufferNo]._SetSignal( wire.toSignalIndex, signal );
@@ -290,13 +276,36 @@ void Component::_Tick( int bufferNo )
     }
 }
 
-void Component::_Reset( int bufferNo )
+void Component::Reset( int bufferNo )
 {
+    if ( bufferNo >= p->bufferCount )
+    {
+        return;
+    }
+
     // clear all inputs
     p->inputBuses[bufferNo].ClearAllValues();
 
     // reset tickStatus
     p->tickStatuses[bufferNo] = internal::Component::TickStatus::NotTicked;
+}
+
+void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
+{
+    p->inputNames = inputNames;
+    for ( size_t i = 0; i < p->inputBuses.size(); i++ )
+    {
+        p->inputBuses[i].SetSignalCount( inputCount );
+    }
+}
+
+void Component::SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames )
+{
+    p->outputNames = outputNames;
+    for ( size_t i = 0; i < p->outputBuses.size(); i++ )
+    {
+        p->outputBuses[i].SetSignalCount( outputCount );
+    }
 }
 
 void internal::Component::WaitForRelease( int threadNo )
