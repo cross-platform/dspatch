@@ -218,8 +218,8 @@ void Component::_SetBufferCount( int bufferCount )
     {
         if ( !p->releaseCondts[i] )
         {
-            p->releaseMutexes[i] = std::unique_ptr<std::mutex>( new std::mutex() );
-            p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
+            p->releaseMutexes[i] = std::make_unique<std::mutex>();
+            p->releaseCondts[i] = std::make_unique<std::condition_variable>();
         }
 
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
