@@ -24,8 +24,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <internal/CircuitThread.h>
 
-#include <thread>
-
 using namespace DSPatch::internal;
 
 CircuitThread::CircuitThread()
@@ -48,7 +46,7 @@ void CircuitThread::Initialise( std::shared_ptr<std::vector<DSPatch::Component::
     _threadNo = threadNo;
 }
 
-void CircuitThread::Start( Priority priority )
+void CircuitThread::Start()
 {
     if ( _stopped )
     {
@@ -56,7 +54,8 @@ void CircuitThread::Start( Priority priority )
         _stopped = false;
         _gotResume = false;
         _gotSync = true;
-        Thread::Start( priority );
+
+        _thread = std::thread( &CircuitThread::_Run, this );
     }
 }
 
@@ -73,7 +72,10 @@ void CircuitThread::Stop()
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
-        Thread::Stop();
+        if ( _thread.joinable() )
+        {
+            _thread.join();
+        }
     }
 }
 
@@ -97,7 +99,7 @@ void CircuitThread::Resume()
     _resumeCondt.notify_one();
 }
 
-void CircuitThread::Run_()
+void CircuitThread::_Run()
 {
     if ( _components.lock() != nullptr )
     {

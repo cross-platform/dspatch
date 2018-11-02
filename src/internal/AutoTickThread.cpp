@@ -57,14 +57,15 @@ bool AutoTickThread::IsStopped() const
     return _stopped;
 }
 
-void AutoTickThread::Start( Priority priority )
+void AutoTickThread::Start()
 {
     if ( _stopped )
     {
         _stop = false;
         _stopped = false;
         _pause = false;
-        Thread::Start( priority );
+
+        _thread = std::thread( &AutoTickThread::_Run, this );
     }
 }
 
@@ -81,7 +82,10 @@ void AutoTickThread::Stop()
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
-        Thread::Stop();
+        if ( _thread.joinable() )
+        {
+            _thread.join();
+        }
     }
 }
 
@@ -107,7 +111,7 @@ void AutoTickThread::Resume()
     }
 }
 
-void AutoTickThread::Run_()
+void AutoTickThread::_Run()
 {
     if ( _circuit.lock() != nullptr )
     {

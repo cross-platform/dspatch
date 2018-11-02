@@ -26,7 +26,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Component.h>
 
-#include <internal/Thread.h>
+#include <thread>
 
 namespace DSPatch
 {
@@ -58,26 +58,27 @@ processing. If the circuit thread is already awaiting the next Resume() request,
 return immediately.
 */
 
-class CircuitThread final : public Thread
+class CircuitThread final
 {
 public:
     NONCOPYABLE( CircuitThread );
     DEFINE_PTRS( CircuitThread );
 
     CircuitThread();
-    virtual ~CircuitThread() override;
+    virtual ~CircuitThread();
 
     void Initialise( std::shared_ptr<std::vector<DSPatch::Component::SPtr>> const& components, int threadNo );
 
-    void Start( Priority priority = HighestPriority ) override;
-    void Stop() override;
+    void Start();
+    void Stop();
     void Sync();
     void Resume();
 
 private:
-    virtual void Run_() override;
+    virtual void _Run();
 
 private:
+    std::thread _thread;
     std::weak_ptr<std::vector<DSPatch::Component::SPtr>> _components;
     int _threadNo;
     bool _stop;
