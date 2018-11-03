@@ -65,26 +65,24 @@ public:
     std::type_info const& GetType() const;
 
 private:
-    class _RtValueHolder
+    struct _ValueHolder
     {
-    public:
-        NONCOPYABLE( _RtValueHolder );
+        NONCOPYABLE( _ValueHolder );
 
-        _RtValueHolder() = default;
-        virtual ~_RtValueHolder() = default;
+        _ValueHolder() = default;
+        virtual ~_ValueHolder() = default;
 
         virtual std::type_info const& GetType() const = 0;
-        virtual _RtValueHolder* GetCopy() const = 0;
-        virtual void SetValue( _RtValueHolder* valueHolder ) = 0;
+        virtual _ValueHolder* GetCopy() const = 0;
+        virtual void SetValue( _ValueHolder* valueHolder ) = 0;
     };
 
     template <class ValueType>
-    class _RtValue final : public _RtValueHolder
+    struct _Value final : _ValueHolder
     {
-    public:
-        NONCOPYABLE( _RtValue );
+        NONCOPYABLE( _Value );
 
-        _RtValue( ValueType const& value )
+        _Value( ValueType const& value )
             : value( value )
             , type( typeid( ValueType ) )
         {
@@ -95,21 +93,21 @@ private:
             return type;
         }
 
-        virtual _RtValueHolder* GetCopy() const override
+        virtual _ValueHolder* GetCopy() const override
         {
-            return new _RtValue( value );
+            return new _Value( value );
         }
 
-        virtual void SetValue( _RtValueHolder* valueHolder ) override
+        virtual void SetValue( _ValueHolder* valueHolder ) override
         {
-            value = ( (_RtValue<ValueType>*)valueHolder )->value;
+            value = ( (_Value<ValueType>*)valueHolder )->value;
         }
 
         ValueType value;
         std::type_info const& type;
     };
 
-    _RtValueHolder* _valueHolder = nullptr;
+    _ValueHolder* _valueHolder = nullptr;
     bool _hasValue = false;
 };
 
@@ -118,7 +116,7 @@ ValueType* Signal::GetValue()
 {
     if ( _hasValue && GetType() == typeid( ValueType ) )
     {
-        return &static_cast<Signal::_RtValue<ValueType>*>( _valueHolder )->value;
+        return &static_cast<Signal::_Value<ValueType>*>( _valueHolder )->value;
     }
     else
     {
@@ -131,12 +129,12 @@ void Signal::SetValue( ValueType const& newValue )
 {
     if ( GetType() == typeid( ValueType ) )
     {
-        ( (_RtValue<ValueType>*)_valueHolder )->value = newValue;
+        ( (_Value<ValueType>*)_valueHolder )->value = newValue;
     }
     else
     {
         delete _valueHolder;
-        _valueHolder = new _RtValue<ValueType>( newValue );
+        _valueHolder = new _Value<ValueType>( newValue );
     }
     _hasValue = true;
 }
