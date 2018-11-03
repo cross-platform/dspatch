@@ -30,7 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 static void MaximiseThreadPriority( std::thread::native_handle_type const& handle )
 {
-    SetThreadPriority( handle, THREAD_PRIORITY_TIME_CRITICAL );
+    SetThreadPriority( (HANDLE)handle, THREAD_PRIORITY_TIME_CRITICAL );
 }
 
 #else
