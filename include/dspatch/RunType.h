@@ -159,17 +159,17 @@ private:
         }
 
     public:
-        virtual std::type_info const& GetType() const
+        virtual std::type_info const& GetType() const override
         {
             return _type;
         }
 
-        virtual _RtValueHolder* GetCopy() const
+        virtual _RtValueHolder* GetCopy() const override
         {
             return new _RtValue( _value );
         }
 
-        void SetValue( _RtValueHolder* valueHolder )
+        virtual void SetValue( _RtValueHolder* valueHolder ) override
         {
             _value = ( (_RtValue<ValueType>*)valueHolder )->_value;
         }

@@ -68,7 +68,7 @@ public:
     int AddComponent( Component::SPtr const& component );
 
     void RemoveComponent( Component::SCPtr const& component );
-    void RemoveComponent( int component );
+    void RemoveComponent( int componentIndex );
     void RemoveAllComponents();
 
     int GetComponentCount() const;
