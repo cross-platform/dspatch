@@ -24,31 +24,33 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #pragma once
 
+#include <dspatch/Common.h>
+
 namespace DSPatch
 {
 
 /// Dynamically typed variable
 
 /**
-RunType holds a variable that can be dynamically typed at run-time (hence the name). The RunType
+Signal holds a variable that can be dynamically typed at run-time (hence the name). The Signal
 class makes use of an internal template class and public template methods to allow users to get and
-set the contained variable as any type they wish. A RunType object also has the ability to change
+set the contained variable as any type they wish. A Signal object also has the ability to change
 type at any point during program execution. Built-in typecasting and error checking (via the
-RunTypeCast() method) prevents critical runtime errors from occurring when signal types are
+SignalCast() method) prevents critical runtime errors from occurring when signal types are
 mismatched.
 */
 
-class RunType final
+class DLLEXPORT Signal final
 {
 public:
-    NONCOPYABLE( RunType );
-    DEFINE_PTRS( RunType );
+    NONCOPYABLE( Signal );
+    DEFINE_PTRS( Signal );
 
-    RunType()
+    Signal()
     {
     }
 
-    virtual ~RunType()
+    virtual ~Signal()
     {
         delete _valueHolder;
     }
@@ -68,7 +70,7 @@ public:
 
         if ( GetType() == typeid( ValueType ) )
         {
-            return &static_cast<RunType::_RtValue<ValueType>*>( _valueHolder )->value;
+            return &static_cast<Signal::_RtValue<ValueType>*>( _valueHolder )->value;
         }
         else
         {
@@ -91,25 +93,25 @@ public:
         _hasValue = true;
     }
 
-    bool CopyRunType( RunType::SPtr const& newRunType )
+    bool CopySignal( Signal::SPtr const& newSignal )
     {
-        if ( newRunType != nullptr )
+        if ( newSignal != nullptr )
         {
-            if ( newRunType->_hasValue == false )
+            if ( newSignal->_hasValue == false )
             {
                 return false;
             }
             else
             {
-                if ( _valueHolder != nullptr && newRunType->_valueHolder != nullptr &&
-                     _valueHolder->GetType() == newRunType->_valueHolder->GetType() )
+                if ( _valueHolder != nullptr && newSignal->_valueHolder != nullptr &&
+                     _valueHolder->GetType() == newSignal->_valueHolder->GetType() )
                 {
-                    _valueHolder->SetValue( newRunType->_valueHolder );
+                    _valueHolder->SetValue( newSignal->_valueHolder );
                 }
                 else
                 {
                     delete _valueHolder;
-                    _valueHolder = newRunType->_valueHolder->GetCopy();
+                    _valueHolder = newSignal->_valueHolder->GetCopy();
                 }
 
                 _hasValue = true;
@@ -122,18 +124,18 @@ public:
         }
     }
 
-    bool MoveRunType( RunType::SPtr const& newRunType )
+    bool MoveSignal( Signal::SPtr const& newSignal )
     {
-        if ( newRunType != nullptr )
+        if ( newSignal != nullptr )
         {
-            if ( newRunType->_hasValue == false )
+            if ( newSignal->_hasValue == false )
             {
                 return false;
             }
             else
             {
-                std::swap( newRunType->_valueHolder, _valueHolder );
-                newRunType->_hasValue = false;
+                std::swap( newSignal->_valueHolder, _valueHolder );
+                newSignal->_hasValue = false;
 
                 _hasValue = true;
                 return true;
