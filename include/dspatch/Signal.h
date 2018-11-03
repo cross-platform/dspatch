@@ -70,8 +70,7 @@ public:
     void ClearValue();
 
 private:
-    RunType _value;
-    bool _hasValue;
+    RunType::SPtr _value;
 
     std::unique_ptr<internal::Signal> p;
 };
@@ -79,21 +78,13 @@ private:
 template <class ValueType>
 ValueType* Signal::GetValue()
 {
-    if ( _hasValue )
-    {
-        return RunType::RunTypeCast<ValueType>( &_value );
-    }
-    else
-    {
-        return nullptr;  // no value available
-    }
+    return _value->GetValue<ValueType>();
 }
 
 template <class ValueType>
 void Signal::SetValue( ValueType const& newValue )
 {
-    _value = newValue;
-    _hasValue = true;
+    _value->SetValue( newValue );
 }
 
 }  // namespace DSPatch

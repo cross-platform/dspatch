@@ -39,8 +39,8 @@ class Signal
 }  // namespace DSPatch
 
 Signal::Signal()
-    : _hasValue( false )
-    , p( new internal::Signal() )
+    : p( new internal::Signal() )
+    , _value( std::make_shared<RunType>() )
 {
 }
 
@@ -50,55 +50,20 @@ Signal::~Signal()
 
 bool Signal::HasValue() const
 {
-    return _hasValue;
+    return _value->HasValue();
 }
 
 bool Signal::CopySignal( Signal::SPtr const& newSignal )
 {
-    if ( newSignal != nullptr )
-    {
-        if ( newSignal->_hasValue == false )
-        {
-            return false;
-        }
-        else
-        {
-            _value.CopyFrom( newSignal->_value );
-
-            _hasValue = true;
-            return true;
-        }
-    }
-    else
-    {
-        return false;
-    }
+    return _value->CopyRunType( newSignal->_value );
 }
 
 bool Signal::MoveSignal( Signal::SPtr const& newSignal )
 {
-    if ( newSignal != nullptr )
-    {
-        if ( newSignal->_hasValue == false )
-        {
-            return false;
-        }
-        else
-        {
-            newSignal->_value.MoveTo( _value );
-            newSignal->_hasValue = false;
-
-            _hasValue = true;
-            return true;
-        }
-    }
-    else
-    {
-        return false;
-    }
+    return _value->MoveRunType( newSignal->_value );
 }
 
 void Signal::ClearValue()
 {
-    _hasValue = false;
+    _value->ClearValue();
 }

@@ -41,27 +41,11 @@ mismatched.
 class RunType final
 {
 public:
+    NONCOPYABLE( RunType );
+    DEFINE_PTRS( RunType );
+
     RunType()
-        : _valueHolder( nullptr )
     {
-    }
-
-    template <class ValueType>
-    RunType( ValueType const& value )
-    {
-        _valueHolder = new _RtValue<ValueType>( value );
-    }
-
-    RunType( RunType const& other )
-    {
-        if ( other._valueHolder != nullptr )
-        {
-            _valueHolder = other._valueHolder->GetCopy();
-        }
-        else
-        {
-            _valueHolder = nullptr;
-        }
     }
 
     virtual ~RunType()
@@ -69,46 +53,103 @@ public:
         delete _valueHolder;
     }
 
-public:
-    RunType& MoveTo( RunType& rhs )
+    bool HasValue() const
     {
-        std::swap( _valueHolder, rhs._valueHolder );
-        return *this;
+        return _hasValue;
     }
 
-    void CopyFrom( RunType const& rhs )
+    template <class ValueType>
+    ValueType* GetValue()
     {
-        if ( _valueHolder != nullptr && rhs._valueHolder != nullptr && _valueHolder->GetType() == rhs._valueHolder->GetType() )
+        if ( !_hasValue )
         {
-            _valueHolder->SetValue( rhs._valueHolder );
+            return nullptr;
+        }
+
+        if ( GetType() == typeid( ValueType ) )
+        {
+            return &static_cast<RunType::_RtValue<ValueType>*>( _valueHolder )->value;
         }
         else
         {
-            *this = rhs;
+            return nullptr;
         }
     }
 
     template <class ValueType>
-    RunType& operator=( ValueType const& rhs )
+    void SetValue( ValueType const& newValue )
     {
-        if ( typeid( ValueType ) == GetType() )
+        if ( GetType() == typeid( ValueType ) )
         {
-            ( (_RtValue<ValueType>*)_valueHolder )->_value = rhs;
+            ( (_RtValue<ValueType>*)_valueHolder )->value = newValue;
         }
         else
         {
-            RunType( rhs ).MoveTo( *this );
+            delete _valueHolder;
+            _valueHolder = new _RtValue<ValueType>( newValue );
         }
-        return *this;
+        _hasValue = true;
     }
 
-    RunType& operator=( RunType rhs )
+    bool CopyRunType( RunType::SPtr const& newRunType )
     {
-        rhs.MoveTo( *this );
-        return *this;
+        if ( newRunType != nullptr )
+        {
+            if ( newRunType->_hasValue == false )
+            {
+                return false;
+            }
+            else
+            {
+                if ( _valueHolder != nullptr && newRunType->_valueHolder != nullptr &&
+                     _valueHolder->GetType() == newRunType->_valueHolder->GetType() )
+                {
+                    _valueHolder->SetValue( newRunType->_valueHolder );
+                }
+                else
+                {
+                    delete _valueHolder;
+                    _valueHolder = newRunType->_valueHolder->GetCopy();
+                }
+
+                _hasValue = true;
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
     }
 
-public:
+    bool MoveRunType( RunType::SPtr const& newRunType )
+    {
+        if ( newRunType != nullptr )
+        {
+            if ( newRunType->_hasValue == false )
+            {
+                return false;
+            }
+            else
+            {
+                std::swap( newRunType->_valueHolder, _valueHolder );
+                newRunType->_hasValue = false;
+
+                _hasValue = true;
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void ClearValue()
+    {
+        _hasValue = false;
+    }
+
     std::type_info const& GetType() const
     {
         if ( _valueHolder != nullptr )
@@ -121,69 +162,58 @@ public:
         }
     }
 
-    template <class ValueType>
-    static ValueType* RunTypeCast( RunType* operand )
-    {
-        if ( operand != nullptr && operand->GetType() == typeid( ValueType ) )
-        {
-            return &static_cast<RunType::_RtValue<ValueType>*>( operand->_valueHolder )->_value;
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
-
 private:
     class _RtValueHolder
     {
     public:
+        NONCOPYABLE( _RtValueHolder );
+
+        _RtValueHolder()
+        {
+        }
+
         virtual ~_RtValueHolder()
         {
         }
 
-    public:
         virtual std::type_info const& GetType() const = 0;
         virtual _RtValueHolder* GetCopy() const = 0;
         virtual void SetValue( _RtValueHolder* valueHolder ) = 0;
     };
 
     template <class ValueType>
-    class _RtValue : public _RtValueHolder
+    class _RtValue final : public _RtValueHolder
     {
     public:
+        NONCOPYABLE( _RtValue );
+
         _RtValue( ValueType const& value )
-            : _value( value )
-            , _type( typeid( ValueType ) )
+            : value( value )
+            , type( typeid( ValueType ) )
         {
         }
 
-    public:
         virtual std::type_info const& GetType() const override
         {
-            return _type;
+            return type;
         }
 
         virtual _RtValueHolder* GetCopy() const override
         {
-            return new _RtValue( _value );
+            return new _RtValue( value );
         }
 
         virtual void SetValue( _RtValueHolder* valueHolder ) override
         {
-            _value = ( (_RtValue<ValueType>*)valueHolder )->_value;
+            value = ( (_RtValue<ValueType>*)valueHolder )->value;
         }
 
-    public:
-        ValueType _value;
-        std::type_info const& _type;
-
-    private:
-        _RtValue& operator=( _RtValue const& );  // disable copy-assignment
+        ValueType value;
+        std::type_info const& type;
     };
 
-private:
-    _RtValueHolder* _valueHolder;
+    _RtValueHolder* _valueHolder = nullptr;
+    bool _hasValue = false;
 };
 
 }  // namespace DSPatch
