@@ -89,7 +89,7 @@ Component::~Component()
 
 bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput )
 {
-    if ( fromOutput >= fromComponent->p->outputBuses[0].GetSignalCount() || toInput >= p->inputBuses[0].GetSignalCount() )
+    if ( fromOutput >= fromComponent->GetOutputCount() || toInput >= p->inputBuses[0].GetSignalCount() )
     {
         return false;
     }
@@ -100,7 +100,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     p->inputWires.push_back( internal::Wire( fromComponent, fromOutput, toInput ) );
 
     // update source signal's dependent count
-    for ( size_t i = 0; i < fromComponent->p->outputBuses.size(); i++ )
+    for ( int i = 0; i < fromComponent->GetBufferCount(); i++ )
     {
         ///!fromComponent->p->outputBuses[i].GetSignal( fromOutput )->IncDeps();
     }
@@ -119,7 +119,7 @@ void Component::DisconnectInput( int inputNo )
             p->inputWires.erase( p->inputWires.begin() + i );
 
             // update source signal's dependent count
-            for ( size_t j = 0; j < wire.linkedComponent->p->outputBuses.size(); j++ )
+            for ( int j = 0; j < wire.linkedComponent->GetBufferCount(); j++ )
             {
                 ///!wire.linkedComponent->p->outputBuses[j].GetSignal( wire.fromSignalIndex )->DecDeps();
             }
