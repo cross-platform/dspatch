@@ -67,7 +67,7 @@ public:
     CircuitThread();
     virtual ~CircuitThread();
 
-    void Initialise( std::shared_ptr<std::vector<DSPatch::Component::SPtr>> const& components, int threadNo );
+    void Initialise( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
 
     void Start();
     void Stop();
@@ -79,7 +79,7 @@ private:
 
 private:
     std::thread _thread;
-    std::weak_ptr<std::vector<DSPatch::Component::SPtr>> _components;
+    std::vector<DSPatch::Component::SPtr>* _components;
     int _threadNo;
     bool _stop;
     bool _stopped;

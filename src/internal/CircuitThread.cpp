@@ -27,7 +27,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace DSPatch::internal;
 
 CircuitThread::CircuitThread()
-    : _threadNo( 0 )
+    : _components( nullptr )
+    , _threadNo( 0 )
     , _stop( false )
     , _stopped( true )
     , _gotResume( false )
@@ -40,7 +41,7 @@ CircuitThread::~CircuitThread()
     Stop();
 }
 
-void CircuitThread::Initialise( std::shared_ptr<std::vector<DSPatch::Component::SPtr>> const& components, int threadNo )
+void CircuitThread::Initialise( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
 {
     _components = components;
     _threadNo = threadNo;
@@ -101,7 +102,7 @@ void CircuitThread::Resume()
 
 void CircuitThread::_Run()
 {
-    if ( _components.lock() != nullptr )
+    if ( _components != nullptr )
     {
         while ( !_stop )
         {
@@ -121,13 +122,13 @@ void CircuitThread::_Run()
 
             if ( !_stop )
             {
-                for ( size_t i = 0; i < _components.lock()->size(); i++ )
+                for ( size_t i = 0; i < _components->size(); i++ )
                 {
-                    ( *_components.lock() )[i]->Tick( _threadNo );
+                    ( *_components )[i]->Tick( _threadNo );
                 }
-                for ( size_t i = 0; i < _components.lock()->size(); i++ )
+                for ( size_t i = 0; i < _components->size(); i++ )
                 {
-                    ( *_components.lock() )[i]->Reset( _threadNo );
+                    ( *_components )[i]->Reset( _threadNo );
                 }
             }
         }

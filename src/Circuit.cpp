@@ -42,7 +42,6 @@ public:
         : isAutoTickRunning( false )
         , isAutoTickPaused( false )
         , pauseCount( 0 )
-        , components( std::make_shared<std::vector<DSPatch::Component::SPtr>>() )
         , currentThreadIndex( 0 )
     {
     }
@@ -55,7 +54,7 @@ public:
 
     internal::AutoTickThread autoTickThread;
 
-    std::shared_ptr<std::vector<DSPatch::Component::SPtr>> components;
+    std::vector<DSPatch::Component::SPtr> components;
 
     std::vector<internal::CircuitThread::UPtr> circuitThreads;
     int currentThreadIndex;
@@ -91,10 +90,10 @@ int Circuit::AddComponent( Component::SPtr const& component )
         component->SetBufferCount( p->circuitThreads.size() );
 
         PauseAutoTick();
-        p->components->push_back( component );
+        p->components.push_back( component );
         ResumeAutoTick();
 
-        return p->components->size() - 1;
+        return p->components.size() - 1;
     }
 
     return -1;
@@ -116,9 +115,9 @@ void Circuit::RemoveComponent( int componentIndex )
 
     DisconnectComponent( componentIndex );
 
-    if ( p->components->size() != 0 )
+    if ( p->components.size() != 0 )
     {
-        p->components->erase( p->components->begin() + componentIndex );
+        p->components.erase( p->components.begin() + componentIndex );
     }
 
     ResumeAutoTick();
@@ -126,7 +125,7 @@ void Circuit::RemoveComponent( int componentIndex )
 
 void Circuit::RemoveAllComponents()
 {
-    for ( size_t i = 0; i < p->components->size(); i++ )
+    for ( size_t i = 0; i < p->components.size(); i++ )
     {
         RemoveComponent( i-- );  // size drops as one is removed
     }
@@ -134,7 +133,7 @@ void Circuit::RemoveAllComponents()
 
 int Circuit::GetComponentCount() const
 {
-    return p->components->size();
+    return p->components.size();
 }
 
 bool Circuit::ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput )
@@ -173,13 +172,13 @@ bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPt
 
 bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput )
 {
-    if ( (size_t)fromComponent >= p->components->size() || (size_t)toComponent >= p->components->size() )
+    if ( (size_t)fromComponent >= p->components.size() || (size_t)toComponent >= p->components.size() )
     {
         return false;
     }
 
     PauseAutoTick();
-    bool result = ( *p->components )[toComponent]->ConnectInput( ( *p->components )[fromComponent], fromOutput, toInput );
+    bool result = p->components[toComponent]->ConnectInput( p->components[fromComponent], fromOutput, toInput );
     ResumeAutoTick();
 
     return result;
@@ -200,12 +199,12 @@ void Circuit::DisconnectComponent( int componentIndex )
     PauseAutoTick();
 
     // remove component from _inputComponents and _inputWires
-    ( *p->components )[componentIndex]->DisconnectAllInputs();
+    p->components[componentIndex]->DisconnectAllInputs();
 
     // remove any connections this component has to other components
-    for ( size_t i = 0; i < p->components->size(); ++i )
+    for ( size_t i = 0; i < p->components.size(); ++i )
     {
-        ( *p->components )[i]->DisconnectInput( ( *p->components )[componentIndex] );
+        p->components[i]->DisconnectInput( p->components[componentIndex] );
     }
 
     ResumeAutoTick();
@@ -233,14 +232,14 @@ void Circuit::SetThreadCount( int threadCount )
             {
                 p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
             }
-            p->circuitThreads[i]->Initialise( p->components, i );
+            p->circuitThreads[i]->Initialise( &p->components, i );
             p->circuitThreads[i]->Start();
         }
 
         // set all components to the new thread count
-        for ( size_t i = 0; i < p->components->size(); i++ )
+        for ( size_t i = 0; i < p->components.size(); i++ )
         {
-            ( *p->components )[i]->SetBufferCount( threadCount );
+            p->components[i]->SetBufferCount( threadCount );
         }
 
         ResumeAutoTick();
@@ -259,15 +258,15 @@ void Circuit::Tick()
     if ( p->circuitThreads.size() == 0 )
     {
         // tick all internal components
-        for ( size_t i = 0; i < p->components->size(); i++ )
+        for ( size_t i = 0; i < p->components.size(); i++ )
         {
-            ( *p->components )[i]->Tick( 0 );
+            p->components[i]->Tick( 0 );
         }
 
         // reset all internal components
-        for ( size_t i = 0; i < p->components->size(); i++ )
+        for ( size_t i = 0; i < p->components.size(); i++ )
         {
-            ( *p->components )[i]->Reset( 0 );
+            p->components[i]->Reset( 0 );
         }
     }
     // process in multiple threads if this circuit has threads
@@ -291,7 +290,7 @@ void Circuit::StartAutoTick()
     {
         if ( !p->autoTickThread.IsInitialised() )
         {
-            p->autoTickThread.Initialise( shared_from_this() );
+            p->autoTickThread.Initialise( this );
         }
 
         p->autoTickThread.Start();
@@ -351,9 +350,9 @@ void Circuit::ResumeAutoTick()
 
 bool internal::Circuit::FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const
 {
-    for ( size_t i = 0; i < components->size(); i++ )
+    for ( size_t i = 0; i < components.size(); i++ )
     {
-        if ( ( *components )[i] == component )
+        if ( components[i] == component )
         {
             returnIndex = i;
             return true;

@@ -54,7 +54,7 @@ public:
     AutoTickThread();
     virtual ~AutoTickThread();
 
-    void Initialise( DSPatch::Circuit::SPtr const& circuit );
+    void Initialise( DSPatch::Circuit* circuit );
 
     bool IsInitialised() const;
     bool IsStopped() const;
@@ -69,7 +69,7 @@ private:
 
 private:
     std::thread _thread;
-    std::weak_ptr<DSPatch::Circuit> _circuit;
+    DSPatch::Circuit* _circuit;
     bool _stop, _pause;
     bool _stopped;
     std::mutex _resumeMutex;

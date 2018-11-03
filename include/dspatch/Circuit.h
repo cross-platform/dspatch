@@ -56,7 +56,7 @@ Process_() method simply runs through it's internal array of components and call
 Tick() and Reset() methods.
 */
 
-class DLLEXPORT Circuit final : public std::enable_shared_from_this<Circuit>
+class DLLEXPORT Circuit final
 {
 public:
     NONCOPYABLE( Circuit );

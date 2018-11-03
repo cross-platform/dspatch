@@ -31,7 +31,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace DSPatch::internal;
 
 AutoTickThread::AutoTickThread()
-    : _stop( false )
+    : _circuit( nullptr )
+    , _stop( false )
     , _pause( false )
     , _stopped( true )
 {
@@ -42,14 +43,14 @@ AutoTickThread::~AutoTickThread()
     Stop();
 }
 
-void AutoTickThread::Initialise( DSPatch::Circuit::SPtr const& circuit )
+void AutoTickThread::Initialise( DSPatch::Circuit* circuit )
 {
     _circuit = circuit;
 }
 
 bool AutoTickThread::IsInitialised() const
 {
-    return _circuit.lock() != nullptr;
+    return _circuit != nullptr;
 }
 
 bool AutoTickThread::IsStopped() const
@@ -113,11 +114,11 @@ void AutoTickThread::Resume()
 
 void AutoTickThread::_Run()
 {
-    if ( _circuit.lock() != nullptr )
+    if ( _circuit != nullptr )
     {
         while ( !_stop )
         {
-            _circuit.lock()->Tick();
+            _circuit->Tick();
 
             if ( _pause )
             {
