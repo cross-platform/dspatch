@@ -45,10 +45,10 @@ providing signals across component connections.
 
 struct Wire final
 {
-    Wire( DSPatch::Component::SPtr const& newLinkedComponent, int newFromSignalIndex, int newToSignalIndex )
-        : fromComponent( newLinkedComponent )
-        , fromOutput( newFromSignalIndex )
-        , toInput( newToSignalIndex )
+    Wire( DSPatch::Component::SPtr const& newFromComponent, int newFromOutput, int newToInput )
+        : fromComponent( newFromComponent )
+        , fromOutput( newFromOutput )
+        , toInput( newToInput )
     {
     }
 
