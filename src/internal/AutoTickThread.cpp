@@ -28,6 +28,22 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <thread>
 
+#ifdef _WIN32
+#include <windows.h>
+
+static void MaximiseThreadPriority( std::thread::native_handle_type const& handle )
+{
+    SetThreadPriority( handle, THREAD_PRIORITY_TIME_CRITICAL );
+}
+#else
+static void MaximiseThreadPriority( std::thread::native_handle_type const& handle )
+{
+    struct sched_param params;
+    params.sched_priority = 99;
+    pthread_setschedparam( handle, SCHED_FIFO, &params );
+}
+#endif
+
 using namespace DSPatch::internal;
 
 AutoTickThread::AutoTickThread()
@@ -67,15 +83,7 @@ void AutoTickThread::Start()
         _pause = false;
 
         _thread = std::thread( &AutoTickThread::_Run, this );
-        auto handle = _thread.native_handle();
-
-#ifdef _WIN32
-        SetThreadPriority( handle, THREAD_PRIORITY_TIME_CRITICAL );
-#else
-        struct sched_param params;
-        params.sched_priority = 99;
-        pthread_setschedparam( handle, SCHED_FIFO, &params );
-#endif
+        MaximiseThreadPriority( _thread.native_handle() );
     }
 }
 
