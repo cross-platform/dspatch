@@ -233,11 +233,6 @@ int Component::GetBufferCount()
 
 void Component::Tick( int bufferNo )
 {
-    if ( bufferNo >= p->bufferCount )
-    {
-        return;
-    }
-
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
     {
@@ -278,11 +273,6 @@ void Component::Tick( int bufferNo )
 
 void Component::Reset( int bufferNo )
 {
-    if ( bufferNo >= p->bufferCount )
-    {
-        return;
-    }
-
     // clear all inputs
     p->inputBuses[bufferNo].ClearAllValues();
 
