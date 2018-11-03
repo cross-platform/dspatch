@@ -33,9 +33,6 @@ namespace internal
 
 class Signal
 {
-public:
-    int deps = 0;
-    int depsServiced = 0;
 };
 
 }  // namespace internal
@@ -61,19 +58,12 @@ bool Signal::SetSignal( Signal::SPtr const& newSignal )
         }
         else
         {
-            if ( newSignal->p->depsServiced == newSignal->p->deps - 1 )
-            {
-                // This is the incoming signal's last dependent, so we move it.
-                newSignal->_signalValue.MoveTo( _signalValue );
-                newSignal->_valueAvailable = false;
-            }
-            else
-            {
-                _signalValue.CopyFrom( newSignal->_signalValue );
-            }
+            ///!newSignal->_signalValue.MoveTo( _signalValue );
+            ///!newSignal->_valueAvailable = false;
+
+            _signalValue.CopyFrom( newSignal->_signalValue );
 
             _valueAvailable = true;
-            ++newSignal->p->depsServiced;
             return true;
         }
     }
@@ -109,25 +99,4 @@ bool Signal::MoveSignal( Signal::SPtr const& newSignal )
 void Signal::ClearValue()
 {
     _valueAvailable = false;
-    p->depsServiced = 0;
-}
-
-int Signal::Deps() const
-{
-    return p->deps;
-}
-
-void Signal::IncDeps()
-{
-    ++p->deps;
-}
-
-void Signal::DecDeps()
-{
-    --p->deps;
-}
-
-void Signal::SetDeps( int deps )
-{
-    p->deps = deps;
 }

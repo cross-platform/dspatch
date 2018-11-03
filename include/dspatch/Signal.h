@@ -67,11 +67,6 @@ public:
 
     void ClearValue();
 
-    int Deps() const;
-    void IncDeps();
-    void DecDeps();
-    void SetDeps( int deps );
-
 private:
     RunType _signalValue;
     bool _valueAvailable;
