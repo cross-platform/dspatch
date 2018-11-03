@@ -57,6 +57,15 @@ void CircuitThread::Start()
         _gotSync = true;
 
         _thread = std::thread( &CircuitThread::_Run, this );
+        auto handle = _thread.native_handle();
+
+#ifdef _WIN32
+        SetThreadPriority( handle, THREAD_PRIORITY_TIME_CRITICAL );
+#else
+        struct sched_param params;
+        params.sched_priority = 99;
+        pthread_setschedparam( handle, SCHED_FIFO, &params );
+#endif
     }
 }
 
