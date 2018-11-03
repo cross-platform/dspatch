@@ -64,12 +64,12 @@ public:
     template <class ValueType>
     bool SetValue( int signalIndex, ValueType const& newValue );
 
-    bool SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int fromSignalIndex );
-
     void ClearAllValues();
 
     Signal::SPtr GetSignal( int signalIndex ) const;
-    bool SetSignal( int signalIndex, Signal::SPtr const& newSignal );
+
+    bool CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal );
+    bool MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal );
 
 private:
     std::vector<Signal::SPtr> _signals;

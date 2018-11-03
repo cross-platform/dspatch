@@ -69,20 +69,6 @@ int SignalBus::GetSignalCount() const
     return _signals.size();
 }
 
-bool SignalBus::SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int fromSignalIndex )
-{
-    auto newSignal = fromSignalBus.GetSignal( fromSignalIndex );
-
-    if ( (size_t)toSignalIndex < _signals.size() && newSignal != nullptr )
-    {
-        return _signals[toSignalIndex]->MoveSignal( newSignal );
-    }
-    else
-    {
-        return false;
-    }
-}
-
 void SignalBus::ClearAllValues()
 {
     for ( size_t i = 0; i < _signals.size(); i++ )
@@ -103,11 +89,23 @@ Signal::SPtr SignalBus::GetSignal( int signalIndex ) const
     }
 }
 
-bool SignalBus::SetSignal( int signalIndex, Signal::SPtr const& newSignal )
+bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 {
-    if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
+    if ( (size_t)toSignalIndex < _signals.size() && fromSignal != nullptr )
     {
-        return _signals[signalIndex]->SetSignal( newSignal );
+        return _signals[toSignalIndex]->SetSignal( fromSignal );
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
+{
+    if ( (size_t)toSignalIndex < _signals.size() && fromSignal != nullptr )
+    {
+        return _signals[toSignalIndex]->MoveSignal( fromSignal );
     }
     else
     {

@@ -246,7 +246,7 @@ void Component::Tick( int bufferNo )
             wire.linkedComponent->Tick( bufferNo );
 
             auto signal = wire.linkedComponent->p->outputBuses[bufferNo].GetSignal( wire.fromSignalIndex );
-            p->inputBuses[bufferNo].SetSignal( wire.toSignalIndex, signal );
+            p->inputBuses[bufferNo].CopySignal( wire.toSignalIndex, signal );
         }
 
         // 3. clear all outputs
