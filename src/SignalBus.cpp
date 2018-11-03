@@ -71,7 +71,7 @@ int SignalBus::GetSignalCount() const
 
 bool SignalBus::SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int fromSignalIndex )
 {
-    auto newSignal = fromSignalBus._GetSignal( fromSignalIndex );
+    auto newSignal = fromSignalBus.GetSignal( fromSignalIndex );
 
     if ( (size_t)toSignalIndex < _signals.size() && newSignal != nullptr )
     {
@@ -91,7 +91,7 @@ void SignalBus::ClearAllValues()
     }
 }
 
-Signal::SPtr SignalBus::_GetSignal( int signalIndex ) const
+Signal::SPtr SignalBus::GetSignal( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -103,7 +103,7 @@ Signal::SPtr SignalBus::_GetSignal( int signalIndex ) const
     }
 }
 
-bool SignalBus::_SetSignal( int signalIndex, Signal::SPtr const& newSignal )
+bool SignalBus::SetSignal( int signalIndex, Signal::SPtr const& newSignal )
 {
     if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
     {

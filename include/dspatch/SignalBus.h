@@ -68,15 +68,10 @@ public:
 
     void ClearAllValues();
 
-private:
-    // Private methods required by Component
-
-    Signal::SPtr _GetSignal( int signalIndex ) const;
-    bool _SetSignal( int signalIndex, Signal::SPtr const& newSignal );
+    Signal::SPtr GetSignal( int signalIndex ) const;
+    bool SetSignal( int signalIndex, Signal::SPtr const& newSignal );
 
 private:
-    friend class Component;
-
     std::vector<Signal::SPtr> _signals;
 
     std::unique_ptr<internal::SignalBus> p;

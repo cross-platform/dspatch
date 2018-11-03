@@ -102,7 +102,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     // update source signal's dependent count
     for ( size_t i = 0; i < fromComponent->p->outputBuses.size(); i++ )
     {
-        fromComponent->p->outputBuses[i]._GetSignal( fromOutput )->IncDeps();
+        fromComponent->p->outputBuses[i].GetSignal( fromOutput )->IncDeps();
     }
 
     return true;
@@ -121,7 +121,7 @@ void Component::DisconnectInput( int inputNo )
             // update source signal's dependent count
             for ( size_t j = 0; j < wire.linkedComponent->p->outputBuses.size(); j++ )
             {
-                wire.linkedComponent->p->outputBuses[j]._GetSignal( wire.fromSignalIndex )->DecDeps();
+                wire.linkedComponent->p->outputBuses[j].GetSignal( wire.fromSignalIndex )->DecDeps();
             }
         }
     }
@@ -212,12 +212,12 @@ void Component::SetBufferCount( int bufferCount )
         for ( int j = 0; j < p->inputBuses[0].GetSignalCount(); ++j )
         {
             // update source signal's dependent count
-            p->inputBuses[i]._GetSignal( j )->SetDeps( p->inputBuses[0]._GetSignal( j )->Deps() );
+            p->inputBuses[i].GetSignal( j )->SetDeps( p->inputBuses[0].GetSignal( j )->Deps() );
         }
         for ( int j = 0; j < p->outputBuses[0].GetSignalCount(); ++j )
         {
             // update source signal's dependent count
-            p->outputBuses[i]._GetSignal( j )->SetDeps( p->outputBuses[0]._GetSignal( j )->Deps() );
+            p->outputBuses[i].GetSignal( j )->SetDeps( p->outputBuses[0].GetSignal( j )->Deps() );
         }
     }
 
@@ -245,8 +245,8 @@ void Component::Tick( int bufferNo )
             auto wire = p->inputWires[i];
             wire.linkedComponent->Tick( bufferNo );
 
-            auto signal = wire.linkedComponent->p->outputBuses[bufferNo]._GetSignal( wire.fromSignalIndex );
-            p->inputBuses[bufferNo]._SetSignal( wire.toSignalIndex, signal );
+            auto signal = wire.linkedComponent->p->outputBuses[bufferNo].GetSignal( wire.fromSignalIndex );
+            p->inputBuses[bufferNo].SetSignal( wire.toSignalIndex, signal );
         }
 
         // 3. clear all outputs
