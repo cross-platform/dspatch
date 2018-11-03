@@ -63,12 +63,7 @@ public:
     template <class ValueType>
     ValueType* GetValue()
     {
-        if ( !_hasValue )
-        {
-            return nullptr;
-        }
-
-        if ( GetType() == typeid( ValueType ) )
+        if ( _hasValue && GetType() == typeid( ValueType ) )
         {
             return &static_cast<Signal::_RtValue<ValueType>*>( _valueHolder )->value;
         }
@@ -95,28 +90,21 @@ public:
 
     bool CopySignal( Signal::SPtr const& newSignal )
     {
-        if ( newSignal != nullptr )
+        if ( newSignal != nullptr && newSignal->_hasValue )
         {
-            if ( newSignal->_hasValue == false )
+            if ( _valueHolder != nullptr && newSignal->_valueHolder != nullptr &&
+                 _valueHolder->GetType() == newSignal->_valueHolder->GetType() )
             {
-                return false;
+                _valueHolder->SetValue( newSignal->_valueHolder );
             }
             else
             {
-                if ( _valueHolder != nullptr && newSignal->_valueHolder != nullptr &&
-                     _valueHolder->GetType() == newSignal->_valueHolder->GetType() )
-                {
-                    _valueHolder->SetValue( newSignal->_valueHolder );
-                }
-                else
-                {
-                    delete _valueHolder;
-                    _valueHolder = newSignal->_valueHolder->GetCopy();
-                }
-
-                _hasValue = true;
-                return true;
+                delete _valueHolder;
+                _valueHolder = newSignal->_valueHolder->GetCopy();
             }
+
+            _hasValue = true;
+            return true;
         }
         else
         {
@@ -126,20 +114,13 @@ public:
 
     bool MoveSignal( Signal::SPtr const& newSignal )
     {
-        if ( newSignal != nullptr )
+        if ( newSignal != nullptr && newSignal->_hasValue )
         {
-            if ( newSignal->_hasValue == false )
-            {
-                return false;
-            }
-            else
-            {
-                std::swap( newSignal->_valueHolder, _valueHolder );
-                newSignal->_hasValue = false;
+            std::swap( newSignal->_valueHolder, _valueHolder );
+            newSignal->_hasValue = false;
 
-                _hasValue = true;
-                return true;
-            }
+            _hasValue = true;
+            return true;
         }
         else
         {
