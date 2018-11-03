@@ -25,26 +25,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #pragma once
 
 #include <dspatch/Common.h>
-#include <dspatch/RunType.h>
 
 namespace DSPatch
 {
 
-namespace internal
-{
-class Signal;
-}
-
-/// Value container used to carry data between components
+/// Dynamically typed variable
 
 /**
-Components process and transfer data between each other in the form of "signals" via interconnected
-wires. The Signal class holds a single value that can be dynamically typed at runtime. Furthermore,
-a Signal has the ability to change it's data type at any point during program execution. This is
-designed such that a signal bus can hold any number of different typed variables, as well as to
-allow for a variable to dynamically change it's type when needed - this can be useful for inputs
-that accept a number of different data types (E.g. Varying sample size in an audio buffer: array of
-byte / int / float).
+Signal holds a variable that can be dynamically typed at run-time (hence the name). The Signal
+class makes use of an internal template class and public template methods to allow users to get and
+set the contained variable as any type they wish. A Signal object also has the ability to change
+type at any point during program execution. Built-in typecasting and error checking (via the
+SignalCast() method) prevents critical runtime errors from occurring when signal types are
+mismatched.
 */
 
 class DLLEXPORT Signal final
@@ -53,38 +46,176 @@ public:
     NONCOPYABLE( Signal );
     DEFINE_PTRS( Signal );
 
-    Signal();
-    virtual ~Signal();
+    Signal()
+    {
+    }
 
-    bool HasValue() const;
+    virtual ~Signal()
+    {
+        delete _valueHolder;
+    }
+
+    bool HasValue() const
+    {
+        return _hasValue;
+    }
 
     template <class ValueType>
-    ValueType* GetValue();
+    ValueType* GetValue()
+    {
+        if ( !_hasValue )
+        {
+            return nullptr;
+        }
+
+        if ( GetType() == typeid( ValueType ) )
+        {
+            return &static_cast<Signal::_RtValue<ValueType>*>( _valueHolder )->value;
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
 
     template <class ValueType>
-    void SetValue( ValueType const& newValue );
+    void SetValue( ValueType const& newValue )
+    {
+        if ( GetType() == typeid( ValueType ) )
+        {
+            ( (_RtValue<ValueType>*)_valueHolder )->value = newValue;
+        }
+        else
+        {
+            delete _valueHolder;
+            _valueHolder = new _RtValue<ValueType>( newValue );
+        }
+        _hasValue = true;
+    }
 
-    bool CopySignal( Signal::SPtr const& newSignal );
-    bool MoveSignal( Signal::SPtr const& newSignal );
+    bool CopySignal( Signal::SPtr const& newSignal )
+    {
+        if ( newSignal != nullptr )
+        {
+            if ( newSignal->_hasValue == false )
+            {
+                return false;
+            }
+            else
+            {
+                if ( _valueHolder != nullptr && newSignal->_valueHolder != nullptr &&
+                     _valueHolder->GetType() == newSignal->_valueHolder->GetType() )
+                {
+                    _valueHolder->SetValue( newSignal->_valueHolder );
+                }
+                else
+                {
+                    delete _valueHolder;
+                    _valueHolder = newSignal->_valueHolder->GetCopy();
+                }
 
-    void ClearValue();
+                _hasValue = true;
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    bool MoveSignal( Signal::SPtr const& newSignal )
+    {
+        if ( newSignal != nullptr )
+        {
+            if ( newSignal->_hasValue == false )
+            {
+                return false;
+            }
+            else
+            {
+                std::swap( newSignal->_valueHolder, _valueHolder );
+                newSignal->_hasValue = false;
+
+                _hasValue = true;
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void ClearValue()
+    {
+        _hasValue = false;
+    }
+
+    std::type_info const& GetType() const
+    {
+        if ( _valueHolder != nullptr )
+        {
+            return _valueHolder->GetType();
+        }
+        else
+        {
+            return typeid( void );
+        }
+    }
 
 private:
-    RunType::SPtr _value;
+    class _RtValueHolder
+    {
+    public:
+        NONCOPYABLE( _RtValueHolder );
 
-    std::unique_ptr<internal::Signal> p;
+        _RtValueHolder()
+        {
+        }
+
+        virtual ~_RtValueHolder()
+        {
+        }
+
+        virtual std::type_info const& GetType() const = 0;
+        virtual _RtValueHolder* GetCopy() const = 0;
+        virtual void SetValue( _RtValueHolder* valueHolder ) = 0;
+    };
+
+    template <class ValueType>
+    class _RtValue final : public _RtValueHolder
+    {
+    public:
+        NONCOPYABLE( _RtValue );
+
+        _RtValue( ValueType const& value )
+            : value( value )
+            , type( typeid( ValueType ) )
+        {
+        }
+
+        virtual std::type_info const& GetType() const override
+        {
+            return type;
+        }
+
+        virtual _RtValueHolder* GetCopy() const override
+        {
+            return new _RtValue( value );
+        }
+
+        virtual void SetValue( _RtValueHolder* valueHolder ) override
+        {
+            value = ( (_RtValue<ValueType>*)valueHolder )->value;
+        }
+
+        ValueType value;
+        std::type_info const& type;
+    };
+
+    _RtValueHolder* _valueHolder = nullptr;
+    bool _hasValue = false;
 };
-
-template <class ValueType>
-ValueType* Signal::GetValue()
-{
-    return _value->GetValue<ValueType>();
-}
-
-template <class ValueType>
-void Signal::SetValue( ValueType const& newValue )
-{
-    _value->SetValue( newValue );
-}
 
 }  // namespace DSPatch
