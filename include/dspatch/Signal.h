@@ -46,104 +46,23 @@ public:
     NONCOPYABLE( Signal );
     DEFINE_PTRS( Signal );
 
-    Signal()
-    {
-    }
+    Signal();
+    ~Signal();
 
-    virtual ~Signal()
-    {
-        delete _valueHolder;
-    }
-
-    bool HasValue() const
-    {
-        return _hasValue;
-    }
+    bool HasValue() const;
 
     template <class ValueType>
-    ValueType* GetValue()
-    {
-        if ( _hasValue && GetType() == typeid( ValueType ) )
-        {
-            return &static_cast<Signal::_RtValue<ValueType>*>( _valueHolder )->value;
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
+    ValueType* GetValue();
 
     template <class ValueType>
-    void SetValue( ValueType const& newValue )
-    {
-        if ( GetType() == typeid( ValueType ) )
-        {
-            ( (_RtValue<ValueType>*)_valueHolder )->value = newValue;
-        }
-        else
-        {
-            delete _valueHolder;
-            _valueHolder = new _RtValue<ValueType>( newValue );
-        }
-        _hasValue = true;
-    }
+    void SetValue( ValueType const& newValue );
 
-    bool CopySignal( Signal::SPtr const& newSignal )
-    {
-        if ( newSignal != nullptr && newSignal->_hasValue )
-        {
-            if ( _valueHolder != nullptr && newSignal->_valueHolder != nullptr &&
-                 _valueHolder->GetType() == newSignal->_valueHolder->GetType() )
-            {
-                _valueHolder->SetValue( newSignal->_valueHolder );
-            }
-            else
-            {
-                delete _valueHolder;
-                _valueHolder = newSignal->_valueHolder->GetCopy();
-            }
+    bool CopySignal( Signal::SPtr const& newSignal );
+    bool MoveSignal( Signal::SPtr const& newSignal );
 
-            _hasValue = true;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    void ClearValue();
 
-    bool MoveSignal( Signal::SPtr const& newSignal )
-    {
-        if ( newSignal != nullptr && newSignal->_hasValue )
-        {
-            std::swap( newSignal->_valueHolder, _valueHolder );
-            newSignal->_hasValue = false;
-
-            _hasValue = true;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    void ClearValue()
-    {
-        _hasValue = false;
-    }
-
-    std::type_info const& GetType() const
-    {
-        if ( _valueHolder != nullptr )
-        {
-            return _valueHolder->GetType();
-        }
-        else
-        {
-            return typeid( void );
-        }
-    }
+    std::type_info const& GetType() const;
 
 private:
     class _RtValueHolder
@@ -151,13 +70,8 @@ private:
     public:
         NONCOPYABLE( _RtValueHolder );
 
-        _RtValueHolder()
-        {
-        }
-
-        virtual ~_RtValueHolder()
-        {
-        }
+        _RtValueHolder() = default;
+        virtual ~_RtValueHolder() = default;
 
         virtual std::type_info const& GetType() const = 0;
         virtual _RtValueHolder* GetCopy() const = 0;
@@ -198,5 +112,33 @@ private:
     _RtValueHolder* _valueHolder = nullptr;
     bool _hasValue = false;
 };
+
+template <class ValueType>
+ValueType* Signal::GetValue()
+{
+    if ( _hasValue && GetType() == typeid( ValueType ) )
+    {
+        return &static_cast<Signal::_RtValue<ValueType>*>( _valueHolder )->value;
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+template <class ValueType>
+void Signal::SetValue( ValueType const& newValue )
+{
+    if ( GetType() == typeid( ValueType ) )
+    {
+        ( (_RtValue<ValueType>*)_valueHolder )->value = newValue;
+    }
+    else
+    {
+        delete _valueHolder;
+        _valueHolder = new _RtValue<ValueType>( newValue );
+    }
+    _hasValue = true;
+}
 
 }  // namespace DSPatch
