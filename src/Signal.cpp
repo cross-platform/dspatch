@@ -39,7 +39,7 @@ class Signal
 }  // namespace DSPatch
 
 Signal::Signal()
-    : _valueAvailable( false )
+    : _hasValue( false )
     , p( new internal::Signal() )
 {
 }
@@ -48,22 +48,24 @@ Signal::~Signal()
 {
 }
 
-bool Signal::SetSignal( Signal::SPtr const& newSignal )
+bool Signal::HasValue() const
+{
+    return _hasValue;
+}
+
+bool Signal::CopySignal( Signal::SPtr const& newSignal )
 {
     if ( newSignal != nullptr )
     {
-        if ( newSignal->_valueAvailable == false )
+        if ( newSignal->_hasValue == false )
         {
             return false;
         }
         else
         {
-            ///!newSignal->_signalValue.MoveTo( _signalValue );
-            ///!newSignal->_valueAvailable = false;
+            _value.CopyFrom( newSignal->_value );
 
-            _signalValue.CopyFrom( newSignal->_signalValue );
-
-            _valueAvailable = true;
+            _hasValue = true;
             return true;
         }
     }
@@ -77,16 +79,16 @@ bool Signal::MoveSignal( Signal::SPtr const& newSignal )
 {
     if ( newSignal != nullptr )
     {
-        if ( newSignal->_valueAvailable == false )
+        if ( newSignal->_hasValue == false )
         {
             return false;
         }
         else
         {
-            newSignal->_signalValue.MoveTo( _signalValue );
-            newSignal->_valueAvailable = false;
+            newSignal->_value.MoveTo( _value );
+            newSignal->_hasValue = false;
 
-            _valueAvailable = true;
+            _hasValue = true;
             return true;
         }
     }
@@ -98,5 +100,5 @@ bool Signal::MoveSignal( Signal::SPtr const& newSignal )
 
 void Signal::ClearValue()
 {
-    _valueAvailable = false;
+    _hasValue = false;
 }

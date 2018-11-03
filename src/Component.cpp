@@ -48,19 +48,50 @@ public:
 
     Component( DSPatch::Component::ProcessOrder processOrder )
         : processOrder( processOrder )
-        , bufferCount( 0 )
     {
     }
 
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
+    bool GetOutput( int bufferNo, int outputNo, DSPatch::Signal::SPtr& signal )
+    {
+        signal = outputBuses[bufferNo].GetSignal( outputNo );
+
+        if ( signal->HasValue() && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
+        {
+            // this is the final dependent, reset the counter
+            deps[bufferNo][outputNo].second = 0;
+            return true;
+        }
+
+        return false;
+    }
+
+    void IncDeps( int output )
+    {
+        for ( size_t i = 0; i < deps.size(); ++i )
+        {
+            deps[i][output].first++;
+        }
+    }
+
+    void DecDeps( int output )
+    {
+        for ( size_t i = 0; i < deps.size(); ++i )
+        {
+            deps[i][output].first--;
+        }
+    }
+
     const DSPatch::Component::ProcessOrder processOrder;
 
-    int bufferCount;
+    int bufferCount = 0;
 
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
+
+    std::vector<std::vector<std::pair<int, int>>> deps;  // dep_count:dep_counter per output per buffer
 
     std::vector<Wire> inputWires;
 
@@ -99,11 +130,8 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
 
     p->inputWires.push_back( internal::Wire( fromComponent, fromOutput, toInput ) );
 
-    // update source signal's dependent count
-    for ( int i = 0; i < fromComponent->GetBufferCount(); i++ )
-    {
-        ///!fromComponent->p->outputBuses[i].GetSignal( fromOutput )->IncDeps();
-    }
+    // update source output's dependent count
+    fromComponent->p->IncDeps( fromOutput );
 
     return true;
 }
@@ -114,15 +142,12 @@ void Component::DisconnectInput( int inputNo )
     for ( size_t i = 0; i < p->inputWires.size(); i++ )
     {
         auto wire = p->inputWires[i];
-        if ( wire.toSignalIndex == inputNo )
+        if ( wire.toInput == inputNo )
         {
             p->inputWires.erase( p->inputWires.begin() + i );
 
-            // update source signal's dependent count
-            for ( int j = 0; j < wire.linkedComponent->GetBufferCount(); j++ )
-            {
-                ///!wire.linkedComponent->p->outputBuses[j].GetSignal( wire.fromSignalIndex )->DecDeps();
-            }
+            // update source output's dependent count
+            wire.fromComponent->p->DecDeps( wire.fromOutput );
         }
     }
 }
@@ -133,9 +158,9 @@ void Component::DisconnectInput( Component::SCPtr const& fromComponent )
     for ( size_t i = 0; i < p->inputWires.size(); i++ )
     {
         auto wire = p->inputWires[i];
-        if ( wire.linkedComponent == fromComponent )
+        if ( wire.fromComponent == fromComponent )
         {
-            DisconnectInput( wire.toSignalIndex );
+            DisconnectInput( wire.toInput );
         }
     }
 }
@@ -188,8 +213,10 @@ void Component::SetBufferCount( int bufferCount )
 
     p->tickStatuses.resize( bufferCount );
 
-    p->inputBuses.resize( bufferCount == 0 ? 1 : bufferCount );
-    p->outputBuses.resize( bufferCount == 0 ? 1 : bufferCount );
+    p->inputBuses.resize( bufferCount );
+    p->outputBuses.resize( bufferCount );
+
+    p->deps.resize( bufferCount );
 
     p->gotReleases.resize( bufferCount );
     p->releaseMutexes.resize( bufferCount );
@@ -209,15 +236,12 @@ void Component::SetBufferCount( int bufferCount )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        for ( int j = 0; j < p->inputBuses[0].GetSignalCount(); ++j )
+        p->deps[i].resize( p->deps[0].size() );
+
+        for ( size_t j = 0; j < p->deps[0].size(); ++j )
         {
-            // update source signal's dependent count
-            ///!p->inputBuses[i].GetSignal( j )->SetDeps( p->inputBuses[0].GetSignal( j )->Deps() );
-        }
-        for ( int j = 0; j < p->outputBuses[0].GetSignalCount(); ++j )
-        {
-            // update source signal's dependent count
-            ///!p->outputBuses[i].GetSignal( j )->SetDeps( p->outputBuses[0].GetSignal( j )->Deps() );
+            // sync output dependent counts
+            p->deps[i][j] = p->deps[0][j];
         }
     }
 
@@ -243,10 +267,17 @@ void Component::Tick( int bufferNo )
         for ( size_t i = 0; i < p->inputWires.size(); i++ )
         {
             auto wire = p->inputWires[i];
-            wire.linkedComponent->Tick( bufferNo );
+            wire.fromComponent->Tick( bufferNo );
 
-            auto signal = wire.linkedComponent->p->outputBuses[bufferNo].GetSignal( wire.fromSignalIndex );
-            p->inputBuses[bufferNo].CopySignal( wire.toSignalIndex, signal );
+            Signal::SPtr signal;
+            if ( wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, signal ) )
+            {
+                p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
+            }
+            else
+            {
+                p->inputBuses[bufferNo].CopySignal( wire.toInput, signal );
+            }
         }
 
         // 3. clear all outputs
@@ -292,9 +323,16 @@ void Component::SetInputCount_( int inputCount, std::vector<std::string> const& 
 void Component::SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames )
 {
     p->outputNames = outputNames;
+
     for ( size_t i = 0; i < p->outputBuses.size(); i++ )
     {
         p->outputBuses[i].SetSignalCount( outputCount );
+    }
+
+    // Add dependent counters for our new outputs
+    for ( size_t i = 0; i < p->deps.size(); i++ )
+    {
+        p->deps[i].resize( outputCount );
     }
 }
 

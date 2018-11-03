@@ -93,7 +93,7 @@ bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() && fromSignal != nullptr )
     {
-        return _signals[toSignalIndex]->SetSignal( fromSignal );
+        return _signals[toSignalIndex]->CopySignal( fromSignal );
     }
     else
     {

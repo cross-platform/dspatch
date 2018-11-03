@@ -56,20 +56,22 @@ public:
     Signal();
     virtual ~Signal();
 
+    bool HasValue() const;
+
     template <class ValueType>
     void SetValue( ValueType const& newValue );
 
     template <class ValueType>
     ValueType* GetValue();
 
-    bool SetSignal( Signal::SPtr const& newSignal );
+    bool CopySignal( Signal::SPtr const& newSignal );
     bool MoveSignal( Signal::SPtr const& newSignal );
 
     void ClearValue();
 
 private:
-    RunType _signalValue;
-    bool _valueAvailable;
+    RunType _value;
+    bool _hasValue;
 
     std::unique_ptr<internal::Signal> p;
 };
@@ -77,16 +79,16 @@ private:
 template <class ValueType>
 void Signal::SetValue( ValueType const& newValue )
 {
-    _signalValue = newValue;
-    _valueAvailable = true;
+    _value = newValue;
+    _hasValue = true;
 }
 
 template <class ValueType>
 ValueType* Signal::GetValue()
 {
-    if ( _valueAvailable )
+    if ( _hasValue )
     {
-        return RunType::RunTypeCast<ValueType>( &_signalValue );
+        return RunType::RunTypeCast<ValueType>( &_value );
     }
     else
     {

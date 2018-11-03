@@ -46,15 +46,15 @@ providing signals across component connections.
 struct Wire final
 {
     Wire( DSPatch::Component::SPtr const& newLinkedComponent, int newFromSignalIndex, int newToSignalIndex )
-        : linkedComponent( newLinkedComponent )
-        , fromSignalIndex( newFromSignalIndex )
-        , toSignalIndex( newToSignalIndex )
+        : fromComponent( newLinkedComponent )
+        , fromOutput( newFromSignalIndex )
+        , toInput( newToSignalIndex )
     {
     }
 
-    DSPatch::Component::SPtr linkedComponent;
-    int fromSignalIndex;
-    int toSignalIndex;
+    DSPatch::Component::SPtr fromComponent;
+    int fromOutput;
+    int toInput;
 };
 
 }  // namespace internal
