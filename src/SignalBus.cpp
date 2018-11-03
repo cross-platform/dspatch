@@ -69,14 +69,6 @@ int SignalBus::GetSignalCount() const
     return _signals.size();
 }
 
-void SignalBus::ClearAllValues()
-{
-    for ( size_t i = 0; i < _signals.size(); i++ )
-    {
-        _signals[i]->ClearValue();
-    }
-}
-
 Signal::SPtr SignalBus::GetSignal( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
@@ -110,5 +102,13 @@ bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
     else
     {
         return false;
+    }
+}
+
+void SignalBus::ClearAllValues()
+{
+    for ( size_t i = 0; i < _signals.size(); i++ )
+    {
+        _signals[i]->ClearValue();
     }
 }

@@ -58,24 +58,37 @@ public:
     void SetSignalCount( int signalCount );
     int GetSignalCount() const;
 
+    Signal::SPtr GetSignal( int signalIndex ) const;
+
     template <class ValueType>
     ValueType* GetValue( int signalIndex ) const;
 
     template <class ValueType>
     bool SetValue( int signalIndex, ValueType const& newValue );
 
-    void ClearAllValues();
-
-    Signal::SPtr GetSignal( int signalIndex ) const;
-
     bool CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal );
     bool MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal );
+
+    void ClearAllValues();
 
 private:
     std::vector<Signal::SPtr> _signals;
 
     std::unique_ptr<internal::SignalBus> p;
 };
+
+template <class ValueType>
+ValueType* SignalBus::GetValue( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex]->GetValue<ValueType>();
+    }
+    else
+    {
+        return nullptr;
+    }
+}
 
 template <class ValueType>
 bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
@@ -88,19 +101,6 @@ bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
     else
     {
         return false;
-    }
-}
-
-template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex ) const
-{
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex]->GetValue<ValueType>();
-    }
-    else
-    {
-        return nullptr;
     }
 }
 

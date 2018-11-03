@@ -59,10 +59,10 @@ public:
     bool HasValue() const;
 
     template <class ValueType>
-    void SetValue( ValueType const& newValue );
+    ValueType* GetValue();
 
     template <class ValueType>
-    ValueType* GetValue();
+    void SetValue( ValueType const& newValue );
 
     bool CopySignal( Signal::SPtr const& newSignal );
     bool MoveSignal( Signal::SPtr const& newSignal );
@@ -77,13 +77,6 @@ private:
 };
 
 template <class ValueType>
-void Signal::SetValue( ValueType const& newValue )
-{
-    _value = newValue;
-    _hasValue = true;
-}
-
-template <class ValueType>
 ValueType* Signal::GetValue()
 {
     if ( _hasValue )
@@ -94,6 +87,13 @@ ValueType* Signal::GetValue()
     {
         return nullptr;  // no value available
     }
+}
+
+template <class ValueType>
+void Signal::SetValue( ValueType const& newValue )
+{
+    _value = newValue;
+    _hasValue = true;
 }
 
 }  // namespace DSPatch
