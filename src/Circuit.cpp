@@ -231,7 +231,7 @@ void Circuit::SetThreadCount( int threadCount )
         {
             if ( !p->circuitThreads[i] )
             {
-                p->circuitThreads[i] = std::make_unique<internal::CircuitThread>();
+                p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
             }
             p->circuitThreads[i]->Initialise( p->components, i );
             p->circuitThreads[i]->Start();
