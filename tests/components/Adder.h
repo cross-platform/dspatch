@@ -7,6 +7,7 @@ class Adder : public Component
 {
 public:
     Adder()
+        : Component( ProcessOrder::OutOfOrder )
     {
         SetInputCount_( 2 );
         SetOutputCount_( 1 );

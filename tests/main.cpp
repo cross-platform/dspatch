@@ -158,14 +158,18 @@ TEST_CASE( "FeedbackTest" )
 
     auto counter = std::make_shared<Counter>();
     auto adder = std::make_shared<Adder>();
+    auto passthrough = std::make_shared<PassThrough>();
     auto probe = std::make_shared<FeedbackProbe>();
 
     circuit->AddComponent( counter );
     circuit->AddComponent( adder );
+    circuit->AddComponent( passthrough );
     circuit->AddComponent( probe );
 
     circuit->ConnectOutToIn( counter, 0, adder, 0 );
-    circuit->ConnectOutToIn( adder, 0, adder, 1 );
+    circuit->ConnectOutToIn( adder, 0, passthrough, 0 );
+
+    circuit->ConnectOutToIn( passthrough, 0, adder, 1 );
 
     circuit->ConnectOutToIn( adder, 0, probe, 0 );
 

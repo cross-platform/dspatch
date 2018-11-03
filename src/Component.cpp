@@ -54,35 +54,10 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
-    bool GetOutput( int bufferNo, int outputNo, DSPatch::Signal::SPtr& signal )
-    {
-        signal = outputBuses[bufferNo].GetSignal( outputNo );
+    bool GetOutput( int bufferNo, int outputNo, DSPatch::Signal::SPtr& signal );
 
-        if ( signal->HasValue() && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
-        {
-            // this is the final dependent, reset the counter
-            deps[bufferNo][outputNo].second = 0;
-            return true;
-        }
-
-        return false;
-    }
-
-    void IncDeps( int output )
-    {
-        for ( size_t i = 0; i < deps.size(); ++i )
-        {
-            deps[i][output].first++;
-        }
-    }
-
-    void DecDeps( int output )
-    {
-        for ( size_t i = 0; i < deps.size(); ++i )
-        {
-            deps[i][output].first--;
-        }
-    }
+    void IncDeps( int output );
+    void DecDeps( int output );
 
     const DSPatch::Component::ProcessOrder processOrder;
 
@@ -272,6 +247,7 @@ void Component::Tick( int bufferNo )
             Signal::SPtr signal;
             if ( wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, signal ) )
             {
+                // we are the final dependent, take the original
                 p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
             }
             else
@@ -359,4 +335,34 @@ void internal::Component::ReleaseThread( int threadNo )
     gotReleases[nextThread] = true;
     releaseCondts[nextThread]->notify_one();
     releaseMutexes[nextThread]->unlock();
+}
+
+bool internal::Component::GetOutput( int bufferNo, int outputNo, DSPatch::Signal::SPtr& signal )
+{
+    signal = outputBuses[bufferNo].GetSignal( outputNo );
+
+    if ( signal->HasValue() && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
+    {
+        // this is the final dependent, reset the counter
+        deps[bufferNo][outputNo].second = 0;
+        return true;
+    }
+
+    return false;
+}
+
+void internal::Component::IncDeps( int output )
+{
+    for ( size_t i = 0; i < deps.size(); ++i )
+    {
+        deps[i][output].first++;
+    }
+}
+
+void internal::Component::DecDeps( int output )
+{
+    for ( size_t i = 0; i < deps.size(); ++i )
+    {
+        deps[i][output].first--;
+    }
 }
