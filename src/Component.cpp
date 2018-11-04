@@ -54,7 +54,7 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
-    bool GetOutput( int bufferNo, int outputNo, DSPatch::Signal::SPtr& signal );
+    DSPatch::Signal::SPtr GetOutput( int bufferNo, int outputNo, bool& canMove );
 
     void IncDeps( int output );
     void DecDeps( int output );
@@ -244,8 +244,9 @@ void Component::Tick( int bufferNo )
             auto wire = p->inputWires[i];
             wire.fromComponent->Tick( bufferNo );
 
-            Signal::SPtr signal;
-            if ( wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, signal ) )
+            bool canMove = false;
+            auto signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
+            if ( canMove )
             {
                 // we are the final dependent, take the original
                 p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
@@ -324,31 +325,24 @@ void internal::Component::WaitForRelease( int threadNo )
 
 void internal::Component::ReleaseThread( int threadNo )
 {
-    int nextThread = threadNo + 1;
+    int nextThread = ( threadNo + 1 ) % bufferCount;
+    std::lock_guard<std::mutex> lock( *releaseMutexes[nextThread] );
 
-    if ( nextThread >= bufferCount )
-    {
-        nextThread = 0;
-    }
-
-    releaseMutexes[nextThread]->lock();
     gotReleases[nextThread] = true;
     releaseCondts[nextThread]->notify_one();
-    releaseMutexes[nextThread]->unlock();
 }
 
-bool internal::Component::GetOutput( int bufferNo, int outputNo, DSPatch::Signal::SPtr& signal )
+DSPatch::Signal::SPtr internal::Component::GetOutput( int bufferNo, int outputNo, bool& canMove )
 {
-    signal = outputBuses[bufferNo].GetSignal( outputNo );
-
-    if ( signal->HasValue() && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
+    if ( outputBuses[bufferNo].HasValue( outputNo ) && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
     {
         // this is the final dependent, reset the counter
         deps[bufferNo][outputNo].second = 0;
-        return true;
+        canMove = true;
     }
 
-    return false;
+    canMove = false;
+    return outputBuses[bufferNo].GetSignal( outputNo );
 }
 
 void internal::Component::IncDeps( int output )

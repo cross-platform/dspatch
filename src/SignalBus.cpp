@@ -81,6 +81,18 @@ Signal::SPtr SignalBus::GetSignal( int signalIndex ) const
     }
 }
 
+bool SignalBus::HasValue( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex]->HasValue();
+    }
+    else
+    {
+        return false;
+    }
+}
+
 bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() && fromSignal != nullptr )
@@ -110,5 +122,17 @@ void SignalBus::ClearAllValues()
     for ( size_t i = 0; i < _signals.size(); ++i )
     {
         _signals[i]->ClearValue();
+    }
+}
+
+std::type_info const& SignalBus::GetType( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex]->GetType();
+    }
+    else
+    {
+        return typeid( void );
     }
 }

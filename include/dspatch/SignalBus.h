@@ -60,6 +60,8 @@ public:
 
     Signal::SPtr GetSignal( int signalIndex ) const;
 
+    bool HasValue( int signalIndex ) const;
+
     template <class ValueType>
     ValueType* GetValue( int signalIndex ) const;
 
@@ -70,6 +72,8 @@ public:
     bool MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal );
 
     void ClearAllValues();
+
+    std::type_info const& GetType( int signalIndex ) const;
 
 private:
     std::vector<Signal::SPtr> _signals;
