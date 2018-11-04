@@ -101,7 +101,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     // first make sure there are no wires already connected to this input
     DisconnectInput( toInput );
 
-    p->inputWires.emplace_back( internal::Wire( fromComponent, fromOutput, toInput ) );
+    p->inputWires.emplace_back( fromComponent, fromOutput, toInput );
 
     // update source output's dependent count
     fromComponent->p->IncDeps( fromOutput );

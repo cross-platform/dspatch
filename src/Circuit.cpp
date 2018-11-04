@@ -89,7 +89,7 @@ int Circuit::AddComponent( Component::SPtr const& component )
         component->SetBufferCount( p->circuitThreads.size() );
 
         PauseAutoTick();
-        p->components.push_back( component );
+        p->components.emplace_back( component );
         ResumeAutoTick();
 
         return p->components.size() - 1;
