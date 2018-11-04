@@ -340,8 +340,11 @@ DSPatch::Signal::SPtr internal::Component::GetOutput( int bufferNo, int outputNo
         deps[bufferNo][outputNo].second = 0;
         canMove = true;
     }
+    else
+    {
+        canMove = false;
+    }
 
-    canMove = false;
     return outputBuses[bufferNo].GetSignal( outputNo );
 }
 
