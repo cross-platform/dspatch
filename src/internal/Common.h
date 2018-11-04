@@ -28,18 +28,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <windows.h>
 
-static void MaximiseThreadPriority( std::thread::native_handle_type const& handle )
+static void MaximiseThreadPriority( std::thread& thread )
 {
-    SetThreadPriority( (HANDLE)handle, THREAD_PRIORITY_TIME_CRITICAL );
+    SetThreadPriority( (HANDLE)thread.native_handle(), THREAD_PRIORITY_TIME_CRITICAL );
 }
 
 #else
 
-static void MaximiseThreadPriority( std::thread::native_handle_type const& handle )
+static void MaximiseThreadPriority( std::thread& thread )
 {
     struct sched_param params;
     params.sched_priority = 99;
-    pthread_setschedparam( handle, SCHED_FIFO, &params );
+    pthread_setschedparam( thread.native_handle(), SCHED_FIFO, &params );
 }
 
 #endif

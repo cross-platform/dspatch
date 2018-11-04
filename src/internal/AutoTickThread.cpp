@@ -68,7 +68,7 @@ void AutoTickThread::Start()
         _pause = false;
 
         _thread = std::thread( &AutoTickThread::_Run, this );
-        MaximiseThreadPriority( _thread.native_handle() );
+        MaximiseThreadPriority( _thread );
     }
 }
 

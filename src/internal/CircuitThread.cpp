@@ -59,7 +59,7 @@ void CircuitThread::Start()
         _gotSync = true;
 
         _thread = std::thread( &CircuitThread::_Run, this );
-        MaximiseThreadPriority( _thread.native_handle() );
+        MaximiseThreadPriority( _thread );
     }
 }
 
