@@ -180,6 +180,35 @@ TEST_CASE( "FeedbackTest" )
     }
 }
 
+TEST_CASE( "FeedbackTestNoCircuit" )
+{
+    auto counter = std::make_shared<Counter>();
+    auto adder = std::make_shared<Adder>();
+    auto passthrough = std::make_shared<PassThrough>();
+    auto probe = std::make_shared<FeedbackProbe>();
+
+    adder->ConnectInput( counter, 0, 0 );
+    passthrough->ConnectInput( adder, 0, 0 );
+
+    adder->ConnectInput( passthrough, 0, 1 );
+
+    probe->ConnectInput( adder, 0, 0 );
+
+    // Tick the circuit 100 times
+    for ( int i = 0; i < 100; ++i )
+    {
+        counter->Tick();
+        adder->Tick();
+        passthrough->Tick();
+        probe->Tick();
+
+        counter->Reset();
+        adder->Reset();
+        passthrough->Reset();
+        probe->Reset();
+    }
+}
+
 TEST_CASE( "NoOutputTest" )
 {
     // Configure a circuit where the counter responds sporadically
