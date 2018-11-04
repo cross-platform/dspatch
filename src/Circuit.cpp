@@ -201,9 +201,9 @@ void Circuit::DisconnectComponent( int componentIndex )
     p->components[componentIndex]->DisconnectAllInputs();
 
     // remove any connections this component has to other components
-    for ( size_t i = 0; i < p->components.size(); ++i )
+    for ( auto& component : p->components )
     {
-        p->components[i]->DisconnectInput( p->components[componentIndex] );
+        component->DisconnectInput( p->components[componentIndex] );
     }
 
     ResumeAutoTick();
@@ -216,9 +216,9 @@ void Circuit::SetThreadCount( int threadCount )
         PauseAutoTick();
 
         // stop all threads
-        for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
+        for ( auto& circuitThread : p->circuitThreads )
         {
-            p->circuitThreads[i]->Stop();
+            circuitThread->Stop();
         }
 
         // resize thread array
@@ -236,9 +236,9 @@ void Circuit::SetThreadCount( int threadCount )
         }
 
         // set all components to the new thread count
-        for ( size_t i = 0; i < p->components.size(); ++i )
+        for ( auto& component : p->components )
         {
-            p->components[i]->SetBufferCount( threadCount );
+            component->SetBufferCount( threadCount );
         }
 
         ResumeAutoTick();
@@ -257,15 +257,15 @@ void Circuit::Tick()
     if ( p->circuitThreads.empty() )
     {
         // tick all internal components
-        for ( size_t i = 0; i < p->components.size(); ++i )
+        for ( auto& component : p->components )
         {
-            p->components[i]->Tick( 0 );
+            component->Tick( 0 );
         }
 
         // reset all internal components
-        for ( size_t i = 0; i < p->components.size(); ++i )
+        for ( auto& component : p->components )
         {
-            p->components[i]->Reset( 0 );
+            component->Reset( 0 );
         }
     }
     // process in multiple threads if this circuit has threads
@@ -276,10 +276,7 @@ void Circuit::Tick()
 
         p->circuitThreads[p->currentThreadIndex]->Resume();  // resume thread x
 
-        if ( (size_t)++p->currentThreadIndex >= p->circuitThreads.size() )  // shift to thread x+1
-        {
-            p->currentThreadIndex = 0;
-        }
+        p->currentThreadIndex = ( p->currentThreadIndex + 1 ) % p->circuitThreads.size();  // shift to thread x+1
     }
 }
 
@@ -331,9 +328,9 @@ void Circuit::PauseAutoTick()
     }
 
     // sync all threads
-    for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
+    for ( auto& circuitThread : p->circuitThreads )
     {
-        p->circuitThreads[i]->Sync();
+        circuitThread->Sync();
     }
 }
 

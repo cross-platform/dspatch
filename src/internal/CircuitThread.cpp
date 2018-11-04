@@ -125,13 +125,13 @@ void CircuitThread::_Run()
 
             if ( !_stop )
             {
-                for ( size_t i = 0; i < _components->size(); ++i )
+                for ( auto& component : *_components )
                 {
-                    ( *_components )[i]->Tick( _threadNo );
+                    component->Tick( _threadNo );
                 }
-                for ( size_t i = 0; i < _components->size(); ++i )
+                for ( auto& component : *_components )
                 {
-                    ( *_components )[i]->Reset( _threadNo );
+                    component->Reset( _threadNo );
                 }
             }
         }

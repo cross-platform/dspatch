@@ -128,9 +128,8 @@ void Component::DisconnectInput( int inputNo )
 void Component::DisconnectInput( Component::SCPtr const& fromComponent )
 {
     // remove fromComponent from inputWires
-    for ( size_t i = 0; i < p->inputWires.size(); ++i )
+    for ( auto& wire : p->inputWires )
     {
-        auto wire = p->inputWires[i];
         if ( wire.fromComponent == fromComponent )
         {
             DisconnectInput( wire.toInput );
@@ -237,12 +236,11 @@ void Component::Tick( int bufferNo )
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
         // 2. get outputs required from input components
-        for ( size_t i = 0; i < p->inputWires.size(); ++i )
+        bool canMove = false;
+        for ( auto& wire : p->inputWires )
         {
-            auto wire = p->inputWires[i];
             wire.fromComponent->Tick( bufferNo );
 
-            bool canMove = false;
             auto signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
             if ( canMove )
             {
@@ -289,9 +287,9 @@ void Component::Reset( int bufferNo )
 void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
 {
     p->inputNames = inputNames;
-    for ( size_t i = 0; i < p->inputBuses.size(); ++i )
+    for ( auto& inputBus : p->inputBuses )
     {
-        p->inputBuses[i].SetSignalCount( inputCount );
+        inputBus.SetSignalCount( inputCount );
     }
 }
 
@@ -299,15 +297,15 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
 {
     p->outputNames = outputNames;
 
-    for ( size_t i = 0; i < p->outputBuses.size(); ++i )
+    for ( auto& outputBus : p->outputBuses )
     {
-        p->outputBuses[i].SetSignalCount( outputCount );
+        outputBus.SetSignalCount( outputCount );
     }
 
     // Add dependent counters for our new outputs
-    for ( size_t i = 0; i < p->deps.size(); ++i )
+    for ( auto& dep : p->deps )
     {
-        p->deps[i].resize( outputCount );
+        dep.resize( outputCount );
     }
 }
 
@@ -348,16 +346,16 @@ DSPatch::Signal::SPtr internal::Component::GetOutput( int bufferNo, int outputNo
 
 void internal::Component::IncDeps( int output )
 {
-    for ( size_t i = 0; i < deps.size(); ++i )
+    for ( auto& dep : deps )
     {
-        deps[i][output].first++;
+        dep[output].first++;
     }
 }
 
 void internal::Component::DecDeps( int output )
 {
-    for ( size_t i = 0; i < deps.size(); ++i )
+    for ( auto& dep : deps )
     {
-        deps[i][output].first--;
+        dep[output].first--;
     }
 }

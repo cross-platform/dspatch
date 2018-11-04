@@ -119,9 +119,9 @@ bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 
 void SignalBus::ClearAllValues()
 {
-    for ( size_t i = 0; i < _signals.size(); ++i )
+    for ( auto& signal : _signals )
     {
-        _signals[i]->ClearValue();
+        signal->ClearValue();
     }
 }
 
