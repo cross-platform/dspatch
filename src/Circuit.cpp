@@ -125,7 +125,7 @@ void Circuit::RemoveComponent( int componentIndex )
 
 void Circuit::RemoveAllComponents()
 {
-    for ( size_t i = 0; i < p->components.size(); i++ )
+    for ( size_t i = 0; i < p->components.size(); ++i )
     {
         RemoveComponent( i-- );  // size drops as one is removed
     }
@@ -217,7 +217,7 @@ void Circuit::SetThreadCount( int threadCount )
         PauseAutoTick();
 
         // stop all threads
-        for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
+        for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
         {
             p->circuitThreads[i]->Stop();
         }
@@ -226,7 +226,7 @@ void Circuit::SetThreadCount( int threadCount )
         p->circuitThreads.resize( threadCount );
 
         // initialise and start all threads
-        for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
+        for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
         {
             if ( !p->circuitThreads[i] )
             {
@@ -237,7 +237,7 @@ void Circuit::SetThreadCount( int threadCount )
         }
 
         // set all components to the new thread count
-        for ( size_t i = 0; i < p->components.size(); i++ )
+        for ( size_t i = 0; i < p->components.size(); ++i )
         {
             p->components[i]->SetBufferCount( threadCount );
         }
@@ -258,13 +258,13 @@ void Circuit::Tick()
     if ( p->circuitThreads.size() == 0 )
     {
         // tick all internal components
-        for ( size_t i = 0; i < p->components.size(); i++ )
+        for ( size_t i = 0; i < p->components.size(); ++i )
         {
             p->components[i]->Tick( 0 );
         }
 
         // reset all internal components
-        for ( size_t i = 0; i < p->components.size(); i++ )
+        for ( size_t i = 0; i < p->components.size(); ++i )
         {
             p->components[i]->Reset( 0 );
         }
@@ -332,7 +332,7 @@ void Circuit::PauseAutoTick()
     }
 
     // sync all threads
-    for ( size_t i = 0; i < p->circuitThreads.size(); i++ )
+    for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
     {
         p->circuitThreads[i]->Sync();
     }
@@ -350,7 +350,7 @@ void Circuit::ResumeAutoTick()
 
 bool internal::Circuit::FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const
 {
-    for ( size_t i = 0; i < components.size(); i++ )
+    for ( size_t i = 0; i < components.size(); ++i )
     {
         if ( components[i] == component )
         {

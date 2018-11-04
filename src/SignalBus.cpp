@@ -58,7 +58,7 @@ void SignalBus::SetSignalCount( int signalCount )
 
     _signals.resize( signalCount );
 
-    for ( int i = fromSize; i < signalCount; i++ )
+    for ( int i = fromSize; i < signalCount; ++i )
     {
         _signals[i] = std::make_shared<Signal>();
     }
@@ -107,7 +107,7 @@ bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 
 void SignalBus::ClearAllValues()
 {
-    for ( size_t i = 0; i < _signals.size(); i++ )
+    for ( size_t i = 0; i < _signals.size(); ++i )
     {
         _signals[i]->ClearValue();
     }

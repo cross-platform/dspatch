@@ -114,7 +114,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
 void Component::DisconnectInput( int inputNo )
 {
     // remove wires connected to inputNo from inputWires
-    for ( size_t i = 0; i < p->inputWires.size(); i++ )
+    for ( size_t i = 0; i < p->inputWires.size(); ++i )
     {
         auto wire = p->inputWires[i];
         if ( wire.toInput == inputNo )
@@ -130,7 +130,7 @@ void Component::DisconnectInput( int inputNo )
 void Component::DisconnectInput( Component::SCPtr const& fromComponent )
 {
     // remove fromComponent from inputWires
-    for ( size_t i = 0; i < p->inputWires.size(); i++ )
+    for ( size_t i = 0; i < p->inputWires.size(); ++i )
     {
         auto wire = p->inputWires[i];
         if ( wire.fromComponent == fromComponent )
@@ -143,7 +143,7 @@ void Component::DisconnectInput( Component::SCPtr const& fromComponent )
 void Component::DisconnectAllInputs()
 {
     // remove all wires from inputWires
-    for ( int i = 0; i < p->inputBuses[0].GetSignalCount(); i++ )
+    for ( int i = 0; i < p->inputBuses[0].GetSignalCount(); ++i )
     {
         DisconnectInput( i );
     }
@@ -197,7 +197,7 @@ void Component::SetBufferCount( int bufferCount )
     p->releaseMutexes.resize( bufferCount );
     p->releaseCondts.resize( bufferCount );
 
-    for ( int i = p->bufferCount; i < bufferCount; i++ )
+    for ( int i = p->bufferCount; i < bufferCount; ++i )
     {
         if ( !p->releaseCondts[i] )
         {
@@ -239,7 +239,7 @@ void Component::Tick( int bufferNo )
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
         // 2. get outputs required from input components
-        for ( size_t i = 0; i < p->inputWires.size(); i++ )
+        for ( size_t i = 0; i < p->inputWires.size(); ++i )
         {
             auto wire = p->inputWires[i];
             wire.fromComponent->Tick( bufferNo );
@@ -290,7 +290,7 @@ void Component::Reset( int bufferNo )
 void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
 {
     p->inputNames = inputNames;
-    for ( size_t i = 0; i < p->inputBuses.size(); i++ )
+    for ( size_t i = 0; i < p->inputBuses.size(); ++i )
     {
         p->inputBuses[i].SetSignalCount( inputCount );
     }
@@ -300,13 +300,13 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
 {
     p->outputNames = outputNames;
 
-    for ( size_t i = 0; i < p->outputBuses.size(); i++ )
+    for ( size_t i = 0; i < p->outputBuses.size(); ++i )
     {
         p->outputBuses[i].SetSignalCount( outputCount );
     }
 
     // Add dependent counters for our new outputs
-    for ( size_t i = 0; i < p->deps.size(); i++ )
+    for ( size_t i = 0; i < p->deps.size(); ++i )
     {
         p->deps[i].resize( outputCount );
     }
