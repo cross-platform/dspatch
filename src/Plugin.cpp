@@ -78,7 +78,7 @@ Plugin::~Plugin()
 
 bool Plugin::IsLoaded() const
 {
-    return p->handle ? true : false;
+    return p->handle;
 }
 
 Component::SPtr Plugin::Create() const

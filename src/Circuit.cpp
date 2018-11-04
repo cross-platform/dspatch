@@ -26,7 +26,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <internal/AutoTickThread.h>
 #include <internal/CircuitThread.h>
-#include <internal/Wire.h>
 
 using namespace DSPatch;
 
@@ -115,7 +114,7 @@ void Circuit::RemoveComponent( int componentIndex )
 
     DisconnectComponent( componentIndex );
 
-    if ( p->components.size() != 0 )
+    if ( !p->components.empty() )
     {
         p->components.erase( p->components.begin() + componentIndex );
     }
@@ -255,7 +254,7 @@ void Circuit::Tick()
 {
     // process in a single thread if this circuit has no threads
     // =========================================================
-    if ( p->circuitThreads.size() == 0 )
+    if ( p->circuitThreads.empty() )
     {
         // tick all internal components
         for ( size_t i = 0; i < p->components.size(); ++i )

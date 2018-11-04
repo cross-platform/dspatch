@@ -53,7 +53,7 @@ public:
     DEFINE_PTRS( AutoTickThread );
 
     AutoTickThread();
-    virtual ~AutoTickThread();
+    ~AutoTickThread();
 
     void Initialise( DSPatch::Circuit* circuit );
 
@@ -66,7 +66,7 @@ public:
     void Resume();
 
 private:
-    virtual void _Run();
+    void _Run();
 
 private:
     std::thread _thread;

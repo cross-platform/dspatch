@@ -53,7 +53,7 @@ public:
 
     SignalBus();
     SignalBus( SignalBus&& );
-    virtual ~SignalBus();
+    ~SignalBus();
 
     void SetSignalCount( int signalCount );
     int GetSignalCount() const;

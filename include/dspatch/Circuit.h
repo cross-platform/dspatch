@@ -63,7 +63,7 @@ public:
     DEFINE_PTRS( Circuit );
 
     Circuit();
-    virtual ~Circuit();
+    ~Circuit();
 
     int AddComponent( Component::SPtr const& component );
 

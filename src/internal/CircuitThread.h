@@ -65,7 +65,7 @@ public:
     DEFINE_PTRS( CircuitThread );
 
     CircuitThread();
-    virtual ~CircuitThread();
+    ~CircuitThread();
 
     void Initialise( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
 
@@ -75,7 +75,7 @@ public:
     void Resume();
 
 private:
-    virtual void _Run();
+    void _Run();
 
 private:
     std::thread _thread;

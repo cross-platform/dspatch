@@ -69,7 +69,7 @@ void CircuitThread::Stop()
     {
         _stop = true;
 
-        while ( _stopped != true )
+        while ( !_stopped )
         {
             _syncCondt.notify_one();
             _resumeCondt.notify_one();

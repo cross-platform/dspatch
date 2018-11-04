@@ -24,8 +24,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Component.h>
 
-#include <dspatch/Circuit.h>
-
 #include <internal/Wire.h>
 
 #include <string>
@@ -103,7 +101,7 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     // first make sure there are no wires already connected to this input
     DisconnectInput( toInput );
 
-    p->inputWires.push_back( internal::Wire( fromComponent, fromOutput, toInput ) );
+    p->inputWires.emplace_back( internal::Wire( fromComponent, fromOutput, toInput ) );
 
     // update source output's dependent count
     fromComponent->p->IncDeps( fromOutput );
@@ -225,7 +223,7 @@ void Component::SetBufferCount( int bufferCount )
     p->bufferCount = bufferCount;
 }
 
-int Component::GetBufferCount()
+int Component::GetBufferCount() const
 {
     return p->inputBuses.size();
 }
