@@ -17,7 +17,7 @@ public:
         return _count;
     }
 
-    void Reset()
+    void ResetCount()
     {
         _count = 0;
     }
