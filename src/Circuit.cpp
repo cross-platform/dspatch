@@ -259,24 +259,22 @@ void Circuit::Tick()
         // tick all internal components
         for ( auto& component : p->components )
         {
-            component->Tick( 0 );
+            component->Tick();
         }
 
         // reset all internal components
         for ( auto& component : p->components )
         {
-            component->Reset( 0 );
+            component->Reset();
         }
     }
     // process in multiple threads if this circuit has threads
     // =======================================================
     else
     {
-        p->circuitThreads[p->currentThreadIndex]->Sync();  // sync with thread x
+        p->circuitThreads[p->currentThreadIndex]->SyncAndResume();  // sync and resume thread x
 
-        p->circuitThreads[p->currentThreadIndex]->Resume();  // resume thread x
-
-        p->currentThreadIndex = ( p->currentThreadIndex + 1 ) % p->circuitThreads.size();  // shift to thread x+1
+        ++p->currentThreadIndex %= p->circuitThreads.size();  // shift to thread x+1
     }
 }
 

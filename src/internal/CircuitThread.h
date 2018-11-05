@@ -72,7 +72,7 @@ public:
     void Start();
     void Stop();
     void Sync();
-    void Resume();
+    void SyncAndResume();
 
 private:
     void _Run();

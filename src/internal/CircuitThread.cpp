@@ -93,10 +93,14 @@ void CircuitThread::Sync()
     }
 }
 
-void CircuitThread::Resume()
+void CircuitThread::SyncAndResume()
 {
-    std::lock_guard<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _resumeMutex );
 
+    if ( !_gotSync )  // if haven't already got sync
+    {
+        _syncCondt.wait( lock );  // wait for sync
+    }
     _gotSync = false;  // reset the sync flag
 
     _gotResume = true;  // set the resume flag
@@ -113,7 +117,6 @@ void CircuitThread::_Run()
                 std::unique_lock<std::mutex> lock( _resumeMutex );
 
                 _gotSync = true;  // set the sync flag
-
                 _syncCondt.notify_one();
 
                 if ( !_gotResume )  // if haven't already got resume
