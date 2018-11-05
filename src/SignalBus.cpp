@@ -95,7 +95,7 @@ bool SignalBus::HasValue( int signalIndex ) const
 
 bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 {
-    if ( (size_t)toSignalIndex < _signals.size() && fromSignal != nullptr )
+    if ( (size_t)toSignalIndex < _signals.size() )
     {
         return _signals[toSignalIndex]->CopySignal( fromSignal );
     }
@@ -107,7 +107,7 @@ bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 
 bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
 {
-    if ( (size_t)toSignalIndex < _signals.size() && fromSignal != nullptr )
+    if ( (size_t)toSignalIndex < _signals.size() )
     {
         return _signals[toSignalIndex]->MoveSignal( fromSignal );
     }
