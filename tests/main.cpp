@@ -257,24 +257,27 @@ TEST_CASE( "ThreadPerformanceTest" )
     auto counter1 = std::make_shared<SlowCounter>();
     auto counter2 = std::make_shared<SlowCounter>();
     auto counter3 = std::make_shared<SlowCounter>();
+    auto counter4 = std::make_shared<SlowCounter>();
     auto probe = std::make_shared<ThreadingProbe>();
 
     circuit->AddComponent( counter1 );
     circuit->AddComponent( counter2 );
     circuit->AddComponent( counter3 );
+    circuit->AddComponent( counter4 );
     circuit->AddComponent( probe );
 
     circuit->ConnectOutToIn( counter1, 0, probe, 0 );
     circuit->ConnectOutToIn( counter2, 0, probe, 1 );
     circuit->ConnectOutToIn( counter3, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter4, 0, probe, 3 );
 
     // Tick the circuit with no threads
     circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
     circuit->PauseAutoTick();
 
     int count = probe->GetCount();
-    std::cout << "0x Thread Tick Count: " << count << std::endl;
+    std::cout << "0x Thread Tick Count: " << count << " (" << count * 0.4 << "% efficiency)" << std::endl;
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     circuit->SetThreadCount( 2 );
@@ -282,33 +285,35 @@ TEST_CASE( "ThreadPerformanceTest" )
     counter1->ResetCount();
     counter2->ResetCount();
     counter3->ResetCount();
+    counter4->ResetCount();
     probe->ResetCount();
 
     circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
     circuit->PauseAutoTick();
 
     REQUIRE( count < probe->GetCount() );
 
     count = probe->GetCount();
-    std::cout << "2x Thread Tick Count: " << count << std::endl;
+    std::cout << "2x Thread Tick Count: " << count << " (" << count * 0.2 << "% efficiency)" << std::endl;
 
-    // Tick the circuit with 3 threads, and check that more ticks occurred
-    circuit->SetThreadCount( 3 );
+    // Tick the circuit with 4 threads, and check that more ticks occurred
+    circuit->SetThreadCount( 4 );
 
     counter1->ResetCount();
     counter2->ResetCount();
     counter3->ResetCount();
+    counter4->ResetCount();
     probe->ResetCount();
 
     circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
     circuit->PauseAutoTick();
 
     REQUIRE( count < probe->GetCount() );
 
     count = probe->GetCount();
-    std::cout << "3x Thread Tick Count: " << count << std::endl;
+    std::cout << "4x Thread Tick Count: " << count << " (" << count * 0.1 << "% efficiency)" << std::endl;
 
     // Tick the circuit with 2 threads again, and check that less ticks occurred
     circuit->SetThreadCount( 2 );
@@ -316,16 +321,17 @@ TEST_CASE( "ThreadPerformanceTest" )
     counter1->ResetCount();
     counter2->ResetCount();
     counter3->ResetCount();
+    counter4->ResetCount();
     probe->ResetCount();
 
     circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
     circuit->PauseAutoTick();
 
     REQUIRE( count > probe->GetCount() );
 
     count = probe->GetCount();
-    std::cout << "2x Thread Tick Count: " << count << std::endl;
+    std::cout << "2x Thread Tick Count: " << count << " (" << count * 0.2 << "% efficiency)" << std::endl;
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
@@ -333,7 +339,7 @@ TEST_CASE( "ThreadAdjustmentTest" )
     // Configure a counter circuit, then adjust the thread count while it's running
     auto circuit = std::make_shared<Circuit>();
 
-    auto counter = std::make_shared<SlowCounter>();
+    auto counter = std::make_shared<Counter>();
     auto probe = std::make_shared<ThreadingProbe>();
 
     circuit->AddComponent( counter );
@@ -342,6 +348,7 @@ TEST_CASE( "ThreadAdjustmentTest" )
     circuit->ConnectOutToIn( counter, 0, probe, 0 );
     circuit->ConnectOutToIn( counter, 0, probe, 1 );
     circuit->ConnectOutToIn( counter, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter, 0, probe, 3 );
 
     // Tick the circuit for 100ms with 1 thread
     circuit->StartAutoTick();
