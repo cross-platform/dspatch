@@ -321,11 +321,12 @@ void internal::Component::WaitForRelease( int threadNo )
 
 void internal::Component::ReleaseThread( int threadNo )
 {
-    int nextThread = ( threadNo + 1 ) % bufferCount;
-    std::lock_guard<std::mutex> lock( *releaseMutexes[nextThread] );
+    ++threadNo %= bufferCount;  // we're actually releasing the next available thread
 
-    gotReleases[nextThread] = true;
-    releaseCondts[nextThread]->notify_one();
+    std::lock_guard<std::mutex> lock( *releaseMutexes[threadNo] );
+
+    gotReleases[threadNo] = true;
+    releaseCondts[threadNo]->notify_one();
 }
 
 DSPatch::Signal::SPtr internal::Component::GetOutput( int bufferNo, int outputNo, bool& canMove )
