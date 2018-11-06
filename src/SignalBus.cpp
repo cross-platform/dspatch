@@ -33,6 +33,8 @@ namespace internal
 
 class SignalBus
 {
+public:
+    Signal::SPtr nullSignal = nullptr;
 };
 
 }  // namespace internal
@@ -69,7 +71,7 @@ int SignalBus::GetSignalCount() const
     return _signals.size();
 }
 
-Signal::SPtr SignalBus::GetSignal( int signalIndex ) const
+Signal::SPtr const& SignalBus::GetSignal( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -77,7 +79,7 @@ Signal::SPtr SignalBus::GetSignal( int signalIndex ) const
     }
     else
     {
-        return nullptr;
+        return p->nullSignal;
     }
 }
 

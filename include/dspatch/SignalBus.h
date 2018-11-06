@@ -58,7 +58,7 @@ public:
     void SetSignalCount( int signalCount );
     int GetSignalCount() const;
 
-    Signal::SPtr GetSignal( int signalIndex ) const;
+    Signal::SPtr const& GetSignal( int signalIndex ) const;
 
     bool HasValue( int signalIndex ) const;
 

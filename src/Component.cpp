@@ -52,7 +52,7 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
-    DSPatch::Signal::SPtr GetOutput( int bufferNo, int outputNo, bool& canMove );
+    DSPatch::Signal::SPtr const& GetOutput( int bufferNo, int outputNo, bool& canMove );
 
     void IncDeps( int output );
     void DecDeps( int output );
@@ -241,7 +241,7 @@ void Component::Tick( int bufferNo )
         {
             wire.fromComponent->Tick( bufferNo );
 
-            auto signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
+            Signal::SPtr const& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
             if ( canMove )
             {
                 // we are the final dependent, take the original
@@ -329,7 +329,7 @@ void internal::Component::ReleaseThread( int threadNo )
     releaseCondts[threadNo]->notify_one();
 }
 
-DSPatch::Signal::SPtr internal::Component::GetOutput( int bufferNo, int outputNo, bool& canMove )
+DSPatch::Signal::SPtr const& internal::Component::GetOutput( int bufferNo, int outputNo, bool& canMove )
 {
     if ( outputBuses[bufferNo].HasValue( outputNo ) && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
     {
