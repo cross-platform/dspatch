@@ -349,7 +349,7 @@ void internal::Component::IncDeps( int output )
 {
     for ( auto& dep : deps )
     {
-        dep[output].first++;
+        ++dep[output].first;
     }
 }
 
@@ -357,6 +357,6 @@ void internal::Component::DecDeps( int output )
 {
     for ( auto& dep : deps )
     {
-        dep[output].first--;
+        --dep[output].first;
     }
 }

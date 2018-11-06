@@ -24,7 +24,7 @@ protected:
 
         REQUIRE( *in == _adder_out );
 
-        _adder_in++;
+        ++_adder_in;
     }
 
 private:
