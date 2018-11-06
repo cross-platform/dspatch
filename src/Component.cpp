@@ -241,7 +241,7 @@ void Component::Tick( int bufferNo )
         {
             wire.fromComponent->Tick( bufferNo );
 
-            Signal::SPtr const& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
+            auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
             if ( canMove )
             {
                 // we are the final dependent, take the original
