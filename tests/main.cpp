@@ -280,6 +280,10 @@ TEST_CASE( "ThreadPerformanceTest" )
     std::cout << "0x Thread Tick Count: " << count << " (" << count / 5 << "% efficiency)" << std::endl;
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 2 )
+    {
+        return;
+    }
     circuit->SetThreadCount( 2 );
 
     counter1->ResetCount();
@@ -297,7 +301,33 @@ TEST_CASE( "ThreadPerformanceTest" )
     count = probe->GetCount() - 1;
     std::cout << "2x Thread Tick Count: " << count << " (" << count / 10 << "% efficiency)" << std::endl;
 
+    // Tick the circuit with 3 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 3 )
+    {
+        return;
+    }
+    circuit->SetThreadCount( 3 );
+
+    counter1->ResetCount();
+    counter2->ResetCount();
+    counter3->ResetCount();
+    counter4->ResetCount();
+    probe->ResetCount();
+
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
+    circuit->PauseAutoTick();
+
+    REQUIRE( count < probe->GetCount() );
+
+    count = probe->GetCount() - 1;
+    std::cout << "3x Thread Tick Count: " << count << " (" << count / 15 << "% efficiency)" << std::endl;
+
     // Tick the circuit with 4 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
     circuit->SetThreadCount( 4 );
 
     counter1->ResetCount();
@@ -314,24 +344,6 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount() - 1;
     std::cout << "4x Thread Tick Count: " << count << " (" << count / 20 << "% efficiency)" << std::endl;
-
-    // Tick the circuit with 2 threads again, and check that less ticks occurred
-    circuit->SetThreadCount( 2 );
-
-    counter1->ResetCount();
-    counter2->ResetCount();
-    counter3->ResetCount();
-    counter4->ResetCount();
-    probe->ResetCount();
-
-    circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
-    circuit->PauseAutoTick();
-
-    REQUIRE( count > probe->GetCount() );
-
-    count = probe->GetCount() - 1;
-    std::cout << "2x Thread Tick Count: " << count << " (" << count / 10 << "% efficiency)" << std::endl;
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
