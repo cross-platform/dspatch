@@ -251,7 +251,7 @@ TEST_CASE( "ChangingOutputTest" )
 
 TEST_CASE( "ThreadPerformanceTest" )
 {
-    float const efficiencyThreshold = 90.f;  // expect at least 90% efficiency
+    int const efficiencyThreshold = 90;  // expect at least 90% efficiency
 
     // Configure a circuit made up of 3 parallel counters, then adjust the thread count
     auto circuit = std::make_shared<Circuit>();
@@ -279,7 +279,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     int count = probe->GetCount();
-    REQUIRE( count / 5.f > efficiencyThreshold );
+    std::cout << "0x Thread Efficiency: " << count / 5 << "%" << std::endl;
+    REQUIRE( count / 5 > efficiencyThreshold );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -299,7 +300,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    REQUIRE( count / 5.f > efficiencyThreshold );
+    std::cout << "1x Thread Efficiency: " << count / 5 << "%" << std::endl;
+    REQUIRE( count / 5 > efficiencyThreshold );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -319,7 +321,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    REQUIRE( count / 10.f > efficiencyThreshold );
+    std::cout << "2x Thread Efficiency: " << count / 10 << "%" << std::endl;
+    REQUIRE( count / 10 > efficiencyThreshold );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 3 )
@@ -339,7 +342,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    REQUIRE( count / 15.f > efficiencyThreshold );
+    std::cout << "3x Thread Efficiency: " << count / 15 << "%" << std::endl;
+    REQUIRE( count / 15 > efficiencyThreshold );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -359,7 +363,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    REQUIRE( count / 20.f > efficiencyThreshold );
+    std::cout << "4x Thread Efficiency: " << count / 20 << "%" << std::endl;
+    REQUIRE( count / 20 > efficiencyThreshold );
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
