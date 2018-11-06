@@ -24,8 +24,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <internal/CircuitThread.h>
 
-#include <internal/Common.h>
-
 using namespace DSPatch::internal;
 
 CircuitThread::CircuitThread()
@@ -59,7 +57,6 @@ void CircuitThread::Start()
         _gotSync = true;
 
         _thread = std::thread( &CircuitThread::_Run, this );
-        MaximiseThreadPriority( _thread );
     }
 }
 

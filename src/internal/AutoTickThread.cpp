@@ -25,7 +25,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <internal/AutoTickThread.h>
 
 #include <dspatch/Circuit.h>
-#include <internal/Common.h>
 
 #include <thread>
 
@@ -68,7 +67,6 @@ void AutoTickThread::Start()
         _pause = false;
 
         _thread = std::thread( &AutoTickThread::_Run, this );
-        MaximiseThreadPriority( _thread );
     }
 }
 
