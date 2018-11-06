@@ -280,7 +280,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     int count = probe->GetCount();
     std::cout << "0x Thread Efficiency: " << count / 5 << "%" << std::endl;
-    REQUIRE( count / 5 > efficiencyThreshold );
+    REQUIRE( count / 5 >= efficiencyThreshold );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -301,7 +301,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "1x Thread Efficiency: " << count / 5 << "%" << std::endl;
-    REQUIRE( count / 5 > efficiencyThreshold );
+    REQUIRE( count / 5 >= efficiencyThreshold );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -322,7 +322,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "2x Thread Efficiency: " << count / 10 << "%" << std::endl;
-    REQUIRE( count / 10 > efficiencyThreshold );
+    REQUIRE( count / 10 >= efficiencyThreshold );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 3 )
@@ -343,7 +343,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "3x Thread Efficiency: " << count / 15 << "%" << std::endl;
-    REQUIRE( count / 15 > efficiencyThreshold );
+    REQUIRE( count / 15 >= efficiencyThreshold );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -364,7 +364,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "4x Thread Efficiency: " << count / 20 << "%" << std::endl;
-    REQUIRE( count / 20 > efficiencyThreshold );
+    REQUIRE( count / 20 >= efficiencyThreshold );
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
