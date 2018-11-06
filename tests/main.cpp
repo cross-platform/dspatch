@@ -251,6 +251,8 @@ TEST_CASE( "ChangingOutputTest" )
 
 TEST_CASE( "ThreadPerformanceTest" )
 {
+    float const efficiencyThreshold = 90.f;  // expect at least 90% efficiency
+
     // Configure a circuit made up of 3 parallel counters, then adjust the thread count
     auto circuit = std::make_shared<Circuit>();
 
@@ -276,8 +278,28 @@ TEST_CASE( "ThreadPerformanceTest" )
     std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
     circuit->PauseAutoTick();
 
-    int count = probe->GetCount() - 1;
-    std::cout << "0x Thread Tick Count: " << count << " (" << count / 5.f << "% efficiency)" << std::endl;
+    int count = probe->GetCount();
+    REQUIRE( count / 5.f > efficiencyThreshold );
+
+    // Tick the circuit with 1 thread, and check that no more ticks occurred
+    if ( std::thread::hardware_concurrency() < 1 )
+    {
+        return;
+    }
+    circuit->SetThreadCount( 1 );
+
+    counter1->ResetCount();
+    counter2->ResetCount();
+    counter3->ResetCount();
+    counter4->ResetCount();
+    probe->ResetCount();
+
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
+    circuit->PauseAutoTick();
+
+    count = probe->GetCount();
+    REQUIRE( count / 5.f > efficiencyThreshold );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -296,10 +318,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
     circuit->PauseAutoTick();
 
-    REQUIRE( count < probe->GetCount() );
-
-    count = probe->GetCount() - 1;
-    std::cout << "2x Thread Tick Count: " << count << " (" << count / 10.f << "% efficiency)" << std::endl;
+    count = probe->GetCount();
+    REQUIRE( count / 10.f > efficiencyThreshold );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 3 )
@@ -318,10 +338,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
     circuit->PauseAutoTick();
 
-    REQUIRE( count < probe->GetCount() );
-
-    count = probe->GetCount() - 1;
-    std::cout << "3x Thread Tick Count: " << count << " (" << count / 15.f << "% efficiency)" << std::endl;
+    count = probe->GetCount();
+    REQUIRE( count / 15.f > efficiencyThreshold );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -340,10 +358,8 @@ TEST_CASE( "ThreadPerformanceTest" )
     std::this_thread::sleep_for( std::chrono::seconds( 2 ) );
     circuit->PauseAutoTick();
 
-    REQUIRE( count < probe->GetCount() );
-
-    count = probe->GetCount() - 1;
-    std::cout << "4x Thread Tick Count: " << count << " (" << count / 20.f << "% efficiency)" << std::endl;
+    count = probe->GetCount();
+    REQUIRE( count / 20.f > efficiencyThreshold );
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
