@@ -274,7 +274,7 @@ void Circuit::Tick()
     {
         p->circuitThreads[p->currentThreadIndex]->SyncAndResume();  // sync and resume thread x
 
-        ++p->currentThreadIndex %= p->circuitThreads.size();  // shift to thread x+1
+        p->currentThreadIndex = p->currentThreadIndex + 1 == p->circuitThreads.size() ? 0 : p->currentThreadIndex + 1;
     }
 }
 
