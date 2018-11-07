@@ -114,6 +114,14 @@ private:
 template <class ValueType>
 ValueType* Signal::GetValue()
 {
+    // You might be thinking: Why the raw pointer return here?
+
+    // This is mainly for performance, and partly for readability. Performance, because returning a
+    // shared_ptr here means having to store the value as a shared_ptr in Signal::_Value too. This
+    // adds yet another level of indirection to the value, as well as some reference counting
+    // overhead. These Get() and Set() methods are VERY frequently called, so doing as little as
+    // possible with the data here is best, which actually aids in the readably of the code too.
+
     if ( _hasValue && GetType() == typeid( ValueType ) )
     {
         return &static_cast<Signal::_Value<ValueType>*>( _valueHolder )->value;
