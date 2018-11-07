@@ -236,11 +236,11 @@ void Component::Tick( int bufferNo )
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
         // 2. get outputs required from input components
-        bool canMove = false;
         for ( auto& wire : p->inputWires )
         {
             wire.fromComponent->Tick( bufferNo );
 
+            bool canMove;
             auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
             if ( canMove )
             {
