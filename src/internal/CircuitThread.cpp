@@ -125,6 +125,16 @@ void CircuitThread::_Run()
 
             if ( !_stop )
             {
+                // You might be thinking: Can't we have each thread start on a different component?
+
+                // Well no. Because threadNo == bufferNo, in order to maintain synchronisation
+                // within the circuit, when a component wants to process its buffers in-order, it
+                // requires that every other in-order component in the system has not only
+                // processed its buffers in the same order, but has processed the same number of
+                // buffers too.
+
+                // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
+
                 for ( auto& component : *_components )
                 {
                     component->Tick( _threadNo );
