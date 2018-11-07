@@ -52,7 +52,7 @@ public:
     typedef DSPatch::Component* ( *Create_t )();
 
     void* handle = nullptr;
-    Create_t create;
+    Create_t create = nullptr;
 };
 
 }  // namespace internal

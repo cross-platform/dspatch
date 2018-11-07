@@ -70,9 +70,10 @@ private:
 
 private:
     std::thread _thread;
-    DSPatch::Circuit* _circuit;
-    bool _stop, _pause;
-    bool _stopped;
+    DSPatch::Circuit* _circuit = nullptr;
+    bool _stop = false;
+    bool _pause = false;
+    bool _stopped = true;
     std::mutex _resumeMutex;
     std::condition_variable _resumeCondt, _pauseCondt;
 };

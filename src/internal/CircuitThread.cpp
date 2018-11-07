@@ -27,12 +27,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace DSPatch::internal;
 
 CircuitThread::CircuitThread()
-    : _components( nullptr )
-    , _threadNo( 0 )
-    , _stop( false )
-    , _stopped( true )
-    , _gotResume( false )
-    , _gotSync( false )
 {
 }
 

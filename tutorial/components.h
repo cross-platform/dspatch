@@ -2,9 +2,9 @@
 
 #include <DSPatch.h>
 
-#include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 namespace DSPatch
 {

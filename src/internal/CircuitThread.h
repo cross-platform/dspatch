@@ -79,11 +79,12 @@ private:
 
 private:
     std::thread _thread;
-    std::vector<DSPatch::Component::SPtr>* _components;
-    int _threadNo;
-    bool _stop;
-    bool _stopped;
-    bool _gotResume, _gotSync;
+    std::vector<DSPatch::Component::SPtr>* _components = nullptr;
+    int _threadNo = 0;
+    bool _stop = false;
+    bool _stopped = true;
+    bool _gotResume = false;
+    bool _gotSync = false;
     std::mutex _resumeMutex;
     std::condition_variable _resumeCondt, _syncCondt;
 };

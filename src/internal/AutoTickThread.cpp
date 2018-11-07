@@ -31,10 +31,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace DSPatch::internal;
 
 AutoTickThread::AutoTickThread()
-    : _circuit( nullptr )
-    , _stop( false )
-    , _pause( false )
-    , _stopped( true )
 {
 }
 

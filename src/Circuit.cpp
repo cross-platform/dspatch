@@ -37,26 +37,18 @@ namespace internal
 class Circuit
 {
 public:
-    Circuit()
-        : isAutoTickRunning( false )
-        , isAutoTickPaused( false )
-        , pauseCount( 0 )
-        , currentThreadIndex( 0 )
-    {
-    }
-
     bool FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const;
 
-    bool isAutoTickRunning;
-    bool isAutoTickPaused;
-    int pauseCount;
+    bool isAutoTickRunning = false;
+    bool isAutoTickPaused = false;
+    int pauseCount = 0;
+    int currentThreadNo = 0;
 
     internal::AutoTickThread autoTickThread;
 
     std::vector<DSPatch::Component::SPtr> components;
 
     std::vector<internal::CircuitThread::UPtr> circuitThreads;
-    int currentThreadIndex;
 };
 
 }  // namespace internal
@@ -272,9 +264,9 @@ void Circuit::Tick()
     // =======================================================
     else
     {
-        p->circuitThreads[p->currentThreadIndex]->SyncAndResume();  // sync and resume thread x
+        p->circuitThreads[p->currentThreadNo]->SyncAndResume();  // sync and resume thread x
 
-        p->currentThreadIndex = p->currentThreadIndex + 1 == p->circuitThreads.size() ? 0 : p->currentThreadIndex + 1;
+        p->currentThreadNo = p->currentThreadNo + 1 == (int)p->circuitThreads.size() ? 0 : p->currentThreadNo + 1;
     }
 }
 
@@ -320,7 +312,7 @@ void Circuit::PauseAutoTick()
     }
 
     // manually tick until 0
-    while ( p->currentThreadIndex != 0 )
+    while ( p->currentThreadNo != 0 )
     {
         Tick();
     }
