@@ -124,7 +124,7 @@ ValueType* Signal::GetValue()
 
     if ( _hasValue && GetType() == typeid( ValueType ) )
     {
-        return &static_cast<Signal::_Value<ValueType>*>( _valueHolder )->value;
+        return &( (_Value<ValueType>*)_valueHolder )->value;
     }
     else
     {
