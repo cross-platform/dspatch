@@ -54,8 +54,8 @@ public:
 
     DSPatch::Signal::SPtr const& GetOutput( int bufferNo, int outputNo, bool& canMove );
 
-    void IncDeps( int output );
-    void DecDeps( int output );
+    void IncRefs( int output );
+    void DecRefs( int output );
 
     const DSPatch::Component::ProcessOrder processOrder;
 
@@ -64,7 +64,7 @@ public:
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
 
-    std::vector<std::vector<std::pair<int, int>>> deps;  // dep_count:dep_counter per output per buffer
+    std::vector<std::vector<std::pair<int, int>>> refs;  // ref_count:ref_counter per output, per buffer
 
     std::vector<Wire> inputWires;
 
@@ -103,8 +103,8 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
 
     p->inputWires.emplace_back( fromComponent, fromOutput, toInput );
 
-    // update source output's dependent count
-    fromComponent->p->IncDeps( fromOutput );
+    // update source output's reference count
+    fromComponent->p->IncRefs( fromOutput );
 
     return true;
 }
@@ -119,8 +119,8 @@ void Component::DisconnectInput( int inputNo )
         {
             p->inputWires.erase( p->inputWires.begin() + i );
 
-            // update source output's dependent count
-            wire.fromComponent->p->DecDeps( wire.fromOutput );
+            // update source output's reference count
+            wire.fromComponent->p->DecRefs( wire.fromOutput );
         }
     }
 }
@@ -188,7 +188,7 @@ void Component::SetBufferCount( int bufferCount )
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
 
-    p->deps.resize( bufferCount );
+    p->refs.resize( bufferCount );
 
     p->gotReleases.resize( bufferCount );
     p->releaseMutexes.resize( bufferCount );
@@ -208,12 +208,12 @@ void Component::SetBufferCount( int bufferCount )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        p->deps[i].resize( p->deps[0].size() );
+        p->refs[i].resize( p->refs[0].size() );
 
-        for ( size_t j = 0; j < p->deps[0].size(); ++j )
+        for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
-            // sync output dependent counts
-            p->deps[i][j] = p->deps[0][j];
+            // sync output reference counts
+            p->refs[i][j] = p->refs[0][j];
         }
     }
 
@@ -244,7 +244,7 @@ void Component::Tick( int bufferNo )
             auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
             if ( canMove )
             {
-                // we are the final dependent, take the original
+                // we are the final reference, take the original
                 p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
             }
             else
@@ -302,10 +302,10 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
         outputBus.SetSignalCount( outputCount );
     }
 
-    // Add dependent counters for our new outputs
-    for ( auto& dep : p->deps )
+    // Add reference counters for our new outputs
+    for ( auto& ref : p->refs )
     {
-        dep.resize( outputCount );
+        ref.resize( outputCount );
     }
 }
 
@@ -331,10 +331,10 @@ void internal::Component::ReleaseThread( int threadNo )
 
 DSPatch::Signal::SPtr const& internal::Component::GetOutput( int bufferNo, int outputNo, bool& canMove )
 {
-    if ( outputBuses[bufferNo].HasValue( outputNo ) && ++deps[bufferNo][outputNo].second == deps[bufferNo][outputNo].first )
+    if ( outputBuses[bufferNo].HasValue( outputNo ) && ++refs[bufferNo][outputNo].second == refs[bufferNo][outputNo].first )
     {
-        // this is the final dependent, reset the counter
-        deps[bufferNo][outputNo].second = 0;
+        // this is the final reference, reset the counter
+        refs[bufferNo][outputNo].second = 0;
         canMove = true;
     }
     else
@@ -345,18 +345,18 @@ DSPatch::Signal::SPtr const& internal::Component::GetOutput( int bufferNo, int o
     return outputBuses[bufferNo].GetSignal( outputNo );
 }
 
-void internal::Component::IncDeps( int output )
+void internal::Component::IncRefs( int output )
 {
-    for ( auto& dep : deps )
+    for ( auto& ref : refs )
     {
-        ++dep[output].first;
+        ++ref[output].first;
     }
 }
 
-void internal::Component::DecDeps( int output )
+void internal::Component::DecRefs( int output )
 {
-    for ( auto& dep : deps )
+    for ( auto& ref : refs )
     {
-        --dep[output].first;
+        --ref[output].first;
     }
 }
