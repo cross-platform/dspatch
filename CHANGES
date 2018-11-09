@@ -2,7 +2,7 @@ v.5.00 (10 November 2018)
     - Removed unnecessarily complex integrated circuits concept.
     - Replaced in-house DSPatch::internal::Threads with std::threads.
     - Removed all friend classes.
-    - Moved signal reference counting to DSPatch::internal::Component.
+    - Moved signal reference counting into DSPatch::internal::Component.
     - Moved RunType logic into Signal.
     - Added Signal::HasValue() and Signal::GetType().
     - Loads of optimisations and static code analysis fixes.

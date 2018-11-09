@@ -40,19 +40,19 @@ bool Signal::HasValue() const
     return _hasValue;
 }
 
-bool Signal::CopySignal( Signal::SPtr const& newSignal )
+bool Signal::CopySignal( Signal::SPtr const& fromSignal )
 {
-    if ( newSignal != nullptr && newSignal->_hasValue )
+    if ( fromSignal != nullptr && fromSignal->_hasValue )
     {
-        if ( _valueHolder != nullptr && newSignal->_valueHolder != nullptr &&
-             _valueHolder->GetType() == newSignal->_valueHolder->GetType() )
+        if ( _valueHolder != nullptr && fromSignal->_valueHolder != nullptr &&
+             _valueHolder->GetType() == fromSignal->_valueHolder->GetType() )
         {
-            _valueHolder->SetValue( newSignal->_valueHolder );
+            _valueHolder->SetValue( fromSignal->_valueHolder );
         }
         else
         {
             delete _valueHolder;
-            _valueHolder = newSignal->_valueHolder->GetCopy();
+            _valueHolder = fromSignal->_valueHolder->GetCopy();
         }
 
         _hasValue = true;
@@ -64,12 +64,22 @@ bool Signal::CopySignal( Signal::SPtr const& newSignal )
     }
 }
 
-bool Signal::MoveSignal( Signal::SPtr const& newSignal )
+bool Signal::MoveSignal( Signal::SPtr const& fromSignal )
 {
-    if ( newSignal != nullptr && newSignal->_hasValue )
+    if ( fromSignal != nullptr && fromSignal->_hasValue )
     {
-        std::swap( newSignal->_valueHolder, _valueHolder );
-        newSignal->_hasValue = false;
+        // You might be thinking: Why std::swap and not std::move here?
+
+        // This is a really nifty little optimisation actually. When we move a signal value from an
+        // output to an input (or vice-versa within a component) we move it's type_info along with
+        // it. If you look at SetValue(), you'll see that type_info is really useful in determining
+        // whether we have to delete and copy (re)construct our contained value, or can simply copy
+        // assign. To avoid the former as much as possible, a swap is done between source and
+        // target signals such that, between these two points, just two value holders need to be
+        // constructed, and shared back and forth from then on.
+
+        std::swap( fromSignal->_valueHolder, _valueHolder );
+        fromSignal->_hasValue = false;
 
         _hasValue = true;
         return true;

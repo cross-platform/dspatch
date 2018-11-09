@@ -54,13 +54,10 @@ In order for a component to do any work it must be ticked over. This is performe
 calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set
 of input signals from component input wires and populating the component's input bus. To insure
 that these inputs are up-to-date, the dependent component first calls all of its input components'
-Tick() methods - hence recursively called in all components going backward through the circuit
-(This is what's classified as a "pull system"). The acquired input bus is then passed to the
-Process_() method. The Reset() method then informs the component that the last circuit traversal
-has completed and hence can execute the next Tick() request. A component's Tick() and Reset()
-methods can be called in a loop from the main application thread, or alternatively, by calling
-StartAutoTick(), a separate thread will spawn, automatically calling Tick() and Reset() methods
-continuously (This is most commonly used to tick over an instance of Circuit).
+Tick() methods - hence recursively called in all components going backward through the circuit. The
+acquired input bus is then passed to the Process_() method. The Reset() method informs the
+component that the last circuit traversal has completed and hence can execute the next Tick()
+request.
 */
 
 class DLLEXPORT Component

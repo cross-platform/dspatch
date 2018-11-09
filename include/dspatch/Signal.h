@@ -29,15 +29,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 namespace DSPatch
 {
 
-/// Dynamically typed variable
+/// Value container used to carry data between components
 
 /**
-Signal holds a variable that can be dynamically typed at run-time (hence the name). The Signal
-class makes use of an internal template class and public template methods to allow users to get and
-set the contained variable as any type they wish. A Signal object also has the ability to change
-type at any point during program execution. Built-in typecasting and error checking (via the
-SignalCast() method) prevents critical runtime errors from occurring when signal types are
-mismatched.
+Components process and transfer data between each other in the form of "signals" via interconnected
+wires. The Signal class holds a single value that can be dynamically typed at runtime. Furthermore,
+a Signal has the ability to change it's data type at any point during program execution. This is
+designed such that a signal bus can hold any number of different typed variables, as well as to
+allow for a variable to dynamically change it's type when needed - this can be useful for inputs
+that accept a number of different data types (E.g. Varying sample size in an audio buffer: array of
+byte / int / float).
 */
 
 class DLLEXPORT Signal final
@@ -57,8 +58,8 @@ public:
     template <class ValueType>
     void SetValue( ValueType const& newValue );
 
-    bool CopySignal( Signal::SPtr const& newSignal );
-    bool MoveSignal( Signal::SPtr const& newSignal );
+    bool CopySignal( Signal::SPtr const& fromSignal );
+    bool MoveSignal( Signal::SPtr const& fromSignal );
 
     void ClearValue();
 
