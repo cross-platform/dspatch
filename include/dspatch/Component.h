@@ -50,10 +50,10 @@ processing. The Process_() method has 2 arguments: the input bus, and the output
 purpose is to pull its required inputs out of the input bus, process these inputs, and populate the
 output bus with the results (see SignalBus).
 
-In order for a component to do any work it must be ticked over. This is performed by repeatedly
-calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set
-of input signals from component input wires and populating the component's input bus. To insure
-that these inputs are up-to-date, the dependent component first calls all of its input components'
+In order for a component to do any work it must be ticked. This is performed by repeatedly calling
+the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of
+input signals from component input wires and populating the component's input bus. To insure that
+these inputs are up-to-date, the dependent component first calls all of its input components'
 Tick() methods - hence recursively called in all components going backward through the circuit. The
 acquired input bus is then passed to the Process_() method. The Reset() method informs the
 component that the last circuit traversal has completed and hence can execute the next Tick()

@@ -34,16 +34,13 @@ namespace DSPatch
 namespace internal
 {
 
-/// Thread class for ticking and reseting a single component
+/// Thread class for auto-ticking a circuit
 
 /**
-A ComponentThread is responsible for ticking and reseting a single component continuously in a
-free-running thread. Upon initialisation, a reference to the component must be provided for the
-Thread's Run_() method to use. Once Start() has been called, the thread will begin repeatedly
-executing the Run_() method. On each thread iteration, ComponentThread simply calls the reference
-component's Tick() and Reset() methods.
-
-The Pause() method causes ComponentThread to wait until instructed to Resume() again.
+An AutoTickThread is responsible for ticking a circuit continuously in a free-running thread. Upon
+initialisation, a reference to the circuit must be provided for the thread's _Run() method to use.
+Once Start() has been called, the thread will begin, repeatedly calling the circuit's Tick()
+method until instructed to Pause() or Stop().
 */
 
 class AutoTickThread final

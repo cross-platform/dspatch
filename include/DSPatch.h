@@ -35,8 +35,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     DSPatch, pronounced "dispatch", is a powerful C++
     <a href="http://www.jpaulmorrison.com/fbp/">flow-based programming</a> framework. DSPatch is
     not limited to any particular domain or data type, its generic, object-oriented API allows you
-    to create almost any system imaginable, from simple logic circuits to high performance audio
-    process chains.
+    to create almost any dataflow system imaginable, from simple logic circuits to high performance
+    audio process chains.
 
     DSPatch is designed around the concept of a "circuit" that contains "components"
     interconnected via "wires" that transfer "signals" to and from component I/O "buses".
@@ -45,7 +45,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     In order to route data to and from components they must be added to a circuit, where they can
     be wired together.
 
-    The DSPatch engine takes care of data transfer between interconnected components. When data
+    The DSPatch engine takes care of data transfers between interconnected components. When data
     is ready for a component to process, a callback: "Process_()" is executed in that component.
     For a component to form part of a DSPatch circuit, designers simply have to derive their
     component from the DSPatch::Component base class, configure the component's IO buses, and
@@ -238,7 +238,7 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     _
     \endcode
 
-    Lastly, in order for our circuit to do any work it must be ticked over. This is performed by
+    Lastly, in order for our circuit to do any work it must be ticked. This is performed by
     repeatedly calling the circuit's Tick() method. This method can be called manually in a loop
     from the main application thread, or alternatively, by calling StartAutoTick(), a seperate
     thread will spawn, automatically calling Tick() continuously.
