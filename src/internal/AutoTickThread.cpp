@@ -22,68 +22,71 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include <internal/ComponentThread.h>
+#include <internal/AutoTickThread.h>
+
+#include <dspatch/Circuit.h>
 
 #include <thread>
 
 using namespace DSPatch::internal;
 
-ComponentThread::ComponentThread()
-    : _stop( false )
-    , _pause( false )
-    , _stopped( true )
+AutoTickThread::AutoTickThread()
 {
 }
 
-ComponentThread::~ComponentThread()
+AutoTickThread::~AutoTickThread()
 {
     Stop();
 }
 
-void ComponentThread::Initialise( DSPatch::Component::SPtr const& component )
+void AutoTickThread::Initialise( DSPatch::Circuit* circuit )
 {
-    _component = component;
+    _circuit = circuit;
 }
 
-bool ComponentThread::IsInitialised() const
+bool AutoTickThread::IsInitialised() const
 {
-    return _component.lock() != nullptr;
+    return _circuit != nullptr;
 }
 
-bool ComponentThread::IsStopped() const
+bool AutoTickThread::IsStopped() const
 {
     return _stopped;
 }
 
-void ComponentThread::Start( Priority priority )
+void AutoTickThread::Start()
 {
     if ( _stopped )
     {
         _stop = false;
         _stopped = false;
         _pause = false;
-        Thread::Start( priority );
+
+        _thread = std::thread( &AutoTickThread::_Run, this );
     }
 }
 
-void ComponentThread::Stop()
+void AutoTickThread::Stop()
 {
     if ( !_stopped )
     {
         _stop = true;
 
-        while ( _stopped != true )
+        while ( !_stopped )
         {
             _pauseCondt.notify_one();
             _resumeCondt.notify_one();
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
-        Thread::Stop();
+        if ( _thread.joinable() )
+        {
+            _thread.join();
+        }
     }
 }
 
-void ComponentThread::Pause()
+void AutoTickThread::Pause()
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
@@ -94,7 +97,7 @@ void ComponentThread::Pause()
     }
 }
 
-void ComponentThread::Resume()
+void AutoTickThread::Resume()
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
@@ -105,14 +108,13 @@ void ComponentThread::Resume()
     }
 }
 
-void ComponentThread::Run_()
+void AutoTickThread::_Run()
 {
-    if ( _component.lock() != nullptr )
+    if ( _circuit != nullptr )
     {
         while ( !_stop )
         {
-            _component.lock()->Tick();
-            _component.lock()->Reset();
+            _circuit->Tick();
 
             if ( _pause )
             {

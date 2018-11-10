@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.4.10</span>
+   &#160;<span id="projectnumber">v.5.00</span>
    </div>
   </td>
  </tr>
@@ -83,27 +83,27 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a255b23fb3d19652fa34f86bb6a563127"><td class="memItemLeft" align="right" valign="top"><a id="a255b23fb3d19652fa34f86bb6a563127"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Wire</b> (std::shared_ptr&lt; <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a> &gt; const &amp;newLinkedComponent, int newFromSignalIndex, int newToSignalIndex)</td></tr>
-<tr class="separator:a255b23fb3d19652fa34f86bb6a563127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addc43ca5ee716bc9548b39bbe7ed79e8"><td class="memItemLeft" align="right" valign="top"><a id="addc43ca5ee716bc9548b39bbe7ed79e8"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Wire</b> (DSPatch::Component::SPtr const &amp;newFromComponent, int newFromOutput, int newToInput)</td></tr>
+<tr class="separator:addc43ca5ee716bc9548b39bbe7ed79e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9480ae7657181240f547c575f1275244"><td class="memItemLeft" align="right" valign="top"><a id="a9480ae7657181240f547c575f1275244"></a>
-std::shared_ptr&lt; <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>linkedComponent</b></td></tr>
-<tr class="separator:a9480ae7657181240f547c575f1275244"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed20b022ba89a21c3da663acec51c145"><td class="memItemLeft" align="right" valign="top"><a id="aed20b022ba89a21c3da663acec51c145"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>fromSignalIndex</b></td></tr>
-<tr class="separator:aed20b022ba89a21c3da663acec51c145"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd5a5c11f84832ffcbda5f549a9e37ef"><td class="memItemLeft" align="right" valign="top"><a id="acd5a5c11f84832ffcbda5f549a9e37ef"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>toSignalIndex</b></td></tr>
-<tr class="separator:acd5a5c11f84832ffcbda5f549a9e37ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ff5950402c034be69e59acbaa053282"><td class="memItemLeft" align="right" valign="top"><a id="a2ff5950402c034be69e59acbaa053282"></a>
+DSPatch::Component::SPtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromComponent</b></td></tr>
+<tr class="separator:a2ff5950402c034be69e59acbaa053282"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abaa4a485207e3f12d4943269f1d8c7ff"><td class="memItemLeft" align="right" valign="top"><a id="abaa4a485207e3f12d4943269f1d8c7ff"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>fromOutput</b></td></tr>
+<tr class="separator:abaa4a485207e3f12d4943269f1d8c7ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74149c9292e337a2060772092be2be26"><td class="memItemLeft" align="right" valign="top"><a id="a74149c9292e337a2060772092be2be26"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>toInput</b></td></tr>
+<tr class="separator:a74149c9292e337a2060772092be2be26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Connection between two components. </p>
-<p>Components process and transfer data between each other in the form of signals via interconnected "wires". Each wire contains references to the linked component, the source output signal, and the destination input signal. The <a class="el" href="struct_d_s_patch_1_1internal_1_1_wire.html" title="Connection between two components. ">Wire</a> struct simply stores these references for use in retrieving and providing signals across component connections. </p>
+<p>Components process and transfer data between each other in the form of signals via interconnected "wires". Each wire contains references to the fromComponent, the fromOutput signal, and the toInput signal. The <a class="el" href="struct_d_s_patch_1_1internal_1_1_wire.html" title="Connection between two components. ">Wire</a> struct simply stores these references for use in retrieving and providing signals across component connections. </p>
 
-<p class="definition">Definition at line <a class="el" href="_wire_8h_source.html#l00044">44</a> of file <a class="el" href="_wire_8h_source.html">Wire.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_wire_8h_source.html#l00046">46</a> of file <a class="el" href="_wire_8h_source.html">Wire.h</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="_wire_8h_source.html">Wire.h</a></li>
 </ul>

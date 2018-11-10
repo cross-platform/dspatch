@@ -24,6 +24,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #pragma once
 
+#include <dspatch/Component.h>
+
 namespace DSPatch
 {
 
@@ -36,23 +38,23 @@ namespace internal
 
 /**
 Components process and transfer data between each other in the form of signals via interconnected
-"wires". Each wire contains references to the linked component, the source output signal, and the
-destination input signal. The Wire struct simply stores these references for use in retrieving and
-providing signals across component connections.
+"wires". Each wire contains references to the fromComponent, the fromOutput signal, and the toInput
+signal. The Wire struct simply stores these references for use in retrieving and providing signals
+across component connections.
 */
 
 struct Wire final
 {
-    Wire( std::shared_ptr<DSPatch::Component> const& newLinkedComponent, int newFromSignalIndex, int newToSignalIndex )
-        : linkedComponent( newLinkedComponent )
-        , fromSignalIndex( newFromSignalIndex )
-        , toSignalIndex( newToSignalIndex )
+    Wire( DSPatch::Component::SPtr const& newFromComponent, int newFromOutput, int newToInput )
+        : fromComponent( newFromComponent )
+        , fromOutput( newFromOutput )
+        , toInput( newToInput )
     {
     }
 
-    std::shared_ptr<DSPatch::Component> linkedComponent;
-    int fromSignalIndex;
-    int toSignalIndex;
+    DSPatch::Component::SPtr fromComponent;
+    int fromOutput;
+    int toInput;
 };
 
 }  // namespace internal

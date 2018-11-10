@@ -26,8 +26,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Component.h>
 
-#include <map>
-
 namespace DSPatch
 {
 
@@ -45,7 +43,8 @@ Plugin object represents one Component class.
 
 A Plugin should be constructed with the absolute path of the plugin (shared library) to be loaded.
 Once instantiated you should check that the plugin was successfully loaded by calling IsLoaded().
-Thereafter, the contained component can be instantiated (mutiple times) via the Create() method.
+Thereafter, the contained component type can be instantiated (mutiple times) via the Create()
+method.
 */
 
 class DLLEXPORT Plugin final

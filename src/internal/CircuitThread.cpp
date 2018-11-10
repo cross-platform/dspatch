@@ -24,16 +24,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <internal/CircuitThread.h>
 
-#include <thread>
-
 using namespace DSPatch::internal;
 
 CircuitThread::CircuitThread()
-    : _threadNo( 0 )
-    , _stop( false )
-    , _stopped( true )
-    , _gotResume( false )
-    , _gotSync( false )
 {
 }
 
@@ -42,13 +35,13 @@ CircuitThread::~CircuitThread()
     Stop();
 }
 
-void CircuitThread::Initialise( std::shared_ptr<std::vector<DSPatch::Component::SPtr>> const& components, int threadNo )
+void CircuitThread::Initialise( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
 {
     _components = components;
     _threadNo = threadNo;
 }
 
-void CircuitThread::Start( Priority priority )
+void CircuitThread::Start()
 {
     if ( _stopped )
     {
@@ -56,7 +49,8 @@ void CircuitThread::Start( Priority priority )
         _stopped = false;
         _gotResume = false;
         _gotSync = true;
-        Thread::Start( priority );
+
+        _thread = std::thread( &CircuitThread::_Run, this );
     }
 }
 
@@ -66,14 +60,17 @@ void CircuitThread::Stop()
     {
         _stop = true;
 
-        while ( _stopped != true )
+        while ( !_stopped )
         {
             _syncCondt.notify_one();
             _resumeCondt.notify_one();
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
-        Thread::Stop();
+        if ( _thread.joinable() )
+        {
+            _thread.join();
+        }
     }
 }
 
@@ -87,19 +84,23 @@ void CircuitThread::Sync()
     }
 }
 
-void CircuitThread::Resume()
+void CircuitThread::SyncAndResume()
 {
-    std::lock_guard<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _resumeMutex );
 
+    if ( !_gotSync )  // if haven't already got sync
+    {
+        _syncCondt.wait( lock );  // wait for sync
+    }
     _gotSync = false;  // reset the sync flag
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_one();
 }
 
-void CircuitThread::Run_()
+void CircuitThread::_Run()
 {
-    if ( _components.lock() != nullptr )
+    if ( _components != nullptr )
     {
         while ( !_stop )
         {
@@ -107,7 +108,6 @@ void CircuitThread::Run_()
                 std::unique_lock<std::mutex> lock( _resumeMutex );
 
                 _gotSync = true;  // set the sync flag
-
                 _syncCondt.notify_one();
 
                 if ( !_gotResume )  // if haven't already got resume
@@ -119,13 +119,23 @@ void CircuitThread::Run_()
 
             if ( !_stop )
             {
-                for ( size_t i = 0; i < _components.lock()->size(); i++ )
+                // You might be thinking: Can't we have each thread start on a different component?
+
+                // Well no. Because threadNo == bufferNo, in order to maintain synchronisation
+                // within the circuit, when a component wants to process its buffers in-order, it
+                // requires that every other in-order component in the system has not only
+                // processed its buffers in the same order, but has processed the same number of
+                // buffers too.
+
+                // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
+
+                for ( auto& component : *_components )
                 {
-                    ( *_components.lock() )[i]->_ThreadTick( _threadNo );
+                    component->Tick( _threadNo );
                 }
-                for ( size_t i = 0; i < _components.lock()->size(); i++ )
+                for ( auto& component : *_components )
                 {
-                    ( *_components.lock() )[i]->_ThreadReset( _threadNo );
+                    component->Reset( _threadNo );
                 }
             }
         }

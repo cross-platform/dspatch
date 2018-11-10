@@ -9,7 +9,7 @@ public:
     ThreadingProbe()
         : _count( 0 )
     {
-        SetInputCount_( 3 );
+        SetInputCount_( 4 );
     }
 
     int GetCount() const
@@ -17,7 +17,7 @@ public:
         return _count;
     }
 
-    void Reset()
+    void ResetCount()
     {
         _count = 0;
     }
@@ -34,9 +34,13 @@ protected:
         auto in2 = inputs.GetValue<int>( 2 );
         REQUIRE( in2 != nullptr );
 
+        auto in3 = inputs.GetValue<int>( 3 );
+        REQUIRE( in3 != nullptr );
+
         REQUIRE( *in0 == _count );
         REQUIRE( *in1 == _count );
-        REQUIRE( *in2 == _count++ );
+        REQUIRE( *in2 == _count );
+        REQUIRE( *in3 == _count++ );
     }
 
 private:

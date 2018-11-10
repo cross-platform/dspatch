@@ -31,12 +31,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 namespace DSPatch
 {
 
-class Circuit;
-
 namespace internal
 {
 class Component;
-class CircuitThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -53,20 +50,17 @@ processing. The Process_() method has 2 arguments: the input bus, and the output
 purpose is to pull its required inputs out of the input bus, process these inputs, and populate the
 output bus with the results (see SignalBus).
 
-In order for a component to do any work it must be ticked over. This is performed by repeatedly
-calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set
-of input signals from component input wires and populating the component's input bus. To insure
-that these inputs are up-to-date, the dependent component first calls all of its input components'
-Tick() methods - hence recursively called in all components going backward through the circuit
-(This is what's classified as a "pull system"). The acquired input bus is then passed to the
-Process_() method. The Reset() method then informs the component that the last circuit traversal
-has completed and hence can execute the next Tick() request. A component's Tick() and Reset()
-methods can be called in a loop from the main application thread, or alternatively, by calling
-StartAutoTick(), a separate thread will spawn, automatically calling Tick() and Reset() methods
-continuously (This is most commonly used to tick over an instance of Circuit).
+In order for a component to do any work it must be ticked. This is performed by repeatedly calling
+the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of
+input signals from component input wires and populating the component's input bus. To insure that
+these inputs are up-to-date, the dependent component first calls all of its input components'
+Tick() methods - hence recursively called in all components going backward through the circuit. The
+acquired input bus is then passed to the Process_() method. The Reset() method informs the
+component that the last circuit traversal has completed and hence can execute the next Tick()
+request.
 */
 
-class DLLEXPORT Component : public std::enable_shared_from_this<Component>
+class DLLEXPORT Component
 {
 public:
     NONCOPYABLE( Component );
@@ -78,17 +72,8 @@ public:
         OutOfOrder
     };
 
-    Component();
-    Component( ProcessOrder processOrder );
+    Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
-
-    void Tick();
-    void Reset();
-
-    virtual void StartAutoTick();
-    virtual void StopAutoTick();
-    virtual void PauseAutoTick();
-    virtual void ResumeAutoTick();
 
     bool ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput );
 
@@ -102,6 +87,12 @@ public:
     std::string GetInputName( int inputNo ) const;
     std::string GetOutputName( int outputNo ) const;
 
+    void SetBufferCount( int bufferCount );
+    int GetBufferCount() const;
+
+    void Tick( int bufferNo = 0 );
+    void Reset( int bufferNo = 0 );
+
 protected:
     virtual void Process_( SignalBus const&, SignalBus& ) = 0;
 
@@ -109,26 +100,6 @@ protected:
     void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
 
 private:
-    // Private methods required by Circuit
-
-    void _SetParentCircuit( std::shared_ptr<Circuit> const& parentCircuit );
-    std::shared_ptr<Circuit const> _GetParentCircuit();
-
-    void _SetBufferCount( int bufferCount );
-    int _GetBufferCount();
-
-    bool _MoveInputSignal( int bufferIndex, int signalIndex, Signal::SPtr const& signal );
-    Signal::SPtr _GetOutputSignal( int bufferIndex, int signalIndex );
-
-    // Private methods required by CircuitThread
-
-    void _ThreadTick( int threadNo );
-    void _ThreadReset( int threadNo );
-
-private:
-    friend class Circuit;
-    friend class internal::CircuitThread;
-
     std::unique_ptr<internal::Component> p;
 };
 

@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.4.10</span>
+   &#160;<span id="projectnumber">v.5.00</span>
    </div>
   </td>
  </tr>
@@ -75,19 +75,10 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="class_d_s_patch_1_1internal_1_1_thread.html" title="Cross-platform, object-oriented thread. ">Thread</a> class for ticking and reseting circuit components.  
+<p>Thread class for asynchronously ticking circuit components.  
  <a href="class_d_s_patch_1_1internal_1_1_circuit_thread.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for DSPatch::internal::CircuitThread:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="class_d_s_patch_1_1internal_1_1_circuit_thread.png" usemap="#DSPatch::internal::CircuitThread_map" alt=""/>
-  <map id="DSPatch::internal::CircuitThread_map" name="DSPatch::internal::CircuitThread_map">
-<area href="class_d_s_patch_1_1internal_1_1_thread.html" title="Cross-platform, object-oriented thread. " alt="DSPatch::internal::Thread" shape="rect" coords="0,0,192,24"/>
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -97,49 +88,28 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aba0ea009e4ca6113a0b3c80cec633986"><td class="memItemLeft" align="right" valign="top"><a id="aba0ea009e4ca6113a0b3c80cec633986"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_PTRS</b> (<a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html">CircuitThread</a>)</td></tr>
 <tr class="separator:aba0ea009e4ca6113a0b3c80cec633986"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b02269dcafe89ccb0cd795d2123b119"><td class="memItemLeft" align="right" valign="top"><a id="a4b02269dcafe89ccb0cd795d2123b119"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Initialise</b> (std::shared_ptr&lt; std::vector&lt; DSPatch::Component::SPtr &gt;&gt; const &amp;components, int threadNo)</td></tr>
-<tr class="separator:a4b02269dcafe89ccb0cd795d2123b119"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25fcf0f896eb63de6d5d5cb0cda5a4fc"><td class="memItemLeft" align="right" valign="top"><a id="a25fcf0f896eb63de6d5d5cb0cda5a4fc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Start</b> (Priority priority=HighestPriority) override</td></tr>
-<tr class="separator:a25fcf0f896eb63de6d5d5cb0cda5a4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af5c26cf676ac38a6e89eb7441e4365b8"><td class="memItemLeft" align="right" valign="top"><a id="af5c26cf676ac38a6e89eb7441e4365b8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Stop</b> () override</td></tr>
-<tr class="separator:af5c26cf676ac38a6e89eb7441e4365b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad96d044fb35705c69bfe60df18feac63"><td class="memItemLeft" align="right" valign="top"><a id="ad96d044fb35705c69bfe60df18feac63"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Initialise</b> (std::vector&lt; DSPatch::Component::SPtr &gt; *components, int threadNo)</td></tr>
+<tr class="separator:ad96d044fb35705c69bfe60df18feac63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0286d2fcd3dab0203a5e3595bb23ac55"><td class="memItemLeft" align="right" valign="top"><a id="a0286d2fcd3dab0203a5e3595bb23ac55"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Start</b> ()</td></tr>
+<tr class="separator:a0286d2fcd3dab0203a5e3595bb23ac55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c10ef8da11245dce92fbb2d8fb6c285"><td class="memItemLeft" align="right" valign="top"><a id="a9c10ef8da11245dce92fbb2d8fb6c285"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Stop</b> ()</td></tr>
+<tr class="separator:a9c10ef8da11245dce92fbb2d8fb6c285"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b56070b8921fcfb1b5186f00b4fc610"><td class="memItemLeft" align="right" valign="top"><a id="a6b56070b8921fcfb1b5186f00b4fc610"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Sync</b> ()</td></tr>
 <tr class="separator:a6b56070b8921fcfb1b5186f00b4fc610"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad9f6dfce4cdb743737404d735ef8efc"><td class="memItemLeft" align="right" valign="top"><a id="aad9f6dfce4cdb743737404d735ef8efc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Resume</b> ()</td></tr>
-<tr class="separator:aad9f6dfce4cdb743737404d735ef8efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_class_d_s_patch_1_1internal_1_1_thread"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_d_s_patch_1_1internal_1_1_thread')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_d_s_patch_1_1internal_1_1_thread.html">DSPatch::internal::Thread</a></td></tr>
-<tr class="memitem:af5b8ce5a3273fdb66c987238b9e6c1b5 inherit pub_methods_class_d_s_patch_1_1internal_1_1_thread"><td class="memItemLeft" align="right" valign="top"><a id="af5b8ce5a3273fdb66c987238b9e6c1b5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NONCOPYABLE</b> (<a class="el" href="class_d_s_patch_1_1internal_1_1_thread.html">Thread</a>)</td></tr>
-<tr class="separator:af5b8ce5a3273fdb66c987238b9e6c1b5 inherit pub_methods_class_d_s_patch_1_1internal_1_1_thread"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_class_d_s_patch_1_1internal_1_1_thread"><td colspan="2" onclick="javascript:toggleInherit('pub_types_class_d_s_patch_1_1internal_1_1_thread')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="class_d_s_patch_1_1internal_1_1_thread.html">DSPatch::internal::Thread</a></td></tr>
-<tr class="memitem:a3f7d60b6ba0466fc51e56000ec88633a inherit pub_types_class_d_s_patch_1_1internal_1_1_thread"><td class="memItemLeft" align="right" valign="top"><a id="a3f7d60b6ba0466fc51e56000ec88633a"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>Priority</b> { <br />
-&#160;&#160;<b>IdlePriority</b>, 
-<b>LowestPriority</b>, 
-<b>LowPriority</b>, 
-<b>NormalPriority</b>, 
-<br />
-&#160;&#160;<b>HighPriority</b>, 
-<b>HighestPriority</b>, 
-<b>TimeCriticalPriority</b>
-<br />
- }</td></tr>
-<tr class="separator:a3f7d60b6ba0466fc51e56000ec88633a inherit pub_types_class_d_s_patch_1_1internal_1_1_thread"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5dff28d3484f4c3f313db5abd2baf33"><td class="memItemLeft" align="right" valign="top"><a id="ab5dff28d3484f4c3f313db5abd2baf33"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SyncAndResume</b> ()</td></tr>
+<tr class="separator:ab5dff28d3484f4c3f313db5abd2baf33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="class_d_s_patch_1_1internal_1_1_thread.html" title="Cross-platform, object-oriented thread. ">Thread</a> class for ticking and reseting circuit components. </p>
-<p>A <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for ticking and reseting circuit components. ">CircuitThread</a> is responsible for ticking and reseting all components within a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a>. Upon initialisation, a reference to the vector of circuit components must be provided for the thread Run_() method to loop through. Each <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for ticking and reseting circuit components. ">CircuitThread</a> has a thread number (threadNo), which is also provided upon initialisation. When creating multiple CircuitThreads, each thread must have their own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This thread number corresponds with the <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components. ">Component</a>'s buffer number when calling it's ThreadTick() and ThreadReset() methods in the <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for ticking and reseting circuit components. ">CircuitThread</a>'s component loop. Hence, for every circuit thread created, each component's buffer count within that circuit must be incremented to match.</p>
-<p>The Resume() method causes the <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for ticking and reseting circuit components. ">CircuitThread</a> to tick and reset all circuit components once, after which the thread will wait until instructed to resume again. As each component is done processing it hands over control to the next waiting circuit thread, therefore, from an external control loop (I.e. <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a>'s Process_() method) we simply loop through our array of CircuitThreads calling Resume() on each. If a circuit thread is busy processing, a call to Resume() will block momentarily until processing is complete, then begin the next iteration immediately upon unblocking the calling thread.</p>
-<p>The Sync() method, when called, will block the calling thread until the circuit thread is done processing. If the circuit thread is already awaiting the next Resume() request, this method will return immediately. </p>
+<div class="textblock"><p>Thread class for asynchronously ticking circuit components. </p>
+<p>A <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components. ">CircuitThread</a> is responsible for ticking and reseting all components within a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a>. Upon initialisation, a reference to the vector of circuit components must be provided for the thread _Run() method to loop through. Each <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components. ">CircuitThread</a> has a thread number (threadNo), which is also provided upon initialisation. When creating multiple CircuitThreads, each thread must have their own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This thread number corresponds with the <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components. ">Component</a>'s buffer number when calling it's Tick() and Reset() methods in the <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components. ">CircuitThread</a>'s component loop. Hence, for every circuit thread created, each component's buffer count within that circuit must be incremented to match.</p>
+<p>The SyncAndResume() method causes the <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components. ">CircuitThread</a> to tick and reset all circuit components once, after which the thread will wait until instructed to resume again. As each component is done processing it hands over control to the next waiting circuit thread, therefore, from an external control loop (I.e. <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a>'s Tick() method) we can simply loop through our array of CircuitThreads calling SyncAndResume() on each. If a circuit thread is busy processing, a call to SyncAndResume() will block momentarily until that thread is done processing. </p>
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00061">61</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00056">56</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a></li>
 </ul>

@@ -25,18 +25,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #pragma once
 
 #include <dspatch/Common.h>
-#include <dspatch/RunType.h>
-
-#include <string>
-#include <vector>
 
 namespace DSPatch
 {
-
-namespace internal
-{
-class Signal;
-}
 
 /// Value container used to carry data between components
 
@@ -57,54 +48,104 @@ public:
     DEFINE_PTRS( Signal );
 
     Signal();
-    virtual ~Signal();
+    ~Signal();
 
-    template <class ValueType>
-    void SetValue( ValueType const& newValue );
+    bool HasValue() const;
 
     template <class ValueType>
     ValueType* GetValue();
 
-    bool SetSignal( Signal::SPtr const& newSignal );
-    bool MoveSignal( Signal::SPtr const& newSignal );
+    template <class ValueType>
+    void SetValue( ValueType const& newValue );
+
+    bool CopySignal( Signal::SPtr const& fromSignal );
+    bool MoveSignal( Signal::SPtr const& fromSignal );
 
     void ClearValue();
 
-private:
-    // Private methods required by Component
-
-    int _Deps() const;
-    void _IncDeps();
-    void _DecDeps();
-    void _SetDeps( int deps );
+    std::type_info const& GetType() const;
 
 private:
-    friend class Component;
+    struct _ValueHolder
+    {
+        NONCOPYABLE( _ValueHolder );
 
-    RunType _signalValue;
-    bool _valueAvailable;
+        _ValueHolder() = default;
+        virtual ~_ValueHolder() = default;
 
-    std::unique_ptr<internal::Signal> p;
+        virtual std::type_info const& GetType() const = 0;
+        virtual _ValueHolder* GetCopy() const = 0;
+        virtual void SetValue( _ValueHolder* valueHolder ) = 0;
+    };
+
+    template <class ValueType>
+    struct _Value final : _ValueHolder
+    {
+        NONCOPYABLE( _Value );
+
+        _Value( ValueType const& value )
+            : value( value )
+            , type( typeid( ValueType ) )
+        {
+        }
+
+        virtual std::type_info const& GetType() const override
+        {
+            return type;
+        }
+
+        virtual _ValueHolder* GetCopy() const override
+        {
+            return new _Value( value );
+        }
+
+        virtual void SetValue( _ValueHolder* valueHolder ) override
+        {
+            value = ( (_Value<ValueType>*)valueHolder )->value;
+        }
+
+        ValueType value;
+        std::type_info const& type;
+    };
+
+    _ValueHolder* _valueHolder = nullptr;
+    bool _hasValue = false;
 };
-
-template <class ValueType>
-void Signal::SetValue( ValueType const& newValue )
-{
-    _signalValue = newValue;
-    _valueAvailable = true;
-}
 
 template <class ValueType>
 ValueType* Signal::GetValue()
 {
-    if ( _valueAvailable )
+    // You might be thinking: Why the raw pointer return here?
+
+    // This is mainly for performance, and partly for readability. Performance, because returning a
+    // shared_ptr here means having to store the value as a shared_ptr in Signal::_Value too. This
+    // adds yet another level of indirection to the value, as well as some reference counting
+    // overhead. These Get() and Set() methods are VERY frequently called, so doing as little as
+    // possible with the data here is best, which actually aids in the readably of the code too.
+
+    if ( _hasValue && GetType() == typeid( ValueType ) )
     {
-        return RunType::RunTypeCast<ValueType>( &_signalValue );
+        return &( (_Value<ValueType>*)_valueHolder )->value;
     }
     else
     {
-        return nullptr;  // no value available
+        return nullptr;
     }
+}
+
+template <class ValueType>
+void Signal::SetValue( ValueType const& newValue )
+{
+    if ( GetType() == typeid( ValueType ) )
+    {
+        ( (_Value<ValueType>*)_valueHolder )->value = newValue;
+    }
+    else
+    {
+        delete _valueHolder;
+        _valueHolder = new _Value<ValueType>( newValue );
+    }
+    _hasValue = true;
 }
 
 }  // namespace DSPatch

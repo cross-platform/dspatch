@@ -26,56 +26,37 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 using namespace DSPatch;
 
-namespace DSPatch
-{
-namespace internal
-{
-
-class Signal
-{
-public:
-    int deps = 0;
-    int depsServiced = 0;
-};
-
-}  // namespace internal
-}  // namespace DSPatch
-
 Signal::Signal()
-    : _valueAvailable( false )
-    , p( new internal::Signal() )
 {
 }
 
 Signal::~Signal()
 {
+    delete _valueHolder;
 }
 
-bool Signal::SetSignal( Signal::SPtr const& newSignal )
+bool Signal::HasValue() const
 {
-    if ( newSignal != nullptr )
+    return _hasValue;
+}
+
+bool Signal::CopySignal( Signal::SPtr const& fromSignal )
+{
+    if ( fromSignal != nullptr && fromSignal->_hasValue )
     {
-        if ( newSignal->_valueAvailable == false )
+        if ( _valueHolder != nullptr && fromSignal->_valueHolder != nullptr &&
+             _valueHolder->GetType() == fromSignal->_valueHolder->GetType() )
         {
-            return false;
+            _valueHolder->SetValue( fromSignal->_valueHolder );
         }
         else
         {
-            if ( newSignal->p->depsServiced == newSignal->p->deps - 1 )
-            {
-                // This is the incoming signal's last dependent, so we move it.
-                newSignal->_signalValue.MoveTo( _signalValue );
-                newSignal->_valueAvailable = false;
-            }
-            else
-            {
-                _signalValue.CopyFrom( newSignal->_signalValue );
-            }
-
-            _valueAvailable = true;
-            ++newSignal->p->depsServiced;
-            return true;
+            delete _valueHolder;
+            _valueHolder = fromSignal->_valueHolder->GetCopy();
         }
+
+        _hasValue = true;
+        return true;
     }
     else
     {
@@ -83,22 +64,25 @@ bool Signal::SetSignal( Signal::SPtr const& newSignal )
     }
 }
 
-bool Signal::MoveSignal( Signal::SPtr const& newSignal )
+bool Signal::MoveSignal( Signal::SPtr const& fromSignal )
 {
-    if ( newSignal != nullptr )
+    if ( fromSignal != nullptr && fromSignal->_hasValue )
     {
-        if ( newSignal->_valueAvailable == false )
-        {
-            return false;
-        }
-        else
-        {
-            newSignal->_signalValue.MoveTo( _signalValue );
-            newSignal->_valueAvailable = false;
+        // You might be thinking: Why std::swap and not std::move here?
 
-            _valueAvailable = true;
-            return true;
-        }
+        // This is a really nifty little optimisation actually. When we move a signal value from an
+        // output to an input (or vice-versa within a component) we move it's type_info along with
+        // it. If you look at SetValue(), you'll see that type_info is really useful in determining
+        // whether we have to delete and copy (re)construct our contained value, or can simply copy
+        // assign. To avoid the former as much as possible, a swap is done between source and
+        // target signals such that, between these two points, just two value holders need to be
+        // constructed, and shared back and forth from then on.
+
+        std::swap( fromSignal->_valueHolder, _valueHolder );
+        fromSignal->_hasValue = false;
+
+        _hasValue = true;
+        return true;
     }
     else
     {
@@ -108,26 +92,17 @@ bool Signal::MoveSignal( Signal::SPtr const& newSignal )
 
 void Signal::ClearValue()
 {
-    _valueAvailable = false;
-    p->depsServiced = 0;
+    _hasValue = false;
 }
 
-int Signal::_Deps() const
+std::type_info const& Signal::GetType() const
 {
-    return p->deps;
-}
-
-void Signal::_IncDeps()
-{
-    ++p->deps;
-}
-
-void Signal::_DecDeps()
-{
-    --p->deps;
-}
-
-void Signal::_SetDeps( int deps )
-{
-    p->deps = deps;
+    if ( _valueHolder != nullptr )
+    {
+        return _valueHolder->GetType();
+    }
+    else
+    {
+        return typeid( void );
+    }
 }

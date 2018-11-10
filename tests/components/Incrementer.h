@@ -21,7 +21,7 @@ protected:
         if ( in )
         {
             *in += _increment;
-            outputs.SetValue( 0, inputs, 0 );  // pass the adjusted signal through (no copy)
+            outputs.MoveSignal( 0, inputs.GetSignal( 0 ) );  // pass the adjusted signal through (no copy)
         }
         // else set no output
     }

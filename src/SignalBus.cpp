@@ -33,6 +33,8 @@ namespace internal
 
 class SignalBus
 {
+public:
+    Signal::SPtr nullSignal = nullptr;
 };
 
 }  // namespace internal
@@ -43,7 +45,7 @@ SignalBus::SignalBus()
 {
 }
 
-SignalBus::SignalBus( SignalBus const& rhs )
+SignalBus::SignalBus( SignalBus&& rhs )
 {
     _signals = rhs._signals;
 }
@@ -58,7 +60,7 @@ void SignalBus::SetSignalCount( int signalCount )
 
     _signals.resize( signalCount );
 
-    for ( int i = fromSize; i < signalCount; i++ )
+    for ( int i = fromSize; i < signalCount; ++i )
     {
         _signals[i] = std::make_shared<Signal>();
     }
@@ -69,13 +71,47 @@ int SignalBus::GetSignalCount() const
     return _signals.size();
 }
 
-bool SignalBus::SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int fromSignalIndex )
+Signal::SPtr const& SignalBus::GetSignal( int signalIndex ) const
 {
-    auto newSignal = fromSignalBus._GetSignal( fromSignalIndex );
-
-    if ( (size_t)toSignalIndex < _signals.size() && newSignal != nullptr )
+    if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex]->MoveSignal( newSignal );
+        return _signals[signalIndex];
+    }
+    else
+    {
+        return p->nullSignal;
+    }
+}
+
+bool SignalBus::HasValue( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex]->HasValue();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
+{
+    if ( (size_t)toSignalIndex < _signals.size() )
+    {
+        return _signals[toSignalIndex]->CopySignal( fromSignal );
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
+{
+    if ( (size_t)toSignalIndex < _signals.size() )
+    {
+        return _signals[toSignalIndex]->MoveSignal( fromSignal );
     }
     else
     {
@@ -85,44 +121,20 @@ bool SignalBus::SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int
 
 void SignalBus::ClearAllValues()
 {
-    for ( size_t i = 0; i < _signals.size(); i++ )
+    for ( auto& signal : _signals )
     {
-        _signals[i]->ClearValue();
+        signal->ClearValue();
     }
 }
 
-Signal::SPtr SignalBus::_GetSignal( int signalIndex ) const
+std::type_info const& SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex];
+        return _signals[signalIndex]->GetType();
     }
     else
     {
-        return nullptr;
-    }
-}
-
-bool SignalBus::_SetSignal( int signalIndex, Signal::SPtr const& newSignal )
-{
-    if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
-    {
-        return _signals[signalIndex]->SetSignal( newSignal );
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool SignalBus::_MoveSignal( int signalIndex, Signal::SPtr const& newSignal )
-{
-    if ( (size_t)signalIndex < _signals.size() && newSignal != nullptr )
-    {
-        return _signals[signalIndex]->MoveSignal( newSignal );
-    }
-    else
-    {
-        return false;
+        return typeid( void );
     }
 }

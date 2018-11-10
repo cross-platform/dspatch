@@ -35,19 +35,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     DSPatch, pronounced "dispatch", is a powerful C++
     <a href="http://www.jpaulmorrison.com/fbp/">flow-based programming</a> framework. DSPatch is
     not limited to any particular domain or data type, its generic, object-oriented API allows you
-    to create almost any system imaginable, from simple logic circuits to high performance audio
-    process chains.
+    to create almost any dataflow system imaginable, from simple logic circuits to high performance
+    audio process chains.
 
     DSPatch is designed around the concept of a "circuit" that contains "components"
-    interconnected via "wires" that transfer "signals" to and from component I/O "buses". For
-    more detail on how DSPatch works internally, check out the <a href="spec_page.html">
-    <b>DSPatch Design Specification</b></a>.
+    interconnected via "wires" that transfer "signals" to and from component I/O "buses".
 
     The two most important classes to consider are DSPatch::Component and DSPatch::Circuit.
     In order to route data to and from components they must be added to a circuit, where they can
     be wired together.
 
-    The DSPatch engine takes care of data transfer between interconnected components. When data
+    The DSPatch engine takes care of data transfers between interconnected components. When data
     is ready for a component to process, a callback: "Process_()" is executed in that component.
     For a component to form part of a DSPatch circuit, designers simply have to derive their
     component from the DSPatch::Component base class, configure the component's IO buses, and
@@ -69,8 +67,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     into previous component inputs.
     - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling
     to maximize data flow efficiency.
-    - <b>Integrated circuits</b> - Build circuits within circuits to encapsulate complex component
-    networks into single circuit components.
     - <b>Optimised signal transfers</b> - Wherever possible, data between components is transfered
     via move rather than copy.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time
@@ -242,11 +238,10 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     _
     \endcode
 
-    Lastly, in order for our circuit to do any work it must be ticked over. This is performed by
-    repeatedly calling the circuit's Tick() and Reset() methods. These methods can be called
-    manually in a loop from the main application thread, or alternatively, by calling
-    StartAutoTick(), a seperate thread will spawn, automatically calling Tick() and Reset()
-    continuously.
+    Lastly, in order for our circuit to do any work it must be ticked. This is performed by
+    repeatedly calling the circuit's Tick() method. This method can be called manually in a loop
+    from the main application thread, or alternatively, by calling StartAutoTick(), a seperate
+    thread will spawn, automatically calling Tick() continuously.
 
     A circuit's thread count can be adjusted at runtime, allowing us to increase / decrease the
     number of threads use by the circuit as required during execution:
@@ -256,10 +251,9 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     // ===================
 
     // Circuit tick method 1: Manual
-    for( int i = 0; i < 10; i++ )
+    for( int i = 0; i < 10; ++i )
     {
         circuit->Tick();
-        circuit->Reset();
     }
 
     // Circuit tick method 2: Automatic
@@ -282,135 +276,4 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     (<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder
     in the <a href="https://github.com/MarcusTomlinson/DSPatch"><b>DSPatch root directory</b></a>).
 
-\page spec_page DSPatch Design Specification
-
-1. The Circuit Concept:
------------------------
-
-A circuit is comprised of a collection of interconnected components. Each
-component has 2 signal buses, on one end of the component there are inputs
-(the "input bus"), and on the other end there are outputs (the "output bus").
-Components within the circuit are connected to each other via wires. Each
-wire carries a signal from one component's output to another component's
-input. A circuit can also comprise of interconnected circuits - in this case
-a circuit acts as a component within another circuit.
-
-______________________________________________________________________________
-
-2. The DSPatch Circuit System:
----------------------------------
-
-<b>2.1 Structure:</b>
-
-The nouns above are the classes we require in order to model our circuit in
-code. Each component will contain an array of input wires. Each wire contains
-references to the source component, the source output, and the destination input.
-The signal bus class will contain an array of signals, and lastly, the Circuit
-class will be derived from Component and will contain an array of internal
-components.
-
-<b>2.2 Behavior:</b>
-
-<b>2.2.1 Component:</b>
-
-The Component class will have a Tick() method responsible for acquiring its
-next set of inputs from its input wires and populating the component's input
-bus. To insure that these inputs are up-to-date, the dependent component
-first calls all of its input components' Tick() methods - hence recursively
-called in all components going backward through the circuit. The acquired
-input bus is then passed into a virtual method: Process_() - it is the
-responsibility of the (derived) component creator to implement this virtual
-method. The Process_() method has 2 input arguments: the input bus and the
-output bus. This method's purpose is to pull its required inputs out of the
-input bus, process these inputs, then populate the output bus with the results.
-These resultant outputs in the output bus are then acquired by dependent
-components via their Tick() methods.
-
-The Component class will also have a Reset() method. For optimization as well
-as to avoid feedback deadlocks, a component needs to be aware of whether or
-not it has already ticked during a circuit traversal so that if asked to
-Tick() again, it can ignore the call. The Reset() method informs the
-component that the last circuit traversal has completed and hence may execute
-the next Tick() request.
-
-<b>2.2.2 Circuit:</b>
-
-In order to satisfy the statement above ("circuit acts as a component"), the
-Circuit class is derived from the Component class. This means that the
-Circuit class has both Tick() and Process_() methods. The Tick() method will
-execute as normal, acquiring inputs for the circuit to process. This allows
-us to expose the IO we require for internal components via the circuit's
-input and output buses. Circuit IO-to-component wires, and
-component-to-component wires, will be publicly routable via Circuit class
-methods. The Circuit class' virtual Process_() method is implemented as such:
-
-- Inputs from the circuit's input bus are moved to their respective
-internal component input buses.
-- All internal components are Tick()ed.
-- All internal components are Reset()ed.
-- The circuit output bus is populated with the respective internal component
-outputs.
-
-All actions in respect to the circuit and the components within the circuit
-will be made available via public methods in the Circuit class. The circuit
-object user will be able to add/remove components, connect/disconnect wires,
-and set/get circuit IO count.
-
-<b>2.2.3 Signal:</b>
-
-When it comes to transferring signals between components we require the same
-level of abstraction for the data being moved around:
-
-The base Component class needs to supply its child class with any number of
-inputs and outputs via the virtual Process_() method. These inputs and outputs
-may also need to be of different types. This requires a generic way of
-containing variables of different types in a single collection - the signal
-bus.
-
-The signal class will hold a variable that can be dynamically typed at
-run-time, which we'll call "run-type". The run-type and signal classes make
-use of template methods to allow object users to set and get the contained
-variable as any type they wish. The run-type (and hence, a signal) has the
-ability to change type at any point during program execution - this can be
-useful for inputs that can accept a number of different types of data (E.g.
-Varying sample size in an audio buffer: array of byte / int / float)
-
-From the Process_() method, a derived component can get and set the signals
-it requires of the provided signal buses via public methods. As the component
-creator is responsible for configuring the component's IO buses, the types
-held within those buses can be assumed, and hence, read and written to
-accordingly. Built-in typecasting and error checking prevents critical
-run-time errors from occurring when signal types are mismatched.
-
-______________________________________________________________________________
-
-3. Parallel Circuit Processing:
--------------------------------
-
-The multi-threading aspect of DSPatch is designed to allow the library user
-the ability to specify the number of threads in which he/she requires the circuit
-to process, rather than the thread count growing as the system does. So for
-example, an application running on a quad core CPU could be limited to 4 threads
-in order to allow each core to handle just one thread.
-
-<b>3.1 The Circuit Thread:</b>
-
-Circuit Threads are threads that traverse entire circuits. The circuit runs
-through its array of components, calling each components' process method in a
-single thread (the Circuit Thread) loop. As each component is done processing,
-it hands over control to the next waiting Circuit Thread. Therefore, if you had
-5 components in a process chain, and 5 Circuit Threads, at any point in time you
-could have one thread per component processing in parallel.
-
-With this in place, you now also have the option to select 0 Circuit Threads.
-In this state, the circuit's Tick() and Reset() methods will block the calling
-thread while all components in the circuit are processed, whereas with circuit
-threads enabled, the calling thread will block only if all Circuit Threads are
-busy.
-
-<b>3.2 The Component Thread:</b>
-
-The Component Thread simply ticks a single component over and over. As the
-Circuit class inherits from Component, we can use its Component Thread to
-"auto-tick" the circuit in order to free up the main application thread for
-control.*/
+*/

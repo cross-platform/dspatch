@@ -24,6 +24,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Plugin.h>
 
+#include <string>
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -50,7 +52,7 @@ public:
     typedef DSPatch::Component* ( *Create_t )();
 
     void* handle = nullptr;
-    Create_t create;
+    Create_t create = nullptr;
 };
 
 }  // namespace internal
@@ -76,7 +78,7 @@ Plugin::~Plugin()
 
 bool Plugin::IsLoaded() const
 {
-    return p->handle ? true : false;
+    return p->handle;
 }
 
 Component::SPtr Plugin::Create() const

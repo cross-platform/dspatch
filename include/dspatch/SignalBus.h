@@ -26,6 +26,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Signal.h>
 
+#include <vector>
+
 namespace DSPatch
 {
 
@@ -46,14 +48,19 @@ abstracting the need to retrieve and interface with the contained Signals themse
 class DLLEXPORT SignalBus final
 {
 public:
+    NONCOPYABLE( SignalBus );
     DEFINE_PTRS( SignalBus );
 
     SignalBus();
-    SignalBus( SignalBus const& );
-    virtual ~SignalBus();
+    SignalBus( SignalBus&& );
+    ~SignalBus();
 
     void SetSignalCount( int signalCount );
     int GetSignalCount() const;
+
+    Signal::SPtr const& GetSignal( int signalIndex ) const;
+
+    bool HasValue( int signalIndex ) const;
 
     template <class ValueType>
     ValueType* GetValue( int signalIndex ) const;
@@ -61,25 +68,31 @@ public:
     template <class ValueType>
     bool SetValue( int signalIndex, ValueType const& newValue );
 
-    bool SetValue( int toSignalIndex, SignalBus const& fromSignalBus, int fromSignalIndex );
+    bool CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal );
+    bool MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal );
 
     void ClearAllValues();
 
-private:
-    // Private methods required by Circuit & Component
-
-    Signal::SPtr _GetSignal( int signalIndex ) const;
-    bool _SetSignal( int signalIndex, Signal::SPtr const& newSignal );
-    bool _MoveSignal( int signalIndex, Signal::SPtr const& newSignal );
+    std::type_info const& GetType( int signalIndex ) const;
 
 private:
-    friend class Circuit;
-    friend class Component;
-
     std::vector<Signal::SPtr> _signals;
 
     std::unique_ptr<internal::SignalBus> p;
 };
+
+template <class ValueType>
+ValueType* SignalBus::GetValue( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex]->GetValue<ValueType>();
+    }
+    else
+    {
+        return nullptr;
+    }
+}
 
 template <class ValueType>
 bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
@@ -92,19 +105,6 @@ bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
     else
     {
         return false;
-    }
-}
-
-template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex ) const
-{
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex]->GetValue<ValueType>();
-    }
-    else
-    {
-        return nullptr;
     }
 }
 

@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.4.10</span>
+   &#160;<span id="projectnumber">v.5.00</span>
    </div>
   </td>
  </tr>
@@ -68,6 +68,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="class_d_s_patch_1_1_signal-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -88,29 +89,35 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad6af40f1a7fef289cfab1ca29b2bb163"><td class="memItemLeft" align="right" valign="top"><a id="ad6af40f1a7fef289cfab1ca29b2bb163"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_PTRS</b> (<a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a>)</td></tr>
 <tr class="separator:ad6af40f1a7fef289cfab1ca29b2bb163"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memTemplParams" colspan="2"><a id="a11e6ed54aa35b43593be9bc86b59a8a6"></a>
-template&lt;class ValueType &gt; </td></tr>
-<tr class="memitem:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetValue</b> (ValueType const &amp;newValue)</td></tr>
-<tr class="separator:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad930da4065a314911ea1b4970d6d917e"><td class="memItemLeft" align="right" valign="top"><a id="ad930da4065a314911ea1b4970d6d917e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>HasValue</b> () const</td></tr>
+<tr class="separator:ad930da4065a314911ea1b4970d6d917e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69472f69f9549af98ee2a75d1dc1afed"><td class="memTemplParams" colspan="2"><a id="a69472f69f9549af98ee2a75d1dc1afed"></a>
 template&lt;class ValueType &gt; </td></tr>
 <tr class="memitem:a69472f69f9549af98ee2a75d1dc1afed"><td class="memTemplItemLeft" align="right" valign="top">ValueType *&#160;</td><td class="memTemplItemRight" valign="bottom"><b>GetValue</b> ()</td></tr>
 <tr class="separator:a69472f69f9549af98ee2a75d1dc1afed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a923c0335db49b199e17ae1222b1aadc4"><td class="memItemLeft" align="right" valign="top"><a id="a923c0335db49b199e17ae1222b1aadc4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetSignal</b> (Signal::SPtr const &amp;newSignal)</td></tr>
-<tr class="separator:a923c0335db49b199e17ae1222b1aadc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cae6e3ad25d00b94a75732c44459591"><td class="memItemLeft" align="right" valign="top"><a id="a4cae6e3ad25d00b94a75732c44459591"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>MoveSignal</b> (Signal::SPtr const &amp;newSignal)</td></tr>
-<tr class="separator:a4cae6e3ad25d00b94a75732c44459591"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memTemplParams" colspan="2"><a id="a11e6ed54aa35b43593be9bc86b59a8a6"></a>
+template&lt;class ValueType &gt; </td></tr>
+<tr class="memitem:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>SetValue</b> (ValueType const &amp;newValue)</td></tr>
+<tr class="separator:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9c5f3620bd3b056a4a110bb8d147657"><td class="memItemLeft" align="right" valign="top"><a id="ae9c5f3620bd3b056a4a110bb8d147657"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>CopySignal</b> (Signal::SPtr const &amp;fromSignal)</td></tr>
+<tr class="separator:ae9c5f3620bd3b056a4a110bb8d147657"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b26cf75978c8839942c057b46c688e0"><td class="memItemLeft" align="right" valign="top"><a id="a2b26cf75978c8839942c057b46c688e0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>MoveSignal</b> (Signal::SPtr const &amp;fromSignal)</td></tr>
+<tr class="separator:a2b26cf75978c8839942c057b46c688e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cedd56f59cddb5acf0642903164865b"><td class="memItemLeft" align="right" valign="top"><a id="a1cedd56f59cddb5acf0642903164865b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ClearValue</b> ()</td></tr>
 <tr class="separator:a1cedd56f59cddb5acf0642903164865b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70eccc27f5595947db701ab2cdd4a441"><td class="memItemLeft" align="right" valign="top"><a id="a70eccc27f5595947db701ab2cdd4a441"></a>
+std::type_info const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetType</b> () const</td></tr>
+<tr class="separator:a70eccc27f5595947db701ab2cdd4a441"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Value container used to carry data between components. </p>
 <p>Components process and transfer data between each other in the form of "signals" via interconnected wires. The <a class="el" href="class_d_s_patch_1_1_signal.html" title="Value container used to carry data between components. ">Signal</a> class holds a single value that can be dynamically typed at runtime. Furthermore, a <a class="el" href="class_d_s_patch_1_1_signal.html" title="Value container used to carry data between components. ">Signal</a> has the ability to change it's data type at any point during program execution. This is designed such that a signal bus can hold any number of different typed variables, as well as to allow for a variable to dynamically change it's type when needed - this can be useful for inputs that accept a number of different data types (E.g. Varying sample size in an audio buffer: array of byte / int / float). </p>
 
-<p class="definition">Definition at line <a class="el" href="_signal_8h_source.html#l00053">53</a> of file <a class="el" href="_signal_8h_source.html">Signal.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_8h_source.html#l00044">44</a> of file <a class="el" href="_signal_8h_source.html">Signal.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_signal_8h_source.html">Signal.h</a></li>
 </ul>

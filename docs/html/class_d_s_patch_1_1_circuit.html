@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.4.10</span>
+   &#160;<span id="projectnumber">v.5.00</span>
    </div>
   </td>
  </tr>
@@ -69,7 +69,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="class_d_s_patch_1_1_circuit-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">DSPatch::Circuit Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
@@ -80,15 +79,6 @@ $(function() {
  <a href="class_d_s_patch_1_1_circuit.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_circuit_8h_source.html">Circuit.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for DSPatch::Circuit:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="class_d_s_patch_1_1_circuit.png" usemap="#DSPatch::Circuit_map" alt=""/>
-  <map id="DSPatch::Circuit_map" name="DSPatch::Circuit_map">
-<area href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components. " alt="DSPatch::Component" shape="rect" coords="0,56,263,80"/>
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -98,33 +88,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a13d175fb4d6fbe868f9c7a2b20f73fb0"><td class="memItemLeft" align="right" valign="top"><a id="a13d175fb4d6fbe868f9c7a2b20f73fb0"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_PTRS</b> (<a class="el" href="class_d_s_patch_1_1_circuit.html">Circuit</a>)</td></tr>
 <tr class="separator:a13d175fb4d6fbe868f9c7a2b20f73fb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a26ee73f4eebda66b3f722870f28eb4"><td class="memItemLeft" align="right" valign="top"><a id="a8a26ee73f4eebda66b3f722870f28eb4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Circuit</b> (int threadCount=0)</td></tr>
-<tr class="separator:a8a26ee73f4eebda66b3f722870f28eb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a250fe90b0c46cab8b0942a2416a9d9"><td class="memItemLeft" align="right" valign="top"><a id="a5a250fe90b0c46cab8b0942a2416a9d9"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>PauseAutoTick</b> () override</td></tr>
-<tr class="separator:a5a250fe90b0c46cab8b0942a2416a9d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc58cde2116a9e6d1196e669d33570bf"><td class="memItemLeft" align="right" valign="top"><a id="adc58cde2116a9e6d1196e669d33570bf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetInputCount</b> (int inputCount)</td></tr>
-<tr class="separator:adc58cde2116a9e6d1196e669d33570bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abefde4355f791770c0d0e2d17660213a"><td class="memItemLeft" align="right" valign="top"><a id="abefde4355f791770c0d0e2d17660213a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount</b> (int outputCount)</td></tr>
-<tr class="separator:abefde4355f791770c0d0e2d17660213a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f54ec0b5fab4afebb7efb59db5e45fb"><td class="memItemLeft" align="right" valign="top"><a id="a2f54ec0b5fab4afebb7efb59db5e45fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetThreadCount</b> (int threadCount)</td></tr>
-<tr class="separator:a2f54ec0b5fab4afebb7efb59db5e45fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04309f25be60fed3727ec1ae14490ccc"><td class="memItemLeft" align="right" valign="top"><a id="a04309f25be60fed3727ec1ae14490ccc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetThreadCount</b> () const</td></tr>
-<tr class="separator:a04309f25be60fed3727ec1ae14490ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafa4dbdcbf07361b10f0a5ada119307f"><td class="memItemLeft" align="right" valign="top"><a id="aafa4dbdcbf07361b10f0a5ada119307f"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>AddComponent</b> (Component::SPtr const &amp;component)</td></tr>
 <tr class="separator:aafa4dbdcbf07361b10f0a5ada119307f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a149eca69c2dc7d7724e63a3dc7ecb62a"><td class="memItemLeft" align="right" valign="top"><a id="a149eca69c2dc7d7724e63a3dc7ecb62a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveComponent</b> (Component::SCPtr const &amp;component)</td></tr>
 <tr class="separator:a149eca69c2dc7d7724e63a3dc7ecb62a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0852c3a72f8d93b9aa6ecb741de3a851"><td class="memItemLeft" align="right" valign="top"><a id="a0852c3a72f8d93b9aa6ecb741de3a851"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveComponent</b> (int component)</td></tr>
-<tr class="separator:a0852c3a72f8d93b9aa6ecb741de3a851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a892813aa130fff527072597df11bf0de"><td class="memItemLeft" align="right" valign="top"><a id="a892813aa130fff527072597df11bf0de"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveComponent</b> (int componentIndex)</td></tr>
+<tr class="separator:a892813aa130fff527072597df11bf0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a050718ebf4f757e105e4974dbb8405eb"><td class="memItemLeft" align="right" valign="top"><a id="a050718ebf4f757e105e4974dbb8405eb"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveAllComponents</b> ()</td></tr>
 <tr class="separator:a050718ebf4f757e105e4974dbb8405eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,103 +115,42 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (i
 <tr class="memitem:adc851f2d0cdf29f13d9aaad65adf7d4f"><td class="memItemLeft" align="right" valign="top"><a id="adc851f2d0cdf29f13d9aaad65adf7d4f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (int fromComponent, int fromOutput, int toComponent, int toInput)</td></tr>
 <tr class="separator:adc851f2d0cdf29f13d9aaad65adf7d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a72125b621111eb030fa0e04a6cf56d8a"><td class="memItemLeft" align="right" valign="top"><a id="a72125b621111eb030fa0e04a6cf56d8a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectInToIn</b> (int fromInput, Component::SCPtr const &amp;toComponent, int toInput)</td></tr>
-<tr class="separator:a72125b621111eb030fa0e04a6cf56d8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a38785ab832417ec3eaecc91bfe4772dd"><td class="memItemLeft" align="right" valign="top"><a id="a38785ab832417ec3eaecc91bfe4772dd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectInToIn</b> (int fromInput, int toComponent, int toInput)</td></tr>
-<tr class="separator:a38785ab832417ec3eaecc91bfe4772dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a838c4dcb48d33de61c0cfc4ab4dacaae"><td class="memItemLeft" align="right" valign="top"><a id="a838c4dcb48d33de61c0cfc4ab4dacaae"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToOut</b> (Component::SCPtr const &amp;fromComponent, int fromOutput, int toOutput)</td></tr>
-<tr class="separator:a838c4dcb48d33de61c0cfc4ab4dacaae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec3f8258f3d548426347c6f6dc055db2"><td class="memItemLeft" align="right" valign="top"><a id="aec3f8258f3d548426347c6f6dc055db2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToOut</b> (int fromComponent, int fromOutput, int toOutput)</td></tr>
-<tr class="separator:aec3f8258f3d548426347c6f6dc055db2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6874151245979af81f8a11205b800e2"><td class="memItemLeft" align="right" valign="top"><a id="aa6874151245979af81f8a11205b800e2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</b> (Component::SCPtr const &amp;component)</td></tr>
 <tr class="separator:aa6874151245979af81f8a11205b800e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a628bf426f076e5982312046ec55bae9a"><td class="memItemLeft" align="right" valign="top"><a id="a628bf426f076e5982312046ec55bae9a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</b> (int componentIndex)</td></tr>
 <tr class="separator:a628bf426f076e5982312046ec55bae9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_class_d_s_patch_1_1_component"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_d_s_patch_1_1_component')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></td></tr>
-<tr class="memitem:a57a45f79efb4151663a77e296e3967d5 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a57a45f79efb4151663a77e296e3967d5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>NONCOPYABLE</b> (<a class="el" href="class_d_s_patch_1_1_component.html">Component</a>)</td></tr>
-<tr class="separator:a57a45f79efb4151663a77e296e3967d5 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5a488ceafbb41f2f2a67df31688e95c inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="ae5a488ceafbb41f2f2a67df31688e95c"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_PTRS</b> (<a class="el" href="class_d_s_patch_1_1_component.html">Component</a>)</td></tr>
-<tr class="separator:ae5a488ceafbb41f2f2a67df31688e95c inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a641acd00d29fd2eeccf602c391f3d9d3 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a641acd00d29fd2eeccf602c391f3d9d3"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Component</b> (ProcessOrder processOrder)</td></tr>
-<tr class="separator:a641acd00d29fd2eeccf602c391f3d9d3 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7a22f9fb915439ab69f91f5b0319f9ee inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a7a22f9fb915439ab69f91f5b0319f9ee"></a>
+<tr class="memitem:a2f54ec0b5fab4afebb7efb59db5e45fb"><td class="memItemLeft" align="right" valign="top"><a id="a2f54ec0b5fab4afebb7efb59db5e45fb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetThreadCount</b> (int threadCount)</td></tr>
+<tr class="separator:a2f54ec0b5fab4afebb7efb59db5e45fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04309f25be60fed3727ec1ae14490ccc"><td class="memItemLeft" align="right" valign="top"><a id="a04309f25be60fed3727ec1ae14490ccc"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>GetThreadCount</b> () const</td></tr>
+<tr class="separator:a04309f25be60fed3727ec1ae14490ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41921757f93f513000f696e795fabe29"><td class="memItemLeft" align="right" valign="top"><a id="a41921757f93f513000f696e795fabe29"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> ()</td></tr>
-<tr class="separator:a7a22f9fb915439ab69f91f5b0319f9ee inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93781a2b06a26313297a22b99c8ec4b6 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a93781a2b06a26313297a22b99c8ec4b6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> ()</td></tr>
-<tr class="separator:a93781a2b06a26313297a22b99c8ec4b6 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a225cd3d8e6bf962ff745b5a781f31693 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a225cd3d8e6bf962ff745b5a781f31693"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>StartAutoTick</b> ()</td></tr>
-<tr class="separator:a225cd3d8e6bf962ff745b5a781f31693 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0064cfd0cc412871437eb8393169aed4 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a0064cfd0cc412871437eb8393169aed4"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>StopAutoTick</b> ()</td></tr>
-<tr class="separator:a0064cfd0cc412871437eb8393169aed4 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7371d07f49af8436e1140314e6bb4ef inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="ac7371d07f49af8436e1140314e6bb4ef"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>ResumeAutoTick</b> ()</td></tr>
-<tr class="separator:ac7371d07f49af8436e1140314e6bb4ef inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb5b1f1f78760f5068e34cf77a2c64fd inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="aeb5b1f1f78760f5068e34cf77a2c64fd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectInput</b> (Component::SPtr const &amp;fromComponent, int fromOutput, int toInput)</td></tr>
-<tr class="separator:aeb5b1f1f78760f5068e34cf77a2c64fd inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5dcf30063b7dfc35ff81ca28e450746 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="aa5dcf30063b7dfc35ff81ca28e450746"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectInput</b> (int inputNo)</td></tr>
-<tr class="separator:aa5dcf30063b7dfc35ff81ca28e450746 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1f4663b779cf6a17bef7089fbf723d7 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="aa1f4663b779cf6a17bef7089fbf723d7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectInput</b> (Component::SCPtr const &amp;fromComponent)</td></tr>
-<tr class="separator:aa1f4663b779cf6a17bef7089fbf723d7 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef45c9c761af8219c79439aa276dc402 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="aef45c9c761af8219c79439aa276dc402"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectAllInputs</b> ()</td></tr>
-<tr class="separator:aef45c9c761af8219c79439aa276dc402 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85438e13271567be239785ecee18c202 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a85438e13271567be239785ecee18c202"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetInputCount</b> () const</td></tr>
-<tr class="separator:a85438e13271567be239785ecee18c202 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97f1a2ea2c8aa6459bd8a8caeabb499c inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a97f1a2ea2c8aa6459bd8a8caeabb499c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetOutputCount</b> () const</td></tr>
-<tr class="separator:a97f1a2ea2c8aa6459bd8a8caeabb499c inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6a79e6722cf2cdfe09b6204ccec1e53 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="ad6a79e6722cf2cdfe09b6204ccec1e53"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetInputName</b> (int inputNo) const</td></tr>
-<tr class="separator:ad6a79e6722cf2cdfe09b6204ccec1e53 inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2663a9bcd7a6fa9ec9e33da62764565f inherit pub_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a2663a9bcd7a6fa9ec9e33da62764565f"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetOutputName</b> (int outputNo) const</td></tr>
-<tr class="separator:a2663a9bcd7a6fa9ec9e33da62764565f inherit pub_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a04d79735aa4ae44daa2429ef0e127f47"><td class="memItemLeft" align="right" valign="top"><a id="a04d79735aa4ae44daa2429ef0e127f47"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Process_</b> (<a class="el" href="class_d_s_patch_1_1_signal_bus.html">SignalBus</a> const &amp;inputs, <a class="el" href="class_d_s_patch_1_1_signal_bus.html">SignalBus</a> &amp;outputs) override</td></tr>
-<tr class="separator:a04d79735aa4ae44daa2429ef0e127f47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_methods_class_d_s_patch_1_1_component"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_class_d_s_patch_1_1_component')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></td></tr>
-<tr class="memitem:a558625b0b81ff0cb382f9de6f9dec955 inherit pro_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a558625b0b81ff0cb382f9de6f9dec955"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetInputCount_</b> (int inputCount, std::vector&lt; std::string &gt; const &amp;inputNames={})</td></tr>
-<tr class="separator:a558625b0b81ff0cb382f9de6f9dec955 inherit pro_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa2b8db3f7a611976971fc7b5f6fcd49 inherit pro_methods_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="afa2b8db3f7a611976971fc7b5f6fcd49"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (int outputCount, std::vector&lt; std::string &gt; const &amp;outputNames={})</td></tr>
-<tr class="separator:afa2b8db3f7a611976971fc7b5f6fcd49 inherit pro_methods_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_class_d_s_patch_1_1_component"><td colspan="2" onclick="javascript:toggleInherit('pub_types_class_d_s_patch_1_1_component')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></td></tr>
-<tr class="memitem:a922d0d4acb680cd2f0474aa60eb60883 inherit pub_types_class_d_s_patch_1_1_component"><td class="memItemLeft" align="right" valign="top"><a id="a922d0d4acb680cd2f0474aa60eb60883"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ProcessOrder</b> { <b>InOrder</b>, 
-<b>OutOfOrder</b>
- }</td></tr>
-<tr class="separator:a922d0d4acb680cd2f0474aa60eb60883 inherit pub_types_class_d_s_patch_1_1_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a41921757f93f513000f696e795fabe29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad75ef1168a830209d4bc1da8dc25fc2f"><td class="memItemLeft" align="right" valign="top"><a id="ad75ef1168a830209d4bc1da8dc25fc2f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>StartAutoTick</b> ()</td></tr>
+<tr class="separator:ad75ef1168a830209d4bc1da8dc25fc2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2036b492d871c011730ebb48a724717"><td class="memItemLeft" align="right" valign="top"><a id="ac2036b492d871c011730ebb48a724717"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>StopAutoTick</b> ()</td></tr>
+<tr class="separator:ac2036b492d871c011730ebb48a724717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b2e14e81c13be8c86ea51aa223872b1"><td class="memItemLeft" align="right" valign="top"><a id="a5b2e14e81c13be8c86ea51aa223872b1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>PauseAutoTick</b> ()</td></tr>
+<tr class="separator:a5b2e14e81c13be8c86ea51aa223872b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d414e8a684fc37f8953f86d75b9e117"><td class="memItemLeft" align="right" valign="top"><a id="a3d414e8a684fc37f8953f86d75b9e117"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ResumeAutoTick</b> ()</td></tr>
+<tr class="separator:a3d414e8a684fc37f8953f86d75b9e117"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Workspace for adding and routing components. </p>
-<p>Components can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> and routed to and from other Components. ConnectOutToIn and DisconnectOutToIn provide a means of routing component outputs to other component inputs, while ConnectInToIn / DisconnectInToIn and ConnectOutToOut / DisconnectOutToOut route the circuit's IO signals to and from it's internal components.</p>
-<p>N.B. Each component input can only accept one wire at a time. When a wire is connected to an input that already has a connected wire, that wire is replaced with the new one. One output, on the other hand, can be distributed to multiple inputs.</p>
-<p>For process intensive circuits, multi-threaded processing can be enabled via the SetThreadCount() method. The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> class allows the user to specify the number of threads in which he/she requires the circuit to process (0 threads: multi-threading disabled). A circuit's thread count can be adjusted at runtime, allowing the user to increase / decrease the number of threads as required during execution.</p>
-<p><a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> is derived from <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components. ">Component</a> and therefore inherits all <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components. ">Component</a> behavior. This means that a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> can be added to, and routed within another <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> as a component. This also means a circuit object needs to be Tick()ed and Reset()ed as a component (see <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components. ">Component</a>). The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> Process_() method simply runs through it's internal array of components and calls each component's Tick() and Reset() methods. </p>
+<p>Components can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> via the AddComponent() method, and routed to and from other components via the ConnectOutToIn() methods.</p>
+<p><b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is connected to an input that already has a connected wire, that wire is replaced with the new one. One output, on the other hand, can be distributed to multiple inputs.</p>
+<p>For process intensive circuits, multi-threaded processing can be enabled via the SetThreadCount() method (0 threads = multi-threading disabled). A circuit's thread count can be adjusted at runtime, allowing the user to increase / decrease the number of threads as required during execution.</p>
+<p>The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> Tick() method runs through it's internal array of components and calls each component's Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called. </p>
 
-<p class="definition">Definition at line <a class="el" href="_circuit_8h_source.html#l00062">62</a> of file <a class="el" href="_circuit_8h_source.html">Circuit.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_8h_source.html#l00057">57</a> of file <a class="el" href="_circuit_8h_source.html">Circuit.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_circuit_8h_source.html">Circuit.h</a></li>
 </ul>

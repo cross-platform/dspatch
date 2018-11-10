@@ -37,72 +37,57 @@ class Circuit;
 /// Workspace for adding and routing components
 
 /**
-Components can be added to a Circuit and routed to and from other Components. ConnectOutToIn and
-DisconnectOutToIn provide a means of routing component outputs to other component inputs, while
-ConnectInToIn / DisconnectInToIn and ConnectOutToOut / DisconnectOutToOut route the circuit's IO
-signals to and from it's internal components.
+Components can be added to a Circuit via the AddComponent() method, and routed to and from other
+components via the ConnectOutToIn() methods.
 
-*N.B. Each component input can only accept one wire at a time. When a wire is connected to an input
-that already has a connected wire, that wire is replaced with the new one. One output, on the other
-hand, can be distributed to multiple inputs.
+<b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is
+connected to an input that already has a connected wire, that wire is replaced with the new one.
+One output, on the other hand, can be distributed to multiple inputs.
 
 For process intensive circuits, multi-threaded processing can be enabled via the SetThreadCount()
-method. The Circuit class allows the user to specify the number of threads in which he/she requires
-the circuit to process (0 threads: multi-threading disabled). A circuit's thread count can be
-adjusted at runtime, allowing the user to increase / decrease the number of threads as required
-during execution.
+method (0 threads = multi-threading disabled). A circuit's thread count can be adjusted at runtime,
+allowing the user to increase / decrease the number of threads as required during execution.
 
-Circuit is derived from Component and therefore inherits all Component behavior. This means that a
-Circuit can be added to, and routed within another Circuit as a component. This also means a
-circuit object needs to be Tick()ed and Reset()ed as a component (see Component). The Circuit
-Process_() method simply runs through it's internal array of components and calls each component's
-Tick() and Reset() methods.
+The Circuit Tick() method runs through it's internal array of components and calls each component's
+Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
+application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn,
+automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
 */
 
-class DLLEXPORT Circuit final : public Component
+class DLLEXPORT Circuit final
 {
 public:
     NONCOPYABLE( Circuit );
     DEFINE_PTRS( Circuit );
 
-    Circuit( int threadCount = 0 );
-    virtual ~Circuit();
-
-    virtual void PauseAutoTick() override;
-
-    void SetInputCount( int inputCount );
-    void SetOutputCount( int outputCount );
-
-    void SetThreadCount( int threadCount );
-    int GetThreadCount() const;
+    Circuit();
+    ~Circuit();
 
     int AddComponent( Component::SPtr const& component );
 
     void RemoveComponent( Component::SCPtr const& component );
-    void RemoveComponent( int component );
+    void RemoveComponent( int componentIndex );
     void RemoveAllComponents();
 
     int GetComponentCount() const;
 
-    // Component output to component input
     bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
     bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, int toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput );
 
-    // Circuit input to component input
-    bool ConnectInToIn( int fromInput, Component::SCPtr const& toComponent, int toInput );
-    bool ConnectInToIn( int fromInput, int toComponent, int toInput );
-
-    // Component output to circuit output
-    bool ConnectOutToOut( Component::SCPtr const& fromComponent, int fromOutput, int toOutput );
-    bool ConnectOutToOut( int fromComponent, int fromOutput, int toOutput );
-
     void DisconnectComponent( Component::SCPtr const& component );
     void DisconnectComponent( int componentIndex );
 
-protected:
-    virtual void Process_( SignalBus const& inputs, SignalBus& outputs ) override;
+    void SetThreadCount( int threadCount );
+    int GetThreadCount() const;
+
+    void Tick();
+
+    void StartAutoTick();
+    void StopAutoTick();
+    void PauseAutoTick();
+    void ResumeAutoTick();
 
 private:
     std::unique_ptr<internal::Circuit> p;
