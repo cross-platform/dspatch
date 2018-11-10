@@ -26,7 +26,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/SignalBus.h>
 
-#include <condition_variable>
 #include <string>
 
 namespace DSPatch

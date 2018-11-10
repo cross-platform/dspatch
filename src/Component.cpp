@@ -26,7 +26,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <internal/Wire.h>
 
-#include <string>
+#include <condition_variable>
 
 using namespace DSPatch;
 

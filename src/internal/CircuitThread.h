@@ -26,6 +26,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Component.h>
 
+#include <condition_variable>
 #include <thread>
 
 namespace DSPatch
