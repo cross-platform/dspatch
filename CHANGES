@@ -1,5 +1,6 @@
 v.5.01 (11 November 2018)
-    - Code readability fixes.
+    - Various code readability improvements.
+    - Wait for circuit threads to stop in StopAutoTick().
 
 v.5.00 (10 November 2018)
     - Removed unnecessarily complex integrated circuits concept.

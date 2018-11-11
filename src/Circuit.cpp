@@ -290,6 +290,18 @@ void Circuit::StopAutoTick()
     if ( !p->autoTickThread.IsStopped() )
     {
         p->autoTickThread.Stop();
+
+        // manually tick until 0
+        while ( p->currentThreadNo != 0 )
+        {
+            Tick();
+        }
+
+        // sync all threads
+        for ( auto& circuitThread : p->circuitThreads )
+        {
+            circuitThread->Sync();
+        }
     }
 }
 
