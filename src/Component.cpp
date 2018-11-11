@@ -253,6 +253,13 @@ void Component::Tick( int bufferNo )
             }
         }
 
+        // You might be thinking: Why not clear the outputs in Reset()?
+
+        // This is because we need components to hold onto their outputs long enough for any
+        // loopback wires to grab them during the next tick. The same applies to how we handle
+        // output reference counting in internal::Component::GetOutput(), reseting the counter upon
+        // the final request rather than in Reset().
+
         // 3. clear all outputs
         p->outputBuses[bufferNo].ClearAllValues();
 
