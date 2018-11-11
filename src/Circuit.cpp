@@ -39,8 +39,6 @@ class Circuit
 public:
     bool FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const;
 
-    bool isAutoTickRunning = false;
-    bool isAutoTickPaused = false;
     int pauseCount = 0;
     int currentThreadNo = 0;
 
@@ -280,9 +278,6 @@ void Circuit::StartAutoTick()
         }
 
         p->autoTickThread.Start();
-
-        p->isAutoTickRunning = true;
-        p->isAutoTickPaused = false;
     }
     else
     {
@@ -295,42 +290,39 @@ void Circuit::StopAutoTick()
     if ( !p->autoTickThread.IsStopped() )
     {
         p->autoTickThread.Stop();
-
-        p->isAutoTickRunning = false;
-        p->isAutoTickPaused = false;
     }
 }
 
 void Circuit::PauseAutoTick()
 {
-    if ( !p->autoTickThread.IsStopped() )
+    if ( p->autoTickThread.IsStopped() )
     {
-        ++p->pauseCount;
+        return;
+    }
+
+    if ( ++p->pauseCount == 1 && !p->autoTickThread.IsPaused() )
+    {
         p->autoTickThread.Pause();
-        p->isAutoTickPaused = true;
-        p->isAutoTickRunning = false;
-    }
 
-    // manually tick until 0
-    while ( p->currentThreadNo != 0 )
-    {
-        Tick();
-    }
+        // manually tick until 0
+        while ( p->currentThreadNo != 0 )
+        {
+            Tick();
+        }
 
-    // sync all threads
-    for ( auto& circuitThread : p->circuitThreads )
-    {
-        circuitThread->Sync();
+        // sync all threads
+        for ( auto& circuitThread : p->circuitThreads )
+        {
+            circuitThread->Sync();
+        }
     }
 }
 
 void Circuit::ResumeAutoTick()
 {
-    if ( p->isAutoTickPaused && --p->pauseCount == 0 )
+    if ( p->autoTickThread.IsPaused() && --p->pauseCount == 0 )
     {
         p->autoTickThread.Resume();
-        p->isAutoTickPaused = false;
-        p->isAutoTickRunning = true;
     }
 }
 

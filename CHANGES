@@ -1,3 +1,6 @@
+v.5.01 (11 November 2018)
+    - Code readability fixes.
+
 v.5.00 (10 November 2018)
     - Removed unnecessarily complex integrated circuits concept.
     - Replaced in-house DSPatch::internal::Threads with std::threads.

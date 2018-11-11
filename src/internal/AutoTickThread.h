@@ -57,6 +57,7 @@ public:
 
     bool IsInitialised() const;
     bool IsStopped() const;
+    bool IsPaused() const;
 
     void Start();
     void Stop();

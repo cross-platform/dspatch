@@ -54,6 +54,11 @@ bool AutoTickThread::IsStopped() const
     return _stopped;
 }
 
+bool AutoTickThread::IsPaused() const
+{
+    return _pause;
+}
+
 void AutoTickThread::Start()
 {
     if ( _stopped )
@@ -90,7 +95,7 @@ void AutoTickThread::Pause()
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
-    if ( !_pause )
+    if ( !_pause && !_stopped )
     {
         _pause = true;
         _pauseCondt.wait( lock );  // wait for resume

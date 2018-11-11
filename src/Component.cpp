@@ -183,30 +183,29 @@ void Component::SetBufferCount( int bufferCount )
         bufferCount = 1;  // there needs to be at least 1 buffer
     }
 
+    // resize vectors
     p->tickStatuses.resize( bufferCount );
 
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
 
-    p->refs.resize( bufferCount );
-
     p->gotReleases.resize( bufferCount );
     p->releaseMutexes.resize( bufferCount );
     p->releaseCondts.resize( bufferCount );
 
+    p->refs.resize( bufferCount );
+
+    // init new vector values
     for ( int i = p->bufferCount; i < bufferCount; ++i )
     {
-        if ( !p->releaseCondts[i] )
-        {
-            p->releaseMutexes[i] = std::unique_ptr<std::mutex>( new std::mutex() );
-            p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
-        }
-
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
-        p->gotReleases[i] = false;
 
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
+
+        p->gotReleases[i] = false;
+        p->releaseMutexes[i] = std::unique_ptr<std::mutex>( new std::mutex() );
+        p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
 
         p->refs[i].resize( p->refs[0].size() );
 
@@ -294,6 +293,7 @@ void Component::Reset( int bufferNo )
 void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
 {
     p->inputNames = inputNames;
+
     for ( auto& inputBus : p->inputBuses )
     {
         inputBus.SetSignalCount( inputCount );
