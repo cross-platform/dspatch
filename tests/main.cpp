@@ -253,7 +253,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 {
     int const efficiencyThreshold = 90;  // expect at least 90% efficiency
 
-    // Configure a circuit made up of 3 parallel counters, then adjust the thread count
+    // Configure a circuit made up of 4 parallel counters, then adjust the thread count
     auto circuit = std::make_shared<Circuit>();
 
     auto counter1 = std::make_shared<SlowCounter>();
@@ -365,6 +365,39 @@ TEST_CASE( "ThreadPerformanceTest" )
     count = probe->GetCount();
     std::cout << "4x Thread Efficiency: " << count / 20 << "%" << std::endl;
     REQUIRE( count / 20 >= efficiencyThreshold );
+}
+
+TEST_CASE( "StopAutoTickRegressionTest" )
+{
+    auto circuit = std::make_shared<Circuit>();
+
+    auto counter1 = std::make_shared<SlowCounter>();
+    auto counter2 = std::make_shared<SlowCounter>();
+    auto counter3 = std::make_shared<SlowCounter>();
+    auto counter4 = std::make_shared<SlowCounter>();
+    auto probe = std::make_shared<ThreadingProbe>();
+
+    circuit->AddComponent( counter1 );
+    circuit->AddComponent( counter2 );
+    circuit->AddComponent( counter3 );
+    circuit->AddComponent( counter4 );
+    circuit->AddComponent( probe );
+
+    circuit->ConnectOutToIn( counter1, 0, probe, 0 );
+    circuit->ConnectOutToIn( counter2, 0, probe, 1 );
+    circuit->ConnectOutToIn( counter3, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter4, 0, probe, 3 );
+
+    circuit->SetThreadCount( std::thread::hardware_concurrency() );
+
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    circuit->StopAutoTick();
+    circuit->RemoveComponent( counter1 );
+    circuit->RemoveComponent( counter2 );
+    circuit->RemoveComponent( counter3 );
+    circuit->RemoveComponent( counter4 );
+    circuit->RemoveComponent( probe );
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
