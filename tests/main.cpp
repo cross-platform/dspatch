@@ -12,6 +12,7 @@
 #include <components/CircuitProbe.h>
 #include <components/Counter.h>
 #include <components/FeedbackProbe.h>
+#include <components/FeedbackTester.h>
 #include <components/Incrementer.h>
 #include <components/NoOutputProbe.h>
 #include <components/ParallelProbe.h>
@@ -207,6 +208,47 @@ TEST_CASE( "FeedbackTestNoCircuit" )
         passthrough->Reset();
         probe->Reset();
     }
+}
+
+TEST_CASE( "RefCountResetRegressionTest" )
+{
+    auto feedback = std::make_shared<FeedbackTester>();
+
+    feedback->Tick();
+    feedback->Reset();
+    feedback->Tick();
+    feedback->Reset();
+
+    feedback->ConnectInput( feedback, 0, 0 );
+    feedback->SetValidInputs( 1 );
+
+    feedback->Tick();
+    feedback->Reset();
+    feedback->Tick();
+    feedback->Reset();
+
+    feedback->ConnectInput( feedback, 0, 1 );
+    feedback->ConnectInput( feedback, 0, 2 );
+    feedback->ConnectInput( feedback, 0, 3 );
+    feedback->SetValidInputs( 4 );
+
+    feedback->Tick();
+    feedback->Reset();
+    feedback->Tick();
+    feedback->Reset();
+
+    feedback->ConnectInput( feedback, 0, 4 );
+    feedback->ConnectInput( feedback, 0, 5 );
+    feedback->ConnectInput( feedback, 0, 6 );
+    feedback->ConnectInput( feedback, 0, 7 );
+    feedback->ConnectInput( feedback, 0, 8 );
+    feedback->ConnectInput( feedback, 0, 9 );
+    feedback->SetValidInputs( 10 );
+
+    feedback->Tick();
+    feedback->Reset();
+    feedback->Tick();
+    feedback->Reset();
 }
 
 TEST_CASE( "NoOutputTest" )
