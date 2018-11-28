@@ -293,7 +293,7 @@ TEST_CASE( "ChangingOutputTest" )
 
 TEST_CASE( "ThreadPerformanceTest" )
 {
-    int const efficiencyThreshold = 90;  // expect at least 90% efficiency
+    int const efficiencyThreshold = 80;  // expect at least 80% efficiency
 
     // Configure a circuit made up of 4 parallel counters, then adjust the thread count
     auto circuit = std::make_shared<Circuit>();
