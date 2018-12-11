@@ -262,7 +262,7 @@ void Component::Tick( int bufferNo )
         // 3. clear all outputs
         p->outputBuses[bufferNo].ClearAllValues();
 
-        if ( p->processOrder == ProcessOrder::InOrder )
+        if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
         {
             // 4. wait for your turn to process.
             p->WaitForRelease( bufferNo );
