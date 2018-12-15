@@ -266,10 +266,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         auto DoTick = [this, mode, bufferNo]() {
             for ( auto& wire : p->inputWires )
             {
-                if ( mode == TickMode::Parallel && p->feedbackComps.find( wire.fromComponent ) == p->feedbackComps.end() )
+                if ( mode == TickMode::Parallel )
                 {
-                    wire.fromComponent->p->WaitForTickThread( bufferNo );
-                    p->feedbackComps.erase( wire.fromComponent );
+                    if ( p->feedbackComps.find( wire.fromComponent ) == p->feedbackComps.end() )
+                    {
+                        wire.fromComponent->p->WaitForTickThread( bufferNo );
+                        p->feedbackComps.erase( wire.fromComponent );
+                    }
                 }
 
                 bool canMove;
