@@ -82,9 +82,9 @@ public:
     void SetThreadCount( int threadCount );
     int GetThreadCount() const;
 
-    void Tick();
+    void Tick( Component::TickMode mode );
 
-    void StartAutoTick();
+    void StartAutoTick( Component::TickMode mode );
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();

@@ -68,12 +68,13 @@ public:
     void Start();
     void Stop();
     void Sync();
-    void SyncAndResume();
+    void SyncAndResume( DSPatch::Component::TickMode mode );
 
 private:
     void _Run();
 
 private:
+    DSPatch::Component::TickMode _mode;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

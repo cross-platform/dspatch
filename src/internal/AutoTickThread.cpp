@@ -59,10 +59,11 @@ bool AutoTickThread::IsPaused() const
     return _pause;
 }
 
-void AutoTickThread::Start()
+void AutoTickThread::Start( DSPatch::Component::TickMode mode )
 {
     if ( _stopped )
     {
+        _mode = mode;
         _stop = false;
         _stopped = false;
         _pause = false;
@@ -119,7 +120,7 @@ void AutoTickThread::_Run()
     {
         while ( !_stop )
         {
-            _circuit->Tick();
+            _circuit->Tick( _mode );
 
             if ( _pause )
             {

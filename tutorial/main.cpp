@@ -35,13 +35,13 @@ int main()
     // Circuit tick method 1: Manual
     for ( int i = 0; i < 10; ++i )
     {
-        circuit->Tick();
+        circuit->Tick( Component::TickMode::Parallel );
     }
 
     // Circuit tick method 2: Automatic
     std::cout << "Press any key to begin circuit auto-tick.";
     getchar();
-    circuit->StartAutoTick();
+    circuit->StartAutoTick( Component::TickMode::Parallel );
 
     // Increase Circuit Thread count for higher performance
     getchar();

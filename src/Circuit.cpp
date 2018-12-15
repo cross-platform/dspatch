@@ -42,6 +42,8 @@ public:
     int pauseCount = 0;
     int currentThreadNo = 0;
 
+    DSPatch::Component::TickMode autoTickMode;
+
     internal::AutoTickThread autoTickThread;
 
     std::vector<DSPatch::Component::SPtr> components;
@@ -240,7 +242,7 @@ int Circuit::GetThreadCount() const
     return p->circuitThreads.size();
 }
 
-void Circuit::Tick()
+void Circuit::Tick( Component::TickMode mode )
 {
     // process in a single thread if this circuit has no threads
     // =========================================================
@@ -249,7 +251,7 @@ void Circuit::Tick()
         // tick all internal components
         for ( auto& component : p->components )
         {
-            component->Tick();
+            component->Tick( mode );
         }
 
         // reset all internal components
@@ -262,13 +264,13 @@ void Circuit::Tick()
     // =======================================================
     else
     {
-        p->circuitThreads[p->currentThreadNo]->SyncAndResume();  // sync and resume thread x
+        p->circuitThreads[p->currentThreadNo]->SyncAndResume( mode );  // sync and resume thread x
 
         p->currentThreadNo = p->currentThreadNo + 1 == (int)p->circuitThreads.size() ? 0 : p->currentThreadNo + 1;
     }
 }
 
-void Circuit::StartAutoTick()
+void Circuit::StartAutoTick( Component::TickMode mode )
 {
     if ( p->autoTickThread.IsStopped() )
     {
@@ -277,7 +279,8 @@ void Circuit::StartAutoTick()
             p->autoTickThread.Initialise( this );
         }
 
-        p->autoTickThread.Start();
+        p->autoTickThread.Start( mode );
+        p->autoTickMode = mode;
     }
     else
     {
@@ -294,7 +297,7 @@ void Circuit::StopAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick();
+            Tick( p->autoTickMode );
         }
 
         // sync all threads
@@ -319,7 +322,7 @@ void Circuit::PauseAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick();
+            Tick( p->autoTickMode );
         }
 
         // sync all threads

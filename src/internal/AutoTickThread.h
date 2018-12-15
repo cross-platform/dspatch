@@ -59,7 +59,7 @@ public:
     bool IsStopped() const;
     bool IsPaused() const;
 
-    void Start();
+    void Start( DSPatch::Component::TickMode mode );
     void Stop();
     void Pause();
     void Resume();
@@ -68,6 +68,7 @@ private:
     void _Run();
 
 private:
+    DSPatch::Component::TickMode _mode;
     std::thread _thread;
     DSPatch::Circuit* _circuit = nullptr;
     bool _stop = false;

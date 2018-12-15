@@ -84,7 +84,7 @@ void CircuitThread::Sync()
     }
 }
 
-void CircuitThread::SyncAndResume()
+void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
@@ -93,6 +93,8 @@ void CircuitThread::SyncAndResume()
         _syncCondt.wait( lock );  // wait for sync
     }
     _gotSync = false;  // reset the sync flag
+
+    _mode = mode;
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_one();
@@ -131,7 +133,7 @@ void CircuitThread::_Run()
 
                 for ( auto& component : *_components )
                 {
-                    component->Tick( DSPatch::Component::TickMode::Parallel, _threadNo );
+                    component->Tick( _mode, _threadNo );
                 }
                 for ( auto& component : *_components )
                 {
