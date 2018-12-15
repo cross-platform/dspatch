@@ -27,6 +27,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <internal/Wire.h>
 
 #include <condition_variable>
+#include <set>
+#include <thread>
 
 using namespace DSPatch;
 
@@ -50,6 +52,8 @@ public:
     {
     }
 
+    void Wait( int bufferCount );
+
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
@@ -68,6 +72,9 @@ public:
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_count:ref_counter per output, per buffer
 
     std::vector<Wire> inputWires;
+
+    std::mutex tickThreadsMutex;
+    std::vector<std::thread> tickThreads;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<bool> gotReleases;
@@ -185,6 +192,8 @@ void Component::SetBufferCount( int bufferCount )
     }
 
     // resize vectors
+    p->tickThreads.resize( bufferCount );
+
     p->tickStatuses.resize( bufferCount );
 
     p->inputBuses.resize( bufferCount );
@@ -235,60 +244,71 @@ bool Component::Tick( int bufferNo )
         // 1. set tickStatus
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
+        std::set<Component::SPtr> feedbackComps;
+
         // 2. get outputs required from input components
         for ( auto& wire : p->inputWires )
         {
             if ( !wire.fromComponent->Tick( bufferNo ) )
             {
+                feedbackComps.emplace( wire.fromComponent );
                 // feedback
             }
         }
 
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        // start thread here. first thing: wait for incoming component threads (excluding feedback ones^)
-
-        for ( auto& wire : p->inputWires )
-        {
-            bool canMove;
-            auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
-            if ( canMove )
+        p->tickThreads[bufferNo] = std::thread( [this, bufferNo, feedbackComps]() {
+            for ( auto& wire : p->inputWires )
             {
-                // we are the final reference, take the original
-                p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
+                if ( feedbackComps.find( wire.fromComponent ) == feedbackComps.end() )
+                {
+                    wire.fromComponent->p->Wait( bufferNo );
+                }
+
+                bool canMove;
+                auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
+                if ( canMove )
+                {
+                    // we are the final reference, take the original
+                    p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
+                }
+                else
+                {
+                    p->inputBuses[bufferNo].CopySignal( wire.toInput, signal );
+                }
+            }
+
+            // You might be thinking: Why not clear the outputs in Reset()?
+
+            // This is because we need components to hold onto their outputs long enough for any
+            // loopback wires to grab them during the next tick. The same applies to how we handle
+            // output reference counting in internal::Component::GetOutput(), reseting the counter upon
+            // the final request rather than in Reset().
+
+            // 3. clear all outputs
+            p->outputBuses[bufferNo].ClearAllValues();
+
+            if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+            {
+                // 4. wait for your turn to process.
+                p->WaitForRelease( bufferNo );
+
+                // 5. call Process_() with newly aquired inputs
+                Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
+
+                // 6. signal that you're done processing.
+                p->ReleaseThread( bufferNo );
             }
             else
             {
-                p->inputBuses[bufferNo].CopySignal( wire.toInput, signal );
+                // 4. call Process_() with newly aquired inputs
+                Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
             }
-        }
 
-        // You might be thinking: Why not clear the outputs in Reset()?
-
-        // This is because we need components to hold onto their outputs long enough for any
-        // loopback wires to grab them during the next tick. The same applies to how we handle
-        // output reference counting in internal::Component::GetOutput(), reseting the counter upon
-        // the final request rather than in Reset().
-
-        // 3. clear all outputs
-        p->outputBuses[bufferNo].ClearAllValues();
-
-        if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
-        {
-            // 4. wait for your turn to process.
-            p->WaitForRelease( bufferNo );
-
-            // 5. call Process_() with newly aquired inputs
-            Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
-
-            // 6. signal that you're done processing.
-            p->ReleaseThread( bufferNo );
-        }
-        else
-        {
-            // 4. call Process_() with newly aquired inputs
-            Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
-        }
+            // clear all inputs
+            p->inputBuses[bufferNo].ClearAllValues();
+        } );
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
     {
@@ -300,8 +320,7 @@ bool Component::Tick( int bufferNo )
 
 void Component::Reset( int bufferNo )
 {
-    // clear all inputs
-    p->inputBuses[bufferNo].ClearAllValues();
+    p->Wait( bufferNo );
 
     // reset tickStatus
     p->tickStatuses[bufferNo] = internal::Component::TickStatus::NotTicked;
@@ -330,6 +349,16 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     for ( auto& ref : p->refs )
     {
         ref.resize( outputCount );
+    }
+}
+
+void internal::Component::Wait( int bufferCount )
+{
+    std::lock_guard<std::mutex> lock( tickThreadsMutex );
+
+    if ( tickThreads[bufferCount].joinable() )
+    {
+        tickThreads[bufferCount].join();
     }
 }
 
