@@ -131,7 +131,7 @@ void CircuitThread::_Run()
 
                 for ( auto& component : *_components )
                 {
-                    component->Tick( _threadNo );
+                    component->Tick( DSPatch::Component::TickMode::Parallel, _threadNo );
                 }
                 for ( auto& component : *_components )
                 {

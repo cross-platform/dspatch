@@ -75,6 +75,7 @@ public:
 
     std::mutex tickThreadsMutex;
     std::vector<std::thread> tickThreads;
+    std::set<DSPatch::Component::SPtr> feedbackComps;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<bool> gotReleases;
@@ -236,7 +237,7 @@ int Component::GetBufferCount() const
     return p->inputBuses.size();
 }
 
-bool Component::Tick( int bufferNo )
+bool Component::Tick( Component::TickMode mode, int bufferNo )
 {
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
@@ -244,25 +245,31 @@ bool Component::Tick( int bufferNo )
         // 1. set tickStatus
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
-        std::set<Component::SPtr> feedbackComps;
-
         // 2. get outputs required from input components
         for ( auto& wire : p->inputWires )
         {
-            if ( !wire.fromComponent->Tick( bufferNo ) )
+            if ( mode == TickMode::Series )
             {
-                feedbackComps.emplace( wire.fromComponent );
+                wire.fromComponent->Tick( mode, bufferNo );
+            }
+            else if ( mode == TickMode::Parallel )
+            {
+                if ( !wire.fromComponent->Tick( mode, bufferNo ) )
+                {
+                    p->feedbackComps.emplace( wire.fromComponent );
+                }
             }
         }
 
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        p->tickThreads[bufferNo] = std::thread( [this, bufferNo, feedbackComps]() {
+        auto DoTick = [this, mode, bufferNo]() {
             for ( auto& wire : p->inputWires )
             {
-                if ( feedbackComps.find( wire.fromComponent ) == feedbackComps.end() )
+                if ( mode == TickMode::Parallel && p->feedbackComps.find( wire.fromComponent ) == p->feedbackComps.end() )
                 {
                     wire.fromComponent->p->WaitForTickThread( bufferNo );
+                    p->feedbackComps.erase( wire.fromComponent );
                 }
 
                 bool canMove;
@@ -304,7 +311,17 @@ bool Component::Tick( int bufferNo )
                 // 4. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
             }
-        } );
+        };
+
+        // do tick
+        if ( mode == TickMode::Series )
+        {
+            DoTick();
+        }
+        else if ( mode == TickMode::Parallel )
+        {
+            p->tickThreads[bufferNo] = std::thread( [DoTick]() { DoTick(); } );
+        }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
     {
