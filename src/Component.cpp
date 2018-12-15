@@ -41,7 +41,8 @@ public:
     enum class TickStatus
     {
         NotTicked,
-        TickStarted
+        TickStarted,
+        Ticking
     };
 
     Component( DSPatch::Component::ProcessOrder processOrder )
@@ -226,7 +227,7 @@ int Component::GetBufferCount() const
     return p->inputBuses.size();
 }
 
-void Component::Tick( int bufferNo )
+bool Component::Tick( int bufferNo )
 {
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
@@ -237,8 +238,18 @@ void Component::Tick( int bufferNo )
         // 2. get outputs required from input components
         for ( auto& wire : p->inputWires )
         {
-            wire.fromComponent->Tick( bufferNo );
+            if ( !wire.fromComponent->Tick( bufferNo ) )
+            {
+                // feedback
+            }
+        }
 
+        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+
+        // start thread here. first thing: wait for incoming component threads (excluding feedback ones^)
+
+        for ( auto& wire : p->inputWires )
+        {
             bool canMove;
             auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
             if ( canMove )
@@ -279,6 +290,12 @@ void Component::Tick( int bufferNo )
             Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
         }
     }
+    else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void Component::Reset( int bufferNo )
