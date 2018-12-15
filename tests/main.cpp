@@ -60,7 +60,7 @@ TEST_CASE( "SerialTest" )
         circuit->Tick();
     }
 }
-/*
+
 TEST_CASE( "ParallelTest" )
 {
     // Configure a circuit made up of a counter and 5 incrementers in parallel
@@ -99,7 +99,7 @@ TEST_CASE( "ParallelTest" )
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
 }
-*/
+
 TEST_CASE( "BranchSyncTest" )
 {
     // Configure a circuit made up of 3 parallel branches of 4, 2, and 1 component(s) respectively

@@ -271,7 +271,7 @@ bool Component::Tick( int bufferNo )
                 if ( canMove )
                 {
                     // we are the final reference, take the original
-                    p->inputBuses[bufferNo].MoveSignal( wire.toInput, signal );
+                    p->inputBuses[bufferNo].CopySignal( wire.toInput, signal );  // data contention here - should be move
                 }
                 else
                 {
