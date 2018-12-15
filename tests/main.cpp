@@ -212,30 +212,27 @@ TEST_CASE( "FeedbackTestNoCircuit" )
 
 TEST_CASE( "RefCountResetRegressionTest" )
 {
-    auto feedback = std::make_shared<FeedbackTester>();
+    auto circuit = std::make_shared<Circuit>();
+    auto feedback = std::make_shared<FeedbackTester>( 2 );
 
-    feedback->Tick();
-    feedback->Reset();
-    feedback->Tick();
-    feedback->Reset();
+    circuit->AddComponent( feedback );
+    circuit->SetThreadCount( 2 );
 
     feedback->ConnectInput( feedback, 0, 0 );
     feedback->SetValidInputs( 1 );
 
-    feedback->Tick();
-    feedback->Reset();
-    feedback->Tick();
-    feedback->Reset();
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    circuit->PauseAutoTick();
 
     feedback->ConnectInput( feedback, 0, 1 );
     feedback->ConnectInput( feedback, 0, 2 );
     feedback->ConnectInput( feedback, 0, 3 );
     feedback->SetValidInputs( 4 );
 
-    feedback->Tick();
-    feedback->Reset();
-    feedback->Tick();
-    feedback->Reset();
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    circuit->PauseAutoTick();
 
     feedback->ConnectInput( feedback, 0, 4 );
     feedback->ConnectInput( feedback, 0, 5 );
@@ -245,10 +242,9 @@ TEST_CASE( "RefCountResetRegressionTest" )
     feedback->ConnectInput( feedback, 0, 9 );
     feedback->SetValidInputs( 10 );
 
-    feedback->Tick();
-    feedback->Reset();
-    feedback->Tick();
-    feedback->Reset();
+    circuit->StartAutoTick();
+    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    circuit->StopAutoTick();
 }
 
 TEST_CASE( "NoOutputTest" )
