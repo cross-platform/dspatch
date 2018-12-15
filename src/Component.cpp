@@ -52,7 +52,7 @@ public:
     {
     }
 
-    void Wait( int bufferCount );
+    void WaitForTickThread( int bufferCount );
 
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
@@ -252,7 +252,6 @@ bool Component::Tick( int bufferNo )
             if ( !wire.fromComponent->Tick( bufferNo ) )
             {
                 feedbackComps.emplace( wire.fromComponent );
-                // feedback
             }
         }
 
@@ -263,7 +262,7 @@ bool Component::Tick( int bufferNo )
             {
                 if ( feedbackComps.find( wire.fromComponent ) == feedbackComps.end() )
                 {
-                    wire.fromComponent->p->Wait( bufferNo );
+                    wire.fromComponent->p->WaitForTickThread( bufferNo );
                 }
 
                 bool canMove;
@@ -305,9 +304,6 @@ bool Component::Tick( int bufferNo )
                 // 4. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
             }
-
-            // clear all inputs
-            p->inputBuses[bufferNo].ClearAllValues();
         } );
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -320,7 +316,10 @@ bool Component::Tick( int bufferNo )
 
 void Component::Reset( int bufferNo )
 {
-    p->Wait( bufferNo );
+    p->WaitForTickThread( bufferNo );
+
+    // clear all inputs
+    p->inputBuses[bufferNo].ClearAllValues();
 
     // reset tickStatus
     p->tickStatuses[bufferNo] = internal::Component::TickStatus::NotTicked;
@@ -352,7 +351,7 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     }
 }
 
-void internal::Component::Wait( int bufferCount )
+void internal::Component::WaitForTickThread( int bufferCount )
 {
     std::lock_guard<std::mutex> lock( tickThreadsMutex );
 
