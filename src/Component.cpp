@@ -221,17 +221,11 @@ void Component::SetBufferCount( int bufferCount )
         p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
 
         p->refs[i].resize( p->refs[0].size() );
+        p->refMutexes[i].resize( p->refMutexes[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
             p->refs[i][j] = p->refs[0][j];
-        }
-
-        p->refMutexes[i].resize( p->refMutexes[0].size() );
-        for ( size_t j = 0; j < p->refs[0].size(); ++j )
-        {
-            // construct new output reference mutexes
-            p->refMutexes[i][j] = std::unique_ptr<std::mutex>( new std::mutex() );
         }
     }
 
@@ -371,14 +365,6 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     for ( auto& refMutexes : p->refMutexes )
     {
         refMutexes.resize( outputCount );
-        for ( auto& refMutex : refMutexes )
-        {
-            // construct new output reference mutexes
-            if ( !refMutex )
-            {
-                refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
-            }
-        }
     }
 }
 
@@ -425,7 +411,11 @@ void internal::Component::GetOutput(
 
     if ( mode == DSPatch::Component::TickMode::Parallel )
     {
-        ( *refMutexes[bufferNo][fromOutput] ).lock();
+        if ( !refMutexes[bufferNo][fromOutput] )
+        {
+            refMutexes[bufferNo][fromOutput] = std::unique_ptr<std::mutex>( new std::mutex() );
+        }
+        refMutexes[bufferNo][fromOutput]->lock();
     }
 
     if ( ++refs[bufferNo][fromOutput].second == refs[bufferNo][fromOutput].first )
@@ -443,7 +433,7 @@ void internal::Component::GetOutput(
 
     if ( mode == DSPatch::Component::TickMode::Parallel )
     {
-        ( *refMutexes[bufferNo][fromOutput] ).unlock();
+        refMutexes[bufferNo][fromOutput]->unlock();
     }
 }
 
