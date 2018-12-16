@@ -263,11 +263,12 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
 
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        auto DoTick = [this, mode, bufferNo]() {
+        auto tick = [this, mode, bufferNo]() {
             for ( auto& wire : p->inputWires )
             {
                 if ( mode == TickMode::Parallel )
                 {
+                    // wait only for non-feedback components to finish ticking
                     if ( p->feedbackComps.find( wire.fromComponent ) == p->feedbackComps.end() )
                     {
                         wire.fromComponent->p->WaitForTickThread( bufferNo );
@@ -319,11 +320,11 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         // do tick
         if ( mode == TickMode::Series )
         {
-            DoTick();
+            tick();
         }
         else if ( mode == TickMode::Parallel )
         {
-            p->tickThreads[bufferNo] = std::thread( [DoTick]() { DoTick(); } );
+            p->tickThreads[bufferNo] = std::thread( [tick]() { tick(); } );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -384,6 +385,7 @@ void internal::Component::WaitForTickThread( int bufferCount )
 void internal::Component::WaitForRelease( int threadNo )
 {
     std::unique_lock<std::mutex> lock( *releaseMutexes[threadNo] );
+
     if ( !gotReleases[threadNo] )
     {
         releaseCondts[threadNo]->wait( lock );  // wait for resume

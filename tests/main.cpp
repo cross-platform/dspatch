@@ -318,6 +318,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     int count = probe->GetCount();
     std::cout << "0x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    REQUIRE( count / 10 >= efficiencyThreshold * 0.25 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -338,6 +339,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "1x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    REQUIRE( count / 10 >= efficiencyThreshold * 0.25 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -358,6 +360,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "2x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    REQUIRE( count / 10 >= efficiencyThreshold * 0.5 );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 3 )
@@ -378,6 +381,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     count = probe->GetCount();
     std::cout << "3x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    REQUIRE( count / 10 >= efficiencyThreshold * 0.75 );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -791,7 +795,12 @@ TEST_CASE( "ChangingOutputTest2" )
 
 TEST_CASE( "ThreadPerformanceTest2" )
 {
-    int const efficiencyThreshold = 80;  // expect at least 80% efficiency
+    int efficiencyThreshold = 80;  // expect at least 80% efficiency with 4+ cores
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        auto fraction = std::thread::hardware_concurrency() / 4;
+        efficiencyThreshold *= fraction;
+    }
 
     // Configure a circuit made up of 4 parallel counters, then adjust the thread count
     auto circuit = std::make_shared<Circuit>();
