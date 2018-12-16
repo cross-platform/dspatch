@@ -72,8 +72,8 @@ void AutoTickThread::Stop()
 
         while ( !_stopped )
         {
-            _pauseCondt.notify_one();
-            _resumeCondt.notify_one();
+            _pauseCondt.notify_all();
+            _resumeCondt.notify_all();
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
@@ -101,7 +101,7 @@ void AutoTickThread::Resume()
 
     if ( _pause )
     {
-        _resumeCondt.notify_one();
+        _resumeCondt.notify_all();
         _pause = false;
     }
 }
@@ -118,7 +118,7 @@ void AutoTickThread::_Run()
             {
                 std::unique_lock<std::mutex> lock( _resumeMutex );
 
-                _pauseCondt.notify_one();
+                _pauseCondt.notify_all();
 
                 _resumeCondt.wait( lock );  // wait for resume
             }

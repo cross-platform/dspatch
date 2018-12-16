@@ -42,10 +42,12 @@ void ComponentThread::Start()
         _stop = false;
         _stopped = false;
         _gotResume = false;
-        _gotSync = true;
+        _gotSync = false;
 
         _thread = std::thread( &ComponentThread::_Run, this );
     }
+
+    Sync();
 }
 
 void ComponentThread::Stop()
@@ -56,8 +58,8 @@ void ComponentThread::Stop()
 
         while ( !_stopped )
         {
-            _syncCondt.notify_one();
-            _resumeCondt.notify_one();
+            _syncCondt.notify_all();
+            _resumeCondt.notify_all();
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
@@ -78,20 +80,16 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::SyncAndResume( std::function<void()> tickFunction )
+void ComponentThread::Resume( std::function<void()> tickFunction )
 {
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
-    if ( !_gotSync )  // if haven't already got sync
-    {
-        _syncCondt.wait( lock );  // wait for sync
-    }
     _gotSync = false;  // reset the sync flag
 
     _tickFunction = tickFunction;
 
     _gotResume = true;  // set the resume flag
-    _resumeCondt.notify_one();
+    _resumeCondt.notify_all();
 }
 
 void ComponentThread::_Run()
@@ -102,7 +100,7 @@ void ComponentThread::_Run()
             std::unique_lock<std::mutex> lock( _resumeMutex );
 
             _gotSync = true;  // set the sync flag
-            _syncCondt.notify_one();
+            _syncCondt.notify_all();
 
             if ( !_gotResume )  // if haven't already got resume
             {

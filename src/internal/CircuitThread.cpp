@@ -45,10 +45,12 @@ void CircuitThread::Start( std::vector<DSPatch::Component::SPtr>* components, in
         _stop = false;
         _stopped = false;
         _gotResume = false;
-        _gotSync = true;
+        _gotSync = false;
 
         _thread = std::thread( &CircuitThread::_Run, this );
     }
+
+    Sync();
 }
 
 void CircuitThread::Stop()
@@ -59,8 +61,8 @@ void CircuitThread::Stop()
 
         while ( !_stopped )
         {
-            _syncCondt.notify_one();
-            _resumeCondt.notify_one();
+            _syncCondt.notify_all();
+            _resumeCondt.notify_all();
             std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
         }
 
@@ -94,7 +96,7 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
     _mode = mode;
 
     _gotResume = true;  // set the resume flag
-    _resumeCondt.notify_one();
+    _resumeCondt.notify_all();
 }
 
 void CircuitThread::_Run()
@@ -107,7 +109,7 @@ void CircuitThread::_Run()
                 std::unique_lock<std::mutex> lock( _resumeMutex );
 
                 _gotSync = true;  // set the sync flag
-                _syncCondt.notify_one();
+                _syncCondt.notify_all();
 
                 if ( !_gotResume )  // if haven't already got resume
                 {

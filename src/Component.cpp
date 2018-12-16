@@ -24,6 +24,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <dspatch/Component.h>
 
+#include <internal/ComponentThread.h>
 #include <internal/Wire.h>
 
 #include <condition_variable>
@@ -52,8 +53,6 @@ public:
     {
     }
 
-    void WaitForTickThread( int bufferCount );
-
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
@@ -74,8 +73,7 @@ public:
 
     std::vector<Wire> inputWires;
 
-    std::mutex tickThreadsMutex;
-    std::vector<std::thread> tickThreads;
+    std::vector<ComponentThread::UPtr> componentThreads;
     std::set<DSPatch::Component::SPtr> feedbackComps;
 
     std::vector<TickStatus> tickStatuses;
@@ -194,7 +192,7 @@ void Component::SetBufferCount( int bufferCount )
     }
 
     // resize vectors
-    p->tickThreads.resize( bufferCount );
+    p->componentThreads.resize( bufferCount );
 
     p->tickStatuses.resize( bufferCount );
 
@@ -211,6 +209,9 @@ void Component::SetBufferCount( int bufferCount )
     // init new vector values
     for ( int i = p->bufferCount; i < bufferCount; ++i )
     {
+        p->componentThreads[i] = std::unique_ptr<internal::ComponentThread>( new internal::ComponentThread() );
+        p->componentThreads[i]->Start();
+
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
@@ -222,6 +223,7 @@ void Component::SetBufferCount( int bufferCount )
 
         p->refs[i].resize( p->refs[0].size() );
         p->refMutexes[i].resize( p->refMutexes[0].size() );
+
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
@@ -273,7 +275,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                     // wait only for non-feedback components to finish ticking
                     if ( p->feedbackComps.find( wire.fromComponent ) == p->feedbackComps.end() )
                     {
-                        wire.fromComponent->p->WaitForTickThread( bufferNo );
+                        wire.fromComponent->p->componentThreads[bufferNo]->Sync();
                         p->feedbackComps.erase( wire.fromComponent );
                     }
                 }
@@ -316,7 +318,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         }
         else if ( mode == TickMode::Parallel )
         {
-            p->tickThreads[bufferNo] = std::thread( [tick]() { tick(); } );
+            p->componentThreads[bufferNo]->Resume( tick );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -329,7 +331,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
 
 void Component::Reset( int bufferNo )
 {
-    p->WaitForTickThread( bufferNo );
+    p->componentThreads[bufferNo]->Sync();
 
     // clear all inputs
     p->inputBuses[bufferNo].ClearAllValues();
@@ -368,16 +370,6 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     }
 }
 
-void internal::Component::WaitForTickThread( int bufferCount )
-{
-    std::lock_guard<std::mutex> lock( tickThreadsMutex );
-
-    if ( tickThreads[bufferCount].joinable() )
-    {
-        tickThreads[bufferCount].join();
-    }
-}
-
 void internal::Component::WaitForRelease( int threadNo )
 {
     std::unique_lock<std::mutex> lock( *releaseMutexes[threadNo] );
@@ -396,7 +388,7 @@ void internal::Component::ReleaseThread( int threadNo )
     std::lock_guard<std::mutex> lock( *releaseMutexes[threadNo] );
 
     gotReleases[threadNo] = true;
-    releaseCondts[threadNo]->notify_one();
+    releaseCondts[threadNo]->notify_all();
 }
 
 void internal::Component::GetOutput(
