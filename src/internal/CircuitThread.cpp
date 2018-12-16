@@ -37,44 +37,53 @@ CircuitThread::~CircuitThread()
 
 void CircuitThread::Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
 {
-    if ( _stopped )
+    if ( !_stopped )
     {
-        _components = components;
-        _threadNo = threadNo;
-
-        _stop = false;
-        _stopped = false;
-        _gotResume = false;
-        _gotSync = false;
-
-        _thread = std::thread( &CircuitThread::_Run, this );
+        return;
     }
+
+    _components = components;
+    _threadNo = threadNo;
+
+    _stop = false;
+    _stopped = false;
+    _gotResume = false;
+    _gotSync = false;
+
+    _thread = std::thread( &CircuitThread::_Run, this );
 
     Sync();
 }
 
 void CircuitThread::Stop()
 {
-    if ( !_stopped )
+    if ( _stopped )
     {
-        _stop = true;
+        return;
+    }
 
-        while ( !_stopped )
-        {
-            _syncCondt.notify_all();
-            _resumeCondt.notify_all();
-            std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-        }
+    _stop = true;
 
-        if ( _thread.joinable() )
-        {
-            _thread.join();
-        }
+    while ( !_stopped )
+    {
+        _syncCondt.notify_all();
+        _resumeCondt.notify_all();
+        std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+    }
+
+    if ( _thread.joinable() )
+    {
+        _thread.join();
     }
 }
 
 void CircuitThread::Sync()
 {
+    if ( _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
     if ( !_gotSync )  // if haven't already got sync
@@ -85,6 +94,11 @@ void CircuitThread::Sync()
 
 void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
 {
+    if ( _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
     if ( !_gotSync )  // if haven't already got sync

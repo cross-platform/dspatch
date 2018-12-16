@@ -42,9 +42,8 @@ public:
     int pauseCount = 0;
     int currentThreadNo = 0;
 
-    DSPatch::Component::TickMode autoTickMode;
-
     AutoTickThread autoTickThread;
+    DSPatch::Component::TickMode autoTickMode;
 
     std::vector<DSPatch::Component::SPtr> components;
 

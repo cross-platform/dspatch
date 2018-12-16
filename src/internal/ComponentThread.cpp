@@ -37,41 +37,50 @@ ComponentThread::~ComponentThread()
 
 void ComponentThread::Start()
 {
-    if ( _stopped )
+    if ( !_stopped )
     {
-        _stop = false;
-        _stopped = false;
-        _gotResume = false;
-        _gotSync = false;
-
-        _thread = std::thread( &ComponentThread::_Run, this );
+        return;
     }
+
+    _stop = false;
+    _stopped = false;
+    _gotResume = false;
+    _gotSync = false;
+
+    _thread = std::thread( &ComponentThread::_Run, this );
 
     Sync();
 }
 
 void ComponentThread::Stop()
 {
-    if ( !_stopped )
+    if ( _stopped )
     {
-        _stop = true;
+        return;
+    }
 
-        while ( !_stopped )
-        {
-            _syncCondt.notify_all();
-            _resumeCondt.notify_all();
-            std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-        }
+    _stop = true;
 
-        if ( _thread.joinable() )
-        {
-            _thread.join();
-        }
+    while ( !_stopped )
+    {
+        _syncCondt.notify_all();
+        _resumeCondt.notify_all();
+        std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
+    }
+
+    if ( _thread.joinable() )
+    {
+        _thread.join();
     }
 }
 
 void ComponentThread::Sync()
 {
+    if ( _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
     if ( !_gotSync )  // if haven't already got sync
@@ -82,6 +91,11 @@ void ComponentThread::Sync()
 
 void ComponentThread::Resume( std::function<void()> tickFunction )
 {
+    if ( _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
     _gotSync = false;  // reset the sync flag
