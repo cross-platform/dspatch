@@ -57,7 +57,7 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
-    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
+    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode );
 
     void IncRefs( int output );
     void DecRefs( int output );
@@ -70,7 +70,7 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::mutex getOutputMutex;
+    std::vector<std::vector<std::unique_ptr<std::mutex>>> refMutexes;
 
     std::vector<Wire> inputWires;
 
@@ -206,6 +206,7 @@ void Component::SetBufferCount( int bufferCount )
     p->releaseCondts.resize( bufferCount );
 
     p->refs.resize( bufferCount );
+    p->refMutexes.resize( bufferCount );
 
     // init new vector values
     for ( int i = p->bufferCount; i < bufferCount; ++i )
@@ -220,11 +221,17 @@ void Component::SetBufferCount( int bufferCount )
         p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
 
         p->refs[i].resize( p->refs[0].size() );
-
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
             p->refs[i][j] = p->refs[0][j];
+        }
+
+        p->refMutexes[i].resize( p->refMutexes[0].size() );
+        for ( size_t j = 0; j < p->refs[0].size(); ++j )
+        {
+            // construct new output reference mutexes
+            p->refMutexes[i][j] = std::unique_ptr<std::mutex>( new std::mutex() );
         }
     }
 
@@ -277,7 +284,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                     }
                 }
 
-                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
+                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
             }
 
             // You might be thinking: Why not clear the outputs in Reset()?
@@ -361,6 +368,18 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     {
         ref.resize( outputCount );
     }
+    for ( auto& refMutexes : p->refMutexes )
+    {
+        refMutexes.resize( outputCount );
+        for ( auto& refMutex : refMutexes )
+        {
+            // construct new output reference mutexes
+            if ( !refMutex )
+            {
+                refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
+            }
+        }
+    }
 }
 
 void internal::Component::WaitForTickThread( int bufferCount )
@@ -394,7 +413,8 @@ void internal::Component::ReleaseThread( int threadNo )
     releaseCondts[threadNo]->notify_one();
 }
 
-void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+void internal::Component::GetOutput(
+    int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode )
 {
     if ( !outputBuses[bufferNo].HasValue( fromOutput ) )
     {
@@ -403,7 +423,10 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
 
     auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
 
-    std::lock_guard<std::mutex> lock( getOutputMutex );  ///! too much locking perhaps
+    if ( mode == DSPatch::Component::TickMode::Parallel )
+    {
+        ( *refMutexes[bufferNo][fromOutput] ).lock();
+    }
 
     if ( ++refs[bufferNo][fromOutput].second == refs[bufferNo][fromOutput].first )
     {
@@ -416,6 +439,11 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
     {
         // otherwise, copy the signal
         toBus.CopySignal( toInput, signal );
+    }
+
+    if ( mode == DSPatch::Component::TickMode::Parallel )
+    {
+        ( *refMutexes[bufferNo][fromOutput] ).unlock();
     }
 }
 
