@@ -57,7 +57,7 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
-    DSPatch::Signal::SPtr const& GetOutput( int bufferNo, int outputNo, bool& canMove );
+    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
 
     void IncRefs( int output );
     void DecRefs( int output );
@@ -69,7 +69,8 @@ public:
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
 
-    std::vector<std::vector<std::pair<int, int>>> refs;  // ref_count:ref_counter per output, per buffer
+    std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
+    std::mutex getOutputMutex;
 
     std::vector<Wire> inputWires;
 
@@ -276,17 +277,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                     }
                 }
 
-                bool canMove;
-                auto& signal = wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, canMove );
-                if ( canMove )
-                {
-                    // we are the final reference, take the original
-                    p->inputBuses[bufferNo].CopySignal( wire.toInput, signal );  // data contention here - should be move
-                }
-                else
-                {
-                    p->inputBuses[bufferNo].CopySignal( wire.toInput, signal );
-                }
+                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
             }
 
             // You might be thinking: Why not clear the outputs in Reset()?
@@ -403,20 +394,29 @@ void internal::Component::ReleaseThread( int threadNo )
     releaseCondts[threadNo]->notify_one();
 }
 
-DSPatch::Signal::SPtr const& internal::Component::GetOutput( int bufferNo, int outputNo, bool& canMove )
+void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
-    if ( outputBuses[bufferNo].HasValue( outputNo ) && ++refs[bufferNo][outputNo].second == refs[bufferNo][outputNo].first )
+    if ( !outputBuses[bufferNo].HasValue( fromOutput ) )
     {
-        // this is the final reference, reset the counter
-        refs[bufferNo][outputNo].second = 0;
-        canMove = true;
+        return;
+    }
+
+    auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
+
+    std::lock_guard<std::mutex> lock( getOutputMutex );  ///! too much locking perhaps
+
+    if ( ++refs[bufferNo][fromOutput].second == refs[bufferNo][fromOutput].first )
+    {
+        // this is the final reference, reset the counter, move the signal
+        refs[bufferNo][fromOutput].second = 0;
+
+        toBus.MoveSignal( toInput, signal );
     }
     else
     {
-        canMove = false;
+        // otherwise, copy the signal
+        toBus.CopySignal( toInput, signal );
     }
-
-    return outputBuses[bufferNo].GetSignal( outputNo );
 }
 
 void internal::Component::IncRefs( int output )
