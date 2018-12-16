@@ -63,9 +63,7 @@ public:
     CircuitThread();
     ~CircuitThread();
 
-    void Initialise( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
-
-    void Start();
+    void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
     void Stop();
     void Sync();
     void SyncAndResume( DSPatch::Component::TickMode mode );
@@ -81,7 +79,7 @@ private:
     bool _stop = false;
     bool _stopped = true;
     bool _gotResume = false;
-    bool _gotSync = false;
+    bool _gotSync = true;
     std::mutex _resumeMutex;
     std::condition_variable _resumeCondt, _syncCondt;
 };

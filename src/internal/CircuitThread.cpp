@@ -35,16 +35,13 @@ CircuitThread::~CircuitThread()
     Stop();
 }
 
-void CircuitThread::Initialise( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
-{
-    _components = components;
-    _threadNo = threadNo;
-}
-
-void CircuitThread::Start()
+void CircuitThread::Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
 {
     if ( _stopped )
     {
+        _components = components;
+        _threadNo = threadNo;
+
         _stop = false;
         _stopped = false;
         _gotResume = false;

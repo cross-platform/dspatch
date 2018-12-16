@@ -44,11 +44,11 @@ public:
 
     DSPatch::Component::TickMode autoTickMode;
 
-    internal::AutoTickThread autoTickThread;
+    AutoTickThread autoTickThread;
 
     std::vector<DSPatch::Component::SPtr> components;
 
-    std::vector<internal::CircuitThread::UPtr> circuitThreads;
+    std::vector<CircuitThread::UPtr> circuitThreads;
 };
 
 }  // namespace internal
@@ -223,8 +223,7 @@ void Circuit::SetThreadCount( int threadCount )
             {
                 p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
             }
-            p->circuitThreads[i]->Initialise( &p->components, i );
-            p->circuitThreads[i]->Start();
+            p->circuitThreads[i]->Start( &p->components, i );
         }
 
         // set all components to the new thread count
@@ -274,12 +273,7 @@ void Circuit::StartAutoTick( Component::TickMode mode )
 {
     if ( p->autoTickThread.IsStopped() )
     {
-        if ( !p->autoTickThread.IsInitialised() )
-        {
-            p->autoTickThread.Initialise( this );
-        }
-
-        p->autoTickThread.Start( mode );
+        p->autoTickThread.Start( this, mode );
         p->autoTickMode = mode;
     }
     else
