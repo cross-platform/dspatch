@@ -798,7 +798,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     int efficiencyThreshold = 80;  // expect at least 80% efficiency with 4+ cores
     if ( std::thread::hardware_concurrency() < 4 )
     {
-        auto fraction = std::thread::hardware_concurrency() / 4;
+        float fraction = (float)std::thread::hardware_concurrency() / 4;
         efficiencyThreshold *= fraction;
     }
 
