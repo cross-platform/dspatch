@@ -28,7 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <internal/Wire.h>
 
 #include <condition_variable>
-#include <set>
+#include <unordered_set>
 
 using namespace DSPatch;
 
@@ -73,7 +73,7 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<ComponentThread::UPtr> componentThreads;
-    std::set<DSPatch::Component::SPtr> feedbackComps;
+    std::unordered_set<DSPatch::Component::SPtr> feedbackComps;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<bool> gotReleases;

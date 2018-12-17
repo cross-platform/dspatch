@@ -89,7 +89,7 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( std::function<void()> tickFunction )
+void ComponentThread::Resume( std::function<void()> tick )
 {
     if ( _stopped )
     {
@@ -100,7 +100,7 @@ void ComponentThread::Resume( std::function<void()> tickFunction )
 
     _gotSync = false;  // reset the sync flag
 
-    _tickFunction = tickFunction;
+    _tick = tick;
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
@@ -125,7 +125,7 @@ void ComponentThread::_Run()
 
         if ( !_stop )
         {
-            _tickFunction();
+            _tick();
         }
     }
 

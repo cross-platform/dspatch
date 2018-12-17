@@ -52,7 +52,7 @@ public:
     void Start();
     void Stop();
     void Sync();
-    void Resume( std::function<void()> tickFunction );
+    void Resume( std::function<void()> tick );
 
 private:
     void _Run();
@@ -65,7 +65,7 @@ private:
     bool _gotSync = true;
     std::mutex _resumeMutex;
     std::condition_variable _resumeCondt, _syncCondt;
-    std::function<void()> _tickFunction;
+    std::function<void()> _tick;
 };
 
 }  // namespace internal
