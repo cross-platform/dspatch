@@ -378,7 +378,10 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
         for ( auto& refMutex : refMutexes )
         {
             // construct new output reference mutexes
-            refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
+            if ( !refMutex )
+            {
+                refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
+            }
         }
     }
 }
