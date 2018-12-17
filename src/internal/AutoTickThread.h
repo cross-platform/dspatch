@@ -53,6 +53,8 @@ public:
     AutoTickThread();
     ~AutoTickThread();
 
+    DSPatch::Component::TickMode Mode();
+
     bool IsStopped() const;
     bool IsPaused() const;
 

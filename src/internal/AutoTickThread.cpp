@@ -39,6 +39,11 @@ AutoTickThread::~AutoTickThread()
     Stop();
 }
 
+DSPatch::Component::TickMode AutoTickThread::Mode()
+{
+    return _mode;
+}
+
 bool AutoTickThread::IsStopped() const
 {
     return _stopped;

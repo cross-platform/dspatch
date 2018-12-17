@@ -43,7 +43,6 @@ public:
     int currentThreadNo = 0;
 
     AutoTickThread autoTickThread;
-    DSPatch::Component::TickMode autoTickMode;
 
     std::vector<DSPatch::Component::SPtr> components;
 
@@ -273,7 +272,6 @@ void Circuit::StartAutoTick( Component::TickMode mode )
     if ( p->autoTickThread.IsStopped() )
     {
         p->autoTickThread.Start( this, mode );
-        p->autoTickMode = mode;
     }
     else
     {
@@ -290,7 +288,7 @@ void Circuit::StopAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick( p->autoTickMode );
+            Tick( p->autoTickThread.Mode() );
         }
 
         // sync all threads
@@ -315,7 +313,7 @@ void Circuit::PauseAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick( p->autoTickMode );
+            Tick( p->autoTickThread.Mode() );
         }
 
         // sync all threads

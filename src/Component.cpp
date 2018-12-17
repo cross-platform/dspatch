@@ -73,7 +73,7 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<ComponentThread::UPtr> componentThreads;
-    std::unordered_set<DSPatch::Component::SPtr> feedbackComps;
+    std::vector<std::unordered_set<DSPatch::Component::SPtr>> feedbackComponents;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<bool> gotReleases;
@@ -192,6 +192,7 @@ void Component::SetBufferCount( int bufferCount )
 
     // resize vectors
     p->componentThreads.resize( bufferCount );
+    p->feedbackComponents.resize( bufferCount );
 
     p->tickStatuses.resize( bufferCount );
 
@@ -250,10 +251,10 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
     {
-        // 1. set tickStatus
+        // 1. set tickStatus -> TickStarted
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
-        // 2. get outputs required from input components
+        // 2. tick incoming components
         for ( auto& wire : p->inputWires )
         {
             if ( mode == TickMode::Series )
@@ -264,23 +265,25 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
             {
                 if ( !wire.fromComponent->Tick( mode, bufferNo ) )
                 {
-                    p->feedbackComps.emplace( wire.fromComponent );
+                    p->feedbackComponents[bufferNo].emplace( wire.fromComponent );
                 }
             }
         }
 
+        // 3. set tickStatus -> Ticking
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
         auto tick = [this, mode, bufferNo]() {
+            // 4. get new inputs from incoming components
             for ( auto& wire : p->inputWires )
             {
                 if ( mode == TickMode::Parallel )
                 {
-                    // wait only for non-feedback components to finish ticking
-                    if ( p->feedbackComps.find( wire.fromComponent ) == p->feedbackComps.end() )
+                    // wait for non-feedback incoming components to finish ticking
+                    if ( p->feedbackComponents[bufferNo].find( wire.fromComponent ) == p->feedbackComponents[bufferNo].end() )
                     {
                         wire.fromComponent->p->componentThreads[bufferNo]->Sync();
-                        p->feedbackComps.erase( wire.fromComponent );
+                        p->feedbackComponents[bufferNo].erase( wire.fromComponent );
                     }
                 }
 
@@ -294,23 +297,23 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
             // output reference counting in internal::Component::GetOutput(), reseting the counter upon
             // the final request rather than in Reset().
 
-            // 3. clear all outputs
+            // 5. clear outputs
             p->outputBuses[bufferNo].ClearAllValues();
 
             if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
             {
-                // 4. wait for your turn to process.
+                // 6. wait for our turn to process.
                 p->WaitForRelease( bufferNo );
 
-                // 5. call Process_() with newly aquired inputs
+                // 7. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
 
-                // 6. signal that you're done processing.
+                // 8. signal that we're done processing.
                 p->ReleaseThread( bufferNo );
             }
             else
             {
-                // 4. call Process_() with newly aquired inputs
+                // 6. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
             }
         };
@@ -335,9 +338,10 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
 
 void Component::Reset( int bufferNo )
 {
+    // wait for ticking to complete
     p->componentThreads[bufferNo]->Sync();
 
-    // clear all inputs
+    // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();
 
     // reset tickStatus
@@ -363,7 +367,7 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
         outputBus.SetSignalCount( outputCount );
     }
 
-    // Add reference counters for our new outputs
+    // add reference counters for our new outputs
     for ( auto& ref : p->refs )
     {
         ref.resize( outputCount );
@@ -374,10 +378,7 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
         for ( auto& refMutex : refMutexes )
         {
             // construct new output reference mutexes
-            if ( !refMutex )
-            {
-                refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
-            }
+            refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
         }
     }
 }
