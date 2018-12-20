@@ -56,36 +56,37 @@ bool AutoTickThread::IsPaused() const
 
 void AutoTickThread::Start( DSPatch::Circuit* circuit, DSPatch::Component::TickMode mode )
 {
-    if ( _stopped )
+    if ( !_stopped )
     {
-        _circuit = circuit;
-
-        _mode = mode;
-        _stop = false;
-        _stopped = false;
-        _pause = false;
-
-        _thread = std::thread( &AutoTickThread::_Run, this );
+        return;
     }
+
+    _circuit = circuit;
+
+    _mode = mode;
+    _stop = false;
+    _stopped = false;
+    _pause = false;
+
+    _thread = std::thread( &AutoTickThread::_Run, this );
 }
 
 void AutoTickThread::Stop()
 {
-    if ( !_stopped )
+    if ( _stopped )
     {
-        _stop = true;
+        return;
+    }
 
-        while ( !_stopped )
-        {
-            _pauseCondt.notify_all();
-            _resumeCondt.notify_all();
-            std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-        }
+    Pause();
 
-        if ( _thread.joinable() )
-        {
-            _thread.join();
-        }
+    _stop = true;
+
+    Resume();
+
+    if ( _thread.joinable() )
+    {
+        _thread.join();
     }
 }
 

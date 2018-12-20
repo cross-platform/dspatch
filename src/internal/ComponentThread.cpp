@@ -59,14 +59,11 @@ void ComponentThread::Stop()
         return;
     }
 
+    Sync();
+
     _stop = true;
 
-    while ( !_stopped )
-    {
-        _syncCondt.notify_all();
-        _resumeCondt.notify_all();
-        std::this_thread::sleep_for( std::chrono::milliseconds( 1 ) );
-    }
+    Resume( _tick );
 
     if ( _thread.joinable() )
     {

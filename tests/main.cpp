@@ -1040,3 +1040,66 @@ TEST_CASE( "WiringTest2" )
 
     circuit->StopAutoTick();
 }
+
+//=================================================================================================
+
+TEST_CASE( "ThreadStopRegressionTest" )
+{
+    // Configure a circuit made up of 3 parallel branches of 4, 2, and 1 component(s) respectively
+    auto circuit = std::make_shared<Circuit>();
+
+    auto counter = std::make_shared<Counter>();
+    auto inc_p1_s1 = std::make_shared<Incrementer>();
+    auto inc_p1_s2 = std::make_shared<Incrementer>();
+    auto inc_p1_s3 = std::make_shared<Incrementer>();
+    auto inc_p1_s4 = std::make_shared<Incrementer>();
+    auto inc_p2_s1 = std::make_shared<Incrementer>();
+    auto inc_p2_s2 = std::make_shared<Incrementer>();
+    auto inc_p3_s1 = std::make_shared<Incrementer>();
+    auto probe = std::make_shared<BranchSyncProbe>();
+
+    circuit->AddComponent( counter );
+
+    circuit->AddComponent( inc_p1_s1 );
+    circuit->AddComponent( inc_p1_s2 );
+    circuit->AddComponent( inc_p1_s3 );
+    circuit->AddComponent( inc_p1_s4 );
+
+    circuit->AddComponent( inc_p2_s1 );
+    circuit->AddComponent( inc_p2_s2 );
+
+    circuit->AddComponent( inc_p3_s1 );
+
+    circuit->AddComponent( probe );
+
+    // Wire branch 1
+    circuit->ConnectOutToIn( counter, 0, inc_p1_s1, 0 );
+    circuit->ConnectOutToIn( inc_p1_s1, 0, inc_p1_s2, 0 );
+    circuit->ConnectOutToIn( inc_p1_s2, 0, inc_p1_s3, 0 );
+    circuit->ConnectOutToIn( inc_p1_s3, 0, inc_p1_s4, 0 );
+    circuit->ConnectOutToIn( inc_p1_s4, 0, probe, 0 );
+
+    // Wire branch 2
+    circuit->ConnectOutToIn( counter, 0, inc_p2_s1, 0 );
+    circuit->ConnectOutToIn( inc_p2_s1, 0, inc_p2_s2, 0 );
+    circuit->ConnectOutToIn( inc_p2_s2, 0, probe, 1 );
+
+    // Wire branch 3
+    circuit->ConnectOutToIn( counter, 0, inc_p3_s1, 0 );
+    circuit->ConnectOutToIn( inc_p3_s1, 0, probe, 2 );
+
+    // Tick the circuit 100 times
+    for ( int i = 0; i < 100; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick( Component::TickMode::Parallel );
+    }
+
+    circuit->SetThreadCount( 30 );
+
+    for ( int i = 0; i < 100; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick( Component::TickMode::Parallel );
+    }
+}
