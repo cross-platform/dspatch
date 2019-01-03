@@ -86,7 +86,7 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( std::function<void()> tick )
+void ComponentThread::Resume( std::function<void()> const& tick )
 {
     if ( _stopped )
     {

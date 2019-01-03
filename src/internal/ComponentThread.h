@@ -52,7 +52,7 @@ public:
     void Start();
     void Stop();
     void Sync();
-    void Resume( std::function<void()> tick );
+    void Resume( std::function<void()> const& tick );
 
 private:
     void _Run();
