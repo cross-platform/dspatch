@@ -417,7 +417,7 @@ void internal::Component::GetOutput(
 
     auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
 
-    if ( mode == DSPatch::Component::TickMode::Parallel )
+    if ( mode == DSPatch::Component::TickMode::Parallel && refs[bufferNo][fromOutput].first > 1 )
     {
         refMutexes[bufferNo][fromOutput]->lock();
     }
@@ -435,7 +435,7 @@ void internal::Component::GetOutput(
         toBus.CopySignal( toInput, signal );
     }
 
-    if ( mode == DSPatch::Component::TickMode::Parallel )
+    if ( mode == DSPatch::Component::TickMode::Parallel && refs[bufferNo][fromOutput].first > 1 )
     {
         refMutexes[bufferNo][fromOutput]->unlock();
     }
