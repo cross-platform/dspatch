@@ -74,7 +74,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
     steady data flow through the system.
     - <b>Run-time thread count adjustment</b> - Specify at run-time, the number of threads in which
-    you require a circuit to process.
+    you require a circuit to process.///!
 
 \n
 
@@ -243,8 +243,8 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     from the main application thread, or alternatively, by calling StartAutoTick(), a seperate
     thread will spawn, automatically calling Tick() continuously.
 
-    A circuit's thread count can be adjusted at runtime, allowing us to increase / decrease the
-    number of threads use by the circuit as required during execution:
+    To boost performance in stream processing circuits like this one, multi-buffering can be
+    enabled via the SetBufferCount() method:
 
     \code
     // 5. Tick the circuit
@@ -261,9 +261,9 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     getchar();
     circuit->StartAutoTick( Component::TickMode::Parallel );
 
-    // Increase Circuit Thread count for higher performance
+    // Increase circuit buffer count for higher performance
     getchar();
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
 
     // Press any key to quit
     getchar();

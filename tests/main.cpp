@@ -94,7 +94,7 @@ TEST_CASE( "ParallelTest" )
     circuit->ConnectOutToIn( inc_p5, 0, probe, 4 );
 
     // Tick the circuit for 100ms with 3 threads
-    circuit->SetThreadCount( 3 );
+    circuit->SetBufferCount( 3 );
     circuit->StartAutoTick( Component::TickMode::Series );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
@@ -216,7 +216,7 @@ TEST_CASE( "RefCountResetRegressionTest" )
     auto feedback = std::make_shared<FeedbackTester>( 2 );
 
     circuit->AddComponent( feedback );
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
 
     feedback->ConnectInput( feedback, 0, 0 );
     feedback->SetValidInputs( 1 );
@@ -317,7 +317,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     int count = probe->GetCount();
-    std::cout << "0x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "0x Buffer Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.25 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
@@ -325,7 +325,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     {
         return;
     }
-    circuit->SetThreadCount( 1 );
+    circuit->SetBufferCount( 1 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -338,7 +338,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "1x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "1x Buffer Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.25 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
@@ -346,7 +346,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     {
         return;
     }
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -359,7 +359,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "2x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "2x Buffer Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.5 );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
@@ -367,7 +367,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     {
         return;
     }
-    circuit->SetThreadCount( 3 );
+    circuit->SetBufferCount( 3 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -380,7 +380,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "3x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "3x Buffer Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.75 );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
@@ -388,7 +388,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     {
         return;
     }
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -401,7 +401,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "4x Thread Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "4x Buffer Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold );
 }
 
@@ -426,7 +426,7 @@ TEST_CASE( "StopAutoTickRegressionTest" )
     circuit->ConnectOutToIn( counter3, 0, probe, 2 );
     circuit->ConnectOutToIn( counter4, 0, probe, 3 );
 
-    circuit->SetThreadCount( std::thread::hardware_concurrency() );
+    circuit->SetBufferCount( std::thread::hardware_concurrency() );
 
     circuit->StartAutoTick( Component::TickMode::Series );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
@@ -459,24 +459,24 @@ TEST_CASE( "ThreadAdjustmentTest" )
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     // Adjust the thread count while the circuit is running
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 0 );
+    circuit->SetBufferCount( 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 3 );
+    circuit->SetBufferCount( 3 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     circuit->StopAutoTick();
 
-    REQUIRE( circuit->GetThreadCount() == 3 );
+    REQUIRE( circuit->GetBufferCount() == 3 );
 }
 
 TEST_CASE( "WiringTest" )
@@ -600,7 +600,7 @@ TEST_CASE( "ParallelTest2" )
     circuit->ConnectOutToIn( inc_p5, 0, probe, 4 );
 
     // Tick the circuit for 100ms with 3 threads
-    circuit->SetThreadCount( 3 );
+    circuit->SetBufferCount( 3 );
     circuit->StartAutoTick( Component::TickMode::Parallel );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
@@ -722,7 +722,7 @@ TEST_CASE( "RefCountResetRegressionTest2" )
     auto feedback = std::make_shared<FeedbackTester>( 2 );
 
     circuit->AddComponent( feedback );
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
 
     feedback->ConnectInput( feedback, 0, 0 );
     feedback->SetValidInputs( 1 );
@@ -828,7 +828,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     circuit->PauseAutoTick();
 
     int count = probe->GetCount();
-    std::cout << "0x Thread Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "0x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.8 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
@@ -836,7 +836,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     {
         return;
     }
-    circuit->SetThreadCount( 1 );
+    circuit->SetBufferCount( 1 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -849,7 +849,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "1x Thread Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "1x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.8 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
@@ -857,7 +857,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     {
         return;
     }
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -870,7 +870,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "2x Thread Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "2x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
@@ -878,7 +878,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     {
         return;
     }
-    circuit->SetThreadCount( 3 );
+    circuit->SetBufferCount( 3 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -891,7 +891,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "3x Thread Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "3x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
@@ -899,7 +899,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     {
         return;
     }
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
 
     counter1->ResetCount();
     counter2->ResetCount();
@@ -912,7 +912,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     circuit->PauseAutoTick();
 
     count = probe->GetCount();
-    std::cout << "4x Thread Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
+    std::cout << "4x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold );
 }
 
@@ -937,7 +937,7 @@ TEST_CASE( "StopAutoTickRegressionTest2" )
     circuit->ConnectOutToIn( counter3, 0, probe, 2 );
     circuit->ConnectOutToIn( counter4, 0, probe, 3 );
 
-    circuit->SetThreadCount( std::thread::hardware_concurrency() );
+    circuit->SetBufferCount( std::thread::hardware_concurrency() );
 
     circuit->StartAutoTick( Component::TickMode::Parallel );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
@@ -970,24 +970,24 @@ TEST_CASE( "ThreadAdjustmentTest2" )
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     // Adjust the thread count while the circuit is running
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 0 );
+    circuit->SetBufferCount( 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 2 );
+    circuit->SetBufferCount( 2 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
-    circuit->SetThreadCount( 3 );
+    circuit->SetBufferCount( 3 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     circuit->StopAutoTick();
 
-    REQUIRE( circuit->GetThreadCount() == 3 );
+    REQUIRE( circuit->GetBufferCount() == 3 );
 }
 
 TEST_CASE( "WiringTest2" )
@@ -1095,7 +1095,7 @@ TEST_CASE( "ThreadStopRegressionTest" )
         circuit->Tick( Component::TickMode::Parallel );
     }
 
-    circuit->SetThreadCount( 30 );
+    circuit->SetBufferCount( 30 );
 
     for ( int i = 0; i < 100; ++i )
     {

@@ -60,7 +60,7 @@ Circuit::Circuit()
 Circuit::~Circuit()
 {
     StopAutoTick();
-    SetThreadCount( 0 );
+    SetBufferCount( 0 );
     RemoveAllComponents();
 }
 
@@ -199,9 +199,9 @@ void Circuit::DisconnectComponent( int componentIndex )
     ResumeAutoTick();
 }
 
-void Circuit::SetThreadCount( int threadCount )
+void Circuit::SetBufferCount( int bufferCount )
 {
-    if ( (size_t)threadCount != p->circuitThreads.size() )
+    if ( (size_t)bufferCount != p->circuitThreads.size() )
     {
         PauseAutoTick();
 
@@ -212,7 +212,7 @@ void Circuit::SetThreadCount( int threadCount )
         }
 
         // resize thread array
-        p->circuitThreads.resize( threadCount );
+        p->circuitThreads.resize( bufferCount );
 
         // initialise and start all threads
         for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
@@ -224,17 +224,17 @@ void Circuit::SetThreadCount( int threadCount )
             p->circuitThreads[i]->Start( &p->components, i );
         }
 
-        // set all components to the new thread count
+        // set all components to the new buffer count
         for ( auto& component : p->components )
         {
-            component->SetBufferCount( threadCount );
+            component->SetBufferCount( bufferCount );
         }
 
         ResumeAutoTick();
     }
 }
 
-int Circuit::GetThreadCount() const
+int Circuit::GetBufferCount() const
 {
     return p->circuitThreads.size();
 }
