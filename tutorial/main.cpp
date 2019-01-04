@@ -43,9 +43,9 @@ int main()
     getchar();
     circuit->StartAutoTick();
 
-    // Increase Circuit Thread count for higher performance
+    // Increase circuit buffer count for higher performance
     getchar();
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
 
     // Press any key to quit
     getchar();

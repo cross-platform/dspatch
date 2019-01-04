@@ -1,3 +1,10 @@
+v.6.00 (04 January 2019)
+    - Greatly improved performance in reactive-style one-shot circuits.
+    - Added Circuit::Set/GetBufferCount() for optimized stream processing.
+    - Added "Series" tick mode for optimized series circuit processing.
+    - Tick parallel components in parallel with new ComponentThread class.
+    - Improved stability in *Thread classes.
+
 v.5.01 (11 November 2018)
     - Various code readability improvements.
     - Wait for circuit threads to stop in StopAutoTick().

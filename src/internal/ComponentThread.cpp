@@ -22,67 +22,48 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ************************************************************************/
 
-#include <internal/AutoTickThread.h>
-
-#include <dspatch/Circuit.h>
-
-#include <thread>
+#include <internal/ComponentThread.h>
 
 using namespace DSPatch::internal;
 
-AutoTickThread::AutoTickThread()
+ComponentThread::ComponentThread()
 {
 }
 
-AutoTickThread::~AutoTickThread()
+ComponentThread::~ComponentThread()
 {
     Stop();
 }
 
-DSPatch::Component::TickMode AutoTickThread::Mode()
-{
-    return _mode;
-}
-
-bool AutoTickThread::IsStopped() const
-{
-    return _stopped;
-}
-
-bool AutoTickThread::IsPaused() const
-{
-    return _pause;
-}
-
-void AutoTickThread::Start( DSPatch::Circuit* circuit, DSPatch::Component::TickMode mode )
+void ComponentThread::Start()
 {
     if ( !_stopped )
     {
         return;
     }
 
-    _circuit = circuit;
-
-    _mode = mode;
     _stop = false;
     _stopped = false;
-    _pause = false;
+    _gotResume = false;
+    _gotSync = false;
 
-    _thread = std::thread( &AutoTickThread::_Run, this );
+    _thread = std::thread( &ComponentThread::_Run, this );
+
+    Sync();
 }
 
-void AutoTickThread::Stop()
+void ComponentThread::Stop()
 {
     if ( _stopped )
     {
         return;
     }
 
-    Pause();
+    Sync();
 
     _stop = true;
 
-    Resume();
+    Resume( _tick );
 
     if ( _thread.joinable() )
     {
@@ -90,44 +71,58 @@ void AutoTickThread::Stop()
     }
 }
 
-void AutoTickThread::Pause()
+void ComponentThread::Sync()
 {
+    if ( _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
-    if ( !_pause && !_stopped )
+    if ( !_gotSync )  // if haven't already got sync
     {
-        _pause = true;
-        _pauseCondt.wait( lock );  // wait for resume
+        _syncCondt.wait( lock );  // wait for sync
     }
 }
 
-void AutoTickThread::Resume()
+void ComponentThread::Resume( std::function<void()> const& tick )
 {
+    if ( _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
-    if ( _pause )
-    {
-        _resumeCondt.notify_all();
-        _pause = false;
-    }
+    _gotSync = false;  // reset the sync flag
+
+    _tick = tick;
+
+    _gotResume = true;  // set the resume flag
+    _resumeCondt.notify_all();
 }
 
-void AutoTickThread::_Run()
+void ComponentThread::_Run()
 {
-    if ( _circuit != nullptr )
+    while ( !_stop )
     {
-        while ( !_stop )
         {
-            _circuit->Tick( _mode );
+            std::unique_lock<std::mutex> lock( _resumeMutex );
 
-            if ( _pause )
+            _gotSync = true;  // set the sync flag
+            _syncCondt.notify_all();
+
+            if ( !_gotResume )  // if haven't already got resume
             {
-                std::unique_lock<std::mutex> lock( _resumeMutex );
-
-                _pauseCondt.notify_all();
-
                 _resumeCondt.wait( lock );  // wait for resume
             }
+            _gotResume = false;  // reset the resume flag
+        }
+
+        if ( !_stop )
+        {
+            _tick();
         }
     }
 

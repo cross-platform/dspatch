@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.5.01</span>
+   &#160;<span id="projectnumber">v.6.00</span>
    </div>
   </td>
  </tr>
@@ -121,18 +121,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</
 <tr class="memitem:a628bf426f076e5982312046ec55bae9a"><td class="memItemLeft" align="right" valign="top"><a id="a628bf426f076e5982312046ec55bae9a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</b> (int componentIndex)</td></tr>
 <tr class="separator:a628bf426f076e5982312046ec55bae9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f54ec0b5fab4afebb7efb59db5e45fb"><td class="memItemLeft" align="right" valign="top"><a id="a2f54ec0b5fab4afebb7efb59db5e45fb"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetThreadCount</b> (int threadCount)</td></tr>
-<tr class="separator:a2f54ec0b5fab4afebb7efb59db5e45fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04309f25be60fed3727ec1ae14490ccc"><td class="memItemLeft" align="right" valign="top"><a id="a04309f25be60fed3727ec1ae14490ccc"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>GetThreadCount</b> () const</td></tr>
-<tr class="separator:a04309f25be60fed3727ec1ae14490ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41921757f93f513000f696e795fabe29"><td class="memItemLeft" align="right" valign="top"><a id="a41921757f93f513000f696e795fabe29"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> ()</td></tr>
-<tr class="separator:a41921757f93f513000f696e795fabe29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad75ef1168a830209d4bc1da8dc25fc2f"><td class="memItemLeft" align="right" valign="top"><a id="ad75ef1168a830209d4bc1da8dc25fc2f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>StartAutoTick</b> ()</td></tr>
-<tr class="separator:ad75ef1168a830209d4bc1da8dc25fc2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a978acbdd0b8a403c273e6489bdca6eaf"><td class="memItemLeft" align="right" valign="top"><a id="a978acbdd0b8a403c273e6489bdca6eaf"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (int bufferCount)</td></tr>
+<tr class="separator:a978acbdd0b8a403c273e6489bdca6eaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c25e5a14c1cda5441ca8b65ef7a0a76"><td class="memItemLeft" align="right" valign="top"><a id="a5c25e5a14c1cda5441ca8b65ef7a0a76"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBufferCount</b> () const</td></tr>
+<tr class="separator:a5c25e5a14c1cda5441ca8b65ef7a0a76"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b0f3ff6f5f86f72040cbba02a9df15e"><td class="memItemLeft" align="right" valign="top"><a id="a6b0f3ff6f5f86f72040cbba02a9df15e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (Component::TickMode mode=Component::TickMode::Parallel)</td></tr>
+<tr class="separator:a6b0f3ff6f5f86f72040cbba02a9df15e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c12438ea975fc775f7c9487547acd2f"><td class="memItemLeft" align="right" valign="top"><a id="a1c12438ea975fc775f7c9487547acd2f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>StartAutoTick</b> (Component::TickMode mode=Component::TickMode::Parallel)</td></tr>
+<tr class="separator:a1c12438ea975fc775f7c9487547acd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2036b492d871c011730ebb48a724717"><td class="memItemLeft" align="right" valign="top"><a id="ac2036b492d871c011730ebb48a724717"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>StopAutoTick</b> ()</td></tr>
 <tr class="separator:ac2036b492d871c011730ebb48a724717"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,10 +147,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ResumeAutoTick</b> ()
 <div class="textblock"><p>Workspace for adding and routing components. </p>
 <p>Components can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> via the AddComponent() method, and routed to and from other components via the ConnectOutToIn() methods.</p>
 <p><b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is connected to an input that already has a connected wire, that wire is replaced with the new one. One output, on the other hand, can be distributed to multiple inputs.</p>
-<p>For process intensive circuits, multi-threaded processing can be enabled via the SetThreadCount() method (0 threads = multi-threading disabled). A circuit's thread count can be adjusted at runtime, allowing the user to increase / decrease the number of threads as required during execution.</p>
+<p>To boost performance in stream processing circuits, multi-buffering can be enabled via the SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.</p>
 <p>The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components. ">Circuit</a> Tick() method runs through it's internal array of components and calls each component's Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called. </p>
 
-<p class="definition">Definition at line <a class="el" href="_circuit_8h_source.html#l00057">57</a> of file <a class="el" href="_circuit_8h_source.html">Circuit.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_8h_source.html#l00056">56</a> of file <a class="el" href="_circuit_8h_source.html">Circuit.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_circuit_8h_source.html">Circuit.h</a></li>
 </ul>

@@ -24,7 +24,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #pragma once
 
-#include <dspatch/Circuit.h>
 #include <dspatch/Common.h>
 
 #include <condition_variable>
@@ -35,46 +34,42 @@ namespace DSPatch
 namespace internal
 {
 
-/// Thread class for auto-ticking a circuit
+/// Thread class for asynchronously ticking a single circuit component
 
 /**
-An AutoTickThread is responsible for ticking a circuit continuously in a free-running thread. Upon
-initialisation, a reference to the circuit must be provided for the thread's _Run() method to use.
-Once Start() has been called, the thread will begin, repeatedly calling the circuit's Tick()
-method until instructed to Pause() or Stop().
+A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
+
+Upon Start(), an internal thread will spawn and wait for the first call to Resume() before
+executing the tick method provided. A call to Sync() will then block until the thread has completed
+execution of the tick method. At this point, the thread will wait until instructed to resume again.
 */
 
-class AutoTickThread final
+class ComponentThread final
 {
 public:
-    NONCOPYABLE( AutoTickThread );
-    DEFINE_PTRS( AutoTickThread );
+    NONCOPYABLE( ComponentThread );
+    DEFINE_PTRS( ComponentThread );
 
-    AutoTickThread();
-    ~AutoTickThread();
+    ComponentThread();
+    ~ComponentThread();
 
-    DSPatch::Component::TickMode Mode();
-
-    bool IsStopped() const;
-    bool IsPaused() const;
-
-    void Start( DSPatch::Circuit* circuit, DSPatch::Component::TickMode mode );
+    void Start();
     void Stop();
-    void Pause();
-    void Resume();
+    void Sync();
+    void Resume( std::function<void()> const& tick );
 
 private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode;
     std::thread _thread;
-    DSPatch::Circuit* _circuit = nullptr;
     bool _stop = false;
-    bool _pause = false;
     bool _stopped = true;
+    bool _gotResume = false;
+    bool _gotSync = true;
     std::mutex _resumeMutex;
-    std::condition_variable _resumeCondt, _pauseCondt;
+    std::condition_variable _resumeCondt, _syncCondt;
+    std::function<void()> _tick;
 };
 
 }  // namespace internal

@@ -44,9 +44,8 @@ components via the ConnectOutToIn() methods.
 connected to an input that already has a connected wire, that wire is replaced with the new one.
 One output, on the other hand, can be distributed to multiple inputs.
 
-For process intensive circuits, multi-threaded processing can be enabled via the SetThreadCount()
-method (0 threads = multi-threading disabled). A circuit's thread count can be adjusted at runtime,
-allowing the user to increase / decrease the number of threads as required during execution.
+To boost performance in stream processing circuits, multi-buffering can be enabled via the
+SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.
 
 The Circuit Tick() method runs through it's internal array of components and calls each component's
 Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
@@ -79,12 +78,12 @@ public:
     void DisconnectComponent( Component::SCPtr const& component );
     void DisconnectComponent( int componentIndex );
 
-    void SetThreadCount( int threadCount );
-    int GetThreadCount() const;
+    void SetBufferCount( int bufferCount );
+    int GetBufferCount() const;
 
-    void Tick();
+    void Tick( Component::TickMode mode = Component::TickMode::Parallel );
 
-    void StartAutoTick();
+    void StartAutoTick( Component::TickMode mode = Component::TickMode::Parallel );
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();

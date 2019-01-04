@@ -61,20 +61,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     - <b>Cross-platform</b> - DSPatch is built and tested daily on Linux, Mac and Windows.
     <a href="https://www.youtube.com/watch?v=u3A9x9bpbdo"><b>Here</b></a> we see DSPatch running
     flawlessly on a BeagleBone!
-    - <b>Easy-to-use object-oriented API</b> - DSPatch is modeled around real-world circuit
+    - <b>Easy-to-use object-oriented API</b> - DSPatch is modelled around real-world circuit
     entities and concepts, making code more readable and easy to understand.
     - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back
     into previous component inputs.
     - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling
-    to maximize data flow efficiency.
-    - <b>Optimised signal transfers</b> - Wherever possible, data between components is transfered
+    to maximize dataflow efficiency across parallel branches.
+    - <b>High performance stream processing</b> - Utilize multi-buffering in stream processing
+    circuits to further boost dataflow efficiency.
+    - <b>Optimised signal transfers</b> - Wherever possible, data between components is transferred
     via move rather than copy.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time
     varying types allowing you to create more flexible, multi-purpose component processes.
     - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
-    steady data flow through the system.
-    - <b>Run-time thread count adjustment</b> - Specify at run-time, the number of threads in which
-    you require a circuit to process.
+    steady dataflow through the system.
 
 \n
 
@@ -243,8 +243,8 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     from the main application thread, or alternatively, by calling StartAutoTick(), a seperate
     thread will spawn, automatically calling Tick() continuously.
 
-    A circuit's thread count can be adjusted at runtime, allowing us to increase / decrease the
-    number of threads use by the circuit as required during execution:
+    Furthermore, to boost performance in stream processing circuits like this one, multi-buffering
+    can be enabled via the SetBufferCount() method:
 
     \code
     // 5. Tick the circuit
@@ -261,9 +261,9 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     getchar();
     circuit->StartAutoTick();
 
-    // Increase Circuit Thread count for higher performance
+    // Increase circuit buffer count for higher performance
     getchar();
-    circuit->SetThreadCount( 4 );
+    circuit->SetBufferCount( 4 );
 
     // Press any key to quit
     getchar();

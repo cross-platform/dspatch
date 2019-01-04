@@ -72,6 +72,12 @@ public:
         OutOfOrder
     };
 
+    enum class TickMode
+    {
+        Series,
+        Parallel
+    };
+
     Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
 
@@ -90,7 +96,7 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    void Tick( int bufferNo = 0 );
+    bool Tick( TickMode mode = TickMode::Parallel, int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
 protected:

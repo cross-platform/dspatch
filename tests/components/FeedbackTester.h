@@ -6,7 +6,8 @@ namespace DSPatch
 class FeedbackTester : public Component
 {
 public:
-    FeedbackTester()
+    FeedbackTester( int bufferCount )
+        : _bufferCount( bufferCount )
     {
         SetInputCount_( 10 );
         SetOutputCount_( 1 );
@@ -23,14 +24,18 @@ protected:
         for ( int i = 0; i < _inputs; ++i )
         {
             auto in = inputs.GetValue<int>( i );
-            REQUIRE( in != nullptr );
-            REQUIRE( *in == _counter );
+            if ( _counter >= _bufferCount )
+            {
+                REQUIRE( in != nullptr );
+                REQUIRE( *in == _counter - ( _bufferCount - 1 ) );
+            }
         }
 
         outputs.SetValue( 0, ++_counter );
     }
 
 private:
+    int _bufferCount = 0;
     int _inputs = 0;
     int _counter = 0;
 };

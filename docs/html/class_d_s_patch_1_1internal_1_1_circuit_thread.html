@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.5.01</span>
+   &#160;<span id="projectnumber">v.6.00</span>
    </div>
   </td>
  </tr>
@@ -88,21 +88,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aba0ea009e4ca6113a0b3c80cec633986"><td class="memItemLeft" align="right" valign="top"><a id="aba0ea009e4ca6113a0b3c80cec633986"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DEFINE_PTRS</b> (<a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html">CircuitThread</a>)</td></tr>
 <tr class="separator:aba0ea009e4ca6113a0b3c80cec633986"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad96d044fb35705c69bfe60df18feac63"><td class="memItemLeft" align="right" valign="top"><a id="ad96d044fb35705c69bfe60df18feac63"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Initialise</b> (std::vector&lt; DSPatch::Component::SPtr &gt; *components, int threadNo)</td></tr>
-<tr class="separator:ad96d044fb35705c69bfe60df18feac63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0286d2fcd3dab0203a5e3595bb23ac55"><td class="memItemLeft" align="right" valign="top"><a id="a0286d2fcd3dab0203a5e3595bb23ac55"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Start</b> ()</td></tr>
-<tr class="separator:a0286d2fcd3dab0203a5e3595bb23ac55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa7b95fc9b62524832d83639a6950d29"><td class="memItemLeft" align="right" valign="top"><a id="aaa7b95fc9b62524832d83639a6950d29"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Start</b> (std::vector&lt; DSPatch::Component::SPtr &gt; *components, int threadNo)</td></tr>
+<tr class="separator:aaa7b95fc9b62524832d83639a6950d29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c10ef8da11245dce92fbb2d8fb6c285"><td class="memItemLeft" align="right" valign="top"><a id="a9c10ef8da11245dce92fbb2d8fb6c285"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Stop</b> ()</td></tr>
 <tr class="separator:a9c10ef8da11245dce92fbb2d8fb6c285"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b56070b8921fcfb1b5186f00b4fc610"><td class="memItemLeft" align="right" valign="top"><a id="a6b56070b8921fcfb1b5186f00b4fc610"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Sync</b> ()</td></tr>
 <tr class="separator:a6b56070b8921fcfb1b5186f00b4fc610"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5dff28d3484f4c3f313db5abd2baf33"><td class="memItemLeft" align="right" valign="top"><a id="ab5dff28d3484f4c3f313db5abd2baf33"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SyncAndResume</b> ()</td></tr>
-<tr class="separator:ab5dff28d3484f4c3f313db5abd2baf33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad00e1681ce3f36e1d20d8e63120f86b1"><td class="memItemLeft" align="right" valign="top"><a id="ad00e1681ce3f36e1d20d8e63120f86b1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SyncAndResume</b> (DSPatch::Component::TickMode mode)</td></tr>
+<tr class="separator:ad00e1681ce3f36e1d20d8e63120f86b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Thread class for asynchronously ticking circuit components. </p>
