@@ -96,7 +96,7 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    bool Tick( TickMode mode, int bufferNo = 0 );
+    bool Tick( TickMode mode = TickMode::Parallel, int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
 protected:

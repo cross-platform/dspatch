@@ -81,9 +81,9 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    void Tick( Component::TickMode mode );
+    void Tick( Component::TickMode mode = Component::TickMode::Parallel );
 
-    void StartAutoTick( Component::TickMode mode );
+    void StartAutoTick( Component::TickMode mode = Component::TickMode::Parallel );
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();

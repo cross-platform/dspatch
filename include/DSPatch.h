@@ -253,13 +253,13 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     // Circuit tick method 1: Manual
     for( int i = 0; i < 10; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick();
     }
 
     // Circuit tick method 2: Automatic
     std::cout << "Press any key to begin circuit auto-tick.";
     getchar();
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    circuit->StartAutoTick();
 
     // Increase circuit buffer count for higher performance
     getchar();
