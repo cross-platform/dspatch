@@ -330,9 +330,11 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
     {
+        // return false to indicate that we have already started a tick, and hence, are a feedback component.
         return false;
     }
 
+    // return true to indicate that we are now in "Ticking" state.
     return true;
 }
 
