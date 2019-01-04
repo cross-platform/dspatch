@@ -37,7 +37,11 @@ namespace internal
 /// Thread class for asynchronously ticking a single component
 
 /**
-...
+A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
+
+Upon Start(), an internal thread will spawn and wait for the first call to Resume() before
+executing the tick method provided. A call to Sync() will then block until the thread has completed
+execution of the tick method. At this point, the thread will wait until instructed to resume again.
 */
 
 class ComponentThread final
