@@ -88,6 +88,10 @@ Public Types</h2></td></tr>
 <b>OutOfOrder</b>
  }</td></tr>
 <tr class="separator:a922d0d4acb680cd2f0474aa60eb60883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d31508c8915a415db1fe0203e140561"><td class="memItemLeft" align="right" valign="top"><a id="a2d31508c8915a415db1fe0203e140561"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>TickMode</b> { <b>Series</b>, 
+<b>Parallel</b>
+ }</td></tr>
+<tr class="separator:a2d31508c8915a415db1fe0203e140561"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -130,9 +134,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (i
 <tr class="memitem:a5ea6f3a8e8da3c84692912462702e161"><td class="memItemLeft" align="right" valign="top"><a id="a5ea6f3a8e8da3c84692912462702e161"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBufferCount</b> () const</td></tr>
 <tr class="separator:a5ea6f3a8e8da3c84692912462702e161"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memItemLeft" align="right" valign="top"><a id="ab1af9c4f9b5e72e0785cd58e5cc4d673"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (int bufferNo=0)</td></tr>
-<tr class="separator:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a668d623d93e1867a98f2a8a5222dc85a"><td class="memItemLeft" align="right" valign="top"><a id="a668d623d93e1867a98f2a8a5222dc85a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (TickMode mode, int bufferNo=0)</td></tr>
+<tr class="separator:a668d623d93e1867a98f2a8a5222dc85a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6f3616dadd4a400fac90e0f549fb29d"><td class="memItemLeft" align="right" valign="top"><a id="ac6f3616dadd4a400fac90e0f549fb29d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> (int bufferNo=0)</td></tr>
 <tr class="separator:ac6f3616dadd4a400fac90e0f549fb29d"><td class="memSeparator" colspan="2">&#160;</td></tr>

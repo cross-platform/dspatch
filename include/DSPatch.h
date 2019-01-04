@@ -74,7 +74,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
     steady dataflow through the system.
     - <b>Stream processing</b> - Utilize multi-buffering in stream processing circuits to boost
-    dataflow performance.
+    stream performance.
 
 \n
 
