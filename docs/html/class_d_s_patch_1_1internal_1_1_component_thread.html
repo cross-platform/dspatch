@@ -75,7 +75,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Thread class for asynchronously ticking a single component.  
+<p>Thread class for asynchronously ticking a single circuit component.  
  <a href="class_d_s_patch_1_1internal_1_1_component_thread.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_component_thread_8h_source.html">ComponentThread.h</a>&gt;</code></p>
@@ -102,10 +102,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Resume</b> (std::func
 <tr class="separator:a1c0a7aeda5ca3cc223e18c90197412ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Thread class for asynchronously ticking a single component. </p>
-<p>... </p>
+<div class="textblock"><p>Thread class for asynchronously ticking a single circuit component. </p>
+<p>A <a class="el" href="class_d_s_patch_1_1internal_1_1_component_thread.html" title="Thread class for asynchronously ticking a single circuit component. ">ComponentThread</a>'s primary purpose is to tick parallel circuit components in parallel.</p>
+<p>Upon Start(), an internal thread will spawn and wait for the first call to Resume() before executing the tick method provided. A call to Sync() will then block until the thread has completed execution of the tick method. At this point, the thread will wait until instructed to resume again. </p>
 
-<p class="definition">Definition at line <a class="el" href="_component_thread_8h_source.html#l00043">43</a> of file <a class="el" href="_component_thread_8h_source.html">ComponentThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_thread_8h_source.html#l00047">47</a> of file <a class="el" href="_component_thread_8h_source.html">ComponentThread.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_component_thread_8h_source.html">ComponentThread.h</a></li>
 </ul>

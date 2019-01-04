@@ -34,7 +34,7 @@ namespace DSPatch
 namespace internal
 {
 
-/// Thread class for asynchronously ticking a single component
+/// Thread class for asynchronously ticking a single circuit component
 
 /**
 A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
