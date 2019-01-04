@@ -66,15 +66,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back
     into previous component inputs.
     - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling
-    to maximize data flow efficiency.
+    to maximize dataflow efficiency.
     - <b>Optimised signal transfers</b> - Wherever possible, data between components is transfered
     via move rather than copy.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time
     varying types allowing you to create more flexible, multi-purpose component processes.
     - <b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining
-    steady data flow through the system.
-    - <b>Run-time thread count adjustment</b> - Specify at run-time, the number of threads in which
-    you require a circuit to process.///!
+    steady dataflow through the system.
+    - <b>Stream processing</b> - Utilize multi-buffering in stream processing circuits to boost
+    dataflow performance.
 
 \n
 
