@@ -7,7 +7,7 @@ The Refreshingly Simple C++ Dataflow Framework
 Webite: http://flowbasedprogramming.com
 
 ```
-git clone https://github.com/MarcusTomlinson/DSPatch.git
+git clone https://github.com/cross-platform/DSPatch.git
 cd DSPatch
 mkdir build
 cd build
@@ -22,6 +22,6 @@ DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is
 
 *See also:*
 
-DSPatchables (https://github.com/MarcusTomlinson/DSPatchables): A DSPatch component repository.
+DSPatchables (https://github.com/cross-platform/DSPatchables): A DSPatch component repository.
 
-DSPatcher (https://github.com/MarcusTomlinson/DSPatcher): A cross-platform graphical tool for building DSPatch circuits.
+DSPatcher (https://github.com/cross-platform/DSPatcher): A cross-platform graphical tool for building DSPatch circuits.
