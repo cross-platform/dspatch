@@ -1,6 +1,6 @@
 /************************************************************************
-DSPatch - The C++ Flow-Based Programming Framework
-Copyright (c) 2012-2018 Marcus Tomlinson
+DSPatch - The Refreshingly Simple C++ Dataflow Framework
+Copyright (c) 2012-2019 Marcus Tomlinson
 
 This file is part of DSPatch.
 
