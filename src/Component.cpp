@@ -73,7 +73,7 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<ComponentThread::UPtr> componentThreads;
-    std::vector<std::unordered_set<DSPatch::Component::SPtr>> feedbackComponents;
+    std::vector<std::unordered_set<Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<bool> gotReleases;
@@ -192,7 +192,7 @@ void Component::SetBufferCount( int bufferCount )
 
     // resize vectors
     p->componentThreads.resize( bufferCount );
-    p->feedbackComponents.resize( bufferCount );
+    p->feedbackWires.resize( bufferCount );
 
     p->tickStatuses.resize( bufferCount );
 
@@ -265,7 +265,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
             {
                 if ( !wire.fromComponent->Tick( mode, bufferNo ) )
                 {
-                    p->feedbackComponents[bufferNo].emplace( wire.fromComponent );
+                    p->feedbackWires[bufferNo].emplace( &wire );
                 }
             }
         }
@@ -280,10 +280,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                 if ( mode == TickMode::Parallel )
                 {
                     // wait for non-feedback incoming components to finish ticking
-                    if ( p->feedbackComponents[bufferNo].find( wire.fromComponent ) == p->feedbackComponents[bufferNo].end() )
+                    if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
                     {
                         wire.fromComponent->p->componentThreads[bufferNo]->Sync();
-                        p->feedbackComponents[bufferNo].erase( wire.fromComponent );
+                    }
+                    else
+                    {
+                        p->feedbackWires[bufferNo].erase( &wire );
                     }
                 }
 
