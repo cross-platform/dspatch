@@ -280,13 +280,14 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                 if ( mode == TickMode::Parallel )
                 {
                     // wait for non-feedback incoming components to finish ticking
-                    if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
+                    auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
+                    if ( wireIndex == p->feedbackWires[bufferNo].end() )
                     {
                         wire.fromComponent->p->componentThreads[bufferNo]->Sync();
                     }
                     else
                     {
-                        p->feedbackWires[bufferNo].erase( &wire );
+                        p->feedbackWires[bufferNo].erase( wireIndex );
                     }
                 }
 
@@ -305,13 +306,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
 
             if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
             {
-                // 6. wait for our turn to process.
+                // 6. wait for our turn to process
                 p->WaitForRelease( bufferNo );
 
                 // 7. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
 
-                // 8. signal that we're done processing.
+                // 8. signal that we're done processing
                 p->ReleaseThread( bufferNo );
             }
             else
