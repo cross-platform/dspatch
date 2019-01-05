@@ -1,6 +1,6 @@
 /************************************************************************
-DSPatch - The C++ Flow-Based Programming Framework
-Copyright (c) 2012-2018 Marcus Tomlinson
+DSPatch - The Refreshingly Simple C++ Dataflow Framework
+Copyright (c) 2012-2019 Marcus Tomlinson
 
 This file is part of DSPatch.
 
@@ -29,27 +29,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 /**
 
-\mainpage The C++ Flow-Based Programming Framework
+\mainpage The Refreshingly Simple C++ Dataflow Framework
 
 \section intro_sec Introduction
-    DSPatch, pronounced "dispatch", is a powerful C++
-    <a href="http://www.jpaulmorrison.com/fbp/">flow-based programming</a> framework. DSPatch is
-    not limited to any particular domain or data type, its generic, object-oriented API allows you
-    to create almost any dataflow system imaginable, from simple logic circuits to high performance
-    audio process chains.
+    DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to
+    any particular domain or data type, from reactive programming to stream processing, DSPatch's
+    generic, object-oriented API allows you to create virtually any dataflow system imaginable.
 
-    DSPatch is designed around the concept of a "circuit" that contains "components"
-    interconnected via "wires" that transfer "signals" to and from component I/O "buses".
+    DSPatch is designed around the concept of a "circuit" that contains "components" interconnected
+    via "wires" that transfer "signals" to and from I/O "buses".
 
-    The two most important classes to consider are DSPatch::Component and DSPatch::Circuit.
-    In order to route data to and from components they must be added to a circuit, where they can
-    be wired together.
+    The two most important classes to consider are DSPatch::Component and DSPatch::Circuit. In
+    order to route data to and from components they must be added to a circuit, where they can be
+    wired together.
 
-    The DSPatch engine takes care of data transfers between interconnected components. When data
-    is ready for a component to process, a callback: "Process_()" is executed in that component.
-    For a component to form part of a DSPatch circuit, designers simply have to derive their
-    component from the DSPatch::Component base class, configure the component's IO buses, and
-    implement the virtual Process_() callback method.
+    The DSPatch engine takes care of data transfers between interconnected components. When data is
+    ready for a component to process, a callback: "Process_()" is executed in that component. For a
+    component to form part of a DSPatch circuit, designers simply have to derive their component
+    from the DSPatch::Component base class, configure the component's IO buses, and implement the
+    virtual Process_() callback method.
 
 \n
 

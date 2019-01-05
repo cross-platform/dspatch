@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['the_20c_2b_2b_20flow_2dbased_20programming_20framework',['The C++ Flow-Based Programming Framework',['../index.html',1,'']]]
+  ['the_20refreshingly_20simple_20c_2b_2b_20dataflow_20framework',['The Refreshingly Simple C++ Dataflow Framework',['../index.html',1,'']]]
 ];
