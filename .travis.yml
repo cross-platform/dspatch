@@ -50,7 +50,7 @@ after_success:
     - mkdir push
     - cd push
     - git init
-    - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/MarcusTomlinson/DSPatch.git
+    - git remote add origin https://marcustomlinson:$GITHUB_TOKEN@github.com/cross-platform/DSPatch.git
     - git checkout -b build/$BRANCH/$PLATFORM
     - git pull origin build/$BRANCH/$PLATFORM
     - rm -rf ./*
