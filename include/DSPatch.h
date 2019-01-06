@@ -79,18 +79,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 \section start_sec Getting Started
     1. Download DSPatch:
         - Source Code:
-            - <a href="https://github.com/cross-platform/DSPatch"><b>GitHub</b></a>
+            - <a href="https://github.com/cross-platform/dspatch"><b>GitHub</b></a>
         - Binaries (Linux):
-            - <a href="https://github.com/cross-platform/DSPatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> -
-<a href="https://github.com/cross-platform/DSPatch/archive/build/master/linux-clang.zip"><b>Clang</b></a>
+            - <a href="https://github.com/cross-platform/dspatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> -
+<a href="https://github.com/cross-platform/dspatch/archive/build/master/linux-clang.zip"><b>Clang</b></a>
         - Binaries (Mac):
-            - <a href="https://github.com/cross-platform/DSPatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> -
-<a href="https://github.com/cross-platform/DSPatch/archive/build/master/osx-clang.zip"><b>Clang</b></a>
+            - <a href="https://github.com/cross-platform/dspatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> -
+<a href="https://github.com/cross-platform/dspatch/archive/build/master/osx-clang.zip"><b>Clang</b></a>
         - Binaries (Windows):
-            - <a href="https://github.com/cross-platform/DSPatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> -
-<a href="https://github.com/cross-platform/DSPatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a>
+            - <a href="https://github.com/cross-platform/dspatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> -
+<a href="https://github.com/cross-platform/dspatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a>
     2. \ref tutorial_sec "Read the tutorials"
-    3. <a href="https://github.com/cross-platform/DSPatchables/tree/master/Components"><b>Browse some example components</b></a>
+    3. <a href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Browse some example components</b></a>
     4. <a href="annotated.html"><b>Refer to the API docs</b></a>
 
 \n
@@ -272,6 +272,6 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     That's it! Enjoy using DSPatch!
 
     (<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder
-    in the <a href="https://github.com/cross-platform/DSPatch"><b>DSPatch root directory</b></a>).
+    in the <a href="https://github.com/cross-platform/dspatch"><b>DSPatch root directory</b></a>).
 
 */

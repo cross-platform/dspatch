@@ -96,25 +96,25 @@ Getting Started</h1>
 <ol type="1">
 <li>Download DSPatch:<ul>
 <li>Source Code:<ul>
-<li><a href="https://github.com/cross-platform/DSPatch"><b>GitHub</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatch"><b>GitHub</b></a></li>
 </ul>
 </li>
 <li>Binaries (Linux):<ul>
-<li><a href="https://github.com/cross-platform/DSPatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> - <a href="https://github.com/cross-platform/DSPatch/archive/build/master/linux-clang.zip"><b>Clang</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> - <a href="https://github.com/cross-platform/dspatch/archive/build/master/linux-clang.zip"><b>Clang</b></a></li>
 </ul>
 </li>
 <li>Binaries (Mac):<ul>
-<li><a href="https://github.com/cross-platform/DSPatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> - <a href="https://github.com/cross-platform/DSPatch/archive/build/master/osx-clang.zip"><b>Clang</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> - <a href="https://github.com/cross-platform/dspatch/archive/build/master/osx-clang.zip"><b>Clang</b></a></li>
 </ul>
 </li>
 <li>Binaries (Windows):<ul>
-<li><a href="https://github.com/cross-platform/DSPatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> - <a href="https://github.com/cross-platform/DSPatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> - <a href="https://github.com/cross-platform/dspatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a class="el" href="index.html#tutorial_sec">Read the tutorials</a></li>
-<li><a href="https://github.com/cross-platform/DSPatchables/tree/master/Components"><b>Browse some example components</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Browse some example components</b></a></li>
 <li><a href="annotated.html"><b>Refer to the API docs</b></a></li>
 </ol>
 <p><br />
@@ -142,7 +142,7 @@ Tutorials</h1>
 <div class="fragment"><div class="line">    <span class="comment">// 4. Wire up the components inside the circuit</span></div><div class="line">    <span class="comment">// ============================================</span></div><div class="line">    circuit-&gt;ConnectOutToIn( randBoolGen1, 0, logicAnd, 0 );</div><div class="line">    circuit-&gt;ConnectOutToIn( randBoolGen2, 0, logicAnd, 1 );</div><div class="line">_   circuit-&gt;ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );</div></div><!-- fragment --><p>The code above results in the following wiring configuration: </p><div class="fragment"><div class="line">  ______________            __________</div><div class="line"> |              |          |          |</div><div class="line"> | randBoolGen1 |-0 ===&gt; 0-|          |           _____________</div><div class="line"> |______________|          |          |          |             |</div><div class="line">  ______________           | logicAnd |-0 ===&gt; 0-| boolPrinter |</div><div class="line"> |              |          |          |          |_____________|</div><div class="line"> | randBoolGen2 |-0 ===&gt; 1-|          |</div><div class="line"> |______________|          |__________|</div><div class="line">_</div></div><!-- fragment --><p>Lastly, in order for our circuit to do any work it must be ticked. This is performed by repeatedly calling the circuit's Tick() method. This method can be called manually in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a seperate thread will spawn, automatically calling Tick() continuously.</p>
 <p>Furthermore, to boost performance in stream processing circuits like this one, multi-buffering can be enabled via the SetBufferCount() method:</p>
 <div class="fragment"><div class="line">    <span class="comment">// 5. Tick the circuit</span></div><div class="line">    <span class="comment">// ===================</span></div><div class="line"></div><div class="line">    <span class="comment">// Circuit tick method 1: Manual</span></div><div class="line">    <span class="keywordflow">for</span>( <span class="keywordtype">int</span> i = 0; i &lt; 10; ++i )</div><div class="line">    {</div><div class="line">        circuit-&gt;Tick();</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">// Circuit tick method 2: Automatic</span></div><div class="line">    std::cout &lt;&lt; <span class="stringliteral">&quot;Press any key to begin circuit auto-tick.&quot;</span>;</div><div class="line">    getchar();</div><div class="line">    circuit-&gt;StartAutoTick();</div><div class="line"></div><div class="line">    <span class="comment">// Increase circuit buffer count for higher performance</span></div><div class="line">    getchar();</div><div class="line">    circuit-&gt;SetBufferCount( 4 );</div><div class="line"></div><div class="line">    <span class="comment">// Press any key to quit</span></div><div class="line">    getchar();</div><div class="line">    <span class="keywordflow">return</span> 0;</div><div class="line">}</div></div><!-- fragment --><p>That's it! Enjoy using DSPatch!</p>
-<p>(<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder in the <a href="https://github.com/cross-platform/DSPatch"><b>DSPatch root directory</b></a>). </p>
+<p>(<b>NOTE:</b> The source code for the above tutorials can be found under the "tutorial" folder in the <a href="https://github.com/cross-platform/dspatch"><b>DSPatch root directory</b></a>). </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
