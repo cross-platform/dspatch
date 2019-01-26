@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/MarcusTomlinson/DSPatch.svg?branch=master)](https://travis-ci.org/MarcusTomlinson/DSPatch)
+[![Build Status](https://travis-ci.org/cross-platform/dspatch.svg?branch=master)](https://travis-ci.org/cross-platform/dspatch)
 [![Build status](https://ci.appveyor.com/api/projects/status/kqh1el01gnaarga8/branch/master?svg=true)](https://ci.appveyor.com/project/MarcusTomlinson/dspatch/branch/master)
 
 # DSPatch
