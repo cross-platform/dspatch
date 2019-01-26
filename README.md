@@ -14,7 +14,7 @@ DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is
 
 ```
 git clone https://github.com/cross-platform/dspatch.git
-cd DSPatch
+cd dspatch
 mkdir build
 cd build
 cmake ..
