@@ -28,6 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <condition_variable>
 #include <thread>
+#include <functional>
 
 namespace DSPatch
 {
