@@ -1,3 +1,7 @@
+v.6.02 (21 March 2019)
+    - Fix Archlinux build.
+    - Don't start ComponentThreads unnecessarily in Series TickMode.
+
 v.6.01 (05 January 2019)
     - Minor bug fix in feedback wire detection.
     - Rebrand DSPatch as a Dataflow Framework rather than FBP.

@@ -90,7 +90,7 @@ void ComponentThread::Resume( std::function<void()> const& tick )
 {
     if ( _stopped )
     {
-        return;
+        Start();
     }
 
     std::unique_lock<std::mutex> lock( _resumeMutex );

@@ -210,7 +210,6 @@ void Component::SetBufferCount( int bufferCount )
     for ( int i = p->bufferCount; i < bufferCount; ++i )
     {
         p->componentThreads[i] = std::unique_ptr<internal::ComponentThread>( new internal::ComponentThread() );
-        p->componentThreads[i]->Start();
 
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 
