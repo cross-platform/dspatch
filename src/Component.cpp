@@ -116,33 +116,33 @@ bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutp
     return true;
 }
 
-void Component::DisconnectInput(int inputNo)
+void Component::DisconnectInput( int inputNo )
 {
     // remove wires connected to inputNo from inputWires
-    for (auto it = p->inputWires.begin(); it != p->inputWires.end(); ++it)
+    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); ++it )
     {
-        if (it->toInput == inputNo)
+        if ( it->toInput == inputNo )
         {
             // update source output's reference count
-            it->fromComponent->p->DecRefs(it->fromOutput);
+            it->fromComponent->p->DecRefs( it->fromOutput );
 
-            p->inputWires.erase(it);
+            p->inputWires.erase( it );
             break;
         }
     }
 }
 
-void Component::DisconnectInput(Component::SCPtr const& fromComponent)
+void Component::DisconnectInput( Component::SCPtr const& fromComponent )
 {
     // remove fromComponent from inputWires
-    for (auto it = p->inputWires.begin(); it != p->inputWires.end(); )
+    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )
     {
-        if (it->fromComponent == fromComponent)
+        if ( it->fromComponent == fromComponent )
         {
             // update source output's reference count
-            fromComponent->p->DecRefs(it->fromOutput);
+            fromComponent->p->DecRefs( it->fromOutput );
 
-            it = p->inputWires.erase(it);
+            it = p->inputWires.erase( it );
         }
         else
             ++it;

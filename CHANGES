@@ -1,3 +1,6 @@
+v.6.03 (08 April 2019)
+    - Fix Component::DisconnectInput().
+
 v.6.02 (21 March 2019)
     - Fix Archlinux build.
     - Don't start ComponentThreads unnecessarily in Series TickMode.
