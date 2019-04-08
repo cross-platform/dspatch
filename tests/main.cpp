@@ -21,6 +21,7 @@
 #include <components/SlowCounter.h>
 #include <components/SporadicCounter.h>
 #include <components/ThreadingProbe.h>
+#include <components/NullInputProbe.h>
 
 #include <thread>
 
@@ -1102,4 +1103,22 @@ TEST_CASE( "ThreadStopRegressionTest" )
         circuit->Tick( Component::TickMode::Series );
         circuit->Tick( Component::TickMode::Parallel );
     }
+}
+
+TEST_CASE("DisconnectComponentTest")
+{
+    auto circuit = std::make_shared<Circuit>();
+
+    auto counter = std::make_shared<Counter>();
+    auto probe = std::make_shared<NullInputProbe>();
+
+    circuit->AddComponent(counter);
+    circuit->AddComponent(probe);
+
+    circuit->ConnectOutToIn(counter, 0, probe, 0);
+    circuit->ConnectOutToIn(counter, 0, probe, 1);
+
+    circuit->DisconnectComponent(counter);
+
+    circuit->Tick(Component::TickMode::Series);
 }
