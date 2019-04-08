@@ -145,7 +145,9 @@ void Component::DisconnectInput( Component::SCPtr const& fromComponent )
             it = p->inputWires.erase( it );
         }
         else
+        {
             ++it;
+        }
     }
 }
 
