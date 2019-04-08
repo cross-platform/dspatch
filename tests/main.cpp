@@ -21,6 +21,7 @@
 #include <components/SlowCounter.h>
 #include <components/SporadicCounter.h>
 #include <components/ThreadingProbe.h>
+#include <components/NullInputProbe.h>
 
 #include <thread>
 
@@ -510,7 +511,9 @@ TEST_CASE( "WiringTest" )
 
     // Disconnect a component
 
+    circuit->PauseAutoTick();
     probe->DisconnectInput( 0 );
+    circuit->ResumeAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->DisconnectComponent( probe );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
@@ -1021,7 +1024,9 @@ TEST_CASE( "WiringTest2" )
 
     // Disconnect a component
 
-    probe->DisconnectInput( 0 );
+    circuit->PauseAutoTick();
+    probe->DisconnectInput(0);
+    circuit->ResumeAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->DisconnectComponent( probe );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
@@ -1102,4 +1107,22 @@ TEST_CASE( "ThreadStopRegressionTest" )
         circuit->Tick( Component::TickMode::Series );
         circuit->Tick( Component::TickMode::Parallel );
     }
+}
+
+TEST_CASE("DisconnectComponentTest")
+{
+    auto circuit = std::make_shared<Circuit>();
+
+    auto counter = std::make_shared<Counter>();
+    auto probe = std::make_shared<NullInputProbe>();
+
+    circuit->AddComponent(counter);
+    circuit->AddComponent(probe);
+
+    circuit->ConnectOutToIn(counter, 0, probe, 0);
+    circuit->ConnectOutToIn(counter, 0, probe, 1);
+
+    circuit->DisconnectComponent(counter);
+
+    circuit->Tick(Component::TickMode::Series);
 }
