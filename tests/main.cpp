@@ -511,7 +511,9 @@ TEST_CASE( "WiringTest" )
 
     // Disconnect a component
 
+    circuit->PauseAutoTick();
     probe->DisconnectInput( 0 );
+    circuit->ResumeAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->DisconnectComponent( probe );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
@@ -1022,7 +1024,9 @@ TEST_CASE( "WiringTest2" )
 
     // Disconnect a component
 
-    probe->DisconnectInput( 0 );
+    circuit->PauseAutoTick();
+    probe->DisconnectInput(0);
+    circuit->ResumeAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->DisconnectComponent( probe );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
