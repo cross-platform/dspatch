@@ -22,14 +22,18 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-file(GLOB hdrs include/*.h include/dspatch/*.h src/internal/*.h)
+file(GLOB root_hdrs include/*.h)
+file(GLOB dspatch_hdrs include/dspatch/*.h)
+file(GLOB internal_hdrs src/internal/*.h)
 file(GLOB srcs src/*.cpp src/internal/*.cpp)
 
 # Build shared (LGPL)
 add_library(
     ${PROJECT_NAME} SHARED
+    ${root_hdrs}
+    ${dspatch_hdrs}
+    ${internal_hdrs}
     ${srcs}
-    ${hdrs}
 )
 
 # Link pthread and dl on Unix
@@ -40,6 +44,10 @@ if(UNIX)
         dl
     )
 endif(UNIX)
+
+install(TARGETS ${PROJECT_NAME} DESTINATION lib)
+install(FILES ${root_hdrs} DESTINATION include)
+install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
 
 add_subdirectory(docs)
 add_subdirectory(tests)
