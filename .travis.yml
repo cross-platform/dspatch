@@ -60,8 +60,8 @@ after_success:
     - cp ../LICENSE ./
     - cp ../README.md ./
     - cp -r ../include ./include
-    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../debug/*.so ./debug/; fi
-    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../release/*.so ./release/; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../debug/*.so* ./debug/; fi
+    - if [ $TRAVIS_OS_NAME = linux ] && [ ! -n "$CMakeArgs" ]; then cp ../release/*.so* ./release/; fi
     - if [ $TRAVIS_OS_NAME = osx ]; then cp ../debug/*.dylib ./debug/; fi
     - if [ $TRAVIS_OS_NAME = osx ]; then cp ../release/*.dylib ./release/; fi
     - if [ $TRAVIS_OS_NAME = linux ] && [ -n "$CMakeArgs" ]; then cp ../debug/*.dll ./debug/; cp ../debug/*.a ./debug/; fi
