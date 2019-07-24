@@ -49,6 +49,11 @@ install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
 
+set_target_properties(
+	${PROJECT_NAME} PROPERTIES
+	VERSION 6.03
+	SOVERSION 1)
+
 add_subdirectory(docs)
 add_subdirectory(tests)
 add_subdirectory(tutorial)
