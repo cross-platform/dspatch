@@ -36,6 +36,12 @@ add_library(
     ${srcs}
 )
 
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES
+    SOVERSION 6
+    VERSION 6.03
+)
+
 # Link pthread and dl on Unix
 if(UNIX)
     target_link_libraries(
@@ -48,11 +54,6 @@ endif(UNIX)
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
-
-set_target_properties(
-	${PROJECT_NAME} PROPERTIES
-	VERSION 6.03
-	SOVERSION 1)
 
 add_subdirectory(docs)
 add_subdirectory(tests)
