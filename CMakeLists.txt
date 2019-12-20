@@ -13,7 +13,9 @@ set(DSPATCH_PATCH 0)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
+    set(VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
     set(MANIFEST_FILE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.dll.manifest)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${VERSION_FILE})
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/manifest.in ${MANIFEST_FILE})
 elseif(MINGW)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -pedantic -Wall -Wextra -Wnon-virtual-dtor -Wno-unknown-pragmas")
@@ -41,6 +43,7 @@ add_library(
     ${dspatch_hdrs}
     ${internal_hdrs}
     ${srcs}
+    ${VERSION_FILE}
     ${MANIFEST_FILE}
 )
 
