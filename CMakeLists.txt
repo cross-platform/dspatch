@@ -49,8 +49,8 @@ add_library(
 
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
-    SOVERSION 6
-    VERSION 6.03
+    SOVERSION ${DSPATCH_MAJOR}
+    VERSION ${DSPATCH_MAJOR}.0${DSPATCH_MINOR}
 )
 
 if (MSVC)
