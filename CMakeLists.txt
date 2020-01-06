@@ -24,6 +24,9 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-return-type-c-linkage -Wno-gnu-zero-variadic-macro-arguments -Wno-vla-extension")
 endif()
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/DSPatchVersion.h.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/include/DSPatchVersion.h)
+
 enable_testing()
 
 include_directories(
