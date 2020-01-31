@@ -27,7 +27,7 @@ file(GLOB dspatch_hdrs include/dspatch/*.h)
 file(GLOB internal_hdrs src/internal/*.h)
 file(GLOB srcs src/*.cpp src/internal/*.cpp)
 
-# Build shared (LGPL)
+# Build shared
 add_library(
     ${PROJECT_NAME} SHARED
     ${root_hdrs}
@@ -38,8 +38,8 @@ add_library(
 
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
-    SOVERSION 6
-    VERSION 6.03
+    SOVERSION 7
+    VERSION 7.0.0
 )
 
 # Link pthread and dl on Unix

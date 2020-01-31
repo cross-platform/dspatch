@@ -1,3 +1,6 @@
+v.7.0.0 (31 January 2020)
+    - Re-license DSPatch to BSD 2-Clause.
+
 v.6.03 (08 April 2019)
     - Fix Component::DisconnectInput().
 

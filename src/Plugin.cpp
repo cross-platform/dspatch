@@ -1,26 +1,30 @@
-/************************************************************************
+/******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2012-2019 Marcus Tomlinson
+Copyright (c) 2020, Marcus Tomlinson
 
-This file is part of DSPatch.
+BSD 2-Clause License
 
-GNU Lesser General Public License Usage
-This file may be used under the terms of the GNU Lesser General Public
-License version 3.0 as published by the Free Software Foundation and
-appearing in the file LICENSE included in the packaging of this file.
-Please review the following information to ensure the GNU Lesser
-General Public License version 3.0 requirements will be met:
-http://www.gnu.org/copyleft/lgpl.html.
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
-Other Usage
-Alternatively, this file may be used in accordance with the terms and
-conditions contained in a signed written agreement between you and
-Marcus Tomlinson.
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
 
-DSPatch is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-************************************************************************/
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+******************************************************************************/
 
 #include <dspatch/Plugin.h>
 
