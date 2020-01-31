@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="${PROJECT_NAME}" type="win32" version="${DSPATCH_MAJOR}.${DSPATCH_MINOR}.${DSPATCH_MICRO}.0"/>
+</assembly>
