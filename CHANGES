@@ -1,5 +1,7 @@
-v.7.0.0 (31 January 2020)
+v.7.0.0 (02 February 2020)
     - Re-license DSPatch to BSD 2-Clause.
+    - Add Win32 manifest and resource files.
+    - Add version header file.
 
 v.6.03 (08 April 2019)
     - Fix Component::DisconnectInput().
