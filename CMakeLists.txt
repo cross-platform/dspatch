@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Set version information.
 set(DSPATCH_MAJOR 7)
 set(DSPATCH_MINOR 0)
-set(DSPATCH_MICRO 0)
+set(DSPATCH_MICRO 1)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")

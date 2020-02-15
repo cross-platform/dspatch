@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DSPatch
-   &#160;<span id="projectnumber">v.7.0.0</span>
+   &#160;<span id="projectnumber">v.7.0.1</span>
    </div>
   </td>
  </tr>
@@ -158,9 +158,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 <p>Classes derived from <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> and routed to and from other Components.</p>
 <p>On construction, derived classes must configure the component's IO buses by calling SetInputCount_() and SetOutputCount_() respectively.</p>
 <p>Derived classes must also implement the virtual method: Process_(). The Process_() method is a callback from the DSPatch engine that occurs when a new set of input signals is ready for processing. The Process_() method has 2 arguments: the input bus, and the output bus. This method's purpose is to pull its required inputs out of the input bus, process these inputs, and populate the output bus with the results (see <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a>).</p>
-<p>In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of input signals from component input wires and populating the component's input bus. To insure that these inputs are up-to-date, the dependent component first calls all of its input components' Tick() methods - hence recursively called in all components going backward through the circuit. The acquired input bus is then passed to the Process_() method. The Reset() method informs the component that the last circuit traversal has completed and hence can execute the next Tick() request. </p>
+<p>In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of input signals from component input wires and populating the component's input bus. To insure that these inputs are up-to-date, the dependent component first calls all of its input components' Tick() methods - hence recursively called in all components going backward through the circuit. The acquired input bus is then passed to the Process_() method. The Reset() method informs the component that the last circuit traversal has completed and hence can execute the next Tick() request.</p>
+<p><b>PERFORMANCE TIP:</b> If a component's Process_() method is capable of processing buffers out-of-order within a stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve performance. Note however that Process_() must be thread-safe to operate in this mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00091">91</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00096">96</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_component_8h_source.html">Component.h</a></li>
 </ul>

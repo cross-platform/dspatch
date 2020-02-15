@@ -1,3 +1,6 @@
+v.7.0.1 (15 February 2020)
+    - Add notes on TickMode and ProcessOrder to API docs.
+
 v.7.0.0 (02 February 2020)
     - Re-license DSPatch to BSD 2-Clause.
     - Add Win32 manifest and resource files.
