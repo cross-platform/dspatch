@@ -70,10 +70,29 @@ if(UNIX)
     )
 endif(UNIX)
 
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
 install(FILES ${dspatch_dbg} DESTINATION lib)
+install(TARGETS
+  ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Config
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  )
+export(TARGETS ${PROJECT_NAME}
+  NAMESPACE ${PROJECT_NAME}::
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  )
+install(EXPORT
+  ${PROJECT_NAME}Config
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}"
+  NAMESPACE ${PROJECT_NAME}::
+  )
+target_include_directories(${PROJECT_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 
 add_subdirectory(docs)
 add_subdirectory(tests)
