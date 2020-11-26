@@ -58,7 +58,12 @@ set_target_properties(
 )
 
 if (MSVC)
-  set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:NO")
+  set_target_properties(${PROJECT_NAME} PROPERTIES
+	LINK_FLAGS "/MANIFESTUAC:NO /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+  set_target_properties(${PROJECT_NAME} PROPERTIES 
+    COMPILE_PDB_NAME ${PROJECT_NAME} 
+    COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+    )
 endif()
 
 # Link pthread and dl on Unix
