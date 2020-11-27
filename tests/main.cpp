@@ -832,7 +832,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     int count = probe->GetCount();
     std::cout << "0x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
-    REQUIRE( count / 10 >= efficiencyThreshold * 0.8 );
+    REQUIRE( count / 10 >= efficiencyThreshold * 0.7 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -853,7 +853,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     count = probe->GetCount();
     std::cout << "1x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
-    REQUIRE( count / 10 >= efficiencyThreshold * 0.8 );
+    REQUIRE( count / 10 >= efficiencyThreshold * 0.7 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
