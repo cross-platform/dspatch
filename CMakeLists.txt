@@ -58,7 +58,12 @@ set_target_properties(
 )
 
 if (MSVC)
-  set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/MANIFESTUAC:NO")
+  set_target_properties(${PROJECT_NAME} PROPERTIES
+	LINK_FLAGS "/MANIFESTUAC:NO /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+  set_target_properties(${PROJECT_NAME} PROPERTIES 
+    COMPILE_PDB_NAME ${PROJECT_NAME} 
+    COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+    )
 endif()
 
 # Link pthread and dl on Unix
@@ -70,10 +75,29 @@ if(UNIX)
     )
 endif(UNIX)
 
-install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
 install(FILES ${dspatch_dbg} DESTINATION lib)
+install(TARGETS
+  ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Config
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  )
+export(TARGETS ${PROJECT_NAME}
+  NAMESPACE ${PROJECT_NAME}::
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+  )
+install(EXPORT
+  ${PROJECT_NAME}Config
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}"
+  NAMESPACE ${PROJECT_NAME}::
+  )
+target_include_directories(${PROJECT_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
 
 add_subdirectory(docs)
 add_subdirectory(tests)
