@@ -51,6 +51,20 @@ add_library(
     ${MANIFEST_FILE}
 )
 
+# Build static
+add_library(
+    ${PROJECT_NAME}_static STATIC
+    ${root_hdrs}
+    ${dspatch_hdrs}
+    ${internal_hdrs}
+    ${srcs}
+    ${VERSION_FILE}
+    ${MANIFEST_FILE}
+)
+if (NOT WIN32)
+  set_target_properties(${PROJECT_NAME}_static PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+endif()
+
 set_target_properties(
     ${PROJECT_NAME} PROPERTIES
     SOVERSION ${DSPATCH_MAJOR}
@@ -73,6 +87,11 @@ if(UNIX)
         pthread
         dl
     )
+    target_link_libraries(
+        ${PROJECT_NAME}_static
+        pthread
+        dl
+    )
 endif(UNIX)
 
 install(FILES ${root_hdrs} DESTINATION include)
@@ -80,6 +99,7 @@ install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
 install(FILES ${dspatch_dbg} DESTINATION lib)
 install(TARGETS
   ${PROJECT_NAME}
+  ${PROJECT_NAME}_static
   EXPORT ${PROJECT_NAME}Config
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -95,6 +115,10 @@ install(EXPORT
   NAMESPACE ${PROJECT_NAME}::
   )
 target_include_directories(${PROJECT_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+target_include_directories(${PROJECT_NAME}_static INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
