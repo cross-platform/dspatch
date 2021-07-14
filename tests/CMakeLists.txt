@@ -6,12 +6,10 @@ include_directories(
 )
 
 file(GLOB srcs *.cpp)
-file(GLOB hdrs *.hpp components/*.h)
 
 add_executable(
     ${PROJECT_NAME}
     ${srcs}
-    ${hdrs}
 )
 
 target_link_libraries(

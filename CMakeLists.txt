@@ -37,15 +37,11 @@ include_directories(
 
 file(GLOB root_hdrs include/*.h)
 file(GLOB dspatch_hdrs include/dspatch/*.h)
-file(GLOB internal_hdrs src/internal/*.h)
 file(GLOB srcs src/*.cpp src/internal/*.cpp)
 
 # Build shared
 add_library(
     ${PROJECT_NAME} SHARED
-    ${root_hdrs}
-    ${dspatch_hdrs}
-    ${internal_hdrs}
     ${srcs}
     ${VERSION_FILE}
     ${MANIFEST_FILE}
