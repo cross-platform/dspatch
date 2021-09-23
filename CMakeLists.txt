@@ -39,28 +39,40 @@ file(GLOB root_hdrs include/*.h)
 file(GLOB dspatch_hdrs include/dspatch/*.h)
 file(GLOB srcs src/*.cpp src/internal/*.cpp)
 
-# Build shared
-add_library(
-    ${PROJECT_NAME} SHARED
-    ${srcs}
-    ${VERSION_FILE}
-    ${MANIFEST_FILE}
-)
+option(BUILD_STATIC "Build static library" OFF)
 
-set_target_properties(
-    ${PROJECT_NAME} PROPERTIES
-    SOVERSION ${DSPATCH_MAJOR}
-    VERSION ${DSPATCH_MAJOR}.${DSPATCH_MINOR}.${DSPATCH_MICRO}
-)
-
-if (MSVC)
-  set_target_properties(${PROJECT_NAME} PROPERTIES
-	LINK_FLAGS "/MANIFESTUAC:NO /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
-  set_target_properties(${PROJECT_NAME} PROPERTIES 
-    COMPILE_PDB_NAME ${PROJECT_NAME} 
-    COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+if(${BUILD_STATIC})
+    # Build static
+    add_library(
+        ${PROJECT_NAME} STATIC
+        ${srcs}
+        ${VERSION_FILE}
+        ${MANIFEST_FILE}
     )
-endif()
+else()
+    # Build shared
+    add_library(
+        ${PROJECT_NAME} SHARED
+        ${srcs}
+        ${VERSION_FILE}
+        ${MANIFEST_FILE}
+    )
+
+    set_target_properties(
+        ${PROJECT_NAME} PROPERTIES
+        SOVERSION ${DSPATCH_MAJOR}
+        VERSION ${DSPATCH_MAJOR}.${DSPATCH_MINOR}.${DSPATCH_MICRO}
+    )
+
+    if (MSVC)
+      set_target_properties(${PROJECT_NAME} PROPERTIES
+            LINK_FLAGS "/MANIFESTUAC:NO /INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF")
+      set_target_properties(${PROJECT_NAME} PROPERTIES
+        COMPILE_PDB_NAME ${PROJECT_NAME}
+        COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+        )
+    endif()
+endif(${BUILD_STATIC})
 
 # Link pthread and dl on Unix
 if(UNIX)
