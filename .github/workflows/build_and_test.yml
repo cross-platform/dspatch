@@ -35,15 +35,22 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Build
+    - if: matrix.os != 'windows-latest'
+      name: Build (Ubuntu / MacOS)
       run: |
-        meson setup --buildtype=debug builddir
+        meson setup --buildtype=release builddir
         meson compile -C builddir
 
     - if: matrix.os != 'windows-latest'
       name: Test (Ubuntu / MacOS)
       run: |
         meson test -vC builddir
+
+    - if: matrix.os == 'windows-latest'
+      name: Build (Windows)
+      run: |
+        meson setup --buildtype=debug builddir
+        meson compile -C builddir
 
     - if: matrix.os == 'windows-latest'
       name: Test (Windows)
