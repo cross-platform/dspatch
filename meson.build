@@ -111,7 +111,8 @@ dspatch_lib = static_library(
 
 dspatch_dep = declare_dependency(
   link_with: dspatch_lib,
-  include_directories: dspatch_inc
+  include_directories: dspatch_inc,
+  dependencies: dependency('threads')
 )
 
 # Add subdirectories
