@@ -2,9 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "DSPatchTests",
+            "name": "Tests",
             "preLaunchTask": "Build",
-            "program": "${workspaceFolder}/builddir/tests/DSPatchTests",
+            "program": "${workspaceFolder}/builddir/tests/Tests",
             "cwd": "${workspaceFolder}",
             "request": "launch",
             "type": "cppvsdbg",
@@ -14,9 +14,9 @@
             }
         },
         {
-            "name": "DSPatchTutorial",
+            "name": "Tutorial",
             "preLaunchTask": "Build",
-            "program": "${workspaceFolder}/builddir/tutorial/DSPatchTutorial",
+            "program": "${workspaceFolder}/builddir/tutorial/Tutorial",
             "cwd": "${workspaceFolder}",
             "request": "launch",
             "type": "cppvsdbg",

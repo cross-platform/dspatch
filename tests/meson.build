@@ -12,7 +12,7 @@ dspatch_tests_src = [
 dspatch_tests_inc = include_directories('.')
 
 dspatch_tests = executable(
-    'DSPatchTests',
+    'Tests',
     format_first,
     dspatch_tests_src,
     include_directories: dspatch_tests_inc,
@@ -22,13 +22,13 @@ dspatch_tests = executable(
 # Add code coverage
 
 if opencppcoverage.found()
-    test('DSPatchTests', opencppcoverage,
+    test('Tests', opencppcoverage,
         args: [
             opencppcoverage_args,
-            '--export_type', 'binary:DSPatchTests.cov',
+            '--export_type', 'binary:Tests.cov',
             dspatch_tests
         ]
     )
 else
-    test('DSPatchTests', dspatch_tests)
+    test('Tests', dspatch_tests)
 endif

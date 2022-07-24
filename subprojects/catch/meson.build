@@ -1,6 +1,6 @@
 project('catch', 'cpp',
     default_options: [
-        'cpp_std=c++11',
+        'cpp_std=c++14',
         'warning_level=0',
         'werror=false'
     ]

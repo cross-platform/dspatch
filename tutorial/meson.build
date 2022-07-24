@@ -5,7 +5,7 @@ dspatch_tutorial_src = [
 dspatch_tutorial_inc = include_directories('.')
 
 dspatch_tutorial = executable(
-    'DSPatchTutorial',
+    'Tutorial',
     format_first,
     dspatch_tutorial_src,
     include_directories: dspatch_tutorial_inc,

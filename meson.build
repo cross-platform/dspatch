@@ -1,6 +1,6 @@
-project('dspatch', 'cpp',
+project('DSPatch', 'cpp',
     default_options: [
-        'cpp_std=c++11',
+        'cpp_std=c++14',
         'warning_level=3',
         'werror=true'
     ]
@@ -20,7 +20,7 @@ if opencppcoverage.found()
     run_target('codecoverage',
         command: [
             opencppcoverage,
-            '--input_coverage', 'DSPatchTests.cov',
+            '--input_coverage', 'Tests.cov',
             '--export_type', 'html:coverage'
         ]
     )

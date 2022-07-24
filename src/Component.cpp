@@ -256,7 +256,7 @@ void Component::SetBufferCount( int bufferCount )
 
 int Component::GetBufferCount() const
 {
-    return p->inputBuses.size();
+    return (int)p->inputBuses.size();
 }
 
 bool Component::Tick( Component::TickMode mode, int bufferNo )
