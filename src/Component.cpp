@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -51,7 +51,7 @@ public:
         Ticking
     };
 
-    Component( DSPatch::Component::ProcessOrder processOrder )
+    explicit Component( DSPatch::Component::ProcessOrder processOrder )
         : processOrder( processOrder )
     {
     }
@@ -164,6 +164,7 @@ void Component::DisconnectAllInputs()
     }
 }
 
+// cppcheck-suppress unusedFunction
 int Component::GetInputCount() const
 {
     return p->inputBuses[0].GetSignalCount();
@@ -174,6 +175,7 @@ int Component::GetOutputCount() const
     return p->outputBuses[0].GetSignalCount();
 }
 
+// cppcheck-suppress unusedFunction
 std::string Component::GetInputName( int inputNo ) const
 {
     if ( inputNo < (int)p->inputNames.size() )
@@ -183,6 +185,7 @@ std::string Component::GetInputName( int inputNo ) const
     return "";
 }
 
+// cppcheck-suppress unusedFunction
 std::string Component::GetOutputName( int outputNo ) const
 {
     if ( outputNo < (int)p->outputNames.size() )
@@ -253,7 +256,7 @@ void Component::SetBufferCount( int bufferCount )
 
 int Component::GetBufferCount() const
 {
-    return p->inputBuses.size();
+    return (int)p->inputBuses.size();
 }
 
 bool Component::Tick( Component::TickMode mode, int bufferNo )
@@ -283,7 +286,8 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         // 3. set tickStatus -> Ticking
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        auto tick = [this, mode, bufferNo]() {
+        auto tick = [this, mode, bufferNo]()
+        {
             // 4. get new inputs from incoming components
             for ( auto& wire : p->inputWires )
             {

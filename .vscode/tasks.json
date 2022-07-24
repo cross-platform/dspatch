@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build",
+            "type": "shell",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "windows": {
+                "command": [
+                    "cp .vscode/_settings.json .vscode/settings.json;",
+                    "meson setup builddir --buildtype=debug;",
+                    "meson compile -C builddir"
+                ],
+                "problemMatcher": {
+                    "base": "$msCompile"
+                }
+            },
+            "osx": {
+                "command": [
+                    "cp .vscode/_settings.json .vscode/settings.json &&",
+                    "meson setup builddir --buildtype=debug &&",
+                    "meson compile -C builddir"
+                ],
+                "problemMatcher": {
+                    "base": "$gcc",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceFolder}/builddir/"
+                    ]
+                }
+            }
+        }
+    ]
+}

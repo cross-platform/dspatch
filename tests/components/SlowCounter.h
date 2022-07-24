@@ -32,7 +32,7 @@ protected:
             elapsedMs = std::chrono::high_resolution_clock::now() - start;
         } while ( elapsedMs.count() < _waitMs );
 
-        _waitMs = 1000 - ( elapsedMs.count() - _waitMs );
+        _waitMs = 1000 - ( (int)elapsedMs.count() - _waitMs );
     }
 
 private:

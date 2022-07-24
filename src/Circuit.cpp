@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -80,13 +80,13 @@ int Circuit::AddComponent( Component::SPtr const& component )
         }
 
         // components within the circuit need to have as many buffers as there are threads in the circuit
-        component->SetBufferCount( p->circuitThreads.size() );
+        component->SetBufferCount( (int)p->circuitThreads.size() );
 
         PauseAutoTick();
         p->components.emplace_back( component );
         ResumeAutoTick();
 
-        return p->components.size() - 1;
+        return (int)p->components.size() - 1;
     }
 
     return -1;
@@ -120,13 +120,14 @@ void Circuit::RemoveAllComponents()
 {
     for ( size_t i = 0; i < p->components.size(); ++i )
     {
-        RemoveComponent( i-- );  // size drops as one is removed
+        RemoveComponent( (int)i-- );  // size drops as one is removed
     }
 }
 
+// cppcheck-suppress unusedFunction
 int Circuit::GetComponentCount() const
 {
-    return p->components.size();
+    return (int)p->components.size();
 }
 
 bool Circuit::ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput )
@@ -225,7 +226,7 @@ void Circuit::SetBufferCount( int bufferCount )
             {
                 p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
             }
-            p->circuitThreads[i]->Start( &p->components, i );
+            p->circuitThreads[i]->Start( &p->components, (int)i );
         }
 
         // set all components to the new buffer count
@@ -240,7 +241,7 @@ void Circuit::SetBufferCount( int bufferCount )
 
 int Circuit::GetBufferCount() const
 {
-    return p->circuitThreads.size();
+    return (int)p->circuitThreads.size();
 }
 
 void Circuit::Tick( Component::TickMode mode )
@@ -342,7 +343,7 @@ bool internal::Circuit::FindComponent( DSPatch::Component::SCPtr const& componen
     {
         if ( components[i] == component )
         {
-            returnIndex = i;
+            returnIndex = (int)i;
             return true;
         }
     }

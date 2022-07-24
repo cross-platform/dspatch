@@ -1,0 +1,103 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build_and_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+    - if: matrix.os == 'windows-latest'
+      name: Install Cppcheck, OpenCppCoverage, and wkhtmltopdf (Windows)
+      run: |
+        choco upgrade -y --ignore-package-exit-codes chocolatey cppcheck opencppcoverage wkhtmltopdf
+        echo "C:\Program Files\Cppcheck" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "C:\Program Files\OpenCppCoverage" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "C:\Program Files\wkhtmltopdf" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - if: matrix.os == 'windows-latest'
+      name: Configure MSVC (Windows)
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install Meson and Ninja
+      run: |
+        pip3 install --upgrade meson ninja
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Build - Release
+      run: |
+        meson setup --buildtype=release builddir
+        meson compile -C builddir
+
+    - name: Test - Release
+      run: |
+        meson test -vC builddir
+
+    - if: matrix.os == 'windows-latest'
+      name: Release (Windows)
+      uses: ncipollo/release-action@v1.10.0
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: latest-win
+        name: Lastest (Windows)
+        artifacts: builddir/libDSPatch.a
+        artifactContentType: application/octet-stream
+        commit: ${{ github.sha }}
+
+    - if: matrix.os == 'macos-latest'
+      name: Release (MacOS)
+      uses: ncipollo/release-action@v1.10.0
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: latest-mac
+        name: Lastest (MacOS)
+        artifacts: builddir/libDSPatch.a
+        artifactContentType: application/octet-stream
+        commit: ${{ github.sha }}
+
+    - if: matrix.os == 'ubuntu-latest'
+      name: Release (Linux)
+      uses: ncipollo/release-action@v1.10.0
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: latest-linux
+        name: Lastest (Linux)
+        artifacts: builddir/libDSPatch.a
+        artifactContentType: application/octet-stream
+        commit: ${{ github.sha }}
+
+    - if: matrix.os == 'windows-latest'
+      name: Build - Debug (Windows)
+      run: |
+        meson setup --buildtype=debug --wipe builddir
+        meson compile -C builddir
+
+    - if: matrix.os == 'windows-latest'
+      name: Test - Debug (Windows)
+      run: |
+        meson test -vC builddir
+        meson compile ./codecoverage -C builddir
+        $files = (Get-ChildItem -R .\builddir\coverage\*.html)
+        [array]::Reverse($files)
+        wkhtmltopdf --enable-local-file-access --disable-external-links --header-center [title] $files coverage.pdf
+
+    - if: matrix.os == 'windows-latest'
+      name: Upload Coverage Report (Windows)
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage.pdf

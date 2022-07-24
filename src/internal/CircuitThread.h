@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -76,7 +76,7 @@ private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode;
+    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Parallel;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

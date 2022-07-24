@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -50,8 +50,9 @@ SignalBus::SignalBus()
 }
 
 SignalBus::SignalBus( SignalBus&& rhs )
+    : _signals( std::move( rhs._signals ) )
+    , p( std::move( rhs.p ) )
 {
-    _signals = rhs._signals;
 }
 
 SignalBus::~SignalBus()
@@ -60,7 +61,7 @@ SignalBus::~SignalBus()
 
 void SignalBus::SetSignalCount( int signalCount )
 {
-    int fromSize = _signals.size();
+    int fromSize = (int)_signals.size();
 
     _signals.resize( signalCount );
 
@@ -72,7 +73,7 @@ void SignalBus::SetSignalCount( int signalCount )
 
 int SignalBus::GetSignalCount() const
 {
-    return _signals.size();
+    return (int)_signals.size();
 }
 
 Signal::SPtr const& SignalBus::GetSignal( int signalIndex ) const

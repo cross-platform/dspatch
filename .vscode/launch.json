@@ -1,0 +1,29 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Tests",
+            "preLaunchTask": "Build",
+            "program": "${workspaceFolder}/builddir/tests/Tests",
+            "cwd": "${workspaceFolder}",
+            "request": "launch",
+            "type": "cppvsdbg",
+            "osx": {
+                "type": "cppdbg",
+                "MIMode": "lldb"
+            }
+        },
+        {
+            "name": "Tutorial",
+            "preLaunchTask": "Build",
+            "program": "${workspaceFolder}/builddir/tutorial/Tutorial",
+            "cwd": "${workspaceFolder}",
+            "request": "launch",
+            "type": "cppvsdbg",
+            "osx": {
+                "type": "cppdbg",
+                "MIMode": "lldb"
+            }
+        }
+    ]
+}

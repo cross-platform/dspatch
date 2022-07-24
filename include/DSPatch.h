@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -82,17 +82,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 \section start_sec Getting Started
     1. Download DSPatch:
-        - Source Code:
-            - <a href="https://github.com/cross-platform/dspatch"><b>GitHub</b></a>
-        - Binaries (Linux):
-            - <a href="https://github.com/cross-platform/dspatch/archive/build/master/linux-gcc.zip"><b>GCC</b></a> -
-<a href="https://github.com/cross-platform/dspatch/archive/build/master/linux-clang.zip"><b>Clang</b></a>
-        - Binaries (Mac):
-            - <a href="https://github.com/cross-platform/dspatch/archive/build/master/osx-gcc.zip"><b>GCC</b></a> -
-<a href="https://github.com/cross-platform/dspatch/archive/build/master/osx-clang.zip"><b>Clang</b></a>
-        - Binaries (Windows):
-            - <a href="https://github.com/cross-platform/dspatch/archive/build/master/win-mingw-x86.zip"><b>MinGW</b></a> -
-<a href="https://github.com/cross-platform/dspatch/archive/build/master/win-msvc-x86.zip"><b>MSVC</b></a>
+        - <a href="https://github.com/cross-platform/dspatch"><b>Source</b></a>
+        - <a href="https://github.com/cross-platform/dspatch/releases/tag/latest-linux"><b>Binary (Linux)</b></a>
+        - <a href="https://github.com/cross-platform/dspatch/releases/tag/latest-mac"><b>Binary (macOS)</b></a>
+        - <a href="https://github.com/cross-platform/dspatch/releases/tag/latest-win"><b>Binary (Windows)</b></a>
     2. \ref tutorial_sec "Read the tutorials"
     3. <a href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Browse some example components</b></a>
     4. <a href="annotated.html"><b>Refer to the API docs</b></a>

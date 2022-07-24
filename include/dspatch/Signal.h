@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -87,7 +87,7 @@ private:
     {
         NONCOPYABLE( _Value );
 
-        _Value( ValueType const& value )
+        explicit _Value( ValueType const& value )
             : value( value )
             , type( typeid( ValueType ) )
         {

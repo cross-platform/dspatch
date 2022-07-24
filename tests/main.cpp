@@ -802,7 +802,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     if ( std::thread::hardware_concurrency() < 4 )
     {
         float fraction = (float)std::thread::hardware_concurrency() / 4;
-        efficiencyThreshold *= fraction;
+        efficiencyThreshold *= (int)fraction;
     }
 
     // Configure a circuit made up of 4 parallel counters, then adjust the thread count

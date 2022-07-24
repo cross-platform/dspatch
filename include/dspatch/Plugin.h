@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2021, Marcus Tomlinson
+Copyright (c) 2022, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -57,7 +57,7 @@ public:
     DEFINE_PTRS( Plugin );
     NONCOPYABLE( Plugin );
 
-    Plugin( std::string const& pluginPath );
+    explicit Plugin( std::string const& pluginPath );
     ~Plugin();
 
     bool IsLoaded() const;
