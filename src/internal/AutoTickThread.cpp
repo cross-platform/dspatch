@@ -43,7 +43,7 @@ AutoTickThread::~AutoTickThread()
     Stop();
 }
 
-DSPatch::Component::TickMode AutoTickThread::Mode()
+DSPatch::Component::TickMode AutoTickThread::Mode() const
 {
     return _mode;
 }

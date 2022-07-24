@@ -87,7 +87,7 @@ private:
     {
         NONCOPYABLE( _Value );
 
-        _Value( ValueType const& value )
+        explicit _Value( ValueType const& value )
             : value( value )
             , type( typeid( ValueType ) )
         {

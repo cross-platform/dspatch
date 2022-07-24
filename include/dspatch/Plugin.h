@@ -57,7 +57,7 @@ public:
     DEFINE_PTRS( Plugin );
     NONCOPYABLE( Plugin );
 
-    Plugin( std::string const& pluginPath );
+    explicit Plugin( std::string const& pluginPath );
     ~Plugin();
 
     bool IsLoaded() const;

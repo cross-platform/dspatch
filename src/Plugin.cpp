@@ -46,7 +46,7 @@ namespace internal
 class Plugin
 {
 public:
-    Plugin( std::string const& pluginPath )
+    explicit Plugin( std::string const& pluginPath )
     {
         LoadPlugin( pluginPath );
     }
@@ -80,11 +80,13 @@ Plugin::~Plugin()
     }
 }
 
+// cppcheck-suppress unusedFunction
 bool Plugin::IsLoaded() const
 {
     return p->handle;
 }
 
+// cppcheck-suppress unusedFunction
 Component::SPtr Plugin::Create() const
 {
     if ( p->handle )

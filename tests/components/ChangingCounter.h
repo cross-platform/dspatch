@@ -33,7 +33,7 @@ protected:
                     outputs.SetValue( 0, std::to_string( _count++ ) );
                     break;
                 case 3:
-                    outputs.SetValue( 0, std::vector<int>{_count, _count + 1, _count + 2} );
+                    outputs.SetValue( 0, std::vector<int>{ _count, _count + 1, _count + 2 } );
                     _count += 3;
                     break;
             }

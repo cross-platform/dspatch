@@ -76,7 +76,7 @@ private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode;
+    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Parallel;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

@@ -50,8 +50,9 @@ SignalBus::SignalBus()
 }
 
 SignalBus::SignalBus( SignalBus&& rhs )
+    : _signals( std::move( rhs._signals ) )
+    , p( std::move( rhs.p ) )
 {
-    _signals = rhs._signals;
 }
 
 SignalBus::~SignalBus()

@@ -6,7 +6,7 @@ namespace DSPatch
 class FeedbackTester : public Component
 {
 public:
-    FeedbackTester( int bufferCount )
+    explicit FeedbackTester( int bufferCount )
         : _bufferCount( bufferCount )
     {
         SetInputCount_( 10 );
