@@ -1,3 +1,9 @@
+v.8.0.0 (24 July 2022)
+    - Add Meson build configs.
+    - Switched from Travis and AppVeyor to GitHub Actions.
+    - Code formatting and style fixes.
+    - Optimized SignalBus transfers.
+
 v.7.0.1 (15 February 2020)
     - Add notes on TickMode and ProcessOrder to API docs.
 

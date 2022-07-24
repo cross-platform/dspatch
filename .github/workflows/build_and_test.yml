@@ -35,25 +35,59 @@ jobs:
       with:
         submodules: recursive
 
-    - if: matrix.os != 'windows-latest'
-      name: Build (Ubuntu / MacOS)
+    - name: Build - Release
       run: |
         meson setup --buildtype=release builddir
         meson compile -C builddir
 
-    - if: matrix.os != 'windows-latest'
-      name: Test (Ubuntu / MacOS)
+    - name: Test - Release
       run: |
         meson test -vC builddir
 
     - if: matrix.os == 'windows-latest'
-      name: Build (Windows)
+      name: Release (Windows)
+      uses: ncipollo/release-action@v1.10.0
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: latest-win
+        name: Lastest (Windows)
+        artifacts: builddir/libDSPatch.a
+        artifactContentType: application/octet-stream
+        commit: ${{ github.sha }}
+
+    - if: matrix.os == 'macos-latest'
+      name: Release (MacOS)
+      uses: ncipollo/release-action@v1.10.0
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: latest-mac
+        name: Lastest (MacOS)
+        artifacts: builddir/libDSPatch.a
+        artifactContentType: application/octet-stream
+        commit: ${{ github.sha }}
+
+    - if: matrix.os == 'ubuntu-latest'
+      name: Release (Linux)
+      uses: ncipollo/release-action@v1.10.0
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        tag: latest-linux
+        name: Lastest (Linux)
+        artifacts: builddir/libDSPatch.a
+        artifactContentType: application/octet-stream
+        commit: ${{ github.sha }}
+
+    - if: matrix.os == 'windows-latest'
+      name: Build - Debug (Windows)
       run: |
-        meson setup --buildtype=debug builddir
+        meson setup --buildtype=debug --wipe builddir
         meson compile -C builddir
 
     - if: matrix.os == 'windows-latest'
-      name: Test (Windows)
+      name: Test - Debug (Windows)
       run: |
         meson test -vC builddir
         meson compile ./codecoverage -C builddir
