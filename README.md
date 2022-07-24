@@ -1,3 +1,5 @@
+[![Build & Test](https://github.com/cross-platform/dspatch/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/cross-platform/dspatch/actions/workflows/build_and_test.yml)
+
 # DSPatch
 
 The Refreshingly Simple C++ Dataflow Framework
