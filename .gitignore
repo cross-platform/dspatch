@@ -4,3 +4,4 @@ doc/doxygen_sqlite3.db
 build
 .DS_Store
 include/DSPatchVersion.h
+.vscode/settings.json
