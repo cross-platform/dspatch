@@ -17,7 +17,7 @@ jobs:
     - if: matrix.os == 'windows-latest'
       name: Install Cppcheck, OpenCppCoverage, and wkhtmltopdf (Windows)
       run: |
-        choco upgrade -y --ignore-package-exit-codes chocolatey cppcheck opencppcoverage wkhtmltopdf
+        choco install -y --ignore-package-exit-codes cppcheck opencppcoverage wkhtmltopdf
         echo "C:\Program Files\Cppcheck" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         echo "C:\Program Files\OpenCppCoverage" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         echo "C:\Program Files\wkhtmltopdf" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -26,12 +26,17 @@ jobs:
       name: Configure MSVC (Windows)
       uses: ilammy/msvc-dev-cmd@v1
 
+    - name: Configure Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x' 
+
     - name: Install Meson and Ninja
       run: |
         pip3 install --upgrade meson ninja
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
 
@@ -46,7 +51,7 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       name: Release (Windows)
-      uses: ncipollo/release-action@v1.10.0
+      uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
         replacesArtifacts: true
@@ -58,7 +63,7 @@ jobs:
 
     - if: matrix.os == 'macos-latest'
       name: Release (MacOS)
-      uses: ncipollo/release-action@v1.10.0
+      uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
         replacesArtifacts: true
@@ -70,7 +75,7 @@ jobs:
 
     - if: matrix.os == 'ubuntu-latest'
       name: Release (Linux)
-      uses: ncipollo/release-action@v1.10.0
+      uses: ncipollo/release-action@v1
       with:
         allowUpdates: true
         replacesArtifacts: true
@@ -97,7 +102,7 @@ jobs:
 
     - if: matrix.os == 'windows-latest'
       name: Upload Coverage Report (Windows)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: coverage
         path: coverage.pdf

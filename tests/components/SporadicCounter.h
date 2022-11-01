@@ -6,7 +6,7 @@ namespace DSPatch
 class SporadicCounter : public Component
 {
 public:
-    SporadicCounter( int increment = 1 )
+    explicit SporadicCounter( int increment = 1 )
         : _count( 0 )
         , _increment( increment )
     {

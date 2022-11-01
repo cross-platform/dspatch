@@ -6,7 +6,7 @@ namespace DSPatch
 class Counter : public Component
 {
 public:
-    Counter( int increment = 1 )
+    explicit Counter( int increment = 1 )
         : _count( 0 )
         , _increment( increment )
     {
