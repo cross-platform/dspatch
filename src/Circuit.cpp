@@ -306,6 +306,11 @@ void Circuit::PauseAutoTick()
 {
     if ( p->autoTickThread.IsStopped() )
     {
+        // manually tick until 0
+        while ( p->currentThreadNo != 0 )
+        {
+            Tick();
+        }
         return;
     }
 

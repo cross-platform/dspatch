@@ -11,10 +11,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-12, ubuntu-20.04, windows-2022]
 
     steps:
-    - if: matrix.os == 'windows-latest'
+    - if: matrix.os == 'windows-2022'
       name: Install Cppcheck, OpenCppCoverage, and wkhtmltopdf (Windows)
       run: |
         choco install -y --ignore-package-exit-codes cppcheck opencppcoverage wkhtmltopdf
@@ -22,7 +22,7 @@ jobs:
         echo "C:\Program Files\OpenCppCoverage" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         echo "C:\Program Files\wkhtmltopdf" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - if: matrix.os == 'windows-latest'
+    - if: matrix.os == 'windows-2022'
       name: Configure MSVC (Windows)
       uses: ilammy/msvc-dev-cmd@v1
 
@@ -49,7 +49,7 @@ jobs:
       run: |
         meson test -vC builddir
 
-    - if: matrix.os == 'windows-latest'
+    - if: matrix.os == 'windows-2022'
       name: Release (Windows)
       uses: ncipollo/release-action@v1
       with:
@@ -61,7 +61,7 @@ jobs:
         artifactContentType: application/octet-stream
         commit: ${{ github.sha }}
 
-    - if: matrix.os == 'macos-latest'
+    - if: matrix.os == 'macos-12'
       name: Release (MacOS)
       uses: ncipollo/release-action@v1
       with:
@@ -73,7 +73,7 @@ jobs:
         artifactContentType: application/octet-stream
         commit: ${{ github.sha }}
 
-    - if: matrix.os == 'ubuntu-latest'
+    - if: matrix.os == 'ubuntu-20.04'
       name: Release (Linux)
       uses: ncipollo/release-action@v1
       with:
@@ -85,13 +85,13 @@ jobs:
         artifactContentType: application/octet-stream
         commit: ${{ github.sha }}
 
-    - if: matrix.os == 'windows-latest'
+    - if: matrix.os == 'windows-2022'
       name: Build - Debug (Windows)
       run: |
         meson setup --buildtype=debug --wipe builddir
         meson compile -C builddir
 
-    - if: matrix.os == 'windows-latest'
+    - if: matrix.os == 'windows-2022'
       name: Test - Debug (Windows)
       run: |
         meson test -vC builddir
@@ -100,7 +100,7 @@ jobs:
         [array]::Reverse($files)
         wkhtmltopdf --enable-local-file-access --disable-external-links --header-center [title] $files coverage.pdf
 
-    - if: matrix.os == 'windows-latest'
+    - if: matrix.os == 'windows-2022'
       name: Upload Coverage Report (Windows)
       uses: actions/upload-artifact@v3
       with:
