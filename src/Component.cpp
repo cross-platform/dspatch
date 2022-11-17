@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/Wire.h>
 
 #include <condition_variable>
+#include <deque>
 #include <unordered_set>
 
 using namespace DSPatch;
@@ -72,17 +73,17 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::vector<std::vector<std::unique_ptr<std::mutex>>> refMutexes;
+    std::deque<std::deque<std::mutex>> refMutexes;
 
     std::vector<Wire> inputWires;
 
-    std::vector<ComponentThread::UPtr> componentThreads;
+    std::deque<ComponentThread> componentThreads;
     std::vector<std::unordered_set<Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<bool> gotReleases;
-    std::vector<std::unique_ptr<std::mutex>> releaseMutexes;
-    std::vector<std::unique_ptr<std::condition_variable>> releaseCondts;
+    std::deque<std::mutex> releaseMutexes;
+    std::deque<std::condition_variable> releaseCondts;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
@@ -223,16 +224,12 @@ void Component::SetBufferCount( int bufferCount )
     // init new vector values
     for ( int i = p->bufferCount; i < bufferCount; ++i )
     {
-        p->componentThreads[i] = std::unique_ptr<internal::ComponentThread>( new internal::ComponentThread() );
-
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
         p->gotReleases[i] = false;
-        p->releaseMutexes[i] = std::unique_ptr<std::mutex>( new std::mutex() );
-        p->releaseCondts[i] = std::unique_ptr<std::condition_variable>( new std::condition_variable() );
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -242,11 +239,6 @@ void Component::SetBufferCount( int bufferCount )
         }
 
         p->refMutexes[i].resize( p->refMutexes[0].size() );
-        for ( size_t j = 0; j < p->refs[0].size(); ++j )
-        {
-            // construct new output reference mutexes
-            p->refMutexes[i][j] = std::unique_ptr<std::mutex>( new std::mutex() );
-        }
     }
 
     p->gotReleases[0] = true;
@@ -297,7 +289,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                     auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
                     if ( wireIndex == p->feedbackWires[bufferNo].end() )
                     {
-                        wire.fromComponent->p->componentThreads[bufferNo]->Sync();
+                        wire.fromComponent->p->componentThreads[bufferNo].Sync();
                     }
                     else
                     {
@@ -343,7 +335,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         }
         else if ( mode == TickMode::Parallel )
         {
-            p->componentThreads[bufferNo]->Resume( tick );
+            p->componentThreads[bufferNo].Resume( tick );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -359,7 +351,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
 void Component::Reset( int bufferNo )
 {
     // wait for ticking to complete
-    p->componentThreads[bufferNo]->Sync();
+    p->componentThreads[bufferNo].Sync();
 
     // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();
@@ -395,36 +387,28 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     for ( auto& refMutexes : p->refMutexes )
     {
         refMutexes.resize( outputCount );
-        for ( auto& refMutex : refMutexes )
-        {
-            // construct new output reference mutexes
-            if ( !refMutex )
-            {
-                refMutex = std::unique_ptr<std::mutex>( new std::mutex() );
-            }
-        }
     }
 }
 
 void internal::Component::WaitForRelease( int threadNo )
 {
-    std::unique_lock<std::mutex> lock( *releaseMutexes[threadNo] );
+    std::unique_lock<std::mutex> lock( releaseMutexes[threadNo] );
 
     if ( !gotReleases[threadNo] )
     {
-        releaseCondts[threadNo]->wait( lock );  // wait for resume
+        releaseCondts[threadNo].wait( lock );  // wait for resume
     }
     gotReleases[threadNo] = false;  // reset the release flag
 }
 
 void internal::Component::ReleaseThread( int threadNo )
 {
-    threadNo = threadNo + 1 == bufferCount ? 0 : threadNo + 1;  // we're actually releasing the next available thread
+    threadNo = ( threadNo + 1 ) % bufferCount;  // we're actually releasing the next available thread
 
-    std::lock_guard<std::mutex> lock( *releaseMutexes[threadNo] );
+    std::lock_guard<std::mutex> lock( releaseMutexes[threadNo] );
 
     gotReleases[threadNo] = true;
-    releaseCondts[threadNo]->notify_all();
+    releaseCondts[threadNo].notify_all();
 }
 
 void internal::Component::GetOutput(
@@ -436,16 +420,17 @@ void internal::Component::GetOutput(
     }
 
     auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
+    auto& ref = refs[bufferNo][fromOutput];
 
-    if ( mode == DSPatch::Component::TickMode::Parallel && refs[bufferNo][fromOutput].first > 1 )
+    if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
     {
-        refMutexes[bufferNo][fromOutput]->lock();
+        refMutexes[bufferNo][fromOutput].lock();
     }
 
-    if ( ++refs[bufferNo][fromOutput].second == refs[bufferNo][fromOutput].first )
+    if ( ++ref.second == ref.first )
     {
         // this is the final reference, reset the counter, move the signal
-        refs[bufferNo][fromOutput].second = 0;
+        ref.second = 0;
 
         toBus.MoveSignal( toInput, signal );
     }
@@ -455,9 +440,9 @@ void internal::Component::GetOutput(
         toBus.CopySignal( toInput, signal );
     }
 
-    if ( mode == DSPatch::Component::TickMode::Parallel && refs[bufferNo][fromOutput].first > 1 )
+    if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
     {
-        refMutexes[bufferNo][fromOutput]->unlock();
+        refMutexes[bufferNo][fromOutput].unlock();
     }
 }
 

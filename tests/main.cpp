@@ -290,11 +290,11 @@ TEST_CASE( "ChangingOutputTest" )
 
 TEST_CASE( "ThreadPerformanceTest" )
 {
-    int efficiencyThreshold = 75;  // expect at least 75% efficiency with 4+ cores
+    double efficiencyThreshold = 75;  // expect at least 75% efficiency with 4+ cores
     if ( std::thread::hardware_concurrency() < 4 )
     {
-        float fraction = (float)std::thread::hardware_concurrency() / 4;
-        efficiencyThreshold *= (int)fraction;
+        double fraction = (double)std::thread::hardware_concurrency() / 4;
+        efficiencyThreshold *= fraction;
     }
 
     // Configure a circuit made up of 4 parallel counters, then adjust the thread count
@@ -322,7 +322,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
     circuit->PauseAutoTick();
 
-    int count = probe->GetCount();
+    double count = probe->GetCount();
     std::cout << "0x Buffer Efficiency (Series Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.25 );
 
@@ -803,11 +803,11 @@ TEST_CASE( "ChangingOutputTest2" )
 
 TEST_CASE( "ThreadPerformanceTest2" )
 {
-    int efficiencyThreshold = 75;  // expect at least 75% efficiency with 4+ cores
+    double efficiencyThreshold = 75;  // expect at least 75% efficiency with 4+ cores
     if ( std::thread::hardware_concurrency() < 4 )
     {
-        float fraction = (float)std::thread::hardware_concurrency() / 4;
-        efficiencyThreshold *= (int)fraction;
+        double fraction = (double)std::thread::hardware_concurrency() / 4;
+        efficiencyThreshold *= fraction;
     }
 
     // Configure a circuit made up of 4 parallel counters, then adjust the thread count
@@ -835,7 +835,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
     circuit->PauseAutoTick();
 
-    int count = probe->GetCount();
+    double count = probe->GetCount();
     std::cout << "0x Buffer Efficiency (Parallel Mode): " << count / 10 << "%" << std::endl;
     REQUIRE( count / 10 >= efficiencyThreshold * 0.75 );
 

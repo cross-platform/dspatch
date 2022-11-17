@@ -107,7 +107,7 @@ void AutoTickThread::Pause()
 
 void AutoTickThread::Resume()
 {
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::lock_guard<std::mutex> lock( _resumeMutex );
 
     if ( _pause )
     {
