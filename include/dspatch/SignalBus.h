@@ -53,7 +53,6 @@ class DLLEXPORT SignalBus final
 {
 public:
     NONCOPYABLE( SignalBus );
-    DEFINE_PTRS( SignalBus );
 
     SignalBus();
     SignalBus( SignalBus&& );

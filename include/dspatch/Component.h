@@ -73,7 +73,9 @@ class DLLEXPORT Component
 {
 public:
     NONCOPYABLE( Component );
-    DEFINE_PTRS( Component );
+
+    using SPtr = std::shared_ptr<Component>;
+    using SCPtr = std::shared_ptr<const Component>;
 
     enum class ProcessOrder
     {

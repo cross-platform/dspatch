@@ -52,7 +52,6 @@ class AutoTickThread final
 {
 public:
     NONCOPYABLE( AutoTickThread );
-    DEFINE_PTRS( AutoTickThread );
 
     AutoTickThread();
     ~AutoTickThread();

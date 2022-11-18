@@ -49,7 +49,8 @@ class DLLEXPORT Signal final
 {
 public:
     NONCOPYABLE( Signal );
-    DEFINE_PTRS( Signal );
+
+    using SPtr = std::shared_ptr<Signal>;
 
     Signal();
     ~Signal();
