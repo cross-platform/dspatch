@@ -20,7 +20,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const&, SignalBus& outputs ) override
+    virtual void Process_( SignalBus&, SignalBus& outputs ) override
     {
         auto start = std::chrono::high_resolution_clock::now();
 

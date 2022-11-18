@@ -38,7 +38,7 @@ namespace internal
 class SignalBus
 {
 public:
-    Signal::SPtr nullSignal = nullptr;
+    Signal emptySignal;
 };
 
 }  // namespace internal
@@ -61,14 +61,7 @@ SignalBus::~SignalBus()
 
 void SignalBus::SetSignalCount( int signalCount )
 {
-    int fromSize = (int)_signals.size();
-
     _signals.resize( signalCount );
-
-    for ( int i = fromSize; i < signalCount; ++i )
-    {
-        _signals[i] = std::make_shared<Signal>();
-    }
 }
 
 int SignalBus::GetSignalCount() const
@@ -76,7 +69,7 @@ int SignalBus::GetSignalCount() const
     return (int)_signals.size();
 }
 
-Signal::SPtr const& SignalBus::GetSignal( int signalIndex ) const
+Signal& SignalBus::GetSignal( int signalIndex )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -84,7 +77,8 @@ Signal::SPtr const& SignalBus::GetSignal( int signalIndex ) const
     }
     else
     {
-        return p->nullSignal;
+        p->emptySignal.ClearValue();
+        return p->emptySignal;
     }
 }
 
@@ -92,7 +86,7 @@ bool SignalBus::HasValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex]->HasValue();
+        return _signals[signalIndex].HasValue();
     }
     else
     {
@@ -100,11 +94,11 @@ bool SignalBus::HasValue( int signalIndex ) const
     }
 }
 
-bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
+bool SignalBus::CopySignal( int toSignalIndex, Signal const& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex]->CopySignal( fromSignal );
+        return _signals[toSignalIndex].CopySignal( fromSignal );
     }
     else
     {
@@ -112,11 +106,11 @@ bool SignalBus::CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal )
     }
 }
 
-bool SignalBus::MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal )
+bool SignalBus::MoveSignal( int toSignalIndex, Signal& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex]->MoveSignal( fromSignal );
+        return _signals[toSignalIndex].MoveSignal( fromSignal );
     }
     else
     {
@@ -128,7 +122,7 @@ void SignalBus::ClearAllValues()
 {
     for ( auto& signal : _signals )
     {
-        signal->ClearValue();
+        signal.ClearValue();
     }
 }
 
@@ -136,7 +130,7 @@ std::type_info const& SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex]->GetType();
+        return _signals[signalIndex].GetType();
     }
     else
     {

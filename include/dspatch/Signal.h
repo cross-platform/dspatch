@@ -50,8 +50,6 @@ class DLLEXPORT Signal final
 public:
     NONCOPYABLE( Signal );
 
-    using SPtr = std::shared_ptr<Signal>;
-
     Signal();
     ~Signal();
 
@@ -63,8 +61,8 @@ public:
     template <class ValueType>
     void SetValue( ValueType const& newValue );
 
-    bool CopySignal( Signal::SPtr const& fromSignal );
-    bool MoveSignal( Signal::SPtr const& fromSignal );
+    bool CopySignal( Signal const& fromSignal );
+    bool MoveSignal( Signal& fromSignal );
 
     void ClearValue();
 

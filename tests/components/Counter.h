@@ -14,7 +14,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const&, SignalBus& outputs ) override
+    virtual void Process_( SignalBus&, SignalBus& outputs ) override
     {
         outputs.SetValue( 0, _count );
         _count += _increment;

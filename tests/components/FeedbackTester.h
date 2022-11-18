@@ -19,7 +19,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const& inputs, SignalBus& outputs ) override
+    virtual void Process_( SignalBus& inputs, SignalBus& outputs ) override
     {
         for ( int i = 0; i < _inputs; ++i )
         {

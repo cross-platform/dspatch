@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dspatch/SignalBus.h>
 
 #include <string>
+#include <vector>
 
 namespace DSPatch
 {
@@ -111,7 +112,7 @@ public:
     void Reset( int bufferNo = 0 );
 
 protected:
-    virtual void Process_( SignalBus const&, SignalBus& ) = 0;
+    virtual void Process_( SignalBus&, SignalBus& ) = 0;
 
     void SetInputCount_( int inputCount, std::vector<std::string> const& inputNames = {} );
     void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
