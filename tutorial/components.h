@@ -32,7 +32,7 @@ public:
 protected:
     // 3. Implement virtual Process_() method
     // ======================================
-    virtual void Process_( SignalBus const& inputs, SignalBus& outputs ) override
+    virtual void Process_( SignalBus& inputs, SignalBus& outputs ) override
     {
         // create some local pointers to hold our input values
         auto bool1 = inputs.GetValue<bool>( 0 );
@@ -64,7 +64,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const&, SignalBus& outputs ) override
+    virtual void Process_( SignalBus&, SignalBus& outputs ) override
     {
         // set output as randomized true / false
         outputs.SetValue( 0, rand() % 2 == 0 );
@@ -85,7 +85,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const& inputs, SignalBus& ) override
+    virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
         // create a local stack variable to hold input value
         auto inputBool = inputs.GetValue<bool>( 0 );

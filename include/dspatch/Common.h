@@ -34,12 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     classname( classname const& ) = delete; \
     classname& operator=( classname const& ) = delete
 
-#define DEFINE_PTRS( classname )                    \
-    using SPtr = std::shared_ptr<classname>;        \
-    using SCPtr = std::shared_ptr<classname const>; \
-    using UPtr = std::unique_ptr<classname>;        \
-    using UCPtr = std::unique_ptr<classname const>
-
 #define EXPORT_PLUGIN( classname, ... )          \
     extern "C"                                   \
     {                                            \

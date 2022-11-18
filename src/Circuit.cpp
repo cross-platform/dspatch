@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/AutoTickThread.h>
 #include <internal/CircuitThread.h>
 
+#include <deque>
+
 using namespace DSPatch;
 
 namespace DSPatch
@@ -50,7 +52,7 @@ public:
 
     std::vector<DSPatch::Component::SPtr> components;
 
-    std::vector<CircuitThread::UPtr> circuitThreads;
+    std::deque<CircuitThread> circuitThreads;
 };
 
 }  // namespace internal
@@ -213,7 +215,7 @@ void Circuit::SetBufferCount( int bufferCount )
         // stop all threads
         for ( auto& circuitThread : p->circuitThreads )
         {
-            circuitThread->Stop();
+            circuitThread.Stop();
         }
 
         // resize thread array
@@ -222,11 +224,7 @@ void Circuit::SetBufferCount( int bufferCount )
         // initialise and start all threads
         for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
         {
-            if ( !p->circuitThreads[i] )
-            {
-                p->circuitThreads[i] = std::unique_ptr<internal::CircuitThread>( new internal::CircuitThread() );
-            }
-            p->circuitThreads[i]->Start( &p->components, (int)i );
+            p->circuitThreads[i].Start( &p->components, (int)i );
         }
 
         // set all components to the new buffer count
@@ -266,9 +264,9 @@ void Circuit::Tick( Component::TickMode mode )
     // =======================================================
     else
     {
-        p->circuitThreads[p->currentThreadNo]->SyncAndResume( mode );  // sync and resume thread x
+        p->circuitThreads[p->currentThreadNo].SyncAndResume( mode );  // sync and resume thread x
 
-        p->currentThreadNo = p->currentThreadNo + 1 == (int)p->circuitThreads.size() ? 0 : p->currentThreadNo + 1;
+        p->currentThreadNo = ( p->currentThreadNo + 1 ) % p->circuitThreads.size();
     }
 }
 
@@ -299,7 +297,7 @@ void Circuit::StopAutoTick()
         // sync all threads
         for ( auto& circuitThread : p->circuitThreads )
         {
-            circuitThread->Sync();
+            circuitThread.Sync();
         }
     }
 }
@@ -308,6 +306,11 @@ void Circuit::PauseAutoTick()
 {
     if ( p->autoTickThread.IsStopped() )
     {
+        // manually tick until 0
+        while ( p->currentThreadNo != 0 )
+        {
+            Tick();
+        }
         return;
     }
 
@@ -324,7 +327,7 @@ void Circuit::PauseAutoTick()
         // sync all threads
         for ( auto& circuitThread : p->circuitThreads )
         {
-            circuitThread->Sync();
+            circuitThread.Sync();
         }
     }
 }

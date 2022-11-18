@@ -141,7 +141,7 @@ public:
 protected:
     // 3. Implement virtual Process_() method
     // ======================================
-    virtual void Process_( SignalBus const& inputs, SignalBus& outputs ) override
+    virtual void Process_( SignalBus& inputs, SignalBus& outputs ) override
     {
         // create some local pointers to hold our input values
         auto bool1 = inputs.GetValue<bool>( 0 );

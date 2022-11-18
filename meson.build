@@ -64,10 +64,6 @@ if find_program('cppcheck', required: false).found()
             '--force',
             '--quiet',
             '--suppress=missingIncludeSystem',
-            '--suppress=unmatchedSuppression',
-            '--suppress=containerOutOfBounds',
-            '--suppress=cstyleCast',
-            '--suppress=useStlAlgorithm',
 
             '-i', meson.current_source_dir() + '/builddir',
             '-i', meson.current_source_dir() + '/subprojects',

@@ -13,7 +13,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const& inputs, SignalBus& ) override
+    virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
         if ( auto integer = inputs.GetValue<int>( 0 ) )
         {

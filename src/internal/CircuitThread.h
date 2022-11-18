@@ -62,7 +62,6 @@ class CircuitThread final
 {
 public:
     NONCOPYABLE( CircuitThread );
-    DEFINE_PTRS( CircuitThread );
 
     CircuitThread();
     ~CircuitThread();

@@ -54,7 +54,6 @@ method.
 class DLLEXPORT Plugin final
 {
 public:
-    DEFINE_PTRS( Plugin );
     NONCOPYABLE( Plugin );
 
     explicit Plugin( std::string const& pluginPath );

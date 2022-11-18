@@ -66,7 +66,6 @@ class DLLEXPORT Circuit final
 {
 public:
     NONCOPYABLE( Circuit );
-    DEFINE_PTRS( Circuit );
 
     Circuit();
     ~Circuit();

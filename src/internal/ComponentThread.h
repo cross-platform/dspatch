@@ -53,7 +53,6 @@ class ComponentThread final
 {
 public:
     NONCOPYABLE( ComponentThread );
-    DEFINE_PTRS( ComponentThread );
 
     ComponentThread();
     ~ComponentThread();

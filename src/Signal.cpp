@@ -44,19 +44,18 @@ bool Signal::HasValue() const
     return _hasValue;
 }
 
-bool Signal::CopySignal( Signal::SPtr const& fromSignal )
+bool Signal::CopySignal( Signal const& fromSignal )
 {
-    if ( fromSignal != nullptr && fromSignal->_hasValue )
+    if ( fromSignal._hasValue && fromSignal._valueHolder != nullptr )
     {
-        if ( _valueHolder != nullptr && fromSignal->_valueHolder != nullptr &&
-             _valueHolder->GetType() == fromSignal->_valueHolder->GetType() )
+        if ( _valueHolder != nullptr && _valueHolder->GetType() == fromSignal._valueHolder->GetType() )
         {
-            _valueHolder->SetValue( fromSignal->_valueHolder );
+            _valueHolder->SetValue( fromSignal._valueHolder );
         }
         else
         {
             delete _valueHolder;
-            _valueHolder = fromSignal->_valueHolder->GetCopy();
+            _valueHolder = fromSignal._valueHolder->GetCopy();
         }
 
         _hasValue = true;
@@ -68,9 +67,9 @@ bool Signal::CopySignal( Signal::SPtr const& fromSignal )
     }
 }
 
-bool Signal::MoveSignal( Signal::SPtr const& fromSignal )
+bool Signal::MoveSignal( Signal& fromSignal )
 {
-    if ( fromSignal != nullptr && fromSignal->_hasValue )
+    if ( fromSignal._hasValue )
     {
         // You might be thinking: Why std::swap and not std::move here?
 
@@ -82,8 +81,8 @@ bool Signal::MoveSignal( Signal::SPtr const& fromSignal )
         // target signals such that, between these two points, just two value holders need to be
         // constructed, and shared back and forth from then on.
 
-        std::swap( fromSignal->_valueHolder, _valueHolder );
-        fromSignal->_hasValue = false;
+        std::swap( fromSignal._valueHolder, _valueHolder );
+        fromSignal._hasValue = false;
 
         _hasValue = true;
         return true;

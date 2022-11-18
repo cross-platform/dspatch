@@ -97,7 +97,7 @@ void ComponentThread::Resume( std::function<void()> const& tick )
         Start();
     }
 
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::lock_guard<std::mutex> lock( _resumeMutex );
 
     _gotSync = false;  // reset the sync flag
 

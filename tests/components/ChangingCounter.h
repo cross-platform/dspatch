@@ -15,7 +15,7 @@ public:
     }
 
 protected:
-    virtual void Process_( SignalBus const&, SignalBus& outputs ) override
+    virtual void Process_( SignalBus&, SignalBus& outputs ) override
     {
         if ( rand() % 2 == 1 )
         {

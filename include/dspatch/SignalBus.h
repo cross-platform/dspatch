@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Signal.h>
 
-#include <vector>
+#include <deque>
 
 namespace DSPatch
 {
@@ -53,7 +53,6 @@ class DLLEXPORT SignalBus final
 {
 public:
     NONCOPYABLE( SignalBus );
-    DEFINE_PTRS( SignalBus );
 
     SignalBus();
     SignalBus( SignalBus&& );
@@ -62,35 +61,35 @@ public:
     void SetSignalCount( int signalCount );
     int GetSignalCount() const;
 
-    Signal::SPtr const& GetSignal( int signalIndex ) const;
+    Signal& GetSignal( int signalIndex );
 
     bool HasValue( int signalIndex ) const;
 
     template <class ValueType>
-    ValueType* GetValue( int signalIndex ) const;
+    ValueType* GetValue( int signalIndex );
 
     template <class ValueType>
     bool SetValue( int signalIndex, ValueType const& newValue );
 
-    bool CopySignal( int toSignalIndex, Signal::SPtr const& fromSignal );
-    bool MoveSignal( int toSignalIndex, Signal::SPtr const& fromSignal );
+    bool CopySignal( int toSignalIndex, Signal const& fromSignal );
+    bool MoveSignal( int toSignalIndex, Signal& fromSignal );
 
     void ClearAllValues();
 
     std::type_info const& GetType( int signalIndex ) const;
 
 private:
-    std::vector<Signal::SPtr> _signals;
+    std::deque<Signal> _signals;
 
     std::unique_ptr<internal::SignalBus> p;
 };
 
 template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex ) const
+ValueType* SignalBus::GetValue( int signalIndex )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex]->GetValue<ValueType>();
+        return _signals[signalIndex].GetValue<ValueType>();
     }
     else
     {
@@ -103,7 +102,7 @@ bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        _signals[signalIndex]->SetValue( newValue );
+        _signals[signalIndex].SetValue( newValue );
         return true;
     }
     else
