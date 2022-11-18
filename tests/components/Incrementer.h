@@ -6,7 +6,7 @@ namespace DSPatch
 class Incrementer : public Component
 {
 public:
-    Incrementer( int increment = 1 )
+    explicit Incrementer( int increment = 1 )
         : Component( ProcessOrder::OutOfOrder )
         , _increment( increment )
     {
