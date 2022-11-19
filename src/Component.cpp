@@ -424,26 +424,30 @@ void internal::Component::GetOutput(
 
     if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
     {
-        refMutexes[bufferNo][fromOutput].lock();
+        std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput] );
+        if ( ++ref.second != ref.first )
+        {
+            toBus.CopySignal( toInput, signal );
+            return;
+        }
+        else
+        {
+            // this is the final reference, reset the counter, move the signal
+            ref.second = 0;
+        }
     }
-
-    if ( ++ref.second == ref.first )
+    else if ( ++ref.second != ref.first )
     {
-        // this is the final reference, reset the counter, move the signal
-        ref.second = 0;
-
-        toBus.MoveSignal( toInput, signal );
+        toBus.CopySignal( toInput, signal );
+        return;
     }
     else
     {
-        // otherwise, copy the signal
-        toBus.CopySignal( toInput, signal );
+        // this is the final reference, reset the counter, move the signal
+        ref.second = 0;
     }
 
-    if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
-    {
-        refMutexes[bufferNo][fromOutput].unlock();
-    }
+    toBus.MoveSignal( toInput, signal );
 }
 
 void internal::Component::IncRefs( int output )

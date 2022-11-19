@@ -309,7 +309,7 @@ void Circuit::PauseAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick();
+            Tick( Component::TickMode::Series );
         }
         return;
     }
