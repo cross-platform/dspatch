@@ -101,7 +101,7 @@ void AutoTickThread::Pause()
     if ( !_pause && !_stopped )
     {
         _pause = true;
-        _pauseCondt.wait( lock );  // wait for resume
+        _pauseCondt.wait( lock );  // wait for pause
     }
 }
 

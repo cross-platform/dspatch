@@ -396,7 +396,7 @@ void internal::Component::WaitForRelease( int threadNo )
 
     if ( !gotReleases[threadNo] )
     {
-        releaseCondts[threadNo].wait( lock );  // wait for resume
+        releaseCondts[threadNo].wait( lock );  // wait for release
     }
     gotReleases[threadNo] = false;  // reset the release flag
 }

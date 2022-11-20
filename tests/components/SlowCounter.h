@@ -19,7 +19,6 @@ public:
         _count = 0;
     }
 
-protected:
     virtual void Process_( SignalBus&, SignalBus& outputs ) override
     {
         auto start = std::chrono::high_resolution_clock::now();
@@ -32,12 +31,12 @@ protected:
             elapsedMs = std::chrono::high_resolution_clock::now() - start;
         } while ( elapsedMs.count() < _waitMs );
 
-        _waitMs = 1000 - ( (int)elapsedMs.count() - _waitMs );
+        _waitMs = 1000.0 - ( elapsedMs.count() - _waitMs );
     }
 
 private:
     int _count;
-    int _waitMs = 1000;
+    double _waitMs = 1000.0;
 };
 
 }  // namespace DSPatch

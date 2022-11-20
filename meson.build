@@ -53,6 +53,7 @@ if find_program('cppcheck', required: false).found()
     endif
 
     custom_target(
+        input: format_first,
         output: 'static code analysis',
         command: [
             'cppcheck',
@@ -65,6 +66,7 @@ if find_program('cppcheck', required: false).found()
             '--quiet',
             '--suppress=missingIncludeSystem',
 
+            '-i', meson.current_source_dir() + '/build',
             '-i', meson.current_source_dir() + '/builddir',
             '-i', meson.current_source_dir() + '/subprojects',
 
