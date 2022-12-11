@@ -55,8 +55,6 @@ void CircuitThread::Start( std::vector<DSPatch::Component::SPtr>* components, in
     _gotSync = false;
 
     _thread = std::thread( &CircuitThread::_Run, this );
-
-    Sync();
 }
 
 void CircuitThread::Stop()
