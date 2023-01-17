@@ -61,6 +61,9 @@ public:
     template <class ValueType>
     void SetValue( ValueType const& newValue );
 
+    template <class ValueType>
+    void SetValue( ValueType&& newValue );
+
     bool CopySignal( Signal const& fromSignal );
     bool MoveSignal( Signal& fromSignal );
 
@@ -147,6 +150,21 @@ void Signal::SetValue( ValueType const& newValue )
     {
         delete _valueHolder;
         _valueHolder = new _Value<ValueType>( newValue );
+    }
+    _hasValue = true;
+}
+
+template <class ValueType>
+void Signal::SetValue( ValueType&& newValue )
+{
+    if ( GetType() == typeid( ValueType ) )
+    {
+        ( (_Value<ValueType>*)_valueHolder )->value = std::move( newValue );
+    }
+    else
+    {
+        delete _valueHolder;
+        _valueHolder = new _Value<ValueType>( std::move( newValue ) );
     }
     _hasValue = true;
 }

@@ -71,6 +71,9 @@ public:
     template <class ValueType>
     bool SetValue( int signalIndex, ValueType const& newValue );
 
+    template <class ValueType>
+    bool SetValue( int signalIndex, ValueType&& newValue );
+
     bool CopySignal( int toSignalIndex, Signal const& fromSignal );
     bool MoveSignal( int toSignalIndex, Signal& fromSignal );
 
@@ -103,6 +106,20 @@ bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
     if ( (size_t)signalIndex < _signals.size() )
     {
         _signals[signalIndex].SetValue( newValue );
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+template <class ValueType>
+bool SignalBus::SetValue( int signalIndex, ValueType&& newValue )
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        _signals[signalIndex].SetValue( std::move( newValue ) );
         return true;
     }
     else
