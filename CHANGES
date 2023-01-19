@@ -1,3 +1,8 @@
+v.9.0.1 (19 January 2023)
+    - Added move version of SignalBus / Signal::SetValue().
+    - Removed unnecessary sync in CircuitThread::Start().
+    - Improved & stabilized thread performance tests.
+
 v.9.0.0 (19 November 2022)
     - Reduced unnecessary pointer use.
     - Optimized signal transfers in parallel tick mode.

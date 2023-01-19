@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2022, Marcus Tomlinson
+Copyright (c) 2023, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 \section intro_sec Introduction
     DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to
     any particular domain or data type, from reactive programming to stream processing, DSPatch's
-    generic, object-oriented API allows you to create virtually any dataflow system imaginable.
+    generic, object-oriented API allows you to create virtually any graph processing system imaginable.
 
     DSPatch is designed around the concept of a "circuit" that contains "components" interconnected
     via "wires" that transfer "signals" to and from I/O "buses".

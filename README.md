@@ -6,7 +6,7 @@ The Refreshingly Simple C++ Dataflow Framework
 
 Webite: http://flowbasedprogramming.com
 
-DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to any particular domain or data type, from reactive programming to stream processing, DSPatch's generic, object-oriented API allows you to create virtually any dataflow system imaginable.
+DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to any particular domain or data type, from reactive programming to stream processing, DSPatch's generic, object-oriented API allows you to create virtually any graph processing system imaginable.
 
 
 ## Build

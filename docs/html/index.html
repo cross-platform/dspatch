@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.0.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.0.1</span>
    </div>
   </td>
  </tr>
@@ -75,7 +75,7 @@ $(function() {
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="intro_sec"></a>
 Introduction</h1>
-<p >DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to any particular domain or data type, from reactive programming to stream processing, DSPatch's generic, object-oriented API allows you to create virtually any dataflow system imaginable.</p>
+<p >DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to any particular domain or data type, from reactive programming to stream processing, DSPatch's generic, object-oriented API allows you to create virtually any graph processing system imaginable.</p>
 <p >DSPatch is designed around the concept of a "circuit" that contains "components" interconnected via "wires" that transfer "signals" to and from I/O "buses".</p>
 <p >The two most important classes to consider are <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">DSPatch::Component</a> and <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">DSPatch::Circuit</a>. In order to route data to and from components they must be added to a circuit, where they can be wired together.</p>
 <p >The DSPatch engine takes care of data transfers between interconnected components. When data is ready for a component to process, a callback: "Process_()" is executed in that component. For a component to form part of a DSPatch circuit, designers simply have to derive their component from the <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">DSPatch::Component</a> base class, configure the component's IO buses, and implement the virtual Process_() callback method.</p>
