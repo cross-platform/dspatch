@@ -62,7 +62,7 @@ public:
     void SetValue( ValueType const& newValue );
 
     template <class ValueType>
-    void SetValue( ValueType&& newValue );
+    void MoveValue( ValueType&& newValue );
 
     bool CopySignal( Signal const& fromSignal );
     bool MoveSignal( Signal& fromSignal );
@@ -155,7 +155,7 @@ void Signal::SetValue( ValueType const& newValue )
 }
 
 template <class ValueType>
-void Signal::SetValue( ValueType&& newValue )
+void Signal::MoveValue( ValueType&& newValue )
 {
     if ( GetType() == typeid( ValueType ) )
     {
