@@ -1,3 +1,7 @@
+v.9.1.0 (31 January 2023)
+    - Renamed move version of SetValue() to MoveValue().
+    - Renamed CopySignal() to SetSignal().
+
 v.9.0.1 (19 January 2023)
     - Added move version of SignalBus / Signal::SetValue().
     - Removed unnecessary sync in CircuitThread::Start().
