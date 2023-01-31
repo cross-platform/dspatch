@@ -101,12 +101,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>HasValue</b> () const
 <tr class="memitem:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
 <tr class="memitem:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal.html#a11e6ed54aa35b43593be9bc86b59a8a6">SetValue</a> (ValueType const &amp;newValue)</td></tr>
 <tr class="separator:a11e6ed54aa35b43593be9bc86b59a8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab97324f7531cca6f32e5721e9bd14f6"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
-<tr class="memitem:aab97324f7531cca6f32e5721e9bd14f6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal.html#aab97324f7531cca6f32e5721e9bd14f6">SetValue</a> (ValueType &amp;&amp;newValue)</td></tr>
-<tr class="separator:aab97324f7531cca6f32e5721e9bd14f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9ed011650777c875ec78e9624deb6b3"><td class="memItemLeft" align="right" valign="top"><a id="ae9ed011650777c875ec78e9624deb6b3" name="ae9ed011650777c875ec78e9624deb6b3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>CopySignal</b> (<a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> const &amp;fromSignal)</td></tr>
-<tr class="separator:ae9ed011650777c875ec78e9624deb6b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56facdd5f0863e83c408c2135dd0d5dd"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
+<tr class="memitem:a56facdd5f0863e83c408c2135dd0d5dd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal.html#a56facdd5f0863e83c408c2135dd0d5dd">MoveValue</a> (ValueType &amp;&amp;newValue)</td></tr>
+<tr class="separator:a56facdd5f0863e83c408c2135dd0d5dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a161b45ae1dc1da237b421e0dd805b17a"><td class="memItemLeft" align="right" valign="top"><a id="a161b45ae1dc1da237b421e0dd805b17a" name="a161b45ae1dc1da237b421e0dd805b17a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetSignal</b> (<a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> const &amp;fromSignal)</td></tr>
+<tr class="separator:a161b45ae1dc1da237b421e0dd805b17a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9df6ab85bcd0d6ab0330db9e859dfaf7"><td class="memItemLeft" align="right" valign="top"><a id="a9df6ab85bcd0d6ab0330db9e859dfaf7" name="a9df6ab85bcd0d6ab0330db9e859dfaf7"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>MoveSignal</b> (<a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;fromSignal)</td></tr>
 <tr class="separator:a9df6ab85bcd0d6ab0330db9e859dfaf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,8 +141,8 @@ template&lt;class ValueType &gt; </div>
 
 </div>
 </div>
-<a id="aab97324f7531cca6f32e5721e9bd14f6" name="aab97324f7531cca6f32e5721e9bd14f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab97324f7531cca6f32e5721e9bd14f6">&#9670;&#160;</a></span>SetValue() <span class="overload">[1/2]</span></h2>
+<a id="a56facdd5f0863e83c408c2135dd0d5dd" name="a56facdd5f0863e83c408c2135dd0d5dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56facdd5f0863e83c408c2135dd0d5dd">&#9670;&#160;</a></span>MoveValue()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -150,7 +150,7 @@ template&lt;class ValueType &gt; </div>
 template&lt;class ValueType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void DSPatch::Signal::SetValue </td>
+          <td class="memname">void DSPatch::Signal::MoveValue </td>
           <td>(</td>
           <td class="paramtype">ValueType &amp;&amp;&#160;</td>
           <td class="paramname"><em>newValue</em></td><td>)</td>
@@ -164,7 +164,7 @@ template&lt;class ValueType &gt; </div>
 </div>
 </div>
 <a id="a11e6ed54aa35b43593be9bc86b59a8a6" name="a11e6ed54aa35b43593be9bc86b59a8a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11e6ed54aa35b43593be9bc86b59a8a6">&#9670;&#160;</a></span>SetValue() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e6ed54aa35b43593be9bc86b59a8a6">&#9670;&#160;</a></span>SetValue()</h2>
 
 <div class="memitem">
 <div class="memproto">

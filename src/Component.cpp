@@ -427,7 +427,7 @@ void internal::Component::GetOutput(
         std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput] );
         if ( ++ref.second != ref.first )
         {
-            toBus.CopySignal( toInput, signal );
+            toBus.SetSignal( toInput, signal );
             return;
         }
         else
@@ -438,7 +438,7 @@ void internal::Component::GetOutput(
     }
     else if ( ++ref.second != ref.first )
     {
-        toBus.CopySignal( toInput, signal );
+        toBus.SetSignal( toInput, signal );
         return;
     }
     else

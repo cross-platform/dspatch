@@ -112,12 +112,12 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>HasValue</b> (int sig
 <tr class="memitem:a92bb1302e7e6d7df6ac643dbeb8ae20f"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
 <tr class="memitem:a92bb1302e7e6d7df6ac643dbeb8ae20f"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a92bb1302e7e6d7df6ac643dbeb8ae20f">SetValue</a> (int signalIndex, ValueType const &amp;newValue)</td></tr>
 <tr class="separator:a92bb1302e7e6d7df6ac643dbeb8ae20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3105bcd17c65082efde750cc5eb5ce27"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
-<tr class="memitem:a3105bcd17c65082efde750cc5eb5ce27"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a3105bcd17c65082efde750cc5eb5ce27">SetValue</a> (int signalIndex, ValueType &amp;&amp;newValue)</td></tr>
-<tr class="separator:a3105bcd17c65082efde750cc5eb5ce27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a786b5ca01dd59fc7ad5546ec87ce15b8"><td class="memItemLeft" align="right" valign="top"><a id="a786b5ca01dd59fc7ad5546ec87ce15b8" name="a786b5ca01dd59fc7ad5546ec87ce15b8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>CopySignal</b> (int toSignalIndex, <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> const &amp;fromSignal)</td></tr>
-<tr class="separator:a786b5ca01dd59fc7ad5546ec87ce15b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
+<tr class="memitem:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1e647e83ce944d66604c4ad01fb51e5e">MoveValue</a> (int signalIndex, ValueType &amp;&amp;newValue)</td></tr>
+<tr class="separator:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f43dff9ea090d595f5a62bd25b100e3"><td class="memItemLeft" align="right" valign="top"><a id="a8f43dff9ea090d595f5a62bd25b100e3" name="a8f43dff9ea090d595f5a62bd25b100e3"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>SetSignal</b> (int toSignalIndex, <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> const &amp;fromSignal)</td></tr>
+<tr class="separator:a8f43dff9ea090d595f5a62bd25b100e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a54921d3fd2f9747342526f1b516a5a"><td class="memItemLeft" align="right" valign="top"><a id="a6a54921d3fd2f9747342526f1b516a5a" name="a6a54921d3fd2f9747342526f1b516a5a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>MoveSignal</b> (int toSignalIndex, <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;fromSignal)</td></tr>
 <tr class="separator:a6a54921d3fd2f9747342526f1b516a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -156,8 +156,8 @@ template&lt;class ValueType &gt; </div>
 
 </div>
 </div>
-<a id="a3105bcd17c65082efde750cc5eb5ce27" name="a3105bcd17c65082efde750cc5eb5ce27"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3105bcd17c65082efde750cc5eb5ce27">&#9670;&#160;</a></span>SetValue() <span class="overload">[1/2]</span></h2>
+<a id="a1e647e83ce944d66604c4ad01fb51e5e" name="a1e647e83ce944d66604c4ad01fb51e5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e647e83ce944d66604c4ad01fb51e5e">&#9670;&#160;</a></span>MoveValue()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -165,7 +165,7 @@ template&lt;class ValueType &gt; </div>
 template&lt;class ValueType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">bool DSPatch::SignalBus::SetValue </td>
+          <td class="memname">bool DSPatch::SignalBus::MoveValue </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>signalIndex</em>, </td>
@@ -189,7 +189,7 @@ template&lt;class ValueType &gt; </div>
 </div>
 </div>
 <a id="a92bb1302e7e6d7df6ac643dbeb8ae20f" name="a92bb1302e7e6d7df6ac643dbeb8ae20f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92bb1302e7e6d7df6ac643dbeb8ae20f">&#9670;&#160;</a></span>SetValue() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a92bb1302e7e6d7df6ac643dbeb8ae20f">&#9670;&#160;</a></span>SetValue()</h2>
 
 <div class="memitem">
 <div class="memproto">

@@ -74,7 +74,7 @@ public:
     template <class ValueType>
     bool MoveValue( int signalIndex, ValueType&& newValue );
 
-    bool CopySignal( int toSignalIndex, Signal const& fromSignal );
+    bool SetSignal( int toSignalIndex, Signal const& fromSignal );
     bool MoveSignal( int toSignalIndex, Signal& fromSignal );
 
     void ClearAllValues();

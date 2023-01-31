@@ -64,7 +64,7 @@ public:
     template <class ValueType>
     void MoveValue( ValueType&& newValue );
 
-    bool CopySignal( Signal const& fromSignal );
+    bool SetSignal( Signal const& fromSignal );
     bool MoveSignal( Signal& fromSignal );
 
     void ClearValue();

@@ -44,7 +44,7 @@ bool Signal::HasValue() const
     return _hasValue;
 }
 
-bool Signal::CopySignal( Signal const& fromSignal )
+bool Signal::SetSignal( Signal const& fromSignal )
 {
     if ( fromSignal._hasValue && fromSignal._valueHolder != nullptr )
     {

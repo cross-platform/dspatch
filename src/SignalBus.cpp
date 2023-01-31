@@ -94,11 +94,11 @@ bool SignalBus::HasValue( int signalIndex ) const
     }
 }
 
-bool SignalBus::CopySignal( int toSignalIndex, Signal const& fromSignal )
+bool SignalBus::SetSignal( int toSignalIndex, Signal const& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex].CopySignal( fromSignal );
+        return _signals[toSignalIndex].SetSignal( fromSignal );
     }
     else
     {
