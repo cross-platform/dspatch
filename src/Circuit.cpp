@@ -46,7 +46,7 @@ public:
     bool FindComponent( DSPatch::Component::SCPtr const& component, int& returnIndex ) const;
 
     int pauseCount = 0;
-    int currentThreadNo = 0;
+    size_t currentThreadNo = 0;
 
     AutoTickThread autoTickThread;
 
@@ -266,7 +266,10 @@ void Circuit::Tick( Component::TickMode mode )
     {
         p->circuitThreads[p->currentThreadNo].SyncAndResume( mode );  // sync and resume thread x
 
-        p->currentThreadNo = ( p->currentThreadNo + 1 ) % p->circuitThreads.size();
+        if ( ++p->currentThreadNo == p->circuitThreads.size() )
+        {
+            p->currentThreadNo = 0;
+        }
     }
 }
 

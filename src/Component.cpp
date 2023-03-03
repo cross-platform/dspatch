@@ -403,7 +403,10 @@ void internal::Component::WaitForRelease( int threadNo )
 
 void internal::Component::ReleaseThread( int threadNo )
 {
-    threadNo = ( threadNo + 1 ) % bufferCount;  // we're actually releasing the next available thread
+    if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
+    {
+        threadNo = 0;
+    }
 
     std::lock_guard<std::mutex> lock( releaseMutexes[threadNo] );
 
