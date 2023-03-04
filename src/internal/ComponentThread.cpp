@@ -28,61 +28,117 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <internal/ComponentThread.h>
 
+#include <functional>
+#include <queue>
+
 using namespace DSPatch::internal;
 
-ComponentThread::ComponentThread()
+template <class T>
+class SafeQueue final
 {
-}
-
-ComponentThread::~ComponentThread()
-{
-    Stop();
-}
-
-void ComponentThread::Start()
-{
-    if ( !_stopped )
+public:
+    void push( const T& t )
     {
-        return;
+        std::lock_guard<std::mutex> lock( m );
+        q.push( t );
+        c.notify_one();
     }
 
-    _stop = false;
-    _stopped = false;
-    _gotResume = false;
-    _gotSync = false;
+    const T& front()
+    {
+        std::unique_lock<std::mutex> lock( m );
+        while ( q.empty() )
+        {
+            c.wait( lock );
+        }
+        const T& f = q.front();
+        q.pop();
+        return f;
+    }
 
-    _thread = std::thread( &ComponentThread::_Run, this );
+private:
+    std::queue<T> q;
+    std::mutex m;
+    std::condition_variable c;
+};
 
-    Sync();
-}
-
-void ComponentThread::Stop()
+class ThreadPool final
 {
-    if ( _stopped )
+public:
+    enum class JobType
     {
-        return;
+        Job,
+        Stop
+    };
+
+    struct Job
+    {
+        // cppcheck-suppress unusedStructMember
+        JobType type;
+        std::function<void()> callback;
+    };
+
+    ThreadPool( int bufferCount, int threadsPerBuffer )
+        : bufferCount( bufferCount )
+        , threadsPerBuffer( threadsPerBuffer )
+    {
+        jobs.resize( bufferCount );
+        bufferThreads.resize( bufferCount );
+        for ( int i = 0; i < bufferCount; ++i )
+        {
+            for ( int j = 0; j < threadsPerBuffer; ++j )
+            {
+                bufferThreads[i].push_back( std::thread( &ThreadPool::Run, this, i ) );
+            }
+        }
     }
 
-    Sync();
-
-    _stop = true;
-
-    Resume( _tick );
-
-    if ( _thread.joinable() )
+    ~ThreadPool()
     {
-        _thread.join();
+        for ( int i = 0; i < bufferCount; ++i )
+        {
+            for ( int j = 0; j < threadsPerBuffer; ++j )
+            {
+                jobs[i].push( { JobType::Stop, nullptr } );
+            }
+            for ( int j = 0; j < threadsPerBuffer; ++j )
+            {
+                bufferThreads[i][j].join();
+            }
+        }
     }
-}
+
+    void AddJob( int bufferNo, const std::function<void()>& callback )
+    {
+        jobs[bufferNo].push( { JobType::Job, callback } );
+    }
+
+    void Run( int bufferNo )
+    {
+        while ( true )
+        {
+            const auto& job = jobs[bufferNo].front();
+            if ( job.type == JobType::Stop )
+            {
+                break;
+            }
+            job.callback();
+        }
+    }
+
+    int bufferCount;
+    int threadsPerBuffer;
+    std::vector<std::vector<std::thread>> bufferThreads;
+    std::deque<SafeQueue<Job>> jobs;
+};
+
+static ThreadPool threadPool( 8, 2 );
+
+ComponentThread::ComponentThread() = default;
 
 void ComponentThread::Sync()
 {
-    if ( _stopped )
-    {
-        return;
-    }
-
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _syncMutex );
 
     if ( !_gotSync )  // if haven't already got sync
     {
@@ -90,45 +146,19 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( std::function<void()> const& tick )
+void ComponentThread::Resume( int bufferNo, std::function<void()> const& tick )
 {
-    if ( _stopped )
-    {
-        Start();
-    }
-
-    std::lock_guard<std::mutex> lock( _resumeMutex );
-
     _gotSync = false;  // reset the sync flag
-
     _tick = tick;
-
-    _gotResume = true;  // set the resume flag
-    _resumeCondt.notify_all();
+    threadPool.AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
 }
 
 void ComponentThread::_Run()
 {
-    while ( !_stop )
-    {
-        {
-            std::unique_lock<std::mutex> lock( _resumeMutex );
+    _tick();
 
-            _gotSync = true;  // set the sync flag
-            _syncCondt.notify_all();
+    std::lock_guard<std::mutex> lock( _syncMutex );
 
-            if ( !_gotResume )  // if haven't already got resume
-            {
-                _resumeCondt.wait( lock );  // wait for resume
-            }
-            _gotResume = false;  // reset the resume flag
-        }
-
-        if ( !_stop )
-        {
-            _tick();
-        }
-    }
-
-    _stopped = true;
+    _gotSync = true;  // set the sync flag
+    _syncCondt.notify_all();
 }

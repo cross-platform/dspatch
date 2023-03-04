@@ -335,7 +335,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         }
         else if ( mode == TickMode::Parallel )
         {
-            p->componentThreads[bufferNo].Resume( tick );
+            p->componentThreads[bufferNo].Resume( bufferNo, tick );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )

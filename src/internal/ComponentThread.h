@@ -55,24 +55,17 @@ public:
     NONCOPYABLE( ComponentThread );
 
     ComponentThread();
-    ~ComponentThread();
 
-    void Start();
-    void Stop();
     void Sync();
-    void Resume( std::function<void()> const& tick );
+    void Resume( int bufferNo, std::function<void()> const& tick );
 
 private:
     void _Run();
 
 private:
-    std::thread _thread;
-    bool _stop = false;
-    bool _stopped = true;
-    bool _gotResume = false;
     bool _gotSync = true;
-    std::mutex _resumeMutex;
-    std::condition_variable _resumeCondt, _syncCondt;
+    std::mutex _syncMutex;
+    std::condition_variable _syncCondt;
     std::function<void()> _tick;
 };
 
