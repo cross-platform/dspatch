@@ -60,7 +60,7 @@ TEST_CASE( "SerialTest" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
 }
 
@@ -98,7 +98,7 @@ TEST_CASE( "ParallelTest" )
 
     // Tick the circuit for 100ms with 3 threads
     circuit->SetBufferCount( 3 );
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
 }
@@ -151,7 +151,7 @@ TEST_CASE( "BranchSyncTest" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
 }
 
@@ -180,7 +180,7 @@ TEST_CASE( "FeedbackTest" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
 }
 
@@ -201,10 +201,10 @@ TEST_CASE( "FeedbackTestNoCircuit" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        counter->Tick( Component::TickMode::Series );
-        adder->Tick( Component::TickMode::Series );
-        passthrough->Tick( Component::TickMode::Series );
-        probe->Tick( Component::TickMode::Series );
+        counter->Tick();
+        adder->Tick();
+        passthrough->Tick();
+        probe->Tick();
 
         counter->Reset();
         adder->Reset();
@@ -224,7 +224,7 @@ TEST_CASE( "RefCountResetRegressionTest" )
     feedback->ConnectInput( feedback, 0, 0 );
     feedback->SetValidInputs( 1 );
 
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->PauseAutoTick();
 
@@ -233,7 +233,7 @@ TEST_CASE( "RefCountResetRegressionTest" )
     feedback->ConnectInput( feedback, 0, 3 );
     feedback->SetValidInputs( 4 );
 
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->PauseAutoTick();
 
@@ -245,7 +245,7 @@ TEST_CASE( "RefCountResetRegressionTest" )
     feedback->ConnectInput( feedback, 0, 9 );
     feedback->SetValidInputs( 10 );
 
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
 }
@@ -266,7 +266,7 @@ TEST_CASE( "NoOutputTest" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
 }
 
@@ -286,7 +286,7 @@ TEST_CASE( "ChangingOutputTest" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
 }
 
@@ -345,7 +345,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
     end = std::chrono::high_resolution_clock::now();
     auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -364,7 +364,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -383,7 +383,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -402,7 +402,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -421,7 +421,7 @@ TEST_CASE( "ThreadPerformanceTest" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
+        circuit->Tick();
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -454,7 +454,7 @@ TEST_CASE( "StopAutoTickRegressionTest" )
 
     circuit->SetBufferCount( std::thread::hardware_concurrency() );
 
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
     circuit->RemoveComponent( counter1 );
@@ -481,7 +481,7 @@ TEST_CASE( "ThreadAdjustmentTest" )
     circuit->ConnectOutToIn( counter, 0, probe, 3 );
 
     // Tick the circuit for 100ms with 1 thread
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     // Adjust the thread count while the circuit is running
@@ -520,7 +520,7 @@ TEST_CASE( "WiringTest" )
     circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
 
     // Tick the circuit for 100ms with 1 thread
-    circuit->StartAutoTick( Component::TickMode::Series );
+    circuit->StartAutoTick();
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     // Re-wire
@@ -588,10 +588,12 @@ TEST_CASE( "SerialTest2" )
     circuit->ConnectOutToIn( inc_s4, 0, inc_s5, 0 );
     circuit->ConnectOutToIn( inc_s5, 0, probe, 0 );
 
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
+
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
 }
 
@@ -628,8 +630,10 @@ TEST_CASE( "ParallelTest2" )
     circuit->ConnectOutToIn( inc_p5, 0, probe, 4 );
 
     // Tick the circuit for 100ms with 3 threads
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
+
     circuit->SetBufferCount( 3 );
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
 }
@@ -680,9 +684,10 @@ TEST_CASE( "BranchSyncTest2" )
     circuit->ConnectOutToIn( inc_p3_s1, 0, probe, 2 );
 
     // Tick the circuit 100 times
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
 }
 
@@ -709,9 +714,10 @@ TEST_CASE( "FeedbackTest2" )
     circuit->ConnectOutToIn( adder, 0, probe, 0 );
 
     // Tick the circuit 100 times
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
 }
 
@@ -730,12 +736,13 @@ TEST_CASE( "FeedbackTestNoCircuit2" )
     probe->ConnectInput( adder, 0, 0 );
 
     // Tick the circuit 100 times
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     for ( int i = 0; i < 100; ++i )
     {
-        counter->Tick( Component::TickMode::Parallel );
-        adder->Tick( Component::TickMode::Parallel );
-        passthrough->Tick( Component::TickMode::Parallel );
-        probe->Tick( Component::TickMode::Parallel );
+        counter->Tick( 0, threadPool );
+        adder->Tick( 0, threadPool );
+        passthrough->Tick( 0, threadPool );
+        probe->Tick( 0, threadPool );
 
         counter->Reset();
         adder->Reset();
@@ -755,7 +762,9 @@ TEST_CASE( "RefCountResetRegressionTest2" )
     feedback->ConnectInput( feedback, 0, 0 );
     feedback->SetValidInputs( 1 );
 
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
+
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->PauseAutoTick();
 
@@ -764,7 +773,7 @@ TEST_CASE( "RefCountResetRegressionTest2" )
     feedback->ConnectInput( feedback, 0, 3 );
     feedback->SetValidInputs( 4 );
 
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->PauseAutoTick();
 
@@ -776,7 +785,7 @@ TEST_CASE( "RefCountResetRegressionTest2" )
     feedback->ConnectInput( feedback, 0, 9 );
     feedback->SetValidInputs( 10 );
 
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
 }
@@ -795,9 +804,10 @@ TEST_CASE( "NoOutputTest2" )
     circuit->ConnectOutToIn( counter, 0, probe, 0 );
 
     // Tick the circuit 100 times
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
 }
 
@@ -815,9 +825,10 @@ TEST_CASE( "ChangingOutputTest2" )
     circuit->ConnectOutToIn( counter, 0, probe, 0 );
 
     // Tick the circuit 100 times
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
 }
 
@@ -850,10 +861,11 @@ TEST_CASE( "ThreadPerformanceTest2" )
     circuit->ConnectOutToIn( counter4, 0, probe, 3 );
 
     // Tick the circuit with no threads
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     auto begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
     auto end = std::chrono::high_resolution_clock::now();
     auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -872,7 +884,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -891,7 +903,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -910,7 +922,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -929,7 +941,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
     begin = std::chrono::high_resolution_clock::now();
     for ( int i = 0; i < 1000; ++i )
     {
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick( threadPool );
     }
     end = std::chrono::high_resolution_clock::now();
     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
@@ -962,7 +974,9 @@ TEST_CASE( "StopAutoTickRegressionTest2" )
 
     circuit->SetBufferCount( std::thread::hardware_concurrency() );
 
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
+
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
     circuit->RemoveComponent( counter1 );
@@ -988,8 +1002,10 @@ TEST_CASE( "ThreadAdjustmentTest2" )
     circuit->ConnectOutToIn( counter, 0, probe, 2 );
     circuit->ConnectOutToIn( counter, 0, probe, 3 );
 
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
+
     // Tick the circuit for 100ms with 1 thread
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     // Adjust the thread count while the circuit is running
@@ -1027,8 +1043,10 @@ TEST_CASE( "WiringTest2" )
     circuit->ConnectOutToIn( counter_id, 0, probe, 0 );
     circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
 
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
+
     // Tick the circuit for 100ms with 1 thread
-    circuit->StartAutoTick( Component::TickMode::Parallel );
+    circuit->StartAutoTick( threadPool );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     // Re-wire
@@ -1114,18 +1132,19 @@ TEST_CASE( "ThreadStopRegressionTest" )
     circuit->ConnectOutToIn( inc_p3_s1, 0, probe, 2 );
 
     // Tick the circuit 100 times
+    ThreadPool::SPtr threadPool = std::make_shared<ThreadPool>( 8, 1 );
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick();
+        circuit->Tick( threadPool );
     }
 
     circuit->SetBufferCount( 8 );
 
     for ( int i = 0; i < 100; ++i )
     {
-        circuit->Tick( Component::TickMode::Series );
-        circuit->Tick( Component::TickMode::Parallel );
+        circuit->Tick();
+        circuit->Tick( threadPool );
     }
 }
 
@@ -1144,5 +1163,5 @@ TEST_CASE( "DisconnectComponentRegressionTest" )
 
     circuit->DisconnectComponent( counter );
 
-    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick();
 }

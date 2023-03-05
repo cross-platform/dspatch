@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Component.h>
+#include <dspatch/ThreadPool.h>
 
 namespace DSPatch
 {
@@ -55,11 +56,6 @@ The Circuit Tick() method runs through it's internal array of components and cal
 Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
 application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn,
 automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
-
-TickMode::Parallel (default) will spawn a thread per component in a circuit. The aim of this mode
-is to improve the performance of circuits that contain parallel branches. TickMode::Series on the
-other hand, tells the circuit to tick its components one-by-one in a single thread. This mode aims
-to improve the performance of circuits that do not contain parallel branches.
 */
 
 class DLLEXPORT Circuit final
@@ -89,9 +85,9 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    void Tick( Component::TickMode mode = Component::TickMode::Parallel );
+    void Tick( const ThreadPool::SPtr& threadPool = nullptr );
 
-    void StartAutoTick( Component::TickMode mode = Component::TickMode::Parallel );
+    void StartAutoTick( const ThreadPool::SPtr& threadPool = nullptr );
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();

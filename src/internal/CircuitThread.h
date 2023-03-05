@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Component.h>
+#include <dspatch/ThreadPool.h>
 
 #include <condition_variable>
 #include <thread>
@@ -69,13 +70,13 @@ public:
     void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
     void Stop();
     void Sync();
-    void SyncAndResume( DSPatch::Component::TickMode mode );
+    void SyncAndResume( const DSPatch::ThreadPool::SPtr& threadPool );
 
 private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Parallel;
+    DSPatch::ThreadPool::SPtr _threadPool = nullptr;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

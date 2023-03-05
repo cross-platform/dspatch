@@ -45,6 +45,9 @@ class DLLEXPORT ThreadPool final
 public:
     NONCOPYABLE( ThreadPool );
 
+    using SPtr = std::shared_ptr<ThreadPool>;
+    using SCPtr = std::shared_ptr<const ThreadPool>;
+
     ThreadPool( int bufferCount, int threadsPerBuffer );
     ~ThreadPool();
 
@@ -53,7 +56,5 @@ public:
 private:
     std::unique_ptr<internal::ThreadPool> p;
 };
-
-static ThreadPool threadPool( 8, 1 );
 
 }  // namespace DSPatch

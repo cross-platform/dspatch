@@ -28,8 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <internal/ComponentThread.h>
 
-#include <dspatch/ThreadPool.h>
-
 using namespace DSPatch::internal;
 
 ComponentThread::ComponentThread() = default;
@@ -44,11 +42,11 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( int bufferNo, const std::function<void()>& tick )
+void ComponentThread::Resume( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
 {
     _gotSync = false;  // reset the sync flag
     _tick = tick;
-    threadPool.AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
+    threadPool->AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
 }
 
 void ComponentThread::_Run()

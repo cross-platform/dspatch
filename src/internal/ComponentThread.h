@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Common.h>
+#include <dspatch/ThreadPool.h>
 
 #include <condition_variable>
 #include <functional>
@@ -57,7 +58,7 @@ public:
     ComponentThread();
 
     void Sync();
-    void Resume( int bufferNo, const std::function<void()>& tick );
+    void Resume( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
 
 private:
     void _Run();

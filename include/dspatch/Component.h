@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/SignalBus.h>
+#include <dspatch/ThreadPool.h>
 
 #include <string>
 #include <vector>
@@ -84,12 +85,6 @@ public:
         OutOfOrder
     };
 
-    enum class TickMode
-    {
-        Series,
-        Parallel
-    };
-
     Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
 
@@ -108,7 +103,7 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    bool Tick( TickMode mode = TickMode::Parallel, int bufferNo = 0 );
+    bool Tick( int bufferNo = 0, const ThreadPool::SPtr& threadPool = nullptr );
     void Reset( int bufferNo = 0 );
 
 protected:

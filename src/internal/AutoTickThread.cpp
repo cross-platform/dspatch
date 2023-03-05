@@ -43,9 +43,9 @@ AutoTickThread::~AutoTickThread()
     Stop();
 }
 
-DSPatch::Component::TickMode AutoTickThread::Mode() const
+const DSPatch::ThreadPool::SPtr& AutoTickThread::ThreadPool() const
 {
-    return _mode;
+    return _threadPool;
 }
 
 bool AutoTickThread::IsStopped() const
@@ -58,7 +58,7 @@ bool AutoTickThread::IsPaused() const
     return _pause;
 }
 
-void AutoTickThread::Start( DSPatch::Circuit* circuit, DSPatch::Component::TickMode mode )
+void AutoTickThread::Start( DSPatch::Circuit* circuit, const DSPatch::ThreadPool::SPtr& threadPool )
 {
     if ( !_stopped )
     {
@@ -67,7 +67,7 @@ void AutoTickThread::Start( DSPatch::Circuit* circuit, DSPatch::Component::TickM
 
     _circuit = circuit;
 
-    _mode = mode;
+    _threadPool = threadPool;
     _stop = false;
     _stopped = false;
     _pause = false;
@@ -122,7 +122,7 @@ void AutoTickThread::_Run()
     {
         while ( !_stop )
         {
-            _circuit->Tick( _mode );
+            _circuit->Tick( _threadPool );
 
             if ( _pause )
             {

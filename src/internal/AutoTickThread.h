@@ -56,12 +56,12 @@ public:
     AutoTickThread();
     ~AutoTickThread();
 
-    DSPatch::Component::TickMode Mode() const;
+    const DSPatch::ThreadPool::SPtr& ThreadPool() const;
 
     bool IsStopped() const;
     bool IsPaused() const;
 
-    void Start( DSPatch::Circuit* circuit, DSPatch::Component::TickMode mode );
+    void Start( DSPatch::Circuit* circuit, const DSPatch::ThreadPool::SPtr& threadPool );
     void Stop();
     void Pause();
     void Resume();
@@ -70,7 +70,7 @@ private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Parallel;
+    DSPatch::ThreadPool::SPtr _threadPool = nullptr;
     std::thread _thread;
     DSPatch::Circuit* _circuit = nullptr;
     bool _stop = false;

@@ -60,7 +60,7 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseThread( int threadNo );
 
-    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode );
+    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, const DSPatch::ThreadPool::SPtr& threadPool );
 
     void IncRefs( int output );
     void DecRefs( int output );
@@ -204,6 +204,10 @@ void Component::SetBufferCount( int bufferCount )
     {
         bufferCount = 1;  // there needs to be at least 1 buffer
     }
+    if ( p->bufferCount == bufferCount )
+    {
+        return;
+    }
 
     // resize vectors
     p->componentThreads.resize( bufferCount );
@@ -251,7 +255,7 @@ int Component::GetBufferCount() const
     return (int)p->inputBuses.size();
 }
 
-bool Component::Tick( Component::TickMode mode, int bufferNo )
+bool Component::Tick( int bufferNo, const ThreadPool::SPtr& threadPool )
 {
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
@@ -262,13 +266,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         // 2. tick incoming components
         for ( auto& wire : p->inputWires )
         {
-            if ( mode == TickMode::Series )
+            if ( !threadPool )
             {
-                wire.fromComponent->Tick( mode, bufferNo );
+                wire.fromComponent->Tick( bufferNo, threadPool );
             }
-            else if ( mode == TickMode::Parallel )
+            else
             {
-                if ( !wire.fromComponent->Tick( mode, bufferNo ) )
+                if ( !wire.fromComponent->Tick( bufferNo, threadPool ) )
                 {
                     p->feedbackWires[bufferNo].emplace( &wire );
                 }
@@ -278,12 +282,12 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         // 3. set tickStatus -> Ticking
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        auto tick = [this, mode, bufferNo]()
+        auto tick = [this, bufferNo, threadPool]()
         {
             // 4. get new inputs from incoming components
             for ( auto& wire : p->inputWires )
             {
-                if ( mode == TickMode::Parallel )
+                if ( threadPool )
                 {
                     // wait for non-feedback incoming components to finish ticking
                     auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
@@ -297,7 +301,7 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                     }
                 }
 
-                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
+                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], threadPool );
             }
 
             // You might be thinking: Why not clear the outputs in Reset()?
@@ -329,13 +333,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         };
 
         // do tick
-        if ( mode == TickMode::Series )
+        if ( !threadPool )
         {
             tick();
         }
-        else if ( mode == TickMode::Parallel )
+        else
         {
-            p->componentThreads[bufferNo].Resume( bufferNo, tick );
+            p->componentThreads[bufferNo].Resume( bufferNo, tick, threadPool );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -415,7 +419,7 @@ void internal::Component::ReleaseThread( int threadNo )
 }
 
 void internal::Component::GetOutput(
-    int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode )
+    int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, const DSPatch::ThreadPool::SPtr& threadPool )
 {
     if ( !outputBuses[bufferNo].HasValue( fromOutput ) )
     {
@@ -425,7 +429,7 @@ void internal::Component::GetOutput(
     auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
+    if ( threadPool && ref.first > 1 )
     {
         std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput] );
         if ( ++ref.second != ref.first )
