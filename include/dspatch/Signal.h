@@ -59,17 +59,17 @@ public:
     ValueType* GetValue();
 
     template <class ValueType>
-    void SetValue( ValueType const& newValue );
+    void SetValue( const ValueType& newValue );
 
     template <class ValueType>
     void MoveValue( ValueType&& newValue );
 
-    bool SetSignal( Signal const& fromSignal );
+    bool SetSignal( const Signal& fromSignal );
     bool MoveSignal( Signal& fromSignal );
 
     void ClearValue();
 
-    std::type_info const& GetType() const;
+    const std::type_info& GetType() const;
 
 private:
     struct _ValueHolder
@@ -79,7 +79,7 @@ private:
         _ValueHolder() = default;
         virtual ~_ValueHolder() = default;
 
-        virtual std::type_info const& GetType() const = 0;
+        virtual const std::type_info& GetType() const = 0;
         virtual _ValueHolder* GetCopy() const = 0;
         virtual void SetValue( _ValueHolder* valueHolder ) = 0;
     };
@@ -89,13 +89,13 @@ private:
     {
         NONCOPYABLE( _Value );
 
-        explicit _Value( ValueType const& value )
+        explicit _Value( const ValueType& value )
             : value( value )
             , type( typeid( ValueType ) )
         {
         }
 
-        virtual std::type_info const& GetType() const override
+        virtual const std::type_info& GetType() const override
         {
             return type;
         }
@@ -111,7 +111,7 @@ private:
         }
 
         ValueType value;
-        std::type_info const& type;
+        const std::type_info& type;
     };
 
     _ValueHolder* _valueHolder = nullptr;
@@ -140,7 +140,7 @@ ValueType* Signal::GetValue()
 }
 
 template <class ValueType>
-void Signal::SetValue( ValueType const& newValue )
+void Signal::SetValue( const ValueType& newValue )
 {
     if ( GetType() == typeid( ValueType ) )
     {

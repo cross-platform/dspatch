@@ -30,44 +30,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Common.h>
 
-#include <condition_variable>
 #include <functional>
-#include <thread>
 
 namespace DSPatch
 {
+
 namespace internal
 {
+class ThreadPool;
+}  // namespace internal
 
-/// Thread class for asynchronously ticking a single circuit component
-
-/**
-A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
-
-Upon Start(), an internal thread will spawn and wait for the first call to Resume() before
-executing the tick method provided. A call to Sync() will then block until the thread has completed
-execution of the tick method. At this point, the thread will wait until instructed to resume again.
-*/
-
-class ComponentThread final
+class DLLEXPORT ThreadPool final
 {
 public:
-    NONCOPYABLE( ComponentThread );
+    NONCOPYABLE( ThreadPool );
 
-    ComponentThread();
+    ThreadPool( int bufferCount, int threadsPerBuffer );
+    ~ThreadPool();
 
-    void Sync();
-    void Resume( int bufferNo, const std::function<void()>& tick );
-
-private:
-    void _Run();
+    void AddJob( int bufferNo, const std::function<void()>& job );
 
 private:
-    bool _gotSync = true;
-    std::mutex _syncMutex;
-    std::condition_variable _syncCondt;
-    std::function<void()> _tick;
+    std::unique_ptr<internal::ThreadPool> p;
 };
 
-}  // namespace internal
+static ThreadPool threadPool( 8, 1 );
+
 }  // namespace DSPatch

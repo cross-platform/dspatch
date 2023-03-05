@@ -56,7 +56,7 @@ class DLLEXPORT Plugin final
 public:
     NONCOPYABLE( Plugin );
 
-    explicit Plugin( std::string const& pluginPath );
+    explicit Plugin( const std::string& pluginPath );
     ~Plugin();
 
     bool IsLoaded() const;

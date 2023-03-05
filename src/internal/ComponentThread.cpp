@@ -28,111 +28,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <internal/ComponentThread.h>
 
-#include <functional>
-#include <queue>
+#include <dspatch/ThreadPool.h>
 
 using namespace DSPatch::internal;
-
-template <class T>
-class SafeQueue final
-{
-public:
-    void push( const T& t )
-    {
-        std::lock_guard<std::mutex> lock( m );
-        q.push( t );
-        c.notify_one();
-    }
-
-    const T& front()
-    {
-        std::unique_lock<std::mutex> lock( m );
-        while ( q.empty() )
-        {
-            c.wait( lock );
-        }
-        const T& f = q.front();
-        q.pop();
-        return f;
-    }
-
-private:
-    std::queue<T> q;
-    std::mutex m;
-    std::condition_variable c;
-};
-
-class ThreadPool final
-{
-public:
-    enum class JobType
-    {
-        Job,
-        Stop
-    };
-
-    struct Job
-    {
-        // cppcheck-suppress unusedStructMember
-        JobType type;
-        std::function<void()> callback;
-    };
-
-    ThreadPool( int bufferCount, int threadsPerBuffer )
-        : bufferCount( bufferCount )
-        , threadsPerBuffer( threadsPerBuffer )
-    {
-        jobs.resize( bufferCount );
-        bufferThreads.resize( bufferCount );
-        for ( int i = 0; i < bufferCount; ++i )
-        {
-            for ( int j = 0; j < threadsPerBuffer; ++j )
-            {
-                bufferThreads[i].push_back( std::thread( &ThreadPool::Run, this, i ) );
-            }
-        }
-    }
-
-    ~ThreadPool()
-    {
-        for ( int i = 0; i < bufferCount; ++i )
-        {
-            for ( int j = 0; j < threadsPerBuffer; ++j )
-            {
-                jobs[i].push( { JobType::Stop, nullptr } );
-            }
-            for ( int j = 0; j < threadsPerBuffer; ++j )
-            {
-                bufferThreads[i][j].join();
-            }
-        }
-    }
-
-    void AddJob( int bufferNo, const std::function<void()>& callback )
-    {
-        jobs[bufferNo].push( { JobType::Job, callback } );
-    }
-
-    void Run( int bufferNo )
-    {
-        while ( true )
-        {
-            const auto& job = jobs[bufferNo].front();
-            if ( job.type == JobType::Stop )
-            {
-                break;
-            }
-            job.callback();
-        }
-    }
-
-    int bufferCount;
-    int threadsPerBuffer;
-    std::vector<std::vector<std::thread>> bufferThreads;
-    std::deque<SafeQueue<Job>> jobs;
-};
-
-static ThreadPool threadPool( 8, 2 );
 
 ComponentThread::ComponentThread() = default;
 
@@ -146,7 +44,7 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( int bufferNo, std::function<void()> const& tick )
+void ComponentThread::Resume( int bufferNo, const std::function<void()>& tick )
 {
     _gotSync = false;  // reset the sync flag
     _tick = tick;

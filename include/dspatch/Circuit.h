@@ -70,20 +70,20 @@ public:
     Circuit();
     ~Circuit();
 
-    int AddComponent( Component::SPtr const& component );
+    int AddComponent( const Component::SPtr& component );
 
-    void RemoveComponent( Component::SCPtr const& component );
+    void RemoveComponent( const Component::SCPtr& component );
     void RemoveComponent( int componentIndex );
     void RemoveAllComponents();
 
     int GetComponentCount() const;
 
-    bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
-    bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, int toComponent, int toInput );
-    bool ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
+    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
+    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, int toComponent, int toInput );
+    bool ConnectOutToIn( int fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput );
 
-    void DisconnectComponent( Component::SCPtr const& component );
+    void DisconnectComponent( const Component::SCPtr& component );
     void DisconnectComponent( int componentIndex );
 
     void SetBufferCount( int bufferCount );

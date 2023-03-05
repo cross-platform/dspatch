@@ -69,17 +69,17 @@ public:
     ValueType* GetValue( int signalIndex );
 
     template <class ValueType>
-    bool SetValue( int signalIndex, ValueType const& newValue );
+    bool SetValue( int signalIndex, const ValueType& newValue );
 
     template <class ValueType>
     bool MoveValue( int signalIndex, ValueType&& newValue );
 
-    bool SetSignal( int toSignalIndex, Signal const& fromSignal );
+    bool SetSignal( int toSignalIndex, const Signal& fromSignal );
     bool MoveSignal( int toSignalIndex, Signal& fromSignal );
 
     void ClearAllValues();
 
-    std::type_info const& GetType( int signalIndex ) const;
+    const std::type_info& GetType( int signalIndex ) const;
 
 private:
     std::deque<Signal> _signals;
@@ -101,7 +101,7 @@ ValueType* SignalBus::GetValue( int signalIndex )
 }
 
 template <class ValueType>
-bool SignalBus::SetValue( int signalIndex, ValueType const& newValue )
+bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {

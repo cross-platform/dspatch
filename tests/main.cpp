@@ -341,94 +341,94 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     std::cout << "Reference Efficiency: " << refEff << "%" << std::endl;
 
-    //     // Tick the circuit with no threads
-    //     begin = std::chrono::high_resolution_clock::now();
-    //     for ( int i = 0; i < 1000; ++i )
-    //     {
-    //         circuit->Tick( Component::TickMode::Series );
-    //     }
-    //     end = std::chrono::high_resolution_clock::now();
-    //     auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    // Tick the circuit with no threads
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+    }
+    end = std::chrono::high_resolution_clock::now();
+    auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-    //     auto overhead = 100 - ( 100 * ( eff / refEff ) );
-    //     std::cout << "0x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    //     // REQUIRE( eff >= refEff * 0.25 * 0.90 );
+    auto overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "0x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    // REQUIRE( eff >= refEff * 0.25 * 0.90 );
 
-    //     // Tick the circuit with 1 thread, and check that no more ticks occurred
-    //     if ( std::thread::hardware_concurrency() < 1 )
-    //     {
-    //         return;
-    //     }
-    //     circuit->SetBufferCount( 1 );
+    // Tick the circuit with 1 thread, and check that no more ticks occurred
+    if ( std::thread::hardware_concurrency() < 1 )
+    {
+        return;
+    }
+    circuit->SetBufferCount( 1 );
 
-    //     begin = std::chrono::high_resolution_clock::now();
-    //     for ( int i = 0; i < 1000; ++i )
-    //     {
-    //         circuit->Tick( Component::TickMode::Series );
-    //     }
-    //     end = std::chrono::high_resolution_clock::now();
-    //     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-    //     overhead = 100 - ( 100 * ( eff / refEff ) );
-    //     std::cout << "1x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    //     // REQUIRE( eff >= refEff * 0.25 * 0.90 );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "1x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    // REQUIRE( eff >= refEff * 0.25 * 0.90 );
 
-    //     // Tick the circuit with 2 threads, and check that more ticks occurred
-    //     if ( std::thread::hardware_concurrency() < 2 )
-    //     {
-    //         return;
-    //     }
-    //     circuit->SetBufferCount( 2 );
+    // Tick the circuit with 2 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 2 )
+    {
+        return;
+    }
+    circuit->SetBufferCount( 2 );
 
-    //     begin = std::chrono::high_resolution_clock::now();
-    //     for ( int i = 0; i < 1000; ++i )
-    //     {
-    //         circuit->Tick( Component::TickMode::Series );
-    //     }
-    //     end = std::chrono::high_resolution_clock::now();
-    //     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-    //     overhead = 100 - ( 100 * ( eff / refEff ) );
-    //     std::cout << "2x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    //     // REQUIRE( eff >= refEff * 0.5 * 0.90 );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "2x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    // REQUIRE( eff >= refEff * 0.5 * 0.90 );
 
-    //     // Tick the circuit with 3 threads, and check that more ticks occurred
-    //     if ( std::thread::hardware_concurrency() < 4 )
-    //     {
-    //         return;
-    //     }
-    //     circuit->SetBufferCount( 3 );
+    // Tick the circuit with 3 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
+    circuit->SetBufferCount( 3 );
 
-    //     begin = std::chrono::high_resolution_clock::now();
-    //     for ( int i = 0; i < 1000; ++i )
-    //     {
-    //         circuit->Tick( Component::TickMode::Series );
-    //     }
-    //     end = std::chrono::high_resolution_clock::now();
-    //     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-    //     overhead = 100 - ( 100 * ( eff / refEff ) );
-    //     std::cout << "3x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    //     // REQUIRE( eff >= refEff * 0.75 * 0.90 );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "3x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    // REQUIRE( eff >= refEff * 0.75 * 0.90 );
 
-    //     // Tick the circuit with 4 threads, and check that more ticks occurred
-    //     if ( std::thread::hardware_concurrency() < 4 )
-    //     {
-    //         return;
-    //     }
-    //     circuit->SetBufferCount( 4 );
+    // Tick the circuit with 4 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
+    circuit->SetBufferCount( 4 );
 
-    //     begin = std::chrono::high_resolution_clock::now();
-    //     for ( int i = 0; i < 1000; ++i )
-    //     {
-    //         circuit->Tick( Component::TickMode::Series );
-    //     }
-    //     end = std::chrono::high_resolution_clock::now();
-    //     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick( Component::TickMode::Series );
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-    //     overhead = 100 - ( 100 * ( eff / refEff ) );
-    //     std::cout << "4x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    //     // REQUIRE( eff >= refEff * 0.90 );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "4x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    // REQUIRE( eff >= refEff * 0.90 );
 }
 
 TEST_CASE( "StopAutoTickRegressionTest" )
