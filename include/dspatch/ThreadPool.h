@@ -40,6 +40,15 @@ namespace internal
 class ThreadPool;
 }  // namespace internal
 
+/// A thread pool for enabling multi-buffering in components and circuits
+
+/**
+To boost component / circuit performance, multi-buffering can be enabled by passing a ThreadPool
+object to its SetThreadPool() method. bufferCount sets the number of threads that should run
+serially through the circuit, while, as the name suggests, threadsPerBuffer sets the number of
+threads to use per buffer.
+*/
+
 class DLLEXPORT ThreadPool final
 {
 public:
