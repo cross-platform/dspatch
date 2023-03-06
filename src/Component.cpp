@@ -294,7 +294,7 @@ bool Component::Tick( int bufferNo )
                     auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
                     if ( wireIndex == p->feedbackWires[bufferNo].end() )
                     {
-                        if ( !wire.fromComponent->p->componentThreads[bufferNo].IsSynced() )
+                        if ( !wire.fromComponent->p->componentThreads[bufferNo].Done() )
                         {
                             return false;
                         }
@@ -343,7 +343,7 @@ bool Component::Tick( int bufferNo )
         }
         else
         {
-            p->componentThreads[bufferNo].Resume( bufferNo, tick, p->threadPool );
+            p->componentThreads[bufferNo].TickAsync( bufferNo, tick, p->threadPool );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -359,7 +359,7 @@ bool Component::Tick( int bufferNo )
 void Component::Reset( int bufferNo )
 {
     // wait for ticking to complete
-    p->componentThreads[bufferNo].Sync();
+    p->componentThreads[bufferNo].Wait();
 
     // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();

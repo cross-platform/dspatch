@@ -45,9 +45,8 @@ namespace internal
 /**
 A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
 
-Upon Start(), an internal thread will spawn and wait for the first call to Resume() before
-executing the tick method provided. A call to Sync() will then block until the thread has completed
-execution of the tick method. At this point, the thread will wait until instructed to resume again.
+TickAsync() adds a tick call to the provided thread pool. Wait() will block until that thread pool
+has completed execution of the tick call. Until this point, Done() will return false.
 */
 
 class ComponentThread final
@@ -57,17 +56,17 @@ public:
 
     ComponentThread();
 
-    void Sync();
-    bool IsSynced();
-    void Resume( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
+    void TickAsync( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
+    void Wait();
+    bool Done();
 
 private:
     bool _Run();
 
 private:
-    bool _gotSync = true;
-    std::mutex _syncMutex;
-    std::condition_variable _syncCondt;
+    bool _gotDone = true;
+    std::mutex _doneMutex;
+    std::condition_variable _doneCondt;
     std::function<bool()> _tick;
 };
 

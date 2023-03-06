@@ -32,27 +32,27 @@ using namespace DSPatch::internal;
 
 ComponentThread::ComponentThread() = default;
 
-bool ComponentThread::IsSynced()
+void ComponentThread::TickAsync( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
 {
-    std::lock_guard<std::mutex> lock( _syncMutex );
-    return _gotSync;
+    _gotDone = false;  // reset the sync flag
+    _tick = tick;
+    threadPool->AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
 }
 
-void ComponentThread::Sync()
+void ComponentThread::Wait()
 {
-    std::unique_lock<std::mutex> lock( _syncMutex );
+    std::unique_lock<std::mutex> lock( _doneMutex );
 
-    if ( !_gotSync )  // if haven't already got sync
+    if ( !_gotDone )  // if haven't already got sync
     {
-        _syncCondt.wait( lock );  // wait for sync
+        _doneCondt.wait( lock );  // wait for sync
     }
 }
 
-void ComponentThread::Resume( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
+bool ComponentThread::Done()
 {
-    _gotSync = false;  // reset the sync flag
-    _tick = tick;
-    threadPool->AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
+    std::lock_guard<std::mutex> lock( _doneMutex );
+    return _gotDone;
 }
 
 bool ComponentThread::_Run()
@@ -62,9 +62,9 @@ bool ComponentThread::_Run()
         return false;
     }
 
-    std::lock_guard<std::mutex> lock( _syncMutex );
+    std::lock_guard<std::mutex> lock( _doneMutex );
 
-    _gotSync = true;  // set the sync flag
-    _syncCondt.notify_all();
+    _gotDone = true;  // set the sync flag
+    _doneCondt.notify_all();
     return true;
 }
