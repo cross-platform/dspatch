@@ -68,7 +68,7 @@ void CircuitThread::Stop()
 
     _stop = true;
 
-    SyncAndResume( _threadPool );
+    SyncAndResume();
 
     if ( _thread.joinable() )
     {
@@ -91,7 +91,7 @@ void CircuitThread::Sync()
     }
 }
 
-void CircuitThread::SyncAndResume( const DSPatch::ThreadPool::SPtr& threadPool )
+void CircuitThread::SyncAndResume()
 {
     if ( _stopped )
     {
@@ -105,8 +105,6 @@ void CircuitThread::SyncAndResume( const DSPatch::ThreadPool::SPtr& threadPool )
         _syncCondt.wait( lock );  // wait for sync
     }
     _gotSync = false;  // reset the sync flag
-
-    _threadPool = threadPool;
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
@@ -145,7 +143,7 @@ void CircuitThread::_Run()
 
                 for ( auto& component : *_components )
                 {
-                    component->Tick( _threadNo, _threadPool );
+                    component->Tick( _threadNo );
                 }
                 for ( auto& component : *_components )
                 {

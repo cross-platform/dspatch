@@ -56,12 +56,10 @@ public:
     AutoTickThread();
     ~AutoTickThread();
 
-    const DSPatch::ThreadPool::SPtr& ThreadPool() const;
-
     bool IsStopped() const;
     bool IsPaused() const;
 
-    void Start( DSPatch::Circuit* circuit, const DSPatch::ThreadPool::SPtr& threadPool );
+    void Start( DSPatch::Circuit* circuit );
     void Stop();
     void Pause();
     void Resume();
@@ -70,7 +68,6 @@ private:
     void _Run();
 
 private:
-    DSPatch::ThreadPool::SPtr _threadPool = nullptr;
     std::thread _thread;
     DSPatch::Circuit* _circuit = nullptr;
     bool _stop = false;

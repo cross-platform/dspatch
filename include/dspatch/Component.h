@@ -100,10 +100,9 @@ public:
     std::string GetInputName( int inputNo ) const;
     std::string GetOutputName( int outputNo ) const;
 
-    void SetBufferCount( int bufferCount );
-    int GetBufferCount() const;
+    void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
-    bool Tick( int bufferNo = 0, const ThreadPool::SPtr& threadPool = nullptr );
+    bool Tick( int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
 protected:

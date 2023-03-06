@@ -48,8 +48,11 @@ public:
     using SPtr = std::shared_ptr<ThreadPool>;
     using SCPtr = std::shared_ptr<const ThreadPool>;
 
-    ThreadPool( int bufferCount, int threadsPerBuffer );
+    explicit ThreadPool( int bufferCount, int threadsPerBuffer = 1 );
     ~ThreadPool();
+
+    int GetBufferCount() const;
+    int GetThreadsPerBuffer() const;
 
     void AddJob( int bufferNo, const std::function<bool()>& job );
 

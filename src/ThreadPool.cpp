@@ -71,14 +71,19 @@ public:
     };
 
     ThreadPool( int bufferCount, int threadsPerBuffer )
-        : bufferCount( bufferCount )
-        , threadsPerBuffer( threadsPerBuffer )
+        : c_bufferCount( bufferCount < 0 ? 0 : bufferCount )
+        , c_threadsPerBuffer( c_bufferCount == 0 || threadsPerBuffer <= 1 ? 0 : threadsPerBuffer )
     {
-        jobs.resize( bufferCount );
-        bufferThreads.resize( bufferCount );
-        for ( int i = 0; i < bufferCount; ++i )
+        if ( c_threadsPerBuffer == 0 )
         {
-            for ( int j = 0; j < threadsPerBuffer; ++j )
+            return;
+        }
+
+        jobs.resize( c_bufferCount );
+        bufferThreads.resize( c_bufferCount );
+        for ( int i = 0; i < c_bufferCount; ++i )
+        {
+            for ( int j = 0; j < c_threadsPerBuffer; ++j )
             {
                 bufferThreads[i].push_back( std::thread( &ThreadPool::Run, this, i ) );
             }
@@ -87,13 +92,13 @@ public:
 
     ~ThreadPool()
     {
-        for ( int i = 0; i < bufferCount; ++i )
+        for ( int i = 0; i < c_bufferCount; ++i )
         {
-            for ( int j = 0; j < threadsPerBuffer; ++j )
+            for ( int j = 0; j < c_threadsPerBuffer; ++j )
             {
                 jobs[i].push( nullptr );
             }
-            for ( int j = 0; j < threadsPerBuffer; ++j )
+            for ( int j = 0; j < c_threadsPerBuffer; ++j )
             {
                 bufferThreads[i][j].join();
             }
@@ -121,8 +126,8 @@ public:
         }
     }
 
-    const int bufferCount;
-    const int threadsPerBuffer;
+    const int c_bufferCount;
+    const int c_threadsPerBuffer;
     std::vector<std::vector<std::thread>> bufferThreads;
     std::deque<JobQueue> jobs;
 };
@@ -136,6 +141,16 @@ ThreadPool::ThreadPool( int bufferCount, int threadsPerBuffer )
 }
 
 ThreadPool::~ThreadPool() = default;
+
+int ThreadPool::GetBufferCount() const
+{
+    return p->c_bufferCount;
+}
+
+int ThreadPool::GetThreadsPerBuffer() const
+{
+    return p->c_threadsPerBuffer;
+}
 
 void ThreadPool::AddJob( int bufferNo, const std::function<bool()>& job )
 {

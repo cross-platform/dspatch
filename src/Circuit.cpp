@@ -53,6 +53,8 @@ public:
     std::vector<DSPatch::Component::SPtr> components;
 
     std::deque<CircuitThread> circuitThreads;
+
+    DSPatch::ThreadPool::SPtr threadPool;
 };
 
 }  // namespace internal
@@ -66,7 +68,7 @@ Circuit::Circuit()
 Circuit::~Circuit()
 {
     StopAutoTick();
-    SetBufferCount( 0 );
+    SetThreadPool( nullptr );
     RemoveAllComponents();
 }
 
@@ -82,7 +84,7 @@ int Circuit::AddComponent( const Component::SPtr& component )
         }
 
         // components within the circuit need to have as many buffers as there are threads in the circuit
-        component->SetBufferCount( (int)p->circuitThreads.size() );
+        component->SetThreadPool( p->threadPool );
 
         PauseAutoTick();
         p->components.emplace_back( component );
@@ -206,11 +208,12 @@ void Circuit::DisconnectComponent( int componentIndex )
     ResumeAutoTick();
 }
 
-void Circuit::SetBufferCount( int bufferCount )
+void Circuit::SetThreadPool( const ThreadPool::SPtr& threadPool )
 {
-    if ( p->circuitThreads.size() == (size_t)bufferCount )
+    auto bufferCount = 0;
+    if ( threadPool )
     {
-        return;
+        bufferCount = threadPool->GetBufferCount();
     }
 
     PauseAutoTick();
@@ -233,18 +236,15 @@ void Circuit::SetBufferCount( int bufferCount )
     // set all components to the new buffer count
     for ( auto& component : p->components )
     {
-        component->SetBufferCount( bufferCount );
+        component->SetThreadPool( threadPool );
     }
+
+    p->threadPool = threadPool;
 
     ResumeAutoTick();
 }
 
-int Circuit::GetBufferCount() const
-{
-    return (int)p->circuitThreads.size();
-}
-
-void Circuit::Tick( const ThreadPool::SPtr& threadPool )
+void Circuit::Tick()
 {
     // process in a single thread if this circuit has no threads
     // =========================================================
@@ -253,7 +253,7 @@ void Circuit::Tick( const ThreadPool::SPtr& threadPool )
         // tick all internal components
         for ( auto& component : p->components )
         {
-            component->Tick( 0, threadPool );
+            component->Tick();
         }
 
         // reset all internal components
@@ -266,7 +266,7 @@ void Circuit::Tick( const ThreadPool::SPtr& threadPool )
     // =======================================================
     else
     {
-        p->circuitThreads[p->currentThreadNo].SyncAndResume( threadPool );  // sync and resume thread x
+        p->circuitThreads[p->currentThreadNo].SyncAndResume();  // sync and resume thread x
 
         if ( ++p->currentThreadNo == p->circuitThreads.size() )
         {
@@ -275,11 +275,11 @@ void Circuit::Tick( const ThreadPool::SPtr& threadPool )
     }
 }
 
-void Circuit::StartAutoTick( const ThreadPool::SPtr& threadPool )
+void Circuit::StartAutoTick()
 {
     if ( p->autoTickThread.IsStopped() )
     {
-        p->autoTickThread.Start( this, threadPool );
+        p->autoTickThread.Start( this );
     }
     else
     {
@@ -296,7 +296,7 @@ void Circuit::StopAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick( p->autoTickThread.ThreadPool() );
+            Tick();
         }
 
         // sync all threads
@@ -326,7 +326,7 @@ void Circuit::PauseAutoTick()
         // manually tick until 0
         while ( p->currentThreadNo != 0 )
         {
-            Tick( p->autoTickThread.ThreadPool() );
+            Tick();
         }
 
         // sync all threads

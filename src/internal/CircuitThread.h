@@ -70,13 +70,12 @@ public:
     void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
     void Stop();
     void Sync();
-    void SyncAndResume( const DSPatch::ThreadPool::SPtr& threadPool );
+    void SyncAndResume();
 
 private:
     void _Run();
 
 private:
-    DSPatch::ThreadPool::SPtr _threadPool = nullptr;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

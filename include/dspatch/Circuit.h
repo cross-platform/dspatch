@@ -82,12 +82,11 @@ public:
     void DisconnectComponent( const Component::SCPtr& component );
     void DisconnectComponent( int componentIndex );
 
-    void SetBufferCount( int bufferCount );
-    int GetBufferCount() const;
+    void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
-    void Tick( const ThreadPool::SPtr& threadPool = nullptr );
+    void Tick();
 
-    void StartAutoTick( const ThreadPool::SPtr& threadPool = nullptr );
+    void StartAutoTick();
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();
