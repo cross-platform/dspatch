@@ -51,7 +51,7 @@ public:
     ThreadPool( int bufferCount, int threadsPerBuffer );
     ~ThreadPool();
 
-    void AddJob( int bufferNo, const std::function<void()>& job );
+    void AddJob( int bufferNo, const std::function<bool()>& job );
 
 private:
     std::unique_ptr<internal::ThreadPool> p;

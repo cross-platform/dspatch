@@ -32,6 +32,12 @@ using namespace DSPatch::internal;
 
 ComponentThread::ComponentThread() = default;
 
+bool ComponentThread::IsSynced()
+{
+    std::lock_guard<std::mutex> lock( _syncMutex );
+    return _gotSync;
+}
+
 void ComponentThread::Sync()
 {
     std::unique_lock<std::mutex> lock( _syncMutex );
@@ -42,19 +48,23 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
+void ComponentThread::Resume( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
 {
     _gotSync = false;  // reset the sync flag
     _tick = tick;
     threadPool->AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
 }
 
-void ComponentThread::_Run()
+bool ComponentThread::_Run()
 {
-    _tick();
+    if ( !_tick() )
+    {
+        return false;
+    }
 
     std::lock_guard<std::mutex> lock( _syncMutex );
 
     _gotSync = true;  // set the sync flag
     _syncCondt.notify_all();
+    return true;
 }

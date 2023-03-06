@@ -293,16 +293,17 @@ bool Component::Tick( int bufferNo, const ThreadPool::SPtr& threadPool )
                     auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
                     if ( wireIndex == p->feedbackWires[bufferNo].end() )
                     {
-                        wire.fromComponent->p->componentThreads[bufferNo].Sync();
-                    }
-                    else
-                    {
-                        p->feedbackWires[bufferNo].erase( wireIndex );
+                        if ( !wire.fromComponent->p->componentThreads[bufferNo].IsSynced() )
+                        {
+                            return false;
+                        }
                     }
                 }
 
                 wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], threadPool );
             }
+
+            p->feedbackWires[bufferNo].clear();
 
             // You might be thinking: Why not clear the outputs in Reset()?
 
@@ -330,6 +331,8 @@ bool Component::Tick( int bufferNo, const ThreadPool::SPtr& threadPool )
                 // 6. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
             }
+
+            return true;
         };
 
         // do tick

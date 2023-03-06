@@ -58,16 +58,17 @@ public:
     ComponentThread();
 
     void Sync();
-    void Resume( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
+    bool IsSynced();
+    void Resume( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
 
 private:
-    void _Run();
+    bool _Run();
 
 private:
     bool _gotSync = true;
     std::mutex _syncMutex;
     std::condition_variable _syncCondt;
-    std::function<void()> _tick;
+    std::function<bool()> _tick;
 };
 
 }  // namespace internal

@@ -45,14 +45,14 @@ public:
     class JobQueue final
     {
     public:
-        void push( const std::function<void()>& job )
+        void push( const std::function<bool()>& job )
         {
             std::lock_guard<std::mutex> lock( mutex );
             queue.push( job );
             condt.notify_one();
         }
 
-        std::function<void()> pop()
+        std::function<bool()> pop()
         {
             std::unique_lock<std::mutex> lock( mutex );
             while ( queue.empty() )
@@ -65,7 +65,7 @@ public:
         }
 
     private:
-        std::queue<std::function<void()>> queue;
+        std::queue<std::function<bool()>> queue;
         std::mutex mutex;
         std::condition_variable condt;
     };
@@ -100,7 +100,7 @@ public:
         }
     }
 
-    void AddJob( int bufferNo, const std::function<void()>& job )
+    void AddJob( int bufferNo, const std::function<bool()>& job )
     {
         jobs[bufferNo].push( job );
     }
@@ -114,7 +114,10 @@ public:
             {
                 break;
             }
-            job();
+            if ( !job() )
+            {
+                jobs[bufferNo].push( job );
+            }
         }
     }
 
@@ -134,7 +137,7 @@ ThreadPool::ThreadPool( int bufferCount, int threadsPerBuffer )
 
 ThreadPool::~ThreadPool() = default;
 
-void ThreadPool::AddJob( int bufferNo, const std::function<void()>& job )
+void ThreadPool::AddJob( int bufferNo, const std::function<bool()>& job )
 {
     p->AddJob( bufferNo, job );
 }
