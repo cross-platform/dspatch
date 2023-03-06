@@ -5,25 +5,26 @@
 namespace DSPatch
 {
 
-class SlowCounter : public Component
+class SlowPassThrough : public Component
 {
 public:
-    SlowCounter()
-        : _count( 0 )
+    SlowPassThrough()
     {
+        SetInputCount_( 1 );
         SetOutputCount_( 1 );
     }
 
-    void ResetCount()
-    {
-        _count = 0;
-    }
-
-    virtual void Process_( SignalBus&, SignalBus& outputs ) override
+protected:
+    virtual void Process_( SignalBus& inputs, SignalBus& outputs ) override
     {
         auto start = std::chrono::high_resolution_clock::now();
 
-        outputs.SetValue( 0, _count++ );
+        auto in = inputs.GetValue<int>( 0 );
+        if ( in )
+        {
+            outputs.MoveSignal( 0, inputs.GetSignal( 0 ) );  // pass the signal through (no copy)
+        }
+        // else set no output
 
         std::chrono::duration<double, std::micro> elapsedMs;
         do
@@ -35,7 +36,6 @@ public:
     }
 
 private:
-    int _count;
     double _waitMs = 500.0;
 };
 

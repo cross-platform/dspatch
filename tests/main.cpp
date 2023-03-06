@@ -20,6 +20,7 @@
 #include <components/PassThrough.h>
 #include <components/SerialProbe.h>
 #include <components/SlowCounter.h>
+#include <components/SlowPassThrough.h>
 #include <components/SporadicCounter.h>
 #include <components/ThreadingProbe.h>
 
@@ -296,28 +297,40 @@ TEST_CASE( "ThreadPerformanceTest" )
     auto circuit = std::make_shared<Circuit>();
 
     auto counter1 = std::make_shared<SlowCounter>();
+    auto passthrough1 = std::make_shared<SlowPassThrough>();
     auto counter2 = std::make_shared<SlowCounter>();
+    auto passthrough2 = std::make_shared<SlowPassThrough>();
     auto counter3 = std::make_shared<SlowCounter>();
+    auto passthrough3 = std::make_shared<SlowPassThrough>();
     auto counter4 = std::make_shared<SlowCounter>();
+    auto passthrough4 = std::make_shared<SlowPassThrough>();
     auto probe = std::make_shared<ThreadingProbe>();
 
     circuit->AddComponent( counter1 );
+    circuit->AddComponent( passthrough1 );
     circuit->AddComponent( counter2 );
+    circuit->AddComponent( passthrough2 );
     circuit->AddComponent( counter3 );
+    circuit->AddComponent( passthrough3 );
     circuit->AddComponent( counter4 );
+    circuit->AddComponent( passthrough4 );
     circuit->AddComponent( probe );
 
-    circuit->ConnectOutToIn( counter1, 0, probe, 0 );
-    circuit->ConnectOutToIn( counter2, 0, probe, 1 );
-    circuit->ConnectOutToIn( counter3, 0, probe, 2 );
-    circuit->ConnectOutToIn( counter4, 0, probe, 3 );
+    circuit->ConnectOutToIn( counter1, 0, passthrough1, 0 );
+    circuit->ConnectOutToIn( passthrough1, 0, probe, 0 );
+    circuit->ConnectOutToIn( counter2, 0, passthrough2, 0 );
+    circuit->ConnectOutToIn( passthrough2, 0, probe, 1 );
+    circuit->ConnectOutToIn( counter3, 0, passthrough3, 0 );
+    circuit->ConnectOutToIn( passthrough3, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter4, 0, passthrough4, 0 );
+    circuit->ConnectOutToIn( passthrough4, 0, probe, 3 );
 
     // Calculate reference efficiency
 
     SignalBus testBus;
     auto measureRef = [&testBus]( std::shared_ptr<SlowCounter>& counter )
     {
-        for ( int i = 0; i < 1000; ++i )
+        for ( int i = 0; i < 2000; ++i )
         {
             counter->Process_( testBus, testBus );
         }
@@ -839,21 +852,33 @@ TEST_CASE( "ThreadPerformanceTest2" )
     auto circuit = std::make_shared<Circuit>();
 
     auto counter1 = std::make_shared<SlowCounter>();
+    auto passthrough1 = std::make_shared<SlowPassThrough>();
     auto counter2 = std::make_shared<SlowCounter>();
+    auto passthrough2 = std::make_shared<SlowPassThrough>();
     auto counter3 = std::make_shared<SlowCounter>();
+    auto passthrough3 = std::make_shared<SlowPassThrough>();
     auto counter4 = std::make_shared<SlowCounter>();
+    auto passthrough4 = std::make_shared<SlowPassThrough>();
     auto probe = std::make_shared<ThreadingProbe>();
 
     circuit->AddComponent( counter1 );
+    circuit->AddComponent( passthrough1 );
     circuit->AddComponent( counter2 );
+    circuit->AddComponent( passthrough2 );
     circuit->AddComponent( counter3 );
+    circuit->AddComponent( passthrough3 );
     circuit->AddComponent( counter4 );
+    circuit->AddComponent( passthrough4 );
     circuit->AddComponent( probe );
 
-    circuit->ConnectOutToIn( counter1, 0, probe, 0 );
-    circuit->ConnectOutToIn( counter2, 0, probe, 1 );
-    circuit->ConnectOutToIn( counter3, 0, probe, 2 );
-    circuit->ConnectOutToIn( counter4, 0, probe, 3 );
+    circuit->ConnectOutToIn( counter1, 0, passthrough1, 0 );
+    circuit->ConnectOutToIn( passthrough1, 0, probe, 0 );
+    circuit->ConnectOutToIn( counter2, 0, passthrough2, 0 );
+    circuit->ConnectOutToIn( passthrough2, 0, probe, 1 );
+    circuit->ConnectOutToIn( counter3, 0, passthrough3, 0 );
+    circuit->ConnectOutToIn( passthrough3, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter4, 0, passthrough4, 0 );
+    circuit->ConnectOutToIn( passthrough4, 0, probe, 3 );
 
     // Tick the circuit with no threads
     circuit->SetThreadPool( std::make_shared<ThreadPool>( 0, 4 ) );
