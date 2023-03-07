@@ -271,12 +271,9 @@ bool Component::Tick( int bufferNo )
             {
                 wire.fromComponent->Tick( bufferNo );
             }
-            else
+            else if ( !wire.fromComponent->Tick( bufferNo ) )
             {
-                if ( !wire.fromComponent->Tick( bufferNo ) )
-                {
-                    p->feedbackWires[bufferNo].emplace( &wire );
-                }
+                p->feedbackWires[bufferNo].emplace( &wire );
             }
         }
 
@@ -286,13 +283,12 @@ bool Component::Tick( int bufferNo )
         auto tick = [this, bufferNo]()
         {
             // 4. get new inputs from incoming components
-            for ( auto& wire : p->inputWires )
+            if ( p->threadPool && p->threadPool->GetThreadsPerBuffer() != 0 )
             {
-                if ( p->threadPool && p->threadPool->GetThreadsPerBuffer() != 0 )
+                for ( auto& wire : p->inputWires )
                 {
                     // wait for non-feedback incoming components to finish ticking
-                    auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
-                    if ( wireIndex == p->feedbackWires[bufferNo].end() )
+                    if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
                     {
                         if ( !wire.fromComponent->p->componentThreads[bufferNo].Done() )
                         {
@@ -300,11 +296,13 @@ bool Component::Tick( int bufferNo )
                         }
                     }
                 }
-
-                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
+                p->feedbackWires[bufferNo].clear();
             }
 
-            p->feedbackWires[bufferNo].clear();
+            for ( auto& wire : p->inputWires )
+            {
+                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
+            }
 
             // You might be thinking: Why not clear the outputs in Reset()?
 
