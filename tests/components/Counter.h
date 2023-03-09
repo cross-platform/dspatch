@@ -13,6 +13,11 @@ public:
         SetOutputCount_( 1 );
     }
 
+    int Count() const
+    {
+        return _count;
+    }
+
 protected:
     virtual void Process_( SignalBus&, SignalBus& outputs ) override
     {

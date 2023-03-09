@@ -233,6 +233,8 @@ void Circuit::SetBufferCount( int bufferCount )
             component->SetBufferCount( bufferCount );
         }
 
+        p->currentThreadNo = 0;
+
         ResumeAutoTick();
     }
 }
@@ -309,11 +311,6 @@ void Circuit::PauseAutoTick()
 {
     if ( p->autoTickThread.IsStopped() )
     {
-        // manually tick until 0
-        while ( p->currentThreadNo != 0 )
-        {
-            Tick( Component::TickMode::Series );
-        }
         return;
     }
 

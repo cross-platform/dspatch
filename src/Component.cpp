@@ -221,8 +221,8 @@ void Component::SetBufferCount( int bufferCount )
     p->refs.resize( bufferCount );
     p->refMutexes.resize( bufferCount );
 
-    // init new vector values
-    for ( int i = p->bufferCount; i < bufferCount; ++i )
+    // init vector values
+    for ( int i = 0; i < bufferCount; ++i )
     {
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 

@@ -1145,3 +1145,39 @@ TEST_CASE( "DisconnectComponentRegressionTest" )
 
     circuit->Tick( Component::TickMode::Series );
 }
+
+TEST_CASE( "AutoTickOnCircuitDestructRegressionTest" )
+{
+    auto circuit = std::make_shared<Circuit>();
+    auto counter = std::make_shared<Counter>();
+    circuit->AddComponent( counter );
+    circuit->SetBufferCount( 3 );
+
+    REQUIRE( counter->Count() == 0 );
+    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick( Component::TickMode::Series );
+
+    circuit = nullptr;
+
+    REQUIRE( counter->Count() == 4 );
+}
+
+TEST_CASE( "AutoTickOnBuffersUpdateRegressionTest" )
+{
+    auto circuit = std::make_shared<Circuit>();
+    auto counter = std::make_shared<Counter>();
+    circuit->AddComponent( counter );
+    circuit->SetBufferCount( 3 );
+
+    REQUIRE( counter->Count() == 0 );
+    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick( Component::TickMode::Series );
+
+    circuit->SetBufferCount( 2 );
+
+    REQUIRE( counter->Count() == 4 );
+}
