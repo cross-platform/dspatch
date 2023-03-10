@@ -1184,13 +1184,13 @@ TEST_CASE( "AutoTickOnCircuitDestructRegressionTest" )
     auto circuit = std::make_shared<Circuit>();
     auto counter = std::make_shared<Counter>();
     circuit->AddComponent( counter );
-    circuit->SetBufferCount( 3 );
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 3 ) );
 
     REQUIRE( counter->Count() == 0 );
-    circuit->Tick( Component::TickMode::Series );
-    circuit->Tick( Component::TickMode::Series );
-    circuit->Tick( Component::TickMode::Series );
-    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick();
+    circuit->Tick();
+    circuit->Tick();
+    circuit->Tick();
 
     circuit = nullptr;
 
@@ -1202,15 +1202,15 @@ TEST_CASE( "AutoTickOnBuffersUpdateRegressionTest" )
     auto circuit = std::make_shared<Circuit>();
     auto counter = std::make_shared<Counter>();
     circuit->AddComponent( counter );
-    circuit->SetBufferCount( 3 );
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 3 ) );
 
     REQUIRE( counter->Count() == 0 );
-    circuit->Tick( Component::TickMode::Series );
-    circuit->Tick( Component::TickMode::Series );
-    circuit->Tick( Component::TickMode::Series );
-    circuit->Tick( Component::TickMode::Series );
+    circuit->Tick();
+    circuit->Tick();
+    circuit->Tick();
+    circuit->Tick();
 
-    circuit->SetBufferCount( 2 );
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2 ) );
 
     REQUIRE( counter->Count() == 4 );
 }
