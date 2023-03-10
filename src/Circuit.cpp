@@ -241,6 +241,8 @@ void Circuit::SetThreadPool( const ThreadPool::SPtr& threadPool )
 
     p->threadPool = threadPool;
 
+    p->currentThreadNo = 0;
+
     ResumeAutoTick();
 }
 
@@ -311,11 +313,6 @@ void Circuit::PauseAutoTick()
 {
     if ( p->autoTickThread.IsStopped() )
     {
-        // manually tick until 0
-        while ( p->currentThreadNo != 0 )
-        {
-            Tick();
-        }
         return;
     }
 
