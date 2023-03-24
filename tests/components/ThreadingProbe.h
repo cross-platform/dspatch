@@ -6,10 +6,11 @@ namespace DSPatch
 class ThreadingProbe : public Component
 {
 public:
-    ThreadingProbe()
-        : _count( 0 )
+    explicit ThreadingProbe( int inputCount = 4 )
+        : _inputCount( inputCount )
+        , _count( 0 )
     {
-        SetInputCount_( 4 );
+        SetInputCount_( _inputCount );
     }
 
     int GetCount() const
@@ -25,25 +26,18 @@ public:
 protected:
     virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
-        auto in0 = inputs.GetValue<int>( 0 );
-        REQUIRE( in0 != nullptr );
+        for ( int i = 0; i < _inputCount; ++i )
+        {
+            auto in = inputs.GetValue<int>( i );
+            REQUIRE( in != nullptr );
+            REQUIRE( *in == _count );
+        }
 
-        auto in1 = inputs.GetValue<int>( 1 );
-        REQUIRE( in1 != nullptr );
-
-        auto in2 = inputs.GetValue<int>( 2 );
-        REQUIRE( in2 != nullptr );
-
-        auto in3 = inputs.GetValue<int>( 3 );
-        REQUIRE( in3 != nullptr );
-
-        REQUIRE( *in0 == _count );
-        REQUIRE( *in1 == _count );
-        REQUIRE( *in2 == _count );
-        REQUIRE( *in3 == _count++ );
+        ++_count;
     }
 
 private:
+    const int _inputCount;
     int _count;
 };
 
