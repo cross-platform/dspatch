@@ -28,43 +28,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/Component.h>
+#include <dspatch/Common.h>
+
+#include <functional>
 
 namespace DSPatch
 {
 
 namespace internal
 {
-class Plugin;
-}
+class ThreadPool;
+}  // namespace internal
 
-/// Component plugin loader
+/// A thread pool for enabling multi-buffering in components and circuits
 
 /**
-A component, packaged into a shared library (.so / .dylib / .dll) and exported via the
-EXPORT_PLUGIN macro, can be dynamically loaded into a host application using the Plugin class. Each
-Plugin object represents one Component class.
-
-A Plugin should be constructed with the absolute path of the plugin (shared library) to be loaded.
-Once instantiated you should check that the plugin was successfully loaded by calling IsLoaded().
-Thereafter, the contained component type can be instantiated (mutiple times) via the Create()
-method.
+To boost component / circuit performance, multi-buffering can be enabled by passing a ThreadPool
+object to its SetThreadPool() method. bufferCount sets the number of threads that should run
+serially through the circuit, while, as the name suggests, threadsPerBuffer sets the number of
+threads to use per buffer.
 */
 
-class DLLEXPORT Plugin final
+class DLLEXPORT ThreadPool final
 {
 public:
-    NONCOPYABLE( Plugin );
+    NONCOPYABLE( ThreadPool );
 
-    explicit Plugin( const std::string& pluginPath );
-    ~Plugin();
+    using SPtr = std::shared_ptr<ThreadPool>;
+    using SCPtr = std::shared_ptr<const ThreadPool>;
 
-    bool IsLoaded() const;
+    explicit ThreadPool( int bufferCount, int threadsPerBuffer = 1 );
+    ~ThreadPool();
 
-    Component::SPtr Create() const;
+    int GetBufferCount() const;
+    int GetThreadsPerBuffer() const;
+
+    void AddJob( int bufferNo, const std::function<bool()>& job );
 
 private:
-    std::unique_ptr<internal::Plugin> p;
+    std::unique_ptr<internal::ThreadPool> p;
 };
 
 }  // namespace DSPatch

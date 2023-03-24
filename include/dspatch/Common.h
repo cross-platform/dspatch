@@ -31,8 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <memory>
 
 #define NONCOPYABLE( classname )            \
-    classname( classname const& ) = delete; \
-    classname& operator=( classname const& ) = delete
+    classname( const classname& ) = delete; \
+    classname& operator=( const classname& ) = delete
 
 #define EXPORT_PLUGIN( classname, ... )          \
     extern "C"                                   \

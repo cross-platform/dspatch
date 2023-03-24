@@ -44,7 +44,7 @@ bool Signal::HasValue() const
     return _hasValue;
 }
 
-bool Signal::SetSignal( Signal const& fromSignal )
+bool Signal::SetSignal( const Signal& fromSignal )
 {
     if ( fromSignal._hasValue && fromSignal._valueHolder != nullptr )
     {
@@ -98,7 +98,7 @@ void Signal::ClearValue()
     _hasValue = false;
 }
 
-std::type_info const& Signal::GetType() const
+const std::type_info& Signal::GetType() const
 {
     if ( _valueHolder != nullptr )
     {

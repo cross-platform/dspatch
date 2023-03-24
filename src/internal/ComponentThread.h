@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Common.h>
+#include <dspatch/ThreadPool.h>
 
 #include <condition_variable>
 #include <functional>
@@ -44,9 +45,8 @@ namespace internal
 /**
 A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
 
-Upon Start(), an internal thread will spawn and wait for the first call to Resume() before
-executing the tick method provided. A call to Sync() will then block until the thread has completed
-execution of the tick method. At this point, the thread will wait until instructed to resume again.
+TickAsync() adds a tick call to the provided thread pool. Wait() will block until that thread pool
+has completed execution of the tick call. Until this point, Done() will return false.
 */
 
 class ComponentThread final
@@ -55,25 +55,19 @@ public:
     NONCOPYABLE( ComponentThread );
 
     ComponentThread();
-    ~ComponentThread();
 
-    void Start();
-    void Stop();
-    void Sync();
-    void Resume( std::function<void()> const& tick );
+    void TickAsync( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
+    void Wait();
+    bool Done();
 
 private:
-    void _Run();
+    bool _Run();
 
 private:
-    std::thread _thread;
-    bool _stop = false;
-    bool _stopped = true;
-    bool _gotResume = false;
-    bool _gotSync = true;
-    std::mutex _resumeMutex;
-    std::condition_variable _resumeCondt, _syncCondt;
-    std::function<void()> _tick;
+    bool _gotDone = true;
+    std::mutex _doneMutex;
+    std::condition_variable _doneCondt;
+    std::function<bool()> _tick;
 };
 
 }  // namespace internal

@@ -45,7 +45,11 @@ int main()
 
     // Increase circuit buffer count for higher performance
     getchar();
-    circuit->SetBufferCount( 4 );
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2 ) );
+
+    // Increase threads per buffer for even more performance
+    getchar();
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2, 2 ) );
 
     // Press any key to quit
     getchar();

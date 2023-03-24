@@ -30,105 +30,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace DSPatch::internal;
 
-ComponentThread::ComponentThread()
+ComponentThread::ComponentThread() = default;
+
+void ComponentThread::TickAsync( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
 {
-}
-
-ComponentThread::~ComponentThread()
-{
-    Stop();
-}
-
-void ComponentThread::Start()
-{
-    if ( !_stopped )
-    {
-        return;
-    }
-
-    _stop = false;
-    _stopped = false;
-    _gotResume = false;
-    _gotSync = false;
-
-    _thread = std::thread( &ComponentThread::_Run, this );
-
-    Sync();
-}
-
-void ComponentThread::Stop()
-{
-    if ( _stopped )
-    {
-        return;
-    }
-
-    Sync();
-
-    _stop = true;
-
-    Resume( _tick );
-
-    if ( _thread.joinable() )
-    {
-        _thread.join();
-    }
-}
-
-void ComponentThread::Sync()
-{
-    if ( _stopped )
-    {
-        return;
-    }
-
-    std::unique_lock<std::mutex> lock( _resumeMutex );
-
-    if ( !_gotSync )  // if haven't already got sync
-    {
-        _syncCondt.wait( lock );  // wait for sync
-    }
-}
-
-void ComponentThread::Resume( std::function<void()> const& tick )
-{
-    if ( _stopped )
-    {
-        Start();
-    }
-
-    std::lock_guard<std::mutex> lock( _resumeMutex );
-
-    _gotSync = false;  // reset the sync flag
-
+    _gotDone = false;  // reset the sync flag
     _tick = tick;
-
-    _gotResume = true;  // set the resume flag
-    _resumeCondt.notify_all();
+    threadPool->AddJob( bufferNo, std::bind( &ComponentThread::_Run, this ) );
 }
 
-void ComponentThread::_Run()
+void ComponentThread::Wait()
 {
-    while ( !_stop )
+    std::unique_lock<std::mutex> lock( _doneMutex );
+
+    if ( !_gotDone )  // if haven't already got sync
     {
-        {
-            std::unique_lock<std::mutex> lock( _resumeMutex );
+        _doneCondt.wait( lock );  // wait for sync
+    }
+}
 
-            _gotSync = true;  // set the sync flag
-            _syncCondt.notify_all();
+bool ComponentThread::Done()
+{
+    std::lock_guard<std::mutex> lock( _doneMutex );
+    return _gotDone;
+}
 
-            if ( !_gotResume )  // if haven't already got resume
-            {
-                _resumeCondt.wait( lock );  // wait for resume
-            }
-            _gotResume = false;  // reset the resume flag
-        }
-
-        if ( !_stop )
-        {
-            _tick();
-        }
+bool ComponentThread::_Run()
+{
+    if ( !_tick() )
+    {
+        return false;
     }
 
-    _stopped = true;
+    std::lock_guard<std::mutex> lock( _doneMutex );
+
+    _gotDone = true;  // set the sync flag
+    _doneCondt.notify_all();
+    return true;
 }

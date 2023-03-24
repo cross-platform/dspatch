@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Component.h>
+#include <dspatch/ThreadPool.h>
 
 namespace DSPatch
 {
@@ -48,18 +49,13 @@ components via the ConnectOutToIn() methods.
 connected to an input that already has a connected wire, that wire is replaced with the new one.
 One output, on the other hand, can be distributed to multiple inputs.
 
-To boost performance in stream processing circuits, multi-buffering can be enabled via the
-SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.
+To boost performance, multi-buffering can be enabled via the SetThreadPool() method. A circuit's
+buffer count and threads per buffer can be adjusted at runtime.
 
 The Circuit Tick() method runs through it's internal array of components and calls each component's
 Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
 application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn,
 automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
-
-TickMode::Parallel (default) will spawn a thread per component in a circuit. The aim of this mode
-is to improve the performance of circuits that contain parallel branches. TickMode::Series on the
-other hand, tells the circuit to tick its components one-by-one in a single thread. This mode aims
-to improve the performance of circuits that do not contain parallel branches.
 */
 
 class DLLEXPORT Circuit final
@@ -70,28 +66,27 @@ public:
     Circuit();
     ~Circuit();
 
-    int AddComponent( Component::SPtr const& component );
+    int AddComponent( const Component::SPtr& component );
 
-    void RemoveComponent( Component::SCPtr const& component );
+    void RemoveComponent( const Component::SCPtr& component );
     void RemoveComponent( int componentIndex );
     void RemoveAllComponents();
 
     int GetComponentCount() const;
 
-    bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
-    bool ConnectOutToIn( Component::SCPtr const& fromComponent, int fromOutput, int toComponent, int toInput );
-    bool ConnectOutToIn( int fromComponent, int fromOutput, Component::SCPtr const& toComponent, int toInput );
+    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
+    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, int toComponent, int toInput );
+    bool ConnectOutToIn( int fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput );
 
-    void DisconnectComponent( Component::SCPtr const& component );
+    void DisconnectComponent( const Component::SCPtr& component );
     void DisconnectComponent( int componentIndex );
 
-    void SetBufferCount( int bufferCount );
-    int GetBufferCount() const;
+    void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
-    void Tick( Component::TickMode mode = Component::TickMode::Parallel );
+    void Tick();
 
-    void StartAutoTick( Component::TickMode mode = Component::TickMode::Parallel );
+    void StartAutoTick();
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();

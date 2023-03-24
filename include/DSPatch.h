@@ -238,8 +238,7 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     from the main application thread, or alternatively, by calling StartAutoTick(), a seperate
     thread will spawn, automatically calling Tick() continuously.
 
-    Furthermore, to boost performance in stream processing circuits like this one, multi-buffering
-    can be enabled via the SetBufferCount() method:
+    Furthermore, to boost performance, multi-buffering can be enabled via the SetThreadPool() method:
 
     \code
     // 5. Tick the circuit
@@ -258,7 +257,11 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
 
     // Increase circuit buffer count for higher performance
     getchar();
-    circuit->SetBufferCount( 4 );
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2 ) );
+
+    // Increase threads per buffer for even more performance
+    getchar();
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2, 2 ) );
 
     // Press any key to quit
     getchar();

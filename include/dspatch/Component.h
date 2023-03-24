@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/SignalBus.h>
+#include <dspatch/ThreadPool.h>
 
 #include <string>
 #include <vector>
@@ -84,19 +85,13 @@ public:
         OutOfOrder
     };
 
-    enum class TickMode
-    {
-        Series,
-        Parallel
-    };
-
     Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
 
-    bool ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput );
+    bool ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput );
 
     void DisconnectInput( int inputNo );
-    void DisconnectInput( Component::SCPtr const& fromComponent );
+    void DisconnectInput( const Component::SCPtr& fromComponent );
     void DisconnectAllInputs();
 
     int GetInputCount() const;
@@ -105,17 +100,16 @@ public:
     std::string GetInputName( int inputNo ) const;
     std::string GetOutputName( int outputNo ) const;
 
-    void SetBufferCount( int bufferCount );
-    int GetBufferCount() const;
+    void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
-    bool Tick( TickMode mode = TickMode::Parallel, int bufferNo = 0 );
+    bool Tick( int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
 
-    void SetInputCount_( int inputCount, std::vector<std::string> const& inputNames = {} );
-    void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
+    void SetInputCount_( int inputCount, const std::vector<std::string>& inputNames = {} );
+    void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
     std::unique_ptr<internal::Component> p;

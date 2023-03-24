@@ -92,7 +92,8 @@ dspatch_src = [
     'src/Component.cpp',
     'src/Plugin.cpp',
     'src/Signal.cpp',
-    'src/SignalBus.cpp'
+    'src/SignalBus.cpp',
+    'src/ThreadPool.cpp'
 ]
 
 dspatch_inc = include_directories(

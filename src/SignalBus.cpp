@@ -94,7 +94,7 @@ bool SignalBus::HasValue( int signalIndex ) const
     }
 }
 
-bool SignalBus::SetSignal( int toSignalIndex, Signal const& fromSignal )
+bool SignalBus::SetSignal( int toSignalIndex, const Signal& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
@@ -126,7 +126,7 @@ void SignalBus::ClearAllValues()
     }
 }
 
-std::type_info const& SignalBus::GetType( int signalIndex ) const
+const std::type_info& SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
