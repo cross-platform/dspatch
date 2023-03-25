@@ -49,7 +49,7 @@ void ComponentThread::Wait()
     }
 }
 
-bool ComponentThread::_Run()
+void ComponentThread::_Run()
 {
     _tick();
 
@@ -57,5 +57,4 @@ bool ComponentThread::_Run()
 
     _gotDone = true;  // set the sync flag
     _doneCondt.notify_all();
-    return true;
 }

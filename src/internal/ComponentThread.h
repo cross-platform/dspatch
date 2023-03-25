@@ -60,7 +60,7 @@ public:
     void Wait();
 
 private:
-    bool _Run();
+    void _Run();
 
 private:
     bool _gotDone = true;

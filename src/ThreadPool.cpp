@@ -52,16 +52,20 @@ public:
             condt.notify_one();
         }
 
-        std::function<void()> pop()
+        const std::function<void()>& front()
         {
             std::unique_lock<std::mutex> lock( mutex );
-            while ( queue.empty() )
+            if ( queue.empty() )
             {
                 condt.wait( lock );
             }
-            auto job = queue.front();
+            return queue.front();
+        }
+
+        void pop()
+        {
+            std::lock_guard<std::mutex> lock( mutex );
             queue.pop();
-            return job;
         }
 
     private:
@@ -79,13 +83,16 @@ public:
             return;
         }
 
-        jobs.resize( c_bufferCount );
+        nextThread.resize( c_bufferCount );
         bufferThreads.resize( c_bufferCount );
+        bufferQueues.resize( c_bufferCount );
         for ( int i = 0; i < c_bufferCount; ++i )
         {
+            nextThread[i] = 0;
+            bufferQueues[i].resize( c_threadsPerBuffer );
             for ( int j = 0; j < c_threadsPerBuffer; ++j )
             {
-                bufferThreads[i].push_back( std::thread( &ThreadPool::Run, this, i ) );
+                bufferThreads[i].push_back( std::thread( &ThreadPool::Run, &bufferQueues[i][j] ) );
             }
         }
     }
@@ -96,10 +103,7 @@ public:
         {
             for ( int j = 0; j < c_threadsPerBuffer; ++j )
             {
-                jobs[i].push( nullptr );
-            }
-            for ( int j = 0; j < c_threadsPerBuffer; ++j )
-            {
+                bufferQueues[i][j].push( nullptr );
                 bufferThreads[i][j].join();
             }
         }
@@ -107,26 +111,34 @@ public:
 
     void AddJob( int bufferNo, const std::function<void()>& job )
     {
-        jobs[bufferNo].push( job );
+        bufferQueues[bufferNo][nextThread[bufferNo]++].push( job );
+
+        if ( nextThread[bufferNo] == c_threadsPerBuffer )
+        {
+            nextThread[bufferNo] = 0;
+        }
     }
 
-    void Run( int bufferNo )
+    static void Run( JobQueue* jobs )
     {
         while ( true )
         {
-            auto job = jobs[bufferNo].pop();
+            auto job = jobs->front();
             if ( !job )
             {
                 break;
             }
             job();
+            jobs->pop();
         }
     }
 
     const int c_bufferCount;
     const int c_threadsPerBuffer;
+
+    std::vector<int> nextThread;
     std::vector<std::vector<std::thread>> bufferThreads;
-    std::deque<JobQueue> jobs;
+    std::vector<std::deque<JobQueue>> bufferQueues;
 };
 
 }  // namespace internal
