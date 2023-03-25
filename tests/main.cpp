@@ -291,141 +291,141 @@ TEST_CASE( "ChangingOutputTest" )
     }
 }
 
-// TEST_CASE( "ThreadPerformanceTest" )
-// {
-//     // Configure a circuit made up of 4 parallel counters, then adjust the thread count
-//     auto circuit = std::make_shared<Circuit>();
+TEST_CASE( "ThreadPerformanceTest" )
+{
+    // Configure a circuit made up of 4 parallel counters, then adjust the thread count
+    auto circuit = std::make_shared<Circuit>();
 
-//     auto counter1 = std::make_shared<SlowCounter>();
-//     auto passthrough1 = std::make_shared<SlowPassThrough>();
-//     auto counter2 = std::make_shared<SlowCounter>();
-//     auto passthrough2 = std::make_shared<SlowPassThrough>();
-//     auto counter3 = std::make_shared<SlowCounter>();
-//     auto passthrough3 = std::make_shared<SlowPassThrough>();
-//     auto counter4 = std::make_shared<SlowCounter>();
-//     auto passthrough4 = std::make_shared<SlowPassThrough>();
-//     auto probe = std::make_shared<ThreadingProbe>();
+    auto counter1 = std::make_shared<SlowCounter>();
+    auto passthrough1 = std::make_shared<SlowPassThrough>();
+    auto counter2 = std::make_shared<SlowCounter>();
+    auto passthrough2 = std::make_shared<SlowPassThrough>();
+    auto counter3 = std::make_shared<SlowCounter>();
+    auto passthrough3 = std::make_shared<SlowPassThrough>();
+    auto counter4 = std::make_shared<SlowCounter>();
+    auto passthrough4 = std::make_shared<SlowPassThrough>();
+    auto probe = std::make_shared<ThreadingProbe>();
 
-//     circuit->AddComponent( counter1 );
-//     circuit->AddComponent( passthrough1 );
-//     circuit->AddComponent( counter2 );
-//     circuit->AddComponent( passthrough2 );
-//     circuit->AddComponent( counter3 );
-//     circuit->AddComponent( passthrough3 );
-//     circuit->AddComponent( counter4 );
-//     circuit->AddComponent( passthrough4 );
-//     circuit->AddComponent( probe );
+    circuit->AddComponent( counter1 );
+    circuit->AddComponent( passthrough1 );
+    circuit->AddComponent( counter2 );
+    circuit->AddComponent( passthrough2 );
+    circuit->AddComponent( counter3 );
+    circuit->AddComponent( passthrough3 );
+    circuit->AddComponent( counter4 );
+    circuit->AddComponent( passthrough4 );
+    circuit->AddComponent( probe );
 
-//     circuit->ConnectOutToIn( counter1, 0, passthrough1, 0 );
-//     circuit->ConnectOutToIn( passthrough1, 0, probe, 0 );
-//     circuit->ConnectOutToIn( counter2, 0, passthrough2, 0 );
-//     circuit->ConnectOutToIn( passthrough2, 0, probe, 1 );
-//     circuit->ConnectOutToIn( counter3, 0, passthrough3, 0 );
-//     circuit->ConnectOutToIn( passthrough3, 0, probe, 2 );
-//     circuit->ConnectOutToIn( counter4, 0, passthrough4, 0 );
-//     circuit->ConnectOutToIn( passthrough4, 0, probe, 3 );
+    circuit->ConnectOutToIn( counter1, 0, passthrough1, 0 );
+    circuit->ConnectOutToIn( passthrough1, 0, probe, 0 );
+    circuit->ConnectOutToIn( counter2, 0, passthrough2, 0 );
+    circuit->ConnectOutToIn( passthrough2, 0, probe, 1 );
+    circuit->ConnectOutToIn( counter3, 0, passthrough3, 0 );
+    circuit->ConnectOutToIn( passthrough3, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter4, 0, passthrough4, 0 );
+    circuit->ConnectOutToIn( passthrough4, 0, probe, 3 );
 
-//     // Calculate reference efficiency
+    // Calculate reference efficiency
 
-//     SignalBus testBus;
-//     auto measureRef = [&testBus]( std::shared_ptr<SlowCounter>& counter )
-//     {
-//         for ( int i = 0; i < 2000; ++i )
-//         {
-//             counter->Process_( testBus, testBus );
-//         }
-//     };
+    SignalBus testBus;
+    auto measureRef = [&testBus]( std::shared_ptr<SlowCounter>& counter )
+    {
+        for ( int i = 0; i < 2000; ++i )
+        {
+            counter->Process_( testBus, testBus );
+        }
+    };
 
-//     auto begin = std::chrono::high_resolution_clock::now();
-//     auto t1 = std::thread( [&measureRef, &counter1]() { measureRef( counter1 ); } );
-//     auto t2 = std::thread( [&measureRef, &counter2]() { measureRef( counter2 ); } );
-//     auto t3 = std::thread( [&measureRef, &counter3]() { measureRef( counter3 ); } );
-//     measureRef( counter4 );
-//     t1.join();
-//     t2.join();
-//     t3.join();
-//     auto end = std::chrono::high_resolution_clock::now();
-//     refEff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    auto begin = std::chrono::high_resolution_clock::now();
+    auto t1 = std::thread( [&measureRef, &counter1]() { measureRef( counter1 ); } );
+    auto t2 = std::thread( [&measureRef, &counter2]() { measureRef( counter2 ); } );
+    auto t3 = std::thread( [&measureRef, &counter3]() { measureRef( counter3 ); } );
+    measureRef( counter4 );
+    t1.join();
+    t2.join();
+    t3.join();
+    auto end = std::chrono::high_resolution_clock::now();
+    refEff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     counter1->ResetCount();
-//     counter2->ResetCount();
-//     counter3->ResetCount();
-//     counter4->ResetCount();
+    counter1->ResetCount();
+    counter2->ResetCount();
+    counter3->ResetCount();
+    counter4->ResetCount();
 
-//     std::cout << "Reference Efficiency: " << refEff << "%" << std::endl;
+    std::cout << "Reference Efficiency: " << refEff << "%" << std::endl;
 
-//     // Tick the circuit with 1 thread
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 1 ) );
+    // Tick the circuit with 1 thread
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 1 ) );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     auto overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "1x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * 0.25 * 0.90 );
+    auto overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "1x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * 0.25 * 0.90 );
 
-//     // Tick the circuit with 2 threads, and check that more ticks occurred
-//     if ( std::thread::hardware_concurrency() < 2 )
-//     {
-//         return;
-//     }
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 2 ) );
+    // Tick the circuit with 2 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 2 )
+    {
+        return;
+    }
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2 ) );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "2x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * 0.5 * 0.90 );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "2x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * 0.5 * 0.90 );
 
-//     // Tick the circuit with 3 threads, and check that more ticks occurred
-//     if ( std::thread::hardware_concurrency() < 4 )
-//     {
-//         return;
-//     }
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 3 ) );
+    // Tick the circuit with 3 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 3 ) );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "3x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * 0.75 * 0.90 );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "3x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * 0.75 * 0.90 );
 
-//     // Tick the circuit with 4 threads, and check that more ticks occurred
-//     if ( std::thread::hardware_concurrency() < 4 )
-//     {
-//         return;
-//     }
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 4 ) );
+    // Tick the circuit with 4 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 4 ) );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "4x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * 0.90 );
-// }
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "4x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * 0.90 );
+}
 
 TEST_CASE( "StopAutoTickRegressionTest" )
 {
@@ -824,117 +824,119 @@ TEST_CASE( "ChangingOutputTest2" )
     }
 }
 
-// TEST_CASE( "ThreadPerformanceTest2" )
-// {
-//     double cores = std::thread::hardware_concurrency();
-//     cores = cores == 3.0 ? 2.0 : cores;
-//     cores = cores > 4.0 ? 4.0 : cores;
-//     auto effFrac = cores / 4.0;
+TEST_CASE( "ThreadPerformanceTest2" )
+{
+    double cores = std::thread::hardware_concurrency();
+    cores = cores == 3.0 ? 2.0 : cores;
+    cores = cores > 4.0 ? 4.0 : cores;
+    auto effFrac = cores / 4.0;
 
-//     // Configure a circuit made up of 4 parallel counters, then adjust the thread count
-//     auto circuit = std::make_shared<Circuit>();
+    // Configure a circuit made up of 4 parallel counters, then adjust the thread count
+    auto circuit = std::make_shared<Circuit>();
 
-//     auto counter1 = std::make_shared<SlowCounter>();
-//     auto passthrough1 = std::make_shared<SlowPassThrough>();
-//     auto counter2 = std::make_shared<SlowCounter>();
-//     auto passthrough2 = std::make_shared<SlowPassThrough>();
-//     auto counter3 = std::make_shared<SlowCounter>();
-//     auto passthrough3 = std::make_shared<SlowPassThrough>();
-//     auto counter4 = std::make_shared<SlowCounter>();
-//     auto passthrough4 = std::make_shared<SlowPassThrough>();
-//     auto probe = std::make_shared<ThreadingProbe>();
+    auto counter1 = std::make_shared<SlowCounter>();
+    auto passthrough1 = std::make_shared<SlowPassThrough>();
+    auto counter2 = std::make_shared<SlowCounter>();
+    auto passthrough2 = std::make_shared<SlowPassThrough>();
+    auto counter3 = std::make_shared<SlowCounter>();
+    auto passthrough3 = std::make_shared<SlowPassThrough>();
+    auto counter4 = std::make_shared<SlowCounter>();
+    auto passthrough4 = std::make_shared<SlowPassThrough>();
+    auto probe = std::make_shared<ThreadingProbe>();
 
-//     circuit->AddComponent( counter1 );
-//     circuit->AddComponent( passthrough1 );
-//     circuit->AddComponent( counter2 );
-//     circuit->AddComponent( passthrough2 );
-//     circuit->AddComponent( counter3 );
-//     circuit->AddComponent( passthrough3 );
-//     circuit->AddComponent( counter4 );
-//     circuit->AddComponent( passthrough4 );
-//     circuit->AddComponent( probe );
+    circuit->AddComponent( counter1 );
+    circuit->AddComponent( passthrough1 );
+    circuit->AddComponent( counter2 );
+    circuit->AddComponent( passthrough2 );
+    circuit->AddComponent( counter3 );
+    circuit->AddComponent( passthrough3 );
+    circuit->AddComponent( counter4 );
+    circuit->AddComponent( passthrough4 );
+    circuit->AddComponent( probe );
 
-//     circuit->ConnectOutToIn( counter1, 0, passthrough1, 0 );
-//     circuit->ConnectOutToIn( passthrough1, 0, probe, 0 );
-//     circuit->ConnectOutToIn( counter2, 0, passthrough2, 0 );
-//     circuit->ConnectOutToIn( passthrough2, 0, probe, 1 );
-//     circuit->ConnectOutToIn( counter3, 0, passthrough3, 0 );
-//     circuit->ConnectOutToIn( passthrough3, 0, probe, 2 );
-//     circuit->ConnectOutToIn( counter4, 0, passthrough4, 0 );
-//     circuit->ConnectOutToIn( passthrough4, 0, probe, 3 );
+    circuit->ConnectOutToIn( counter1, 0, passthrough1, 0 );
+    circuit->ConnectOutToIn( passthrough1, 0, probe, 0 );
+    circuit->ConnectOutToIn( counter2, 0, passthrough2, 0 );
+    circuit->ConnectOutToIn( passthrough2, 0, probe, 1 );
+    circuit->ConnectOutToIn( counter3, 0, passthrough3, 0 );
+    circuit->ConnectOutToIn( passthrough3, 0, probe, 2 );
+    circuit->ConnectOutToIn( counter4, 0, passthrough4, 0 );
+    circuit->ConnectOutToIn( passthrough4, 0, probe, 3 );
 
-//     // Tick the circuit with 1 thread
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 1, 4 ) );
+    circuit->Sort();
 
-//     auto begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     auto end = std::chrono::high_resolution_clock::now();
-//     auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    // Tick the circuit with 1 thread
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 1, 4 ) );
 
-//     auto overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "1x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * effFrac * 0.90 );
+    auto begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     // Tick the circuit with 2 threads, and check that more ticks occurred
-//     if ( std::thread::hardware_concurrency() < 2 )
-//     {
-//         return;
-//     }
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 2, 4 ) );
+    auto overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "1x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * effFrac * 0.90 );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    // Tick the circuit with 2 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 2 )
+    {
+        return;
+    }
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 2, 4 ) );
 
-//     overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "2x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * effFrac * 0.98 );
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     // Tick the circuit with 3 threads, and check that more ticks occurred
-//     if ( std::thread::hardware_concurrency() < 4 )
-//     {
-//         return;
-//     }
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 3, 4 ) );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "2x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * effFrac * 0.98 );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    // Tick the circuit with 3 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 3, 4 ) );
 
-//     overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "3x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * effFrac * 0.98 );
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
-//     // Tick the circuit with 4 threads, and check that more ticks occurred
-//     if ( std::thread::hardware_concurrency() < 4 )
-//     {
-//         return;
-//     }
-//     circuit->SetThreadPool( std::make_shared<ThreadPool>( 4, 4 ) );
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "3x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * effFrac * 0.98 );
 
-//     begin = std::chrono::high_resolution_clock::now();
-//     for ( int i = 0; i < 1000; ++i )
-//     {
-//         circuit->Tick();
-//     }
-//     end = std::chrono::high_resolution_clock::now();
-//     eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+    // Tick the circuit with 4 threads, and check that more ticks occurred
+    if ( std::thread::hardware_concurrency() < 4 )
+    {
+        return;
+    }
+    circuit->SetThreadPool( std::make_shared<ThreadPool>( 4, 4 ) );
 
-//     overhead = 100 - ( 100 * ( eff / refEff ) );
-//     std::cout << "4x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-//     REQUIRE( eff >= refEff * effFrac * 0.98 );
-// }
+    begin = std::chrono::high_resolution_clock::now();
+    for ( int i = 0; i < 1000; ++i )
+    {
+        circuit->Tick();
+    }
+    end = std::chrono::high_resolution_clock::now();
+    eff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+    overhead = 100 - ( 100 * ( eff / refEff ) );
+    std::cout << "4x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
+    REQUIRE( eff >= refEff * effFrac * 0.98 );
+}
 
 TEST_CASE( "StopAutoTickRegressionTest2" )
 {
@@ -1310,5 +1312,41 @@ TEST_CASE( "TenThousandComponents" )
         double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
         std::cout << "10000 components tick time (2x buffers, 2x threads per buffer): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
+        circuit->SetThreadPool( std::make_shared<ThreadPool>( 3, 2 ) );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick();
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "10000 components tick time (3x buffers, 2x threads per buffer): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
+        circuit->SetThreadPool( std::make_shared<ThreadPool>( 4, 2 ) );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick();
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "10000 components tick time (4x buffers, 2x threads per buffer): " << diff_ms / iterationCount << "ms\n";
     }
 }
