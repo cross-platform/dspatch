@@ -63,7 +63,7 @@ public:
     int GetBufferCount() const;
     int GetThreadsPerBuffer() const;
 
-    void AddJob( int bufferNo, const std::function<bool()>& job );
+    void AddJob( int bufferNo, const std::function<void()>& job );
 
 private:
     std::unique_ptr<internal::ThreadPool> p;

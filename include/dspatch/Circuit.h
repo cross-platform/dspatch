@@ -82,6 +82,8 @@ public:
     void DisconnectComponent( const Component::SCPtr& component );
     void DisconnectComponent( int componentIndex );
 
+    void Sort();
+
     void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
     void Tick();

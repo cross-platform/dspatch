@@ -208,6 +208,12 @@ void Circuit::DisconnectComponent( int componentIndex )
     ResumeAutoTick();
 }
 
+void Circuit::Sort()
+{
+    std::sort( p->components.begin(), p->components.end(),
+               []( const Component::SPtr& a, const Component::SPtr& b ) { return a->GetCircuitPosition() < b->GetCircuitPosition(); } );
+}
+
 void Circuit::SetThreadPool( const ThreadPool::SPtr& threadPool )
 {
     auto bufferCount = 0;

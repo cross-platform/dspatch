@@ -32,7 +32,7 @@ using namespace DSPatch::internal;
 
 ComponentThread::ComponentThread() = default;
 
-void ComponentThread::TickAsync( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
+void ComponentThread::TickAsync( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool )
 {
     _gotDone = false;  // reset the sync flag
     _tick = tick;
@@ -49,18 +49,9 @@ void ComponentThread::Wait()
     }
 }
 
-bool ComponentThread::Done()
-{
-    std::lock_guard<std::mutex> lock( _doneMutex );
-    return _gotDone;
-}
-
 bool ComponentThread::_Run()
 {
-    if ( !_tick() )
-    {
-        return false;
-    }
+    _tick();
 
     std::lock_guard<std::mutex> lock( _doneMutex );
 

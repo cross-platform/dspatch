@@ -56,9 +56,8 @@ public:
 
     ComponentThread();
 
-    void TickAsync( int bufferNo, const std::function<bool()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
+    void TickAsync( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
     void Wait();
-    bool Done();
 
 private:
     bool _Run();
@@ -67,7 +66,7 @@ private:
     bool _gotDone = true;
     std::mutex _doneMutex;
     std::condition_variable _doneCondt;
-    std::function<bool()> _tick;
+    std::function<void()> _tick;
 };
 
 }  // namespace internal

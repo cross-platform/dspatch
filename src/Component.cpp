@@ -167,6 +167,20 @@ void Component::DisconnectAllInputs()
     }
 }
 
+int Component::GetCircuitPosition( int offset )
+{
+    int furthestPos = 0;
+    for ( auto& wire : p->inputWires )
+    {
+        int pos = wire.fromComponent->GetCircuitPosition( 1 );
+        if ( pos > furthestPos )
+        {
+            furthestPos = pos;
+        }
+    }
+    return offset += furthestPos;
+}
+
 // cppcheck-suppress unusedFunction
 int Component::GetInputCount() const
 {
@@ -290,10 +304,7 @@ bool Component::Tick( int bufferNo )
                     // wait for non-feedback incoming components to finish ticking
                     if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
                     {
-                        if ( !wire.fromComponent->p->componentThreads[bufferNo].Done() )
-                        {
-                            return false;
-                        }
+                        wire.fromComponent->p->componentThreads[bufferNo].Wait();
                     }
                 }
                 p->feedbackWires[bufferNo].clear();
@@ -330,8 +341,6 @@ bool Component::Tick( int bufferNo )
                 // 6. call Process_() with newly aquired inputs
                 Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
             }
-
-            return true;
         };
 
         // do tick
