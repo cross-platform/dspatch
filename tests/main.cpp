@@ -1201,12 +1201,14 @@ TEST_CASE( "TenThousandComponents" )
         circuit->ConnectOutToIn( last, 0, dest, i );
     }
 
+    circuit->Sort();
+
     {
         circuit->SetThreadPool( std::make_shared<ThreadPool>( 1 ) );
 
         auto begin = std::chrono::high_resolution_clock::now();
 
-        int iterationCount = 250;
+        int iterationCount = 100;
 
         for ( int i = 0; i < iterationCount; i++ )
         {
@@ -1224,7 +1226,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto begin = std::chrono::high_resolution_clock::now();
 
-        int iterationCount = 250;
+        int iterationCount = 100;
 
         for ( int i = 0; i < iterationCount; i++ )
         {
@@ -1242,7 +1244,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto begin = std::chrono::high_resolution_clock::now();
 
-        int iterationCount = 250;
+        int iterationCount = 100;
 
         for ( int i = 0; i < iterationCount; i++ )
         {
@@ -1256,11 +1258,29 @@ TEST_CASE( "TenThousandComponents" )
         std::cout << "10000 components tick time (3x buffers, 1x threads per buffer): " << diff_ms / iterationCount << "ms\n";
     }
     {
+        circuit->SetThreadPool( std::make_shared<ThreadPool>( 4 ) );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick();
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "10000 components tick time (4x buffers, 1x threads per buffer): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
         circuit->SetThreadPool( std::make_shared<ThreadPool>( 1, 2 ) );
 
         auto begin = std::chrono::high_resolution_clock::now();
 
-        int iterationCount = 250;
+        int iterationCount = 100;
 
         for ( int i = 0; i < iterationCount; i++ )
         {
@@ -1278,7 +1298,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto begin = std::chrono::high_resolution_clock::now();
 
-        int iterationCount = 250;
+        int iterationCount = 100;
 
         for ( int i = 0; i < iterationCount; i++ )
         {
@@ -1290,23 +1310,5 @@ TEST_CASE( "TenThousandComponents" )
         double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
         std::cout << "10000 components tick time (2x buffers, 2x threads per buffer): " << diff_ms / iterationCount << "ms\n";
-    }
-    {
-        circuit->SetThreadPool( std::make_shared<ThreadPool>( 3, 2 ) );
-
-        auto begin = std::chrono::high_resolution_clock::now();
-
-        int iterationCount = 250;
-
-        for ( int i = 0; i < iterationCount; i++ )
-        {
-            circuit->Tick();
-        }
-
-        auto end = std::chrono::high_resolution_clock::now();
-
-        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
-
-        std::cout << "10000 components tick time (3x buffers, 2x threads per buffer): " << diff_ms / iterationCount << "ms\n";
     }
 }
