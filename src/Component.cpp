@@ -73,7 +73,7 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::deque<std::deque<std::mutex>> refMutexes;
+    std::vector<std::deque<std::mutex>> refMutexes;
 
     std::vector<Wire> inputWires;
 
