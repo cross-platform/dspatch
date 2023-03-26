@@ -299,7 +299,7 @@ bool Component::Tick( int bufferNo )
         // do tick
         if ( !p->threadPool || p->threadPool->GetThreadsPerBuffer() == 0 )
         {
-            DoTick( bufferNo );
+            _DoTick( bufferNo );
         }
         else
         {
@@ -328,7 +328,37 @@ void Component::Reset( int bufferNo )
     p->tickStatuses[bufferNo] = internal::Component::TickStatus::NotTicked;
 }
 
-void Component::DoTick( int bufferNo )
+void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
+{
+    p->inputNames = inputNames;
+
+    for ( auto& inputBus : p->inputBuses )
+    {
+        inputBus.SetSignalCount( inputCount );
+    }
+}
+
+void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
+{
+    p->outputNames = outputNames;
+
+    for ( auto& outputBus : p->outputBuses )
+    {
+        outputBus.SetSignalCount( outputCount );
+    }
+
+    // add reference counters for our new outputs
+    for ( auto& ref : p->refs )
+    {
+        ref.resize( outputCount );
+    }
+    for ( auto& refMutexes : p->refMutexes )
+    {
+        refMutexes.resize( outputCount );
+    }
+}
+
+void Component::_DoTick( int bufferNo )
 {
     // 4. get new inputs from incoming components
     if ( p->threadPool && p->threadPool->GetThreadsPerBuffer() != 0 )
@@ -377,36 +407,6 @@ void Component::DoTick( int bufferNo )
     {
         // 6. call Process_() with newly aquired inputs
         Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
-    }
-}
-
-void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
-{
-    p->inputNames = inputNames;
-
-    for ( auto& inputBus : p->inputBuses )
-    {
-        inputBus.SetSignalCount( inputCount );
-    }
-}
-
-void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
-{
-    p->outputNames = outputNames;
-
-    for ( auto& outputBus : p->outputBuses )
-    {
-        outputBus.SetSignalCount( outputCount );
-    }
-
-    // add reference counters for our new outputs
-    for ( auto& ref : p->refs )
-    {
-        ref.resize( outputCount );
-    }
-    for ( auto& refMutexes : p->refMutexes )
-    {
-        refMutexes.resize( outputCount );
     }
 }
 

@@ -107,8 +107,6 @@ public:
     bool Tick( int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
-    void DoTick( int bufferNo );
-
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
 
@@ -116,6 +114,9 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
+    friend class internal::ComponentThread;
+    void _DoTick( int bufferNo );
+
     std::unique_ptr<internal::Component> p;
 };
 

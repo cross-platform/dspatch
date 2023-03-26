@@ -63,7 +63,7 @@ void ComponentThread::Wait()
 
 void ComponentThread::Run()
 {
-    _component->DoTick( _bufferNo );
+    _component->_DoTick( _bufferNo );
 
     std::lock_guard<std::mutex> lock( _doneMutex );
 
