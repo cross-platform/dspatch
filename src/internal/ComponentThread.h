@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Common.h>
+#include <dspatch/Component.h>
 #include <dspatch/ThreadPool.h>
 
 #include <condition_variable>
@@ -56,17 +57,20 @@ public:
 
     ComponentThread();
 
-    void TickAsync( int bufferNo, const std::function<void()>& tick, const DSPatch::ThreadPool::SPtr& threadPool );
+    void Setup( DSPatch::Component* component, int bufferNo, const DSPatch::ThreadPool::SPtr& threadPool );
+
+    void TickAsync();
     void Wait();
 
-private:
-    void _Run();
+    void Run();
 
 private:
+    DSPatch::ThreadPool::SPtr _threadPool;
+    int _bufferNo = 0;
+    DSPatch::Component* _component = nullptr;
     bool _gotDone = true;
     std::mutex _doneMutex;
     std::condition_variable _doneCondt;
-    std::function<void()> _tick;
 };
 
 }  // namespace internal

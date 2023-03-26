@@ -90,8 +90,14 @@ void AutoTickThread::Stop()
 
 void AutoTickThread::Pause()
 {
+    if ( _pause || _stopped )
+    {
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
+    // cppcheck-suppress knownConditionTrueFalse
     if ( !_pause && !_stopped )
     {
         _pause = true;

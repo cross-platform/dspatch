@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/ThreadPool.h>
 
+#include <internal/ComponentThread.h>
+
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -45,14 +47,14 @@ public:
     class JobQueue final
     {
     public:
-        void push( const std::function<void()>& job )
+        void push( ComponentThread* job )
         {
             std::lock_guard<std::mutex> lock( mutex );
             queue.push( job );
-            condt.notify_one();
+            condt.notify_all();
         }
 
-        const std::function<void()>& front()
+        ComponentThread* front()
         {
             std::unique_lock<std::mutex> lock( mutex );
             if ( queue.empty() )
@@ -69,7 +71,7 @@ public:
         }
 
     private:
-        std::queue<std::function<void()>> queue;
+        std::queue<ComponentThread*> queue;
         std::mutex mutex;
         std::condition_variable condt;
     };
@@ -109,11 +111,11 @@ public:
         }
     }
 
-    void AddJob( int bufferNo, const std::function<void()>& job )
+    void AddJob( int bufferNo, ComponentThread* job )
     {
-        bufferQueues[bufferNo][nextThread[bufferNo]++].push( job );
+        bufferQueues[bufferNo][nextThread[bufferNo]].push( job );
 
-        if ( nextThread[bufferNo] == c_threadsPerBuffer )
+        if ( ++nextThread[bufferNo] == c_threadsPerBuffer )
         {
             nextThread[bufferNo] = 0;
         }
@@ -128,7 +130,7 @@ public:
             {
                 break;
             }
-            job();
+            job->Run();
             jobs->pop();
         }
     }
@@ -161,7 +163,7 @@ int ThreadPool::GetThreadsPerBuffer() const
     return p->c_threadsPerBuffer;
 }
 
-void ThreadPool::AddJob( int bufferNo, const std::function<void()>& job )
+void ThreadPool::AddJob( int bufferNo, internal::ComponentThread* job )
 {
     p->AddJob( bufferNo, job );
 }

@@ -37,6 +37,7 @@ namespace DSPatch
 
 namespace internal
 {
+class ComponentThread;
 class ThreadPool;
 }  // namespace internal
 
@@ -63,7 +64,7 @@ public:
     int GetBufferCount() const;
     int GetThreadsPerBuffer() const;
 
-    void AddJob( int bufferNo, const std::function<void()>& job );
+    void AddJob( int bufferNo, internal::ComponentThread* job );
 
 private:
     std::unique_ptr<internal::ThreadPool> p;

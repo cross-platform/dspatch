@@ -107,6 +107,8 @@ public:
     bool Tick( int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
+    void DoTick( int bufferNo );
+
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
 
