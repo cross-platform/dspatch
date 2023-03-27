@@ -34,6 +34,11 @@ ComponentThread::ComponentThread()
 {
 }
 
+// cppcheck-suppress missingMemberCopy
+ComponentThread::ComponentThread( ComponentThread&& )
+{
+}
+
 ComponentThread::~ComponentThread()
 {
     Stop();

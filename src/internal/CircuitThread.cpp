@@ -34,6 +34,11 @@ CircuitThread::CircuitThread()
 {
 }
 
+// cppcheck-suppress missingMemberCopy
+CircuitThread::CircuitThread( CircuitThread&& )
+{
+}
+
 CircuitThread::~CircuitThread()
 {
     Stop();

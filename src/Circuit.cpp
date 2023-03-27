@@ -31,8 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/AutoTickThread.h>
 #include <internal/CircuitThread.h>
 
-#include <deque>
-
 using namespace DSPatch;
 
 namespace DSPatch
@@ -52,7 +50,7 @@ public:
 
     std::vector<DSPatch::Component::SPtr> components;
 
-    std::deque<CircuitThread> circuitThreads;
+    std::vector<CircuitThread> circuitThreads;
 };
 
 }  // namespace internal
@@ -241,7 +239,6 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 }
 
-// cppcheck-suppress unusedFunction
 int Circuit::GetBufferCount() const
 {
     return (int)p->circuitThreads.size();

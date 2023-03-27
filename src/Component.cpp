@@ -77,7 +77,7 @@ public:
 
     std::vector<Wire> inputWires;
 
-    std::deque<ComponentThread> componentThreads;
+    std::vector<ComponentThread> componentThreads;
     std::vector<std::unordered_set<Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;

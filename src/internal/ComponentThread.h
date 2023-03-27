@@ -55,6 +55,7 @@ public:
     NONCOPYABLE( ComponentThread );
 
     ComponentThread();
+    ComponentThread( ComponentThread&& );
     ~ComponentThread();
 
     void Setup( DSPatch::Component* component, int bufferNo );
