@@ -73,7 +73,7 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::vector<std::deque<std::mutex>> refMutexes;
+    std::deque<std::deque<std::mutex>> refMutexes;
 
     std::vector<Wire> inputWires;
 
@@ -129,6 +129,7 @@ void Component::DisconnectInput( int inputNo )
     for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); ++it )
     {
         if ( it->toInput == inputNo )
+        // cppcheck-suppress useStlAlgorithm
         {
             // update source output's reference count
             it->fromComponent->p->DecRefs( it->fromOutput );

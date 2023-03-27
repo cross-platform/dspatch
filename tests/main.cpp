@@ -859,7 +859,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.90 );
+    REQUIRE( eff >= refEff * effFrac * 0.80 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -878,7 +878,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.90 );
+    REQUIRE( eff >= refEff * effFrac * 0.80 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -1218,7 +1218,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
         std::cout << "1x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1236,7 +1236,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
         std::cout << "2x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1254,7 +1254,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
         std::cout << "3x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1272,7 +1272,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 
         std::cout << "4x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }

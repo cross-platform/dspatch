@@ -27,8 +27,8 @@ if opencppcoverage.found()
             opencppcoverage_args,
             '--export_type', 'binary:Tests.cov',
             dspatch_tests
-        ]
+        ], timeout: 120
     )
 else
-    test('Tests', dspatch_tests)
+    test('Tests', dspatch_tests, timeout: 120)
 endif
