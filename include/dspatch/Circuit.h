@@ -59,8 +59,8 @@ automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick(
 TickMode::Parallel will spawn a thread per component in a circuit. The aim of this mode is to
 improve the performance of small circuits that contain parallel branches. TickMode::Series
 (default) on the other hand, tells the circuit to tick its components one-by-one in a single thread
-(per buffer, that is). This mode aims to improve the performance of large circuits, and small
-circuits that do not contain parallel branches.
+per buffer. This mode aims to improve the performance of large circuits, as well as small circuits
+that do not contain parallel branches.
 */
 
 class DLLEXPORT Circuit final
