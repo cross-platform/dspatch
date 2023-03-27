@@ -29,9 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Common.h>
+#include <dspatch/Component.h>
 
 #include <condition_variable>
-#include <functional>
 #include <thread>
 
 namespace DSPatch
@@ -57,23 +57,29 @@ public:
     ComponentThread();
     ~ComponentThread();
 
+    void Setup( DSPatch::Component* component, int bufferNo );
+
     void Start();
     void Stop();
     void Sync();
-    void Resume( std::function<void()> const& tick );
+    void Resume( DSPatch::Component::TickMode mode );
 
 private:
     void _Run();
 
 private:
     std::thread _thread;
+
+    DSPatch::Component* _component = nullptr;
+    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Series;
+    int _bufferNo = 0;
+
     bool _stop = false;
     bool _stopped = true;
     bool _gotResume = false;
     bool _gotSync = true;
     std::mutex _resumeMutex;
     std::condition_variable _resumeCondt, _syncCondt;
-    std::function<void()> _tick;
 };
 
 }  // namespace internal

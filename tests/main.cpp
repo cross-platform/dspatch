@@ -1282,3 +1282,9 @@ TEST_CASE( "TenThousandComponents" )
 // 2x Buffer, 10000 Components (Series Mode): 6.64ms
 // 3x Buffer, 10000 Components (Series Mode): 4.55ms
 // 4x Buffer, 10000 Components (Series Mode): 3.82ms
+
+// Without std::function
+// 1x Buffer, 10000 Components (Series Mode): 7.27ms
+// 2x Buffer, 10000 Components (Series Mode): 6.34ms
+// 3x Buffer, 10000 Components (Series Mode): 4.66ms
+// 4x Buffer, 10000 Components (Series Mode): 3.51ms

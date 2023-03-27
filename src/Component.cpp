@@ -224,6 +224,8 @@ void Component::SetBufferCount( int bufferCount )
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
+        p->componentThreads[i].Setup( this, i );
+
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
@@ -278,64 +280,14 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         // 3. set tickStatus -> Ticking
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        auto tick = [this, mode, bufferNo]()
-        {
-            // 4. get new inputs from incoming components
-            for ( auto& wire : p->inputWires )
-            {
-                if ( mode == TickMode::Parallel )
-                {
-                    // wait for non-feedback incoming components to finish ticking
-                    auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
-                    if ( wireIndex == p->feedbackWires[bufferNo].end() )
-                    {
-                        wire.fromComponent->p->componentThreads[bufferNo].Sync();
-                    }
-                    else
-                    {
-                        p->feedbackWires[bufferNo].erase( wireIndex );
-                    }
-                }
-
-                wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
-            }
-
-            // You might be thinking: Why not clear the outputs in Reset()?
-
-            // This is because we need components to hold onto their outputs long enough for any
-            // loopback wires to grab them during the next tick. The same applies to how we handle
-            // output reference counting in internal::Component::GetOutput(), reseting the counter upon
-            // the final request rather than in Reset().
-
-            // 5. clear outputs
-            p->outputBuses[bufferNo].ClearAllValues();
-
-            if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
-            {
-                // 6. wait for our turn to process
-                p->WaitForRelease( bufferNo );
-
-                // 7. call Process_() with newly aquired inputs
-                Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
-
-                // 8. signal that we're done processing
-                p->ReleaseThread( bufferNo );
-            }
-            else
-            {
-                // 6. call Process_() with newly aquired inputs
-                Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
-            }
-        };
-
         // do tick
         if ( mode == TickMode::Series )
         {
-            tick();
+            _DoTick( mode, bufferNo );
         }
         else if ( mode == TickMode::Parallel )
         {
-            p->componentThreads[bufferNo].Resume( tick );
+            p->componentThreads[bufferNo].Resume( mode );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -387,6 +339,54 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
     for ( auto& refMutexes : p->refMutexes )
     {
         refMutexes.resize( outputCount );
+    }
+}
+
+void Component::_DoTick( Component::TickMode mode, int bufferNo )
+{
+    // 4. get new inputs from incoming components
+    for ( auto& wire : p->inputWires )
+    {
+        if ( mode == TickMode::Parallel )
+        {
+            // wait for non-feedback incoming components to finish ticking
+            auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
+            if ( wireIndex == p->feedbackWires[bufferNo].end() )
+            {
+                wire.fromComponent->p->componentThreads[bufferNo].Sync();
+            }
+        }
+
+        wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
+    }
+
+    p->feedbackWires[bufferNo].clear();
+
+    // You might be thinking: Why not clear the outputs in Reset()?
+
+    // This is because we need components to hold onto their outputs long enough for any
+    // loopback wires to grab them during the next tick. The same applies to how we handle
+    // output reference counting in internal::Component::GetOutput(), reseting the counter upon
+    // the final request rather than in Reset().
+
+    // 5. clear outputs
+    p->outputBuses[bufferNo].ClearAllValues();
+
+    if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+    {
+        // 6. wait for our turn to process
+        p->WaitForRelease( bufferNo );
+
+        // 7. call Process_() with newly aquired inputs
+        Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
+
+        // 8. signal that we're done processing
+        p->ReleaseThread( bufferNo );
+    }
+    else
+    {
+        // 6. call Process_() with newly aquired inputs
+        Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
     }
 }
 
