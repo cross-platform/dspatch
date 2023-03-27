@@ -107,8 +107,14 @@ void AutoTickThread::Pause()
 
 void AutoTickThread::Resume()
 {
+    if ( !_pause )
+    {
+        return;
+    }
+
     std::lock_guard<std::mutex> lock( _resumeMutex );
 
+    // cppcheck-suppress knownConditionTrueFalse
     if ( _pause )
     {
         _resumeCondt.notify_all();
