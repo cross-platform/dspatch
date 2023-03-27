@@ -34,9 +34,20 @@ ComponentThread::ComponentThread()
 {
 }
 
+// cppcheck-suppress missingMemberCopy
+ComponentThread::ComponentThread( ComponentThread&& )
+{
+}
+
 ComponentThread::~ComponentThread()
 {
     Stop();
+}
+
+void ComponentThread::Setup( DSPatch::Component* component, int bufferNo )
+{
+    _component = component;
+    _bufferNo = bufferNo;
 }
 
 void ComponentThread::Start()
@@ -67,7 +78,7 @@ void ComponentThread::Stop()
 
     _stop = true;
 
-    Resume( _tick );
+    Resume( _mode );
 
     if ( _thread.joinable() )
     {
@@ -77,20 +88,21 @@ void ComponentThread::Stop()
 
 void ComponentThread::Sync()
 {
-    if ( _stopped )
+    if ( _stopped || _gotSync )
     {
         return;
     }
 
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
+    // cppcheck-suppress knownConditionTrueFalse
     if ( !_gotSync )  // if haven't already got sync
     {
         _syncCondt.wait( lock );  // wait for sync
     }
 }
 
-void ComponentThread::Resume( std::function<void()> const& tick )
+void ComponentThread::Resume( DSPatch::Component::TickMode mode )
 {
     if ( _stopped )
     {
@@ -101,7 +113,7 @@ void ComponentThread::Resume( std::function<void()> const& tick )
 
     _gotSync = false;  // reset the sync flag
 
-    _tick = tick;
+    _mode = mode;
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
@@ -126,7 +138,7 @@ void ComponentThread::_Run()
 
         if ( !_stop )
         {
-            _tick();
+            _component->_DoTick( _mode, _bufferNo );
         }
     }
 

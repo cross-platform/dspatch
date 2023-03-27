@@ -859,7 +859,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.80 );
+    REQUIRE( eff >= refEff * effFrac * 0.90 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -878,7 +878,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.80 );
+    REQUIRE( eff >= refEff * effFrac * 0.90 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -1180,4 +1180,100 @@ TEST_CASE( "AutoTickOnBuffersUpdateRegressionTest" )
     circuit->SetBufferCount( 2 );
 
     REQUIRE( counter->Count() == 4 );
+}
+
+TEST_CASE( "TenThousandComponents" )
+{
+    auto circuit = std::make_shared<Circuit>();
+
+    auto source = std::make_shared<Counter>();
+    auto dest = std::make_shared<ThreadingProbe>( 500 );
+    circuit->AddComponent( source );
+    circuit->AddComponent( dest );
+
+    for ( int i = 0; i < 500; i++ )
+    {
+        Component::SPtr last = source;
+        for ( int j = 0; j < 20; j++ )
+        {
+            auto passthrough = std::make_shared<PassThrough>();
+            circuit->AddComponent( passthrough );
+            circuit->ConnectOutToIn( last, 0, passthrough, 0 );
+            last = passthrough;
+        }
+        circuit->ConnectOutToIn( last, 0, dest, i );
+    }
+
+    {
+        circuit->SetBufferCount( 1 );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick( Component::TickMode::Series );
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "1x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
+        circuit->SetBufferCount( 2 );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick( Component::TickMode::Series );
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "2x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
+        circuit->SetBufferCount( 3 );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick( Component::TickMode::Series );
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "3x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
+        circuit->SetBufferCount( 4 );
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        int iterationCount = 100;
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick( Component::TickMode::Series );
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        double diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+
+        std::cout << "4x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
+    }
 }

@@ -39,6 +39,7 @@ namespace DSPatch
 namespace internal
 {
 class Component;
+class ComponentThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -108,7 +109,7 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    bool Tick( TickMode mode = TickMode::Parallel, int bufferNo = 0 );
+    bool Tick( TickMode mode = TickMode::Series, int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
 protected:
@@ -118,7 +119,10 @@ protected:
     void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
 
 private:
-    std::unique_ptr<internal::Component> p;
+    friend class internal::ComponentThread;
+    void _DoTick( Component::TickMode mode, int bufferNo );
+
+    internal::Component* p;
 };
 
 }  // namespace DSPatch

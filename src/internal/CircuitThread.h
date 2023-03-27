@@ -64,6 +64,7 @@ public:
     NONCOPYABLE( CircuitThread );
 
     CircuitThread();
+    CircuitThread( CircuitThread&& );
     ~CircuitThread();
 
     void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
@@ -75,7 +76,7 @@ private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Parallel;
+    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Series;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;
