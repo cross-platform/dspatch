@@ -1218,7 +1218,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "1x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1236,7 +1236,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "2x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1254,7 +1254,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "3x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1272,7 +1272,7 @@ TEST_CASE( "TenThousandComponents" )
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
+        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "4x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
