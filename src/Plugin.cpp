@@ -78,6 +78,8 @@ Plugin::~Plugin()
         dlclose( p->handle );
 #endif
     }
+
+    delete p;
 }
 
 // cppcheck-suppress unusedFunction

@@ -40,6 +40,7 @@ namespace DSPatch
 namespace internal
 {
 class Component;
+class ComponentThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -117,7 +118,7 @@ private:
     friend class internal::ComponentThread;
     void _DoTick( int bufferNo );
 
-    std::unique_ptr<internal::Component> p;
+    internal::Component* p;
 };
 
 }  // namespace DSPatch

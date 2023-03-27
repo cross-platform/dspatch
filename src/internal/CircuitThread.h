@@ -64,6 +64,7 @@ public:
     NONCOPYABLE( CircuitThread );
 
     CircuitThread();
+    CircuitThread( CircuitThread&& );
     ~CircuitThread();
 
     void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );

@@ -32,6 +32,11 @@ using namespace DSPatch::internal;
 
 ComponentThread::ComponentThread() = default;
 
+// cppcheck-suppress missingMemberCopy
+ComponentThread::ComponentThread( ComponentThread&& )
+{
+}
+
 void ComponentThread::Setup( DSPatch::Component* component, int bufferNo, const DSPatch::ThreadPool::SPtr& threadPool )
 {
     _bufferNo = bufferNo;

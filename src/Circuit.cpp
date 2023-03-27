@@ -31,8 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/AutoTickThread.h>
 #include <internal/CircuitThread.h>
 
-#include <deque>
-
 using namespace DSPatch;
 
 namespace DSPatch
@@ -52,7 +50,7 @@ public:
 
     std::vector<DSPatch::Component::SPtr> components;
 
-    std::deque<CircuitThread> circuitThreads;
+    std::vector<CircuitThread> circuitThreads;
 
     DSPatch::ThreadPool::SPtr threadPool;
 };
@@ -70,6 +68,8 @@ Circuit::~Circuit()
     StopAutoTick();
     SetThreadPool( nullptr );
     RemoveAllComponents();
+
+    delete p;
 }
 
 int Circuit::AddComponent( const Component::SPtr& component )

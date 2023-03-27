@@ -94,7 +94,7 @@ public:
     void ResumeAutoTick();
 
 private:
-    std::unique_ptr<internal::Circuit> p;
+    internal::Circuit* p;
 };
 
 }  // namespace DSPatch

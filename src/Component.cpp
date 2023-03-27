@@ -77,7 +77,7 @@ public:
 
     std::vector<Wire> inputWires;
 
-    std::deque<ComponentThread> componentThreads;
+    std::vector<ComponentThread> componentThreads;
     std::vector<std::unordered_set<Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
@@ -103,6 +103,8 @@ Component::Component( ProcessOrder processOrder )
 Component::~Component()
 {
     DisconnectAllInputs();
+
+    delete p;
 }
 
 bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput )
@@ -129,6 +131,7 @@ void Component::DisconnectInput( int inputNo )
     for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); ++it )
     {
         if ( it->toInput == inputNo )
+        // cppcheck-suppress useStlAlgorithm
         {
             // update source output's reference count
             it->fromComponent->p->DecRefs( it->fromOutput );

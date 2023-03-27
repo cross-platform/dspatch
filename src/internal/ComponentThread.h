@@ -33,7 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dspatch/ThreadPool.h>
 
 #include <condition_variable>
-#include <functional>
 #include <thread>
 
 namespace DSPatch
@@ -56,6 +55,7 @@ public:
     NONCOPYABLE( ComponentThread );
 
     ComponentThread();
+    ComponentThread( ComponentThread&& );
 
     void Setup( DSPatch::Component* component, int bufferNo, const DSPatch::ThreadPool::SPtr& threadPool );
 

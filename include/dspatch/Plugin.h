@@ -64,7 +64,7 @@ public:
     Component::SPtr Create() const;
 
 private:
-    std::unique_ptr<internal::Plugin> p;
+    internal::Plugin* p;
 };
 
 }  // namespace DSPatch
