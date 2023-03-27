@@ -46,7 +46,7 @@ namespace internal
 A ComponentThread's primary purpose is to tick parallel circuit components in parallel.
 
 TickAsync() adds a tick call to the provided thread pool. Wait() will block until that thread pool
-has completed execution of the tick call. Until this point, Done() will return false.
+has completed execution of the tick call.
 */
 
 class ComponentThread final
