@@ -239,6 +239,7 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 }
 
+// cppcheck-suppress unusedFunction
 int Circuit::GetBufferCount() const
 {
     return (int)p->circuitThreads.size();
