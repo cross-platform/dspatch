@@ -221,6 +221,15 @@ void Component::SetThreadPool( const ThreadPool::SPtr& threadPool )
     if ( threadPool )
     {
         bufferCount = threadPool->GetBufferCount();
+
+        if ( threadPool->GetThreadsPerBuffer() != 0 )
+        {
+            p->threadPool = threadPool;
+        }
+        else
+        {
+            p->threadPool = nullptr;
+        }
     }
 
     // p->bufferCount is the current thread count / bufferCount is new thread count
@@ -249,7 +258,7 @@ void Component::SetThreadPool( const ThreadPool::SPtr& threadPool )
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
-        p->componentThreads[i].Setup( this, i, threadPool );
+        p->componentThreads[i].Setup( this, i, p->threadPool );
 
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 
@@ -271,8 +280,6 @@ void Component::SetThreadPool( const ThreadPool::SPtr& threadPool )
     p->gotReleases[0] = true;
 
     p->bufferCount = bufferCount;
-
-    p->threadPool = threadPool;
 }
 
 bool Component::Tick( int bufferNo )
@@ -283,30 +290,34 @@ bool Component::Tick( int bufferNo )
         // 1. set tickStatus -> TickStarted
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
-        // 2. tick incoming components
-        for ( auto& wire : p->inputWires )
+        if ( p->threadPool )
         {
-            if ( !p->threadPool || p->threadPool->GetThreadsPerBuffer() == 0 )
+            // 2. tick incoming components
+            for ( auto& wire : p->inputWires )
             {
-                wire.fromComponent->Tick( bufferNo );
+                if ( !wire.fromComponent->Tick( bufferNo ) )
+                {
+                    p->feedbackWires[bufferNo].emplace( &wire );
+                }
             }
-            else if ( !wire.fromComponent->Tick( bufferNo ) )
-            {
-                p->feedbackWires[bufferNo].emplace( &wire );
-            }
-        }
 
-        // 3. set tickStatus -> Ticking
-        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+            // 3. set tickStatus -> Ticking
+            p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        // do tick
-        if ( !p->threadPool || p->threadPool->GetThreadsPerBuffer() == 0 )
-        {
-            _DoTick( bufferNo );
+            p->componentThreads[bufferNo].TickAsync();
         }
         else
         {
-            p->componentThreads[bufferNo].TickAsync();
+            // 2. tick incoming components
+            for ( auto& wire : p->inputWires )
+            {
+                wire.fromComponent->Tick( bufferNo );
+            }
+
+            // 3. set tickStatus -> Ticking
+            p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+
+            _DoTick( bufferNo );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
@@ -364,7 +375,7 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
 void Component::_DoTick( int bufferNo )
 {
     // 4. get new inputs from incoming components
-    if ( p->threadPool && p->threadPool->GetThreadsPerBuffer() != 0 )
+    if ( p->threadPool )
     {
         for ( auto& wire : p->inputWires )
         {
@@ -453,7 +464,7 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
     auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( threadPool && threadPool->GetThreadsPerBuffer() != 0 && ref.first > 1 )
+    if ( threadPool && ref.first > 1 )
     {
         std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput] );
         if ( ++ref.second != ref.first )
