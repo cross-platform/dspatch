@@ -1294,3 +1294,9 @@ TEST_CASE( "TenThousandComponents" )
 // 2x Buffer, 10000 Components (Series Mode): 6.03ms
 // 3x Buffer, 10000 Components (Series Mode): 4.52ms
 // 4x Buffer, 10000 Components (Series Mode): 3.56ms
+
+// Avoid unique_locks
+// 1x Buffer, 10000 Components (Series Mode): 7.51ms
+// 2x Buffer, 10000 Components (Series Mode): 5.81ms
+// 3x Buffer, 10000 Components (Series Mode): 4.2ms
+// 4x Buffer, 10000 Components (Series Mode): 3.33ms

@@ -396,6 +396,12 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
 
 void internal::Component::WaitForRelease( int threadNo )
 {
+    if ( gotReleases[threadNo] )
+    {
+        gotReleases[threadNo] = false;  // reset the release flag
+        return;
+    }
+
     std::unique_lock<std::mutex> lock( releaseMutexes[threadNo] );
 
     if ( !gotReleases[threadNo] )

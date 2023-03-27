@@ -83,13 +83,14 @@ void ComponentThread::Stop()
 
 void ComponentThread::Sync()
 {
-    if ( _stopped )
+    if ( _stopped || _gotSync )
     {
         return;
     }
 
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
+    // cppcheck-suppress knownConditionTrueFalse
     if ( !_gotSync )  // if haven't already got sync
     {
         _syncCondt.wait( lock );  // wait for sync
