@@ -1288,3 +1288,9 @@ TEST_CASE( "TenThousandComponents" )
 // 2x Buffer, 10000 Components (Series Mode): 6.34ms
 // 3x Buffer, 10000 Components (Series Mode): 4.66ms
 // 4x Buffer, 10000 Components (Series Mode): 3.51ms
+
+// std::vector<std::deque<std::mutex>> refMutexes & if parallel in _DoTick()
+// 1x Buffer, 10000 Components (Series Mode): 7.37ms
+// 2x Buffer, 10000 Components (Series Mode): 6.03ms
+// 3x Buffer, 10000 Components (Series Mode): 4.52ms
+// 4x Buffer, 10000 Components (Series Mode): 3.56ms

@@ -73,7 +73,7 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::deque<std::deque<std::mutex>> refMutexes;
+    std::vector<std::deque<std::mutex>> refMutexes;
 
     std::vector<Wire> inputWires;
 
@@ -345,22 +345,26 @@ void Component::SetOutputCount_( int outputCount, std::vector<std::string> const
 void Component::_DoTick( Component::TickMode mode, int bufferNo )
 {
     // 4. get new inputs from incoming components
-    for ( auto& wire : p->inputWires )
+    if ( mode == Component::TickMode::Parallel )
     {
-        if ( mode == TickMode::Parallel )
+        for ( auto& wire : p->inputWires )
         {
             // wait for non-feedback incoming components to finish ticking
-            auto wireIndex = p->feedbackWires[bufferNo].find( &wire );
-            if ( wireIndex == p->feedbackWires[bufferNo].end() )
+            if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
             {
                 wire.fromComponent->p->componentThreads[bufferNo].Sync();
             }
+            wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
         }
-
-        wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
+        p->feedbackWires[bufferNo].clear();
     }
-
-    p->feedbackWires[bufferNo].clear();
+    else
+    {
+        for ( auto& wire : p->inputWires )
+        {
+            wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
+        }
+    }
 
     // You might be thinking: Why not clear the outputs in Reset()?
 
