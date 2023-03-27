@@ -68,6 +68,8 @@ Circuit::~Circuit()
     StopAutoTick();
     SetBufferCount( 0 );
     RemoveAllComponents();
+
+    delete p;
 }
 
 int Circuit::AddComponent( Component::SPtr const& component )
@@ -239,6 +241,7 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 }
 
+// cppcheck-suppress unusedFunction
 int Circuit::GetBufferCount() const
 {
     return (int)p->circuitThreads.size();

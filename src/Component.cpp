@@ -101,6 +101,8 @@ Component::Component( ProcessOrder processOrder )
 Component::~Component()
 {
     DisconnectAllInputs();
+
+    delete p;
 }
 
 bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput )

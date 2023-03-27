@@ -122,7 +122,7 @@ private:
     friend class internal::ComponentThread;
     void _DoTick( Component::TickMode mode, int bufferNo );
 
-    std::unique_ptr<internal::Component> p;
+    internal::Component* p;
 };
 
 }  // namespace DSPatch
