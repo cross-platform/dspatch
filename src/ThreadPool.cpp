@@ -54,12 +54,14 @@ public:
             condt.notify_all();
         }
 
-        ComponentThread* front()
+        ComponentThread* pop()
         {
             if ( !queue.empty() )
             {
                 std::lock_guard<std::mutex> lock( mutex );
-                return queue.front();
+                auto job = queue.front();
+                queue.pop();
+                return job;
             }
 
             std::unique_lock<std::mutex> lock( mutex );
@@ -69,13 +71,9 @@ public:
                 condt.wait( lock );
             }
             // cppcheck-suppress containerOutOfBounds
-            return queue.front();
-        }
-
-        void pop()
-        {
-            std::lock_guard<std::mutex> lock( mutex );
+            auto job = queue.front();
             queue.pop();
+            return job;
         }
 
     private:
@@ -133,13 +131,12 @@ public:
     {
         while ( true )
         {
-            auto job = jobs->front();
+            auto job = jobs->pop();
             if ( !job )
             {
                 break;
             }
             job->Run();
-            jobs->pop();
         }
     }
 
