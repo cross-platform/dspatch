@@ -264,33 +264,34 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
         // 1. set tickStatus -> TickStarted
         p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
-        // 2. tick incoming components
-        for ( auto& wire : p->inputWires )
+        if ( mode == TickMode::Parallel )
         {
-            if ( mode == TickMode::Series )
-            {
-                wire.fromComponent->Tick( mode, bufferNo );
-            }
-            else if ( mode == TickMode::Parallel )
+            // 2. tick incoming components
+            for ( auto& wire : p->inputWires )
             {
                 if ( !wire.fromComponent->Tick( mode, bufferNo ) )
                 {
                     p->feedbackWires[bufferNo].emplace( &wire );
                 }
             }
-        }
 
-        // 3. set tickStatus -> Ticking
-        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+            // 3. set tickStatus -> Ticking
+            p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
-        // do tick
-        if ( mode == TickMode::Series )
-        {
-            _DoTick( mode, bufferNo );
-        }
-        else if ( mode == TickMode::Parallel )
-        {
             p->componentThreads[bufferNo].Resume( mode );
+        }
+        else
+        {
+            // 2. tick incoming components
+            for ( auto& wire : p->inputWires )
+            {
+                wire.fromComponent->Tick( mode, bufferNo );
+            }
+
+            // 3. set tickStatus -> Ticking
+            p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+
+            _DoTick( mode, bufferNo );
         }
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
