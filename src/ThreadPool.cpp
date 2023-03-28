@@ -56,11 +56,19 @@ public:
 
         ComponentThread* front()
         {
+            if ( !queue.empty() )
+            {
+                std::lock_guard<std::mutex> lock( mutex );
+                return queue.front();
+            }
+
             std::unique_lock<std::mutex> lock( mutex );
+            // cppcheck-suppress knownConditionTrueFalse
             if ( queue.empty() )
             {
                 condt.wait( lock );
             }
+            // cppcheck-suppress containerOutOfBounds
             return queue.front();
         }
 
@@ -151,7 +159,10 @@ ThreadPool::ThreadPool( int bufferCount, int threadsPerBuffer )
 {
 }
 
-ThreadPool::~ThreadPool() = default;
+ThreadPool::~ThreadPool()
+{
+    delete p;
+}
 
 int ThreadPool::GetBufferCount() const
 {

@@ -67,7 +67,7 @@ public:
     void AddJob( int bufferNo, internal::ComponentThread* job );
 
 private:
-    std::unique_ptr<internal::ThreadPool> p;
+    internal::ThreadPool* p;
 };
 
 }  // namespace DSPatch
