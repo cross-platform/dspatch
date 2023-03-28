@@ -1,3 +1,8 @@
+v.9.2.0 (28 March 2023)
+    - Fixed auto-tick bug on SetBufferCount().
+    - Added TenThousandComponents test.
+    - Lots of optimizatons.
+
 v.9.1.0 (31 January 2023)
     - Renamed move version of SetValue() to MoveValue().
     - Renamed CopySignal() to SetSignal().
