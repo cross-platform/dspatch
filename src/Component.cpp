@@ -308,13 +308,7 @@ bool Component::Tick( int bufferNo )
         }
         else
         {
-            // 2. tick incoming components
-            for ( auto& wire : p->inputWires )
-            {
-                wire.fromComponent->Tick( bufferNo );
-            }
-
-            // 3. set tickStatus -> Ticking
+            // 2. set tickStatus -> Ticking
             p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
             _DoTick( bufferNo );
@@ -374,9 +368,9 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
 
 void Component::_DoTick( int bufferNo )
 {
-    // 4. get new inputs from incoming components
     if ( p->threadPool )
     {
+        // 4. get new inputs from incoming components
         for ( auto& wire : p->inputWires )
         {
             // wait for non-feedback incoming components to finish ticking
@@ -384,14 +378,22 @@ void Component::_DoTick( int bufferNo )
             {
                 wire.fromComponent->p->componentThreads[bufferNo].Wait();
             }
+            else
+            {
+                p->feedbackWires[bufferNo].erase( &wire );
+            }
+
             wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
         }
-        p->feedbackWires[bufferNo].clear();
     }
     else
     {
+        // 3. tick incoming components
         for ( auto& wire : p->inputWires )
         {
+            wire.fromComponent->Tick( bufferNo );
+
+            // 4. get new inputs from incoming components
             wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
         }
     }
