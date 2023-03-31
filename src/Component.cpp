@@ -105,7 +105,7 @@ Component::~Component()
     delete p;
 }
 
-bool Component::ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput )
+bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput )
 {
     if ( fromOutput >= fromComponent->GetOutputCount() || toInput >= p->inputBuses[0].GetSignalCount() )
     {
@@ -140,7 +140,7 @@ void Component::DisconnectInput( int inputNo )
     }
 }
 
-void Component::DisconnectInput( Component::SCPtr const& fromComponent )
+void Component::DisconnectInput( const Component::SCPtr& fromComponent )
 {
     // remove fromComponent from inputWires
     for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )
@@ -310,7 +310,7 @@ void Component::Reset( int bufferNo )
     p->tickStatuses[bufferNo] = internal::Component::TickStatus::NotTicked;
 }
 
-void Component::SetInputCount_( int inputCount, std::vector<std::string> const& inputNames )
+void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
 {
     p->inputNames = inputNames;
 
@@ -320,7 +320,7 @@ void Component::SetInputCount_( int inputCount, std::vector<std::string> const& 
     }
 }
 
-void Component::SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames )
+void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
 {
     p->outputNames = outputNames;
 
@@ -414,7 +414,7 @@ void internal::Component::WaitForRelease( int threadNo )
     {
         releaseCondts[threadNo].wait( lock );  // wait for release
     }
-    gotReleases[threadNo] = false;  // reset the release flag
+    gotReleases[threadNo] = false;             // reset the release flag
 }
 
 void internal::Component::ReleaseThread( int threadNo )

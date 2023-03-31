@@ -94,10 +94,10 @@ public:
     Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
 
-    bool ConnectInput( Component::SPtr const& fromComponent, int fromOutput, int toInput );
+    bool ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput );
 
     void DisconnectInput( int inputNo );
-    void DisconnectInput( Component::SCPtr const& fromComponent );
+    void DisconnectInput( const Component::SCPtr& fromComponent );
     void DisconnectAllInputs();
 
     int GetInputCount() const;
@@ -115,8 +115,8 @@ public:
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
 
-    void SetInputCount_( int inputCount, std::vector<std::string> const& inputNames = {} );
-    void SetOutputCount_( int outputCount, std::vector<std::string> const& outputNames = {} );
+    void SetInputCount_( int inputCount, const std::vector<std::string>& inputNames = {} );
+    void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
     friend class internal::ComponentThread;
