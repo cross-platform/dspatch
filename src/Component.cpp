@@ -440,7 +440,7 @@ void internal::Component::WaitForRelease( int threadNo )
     {
         releaseCondts[threadNo].wait( lock );  // wait for release
     }
-    gotReleases[threadNo] = false;  // reset the release flag
+    gotReleases[threadNo] = false;             // reset the release flag
 }
 
 void internal::Component::ReleaseThread( int threadNo )
