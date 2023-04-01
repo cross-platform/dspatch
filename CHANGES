@@ -1,3 +1,8 @@
+v.9.2.1 (01 April 2023)
+    - Optimized Component::_DoTick() method.
+    - Massively improved performance of SignalBus.
+    - Code formatting and style fixes.
+
 v.9.2.0 (28 March 2023)
     - Fixed auto-tick bug on SetBufferCount().
     - Added TenThousandComponents test.
