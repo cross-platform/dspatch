@@ -51,6 +51,7 @@ public:
     NONCOPYABLE( Signal );
 
     Signal();
+    Signal( Signal&& );
     ~Signal();
 
     bool HasValue() const;

@@ -34,6 +34,10 @@ Signal::Signal()
 {
 }
 
+Signal::Signal( Signal&& )
+{
+}
+
 Signal::~Signal()
 {
     delete _valueHolder;

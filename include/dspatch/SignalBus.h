@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Signal.h>
 
-#include <deque>
+#include <vector>
 
 namespace DSPatch
 {
@@ -82,9 +82,9 @@ public:
     const std::type_info& GetType( int signalIndex ) const;
 
 private:
-    std::deque<Signal> _signals;
+    std::vector<Signal> _signals;
 
-    std::unique_ptr<internal::SignalBus> p;
+    internal::SignalBus* p;
 };
 
 template <class ValueType>
