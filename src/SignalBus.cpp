@@ -51,12 +51,13 @@ SignalBus::SignalBus()
 
 SignalBus::SignalBus( SignalBus&& rhs )
     : _signals( std::move( rhs._signals ) )
-    , p( std::move( rhs.p ) )
+    , p( new internal::SignalBus() )
 {
 }
 
 SignalBus::~SignalBus()
 {
+    delete p;
 }
 
 void SignalBus::SetSignalCount( int signalCount )
