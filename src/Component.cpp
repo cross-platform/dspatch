@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/Wire.h>
 
 #include <condition_variable>
-#include <deque>
 #include <unordered_set>
 
 using namespace DSPatch;
@@ -50,6 +49,32 @@ public:
         NotTicked,
         TickStarted,
         Ticking
+    };
+
+    struct MovableMutex
+    {
+        MovableMutex() = default;
+
+        // cppcheck-suppress missingMemberCopy
+        MovableMutex( MovableMutex&& )
+        {
+        }
+
+        std::mutex mutex;
+    };
+
+    struct ReleaseFlag
+    {
+        ReleaseFlag() = default;
+
+        // cppcheck-suppress missingMemberCopy
+        ReleaseFlag( ReleaseFlag&& )
+        {
+        }
+
+        bool gotRelease = false;
+        std::mutex mutex;
+        std::condition_variable condt;
     };
 
     explicit Component( DSPatch::Component::ProcessOrder processOrder )
@@ -73,7 +98,7 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::deque<std::deque<std::mutex>> refMutexes;
+    std::vector<std::vector<MovableMutex>> refMutexes;
 
     std::vector<Wire> inputWires;
 
@@ -81,9 +106,7 @@ public:
     std::vector<std::unordered_set<Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
-    std::vector<bool> gotReleases;
-    std::deque<std::mutex> releaseMutexes;
-    std::deque<std::condition_variable> releaseCondts;
+    std::vector<ReleaseFlag> releaseFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
@@ -217,9 +240,7 @@ void Component::SetBufferCount( int bufferCount )
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
 
-    p->gotReleases.resize( bufferCount );
-    p->releaseMutexes.resize( bufferCount );
-    p->releaseCondts.resize( bufferCount );
+    p->releaseFlags.resize( bufferCount );
 
     p->refs.resize( bufferCount );
     p->refMutexes.resize( bufferCount );
@@ -234,7 +255,7 @@ void Component::SetBufferCount( int bufferCount )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        p->gotReleases[i] = false;
+        p->releaseFlags[i].gotRelease = false;
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -246,7 +267,7 @@ void Component::SetBufferCount( int bufferCount )
         p->refMutexes[i].resize( p->refMutexes[0].size() );
     }
 
-    p->gotReleases[0] = true;
+    p->releaseFlags[0].gotRelease = true;
 
     p->bufferCount = bufferCount;
 }
@@ -402,19 +423,21 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
 
 void internal::Component::WaitForRelease( int threadNo )
 {
-    if ( gotReleases[threadNo] )
+    auto& releaseFlag = releaseFlags[threadNo];
+
+    if ( releaseFlag.gotRelease )
     {
-        gotReleases[threadNo] = false;  // reset the release flag
+        releaseFlag.gotRelease = false;  // reset the release flag
         return;
     }
 
-    std::unique_lock<std::mutex> lock( releaseMutexes[threadNo] );
+    std::unique_lock<std::mutex> lock( releaseFlag.mutex );
 
-    if ( !gotReleases[threadNo] )
+    if ( !releaseFlag.gotRelease )
     {
-        releaseCondts[threadNo].wait( lock );  // wait for release
+        releaseFlag.condt.wait( lock );  // wait for release
     }
-    gotReleases[threadNo] = false;             // reset the release flag
+    releaseFlag.gotRelease = false;      // reset the release flag
 }
 
 void internal::Component::ReleaseThread( int threadNo )
@@ -424,10 +447,12 @@ void internal::Component::ReleaseThread( int threadNo )
         threadNo = 0;
     }
 
-    std::lock_guard<std::mutex> lock( releaseMutexes[threadNo] );
+    auto& releaseFlag = releaseFlags[threadNo];
 
-    gotReleases[threadNo] = true;
-    releaseCondts[threadNo].notify_all();
+    std::lock_guard<std::mutex> lock( releaseFlag.mutex );
+
+    releaseFlag.gotRelease = true;
+    releaseFlag.condt.notify_all();
 }
 
 void internal::Component::GetOutput(
@@ -443,7 +468,7 @@ void internal::Component::GetOutput(
 
     if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
     {
-        std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput] );
+        std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput].mutex );
         if ( ++ref.second != ref.first )
         {
             toBus.SetSignal( toInput, signal );
