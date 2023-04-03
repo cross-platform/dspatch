@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.2.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.2.1</span>
    </div>
   </td>
  </tr>
@@ -91,12 +91,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7b383fecceacbe94500c99298af07bf3"><td class="memItemLeft" align="right" valign="top"><a id="a7b383fecceacbe94500c99298af07bf3" name="a7b383fecceacbe94500c99298af07bf3"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NONCOPYABLE</b> (<a class="el" href="class_d_s_patch_1_1_circuit.html">Circuit</a>)</td></tr>
 <tr class="separator:a7b383fecceacbe94500c99298af07bf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aafa4dbdcbf07361b10f0a5ada119307f"><td class="memItemLeft" align="right" valign="top"><a id="aafa4dbdcbf07361b10f0a5ada119307f" name="aafa4dbdcbf07361b10f0a5ada119307f"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>AddComponent</b> (Component::SPtr const &amp;component)</td></tr>
-<tr class="separator:aafa4dbdcbf07361b10f0a5ada119307f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a149eca69c2dc7d7724e63a3dc7ecb62a"><td class="memItemLeft" align="right" valign="top"><a id="a149eca69c2dc7d7724e63a3dc7ecb62a" name="a149eca69c2dc7d7724e63a3dc7ecb62a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveComponent</b> (Component::SCPtr const &amp;component)</td></tr>
-<tr class="separator:a149eca69c2dc7d7724e63a3dc7ecb62a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3320d4200e7e1e524b44b11f4a003c6"><td class="memItemLeft" align="right" valign="top"><a id="ae3320d4200e7e1e524b44b11f4a003c6" name="ae3320d4200e7e1e524b44b11f4a003c6"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>AddComponent</b> (const Component::SPtr &amp;component)</td></tr>
+<tr class="separator:ae3320d4200e7e1e524b44b11f4a003c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af031b7dedce086e7048f2995e3249658"><td class="memItemLeft" align="right" valign="top"><a id="af031b7dedce086e7048f2995e3249658" name="af031b7dedce086e7048f2995e3249658"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveComponent</b> (const Component::SCPtr &amp;component)</td></tr>
+<tr class="separator:af031b7dedce086e7048f2995e3249658"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a892813aa130fff527072597df11bf0de"><td class="memItemLeft" align="right" valign="top"><a id="a892813aa130fff527072597df11bf0de" name="a892813aa130fff527072597df11bf0de"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveComponent</b> (int componentIndex)</td></tr>
 <tr class="separator:a892813aa130fff527072597df11bf0de"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -106,21 +106,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveAllComponents</
 <tr class="memitem:aaa0a828ba81e0d4ff1a3645525b68749"><td class="memItemLeft" align="right" valign="top"><a id="aaa0a828ba81e0d4ff1a3645525b68749" name="aaa0a828ba81e0d4ff1a3645525b68749"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>GetComponentCount</b> () const</td></tr>
 <tr class="separator:aaa0a828ba81e0d4ff1a3645525b68749"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac66991994e1276b1921b3e6c1ad75a42"><td class="memItemLeft" align="right" valign="top"><a id="ac66991994e1276b1921b3e6c1ad75a42" name="ac66991994e1276b1921b3e6c1ad75a42"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (Component::SCPtr const &amp;fromComponent, int fromOutput, Component::SCPtr const &amp;toComponent, int toInput)</td></tr>
-<tr class="separator:ac66991994e1276b1921b3e6c1ad75a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d3202a1ef06223477efd31c02b70efe"><td class="memItemLeft" align="right" valign="top"><a id="a6d3202a1ef06223477efd31c02b70efe" name="a6d3202a1ef06223477efd31c02b70efe"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (Component::SCPtr const &amp;fromComponent, int fromOutput, int toComponent, int toInput)</td></tr>
-<tr class="separator:a6d3202a1ef06223477efd31c02b70efe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82dd34a49338d523e5d0715c93cc050a"><td class="memItemLeft" align="right" valign="top"><a id="a82dd34a49338d523e5d0715c93cc050a" name="a82dd34a49338d523e5d0715c93cc050a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (int fromComponent, int fromOutput, Component::SCPtr const &amp;toComponent, int toInput)</td></tr>
-<tr class="separator:a82dd34a49338d523e5d0715c93cc050a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26916fa1f300b8730e8f2cb5238044a0"><td class="memItemLeft" align="right" valign="top"><a id="a26916fa1f300b8730e8f2cb5238044a0" name="a26916fa1f300b8730e8f2cb5238044a0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (const Component::SCPtr &amp;fromComponent, int fromOutput, const Component::SCPtr &amp;toComponent, int toInput)</td></tr>
+<tr class="separator:a26916fa1f300b8730e8f2cb5238044a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f5676c01963d00a623dab298b69df45"><td class="memItemLeft" align="right" valign="top"><a id="a5f5676c01963d00a623dab298b69df45" name="a5f5676c01963d00a623dab298b69df45"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (const Component::SCPtr &amp;fromComponent, int fromOutput, int toComponent, int toInput)</td></tr>
+<tr class="separator:a5f5676c01963d00a623dab298b69df45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d1e73c2342478b5db8caa66c401c7fa"><td class="memItemLeft" align="right" valign="top"><a id="a5d1e73c2342478b5db8caa66c401c7fa" name="a5d1e73c2342478b5db8caa66c401c7fa"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (int fromComponent, int fromOutput, const Component::SCPtr &amp;toComponent, int toInput)</td></tr>
+<tr class="separator:a5d1e73c2342478b5db8caa66c401c7fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc851f2d0cdf29f13d9aaad65adf7d4f"><td class="memItemLeft" align="right" valign="top"><a id="adc851f2d0cdf29f13d9aaad65adf7d4f" name="adc851f2d0cdf29f13d9aaad65adf7d4f"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectOutToIn</b> (int fromComponent, int fromOutput, int toComponent, int toInput)</td></tr>
 <tr class="separator:adc851f2d0cdf29f13d9aaad65adf7d4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6874151245979af81f8a11205b800e2"><td class="memItemLeft" align="right" valign="top"><a id="aa6874151245979af81f8a11205b800e2" name="aa6874151245979af81f8a11205b800e2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</b> (Component::SCPtr const &amp;component)</td></tr>
-<tr class="separator:aa6874151245979af81f8a11205b800e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a028c941526a716b0df85af64d24269c8"><td class="memItemLeft" align="right" valign="top"><a id="a028c941526a716b0df85af64d24269c8" name="a028c941526a716b0df85af64d24269c8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</b> (const Component::SCPtr &amp;component)</td></tr>
+<tr class="separator:a028c941526a716b0df85af64d24269c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a628bf426f076e5982312046ec55bae9a"><td class="memItemLeft" align="right" valign="top"><a id="a628bf426f076e5982312046ec55bae9a" name="a628bf426f076e5982312046ec55bae9a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectComponent</b> (int componentIndex)</td></tr>
 <tr class="separator:a628bf426f076e5982312046ec55bae9a"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.2.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.2.1</span>
    </div>
   </td>
  </tr>
@@ -111,15 +111,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af7e8b0e0b17eef230b7a63a485d4a9be"><td class="memItemLeft" align="right" valign="top"><a id="af7e8b0e0b17eef230b7a63a485d4a9be" name="af7e8b0e0b17eef230b7a63a485d4a9be"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Component</b> (ProcessOrder processOrder=ProcessOrder::InOrder)</td></tr>
 <tr class="separator:af7e8b0e0b17eef230b7a63a485d4a9be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb5b1f1f78760f5068e34cf77a2c64fd"><td class="memItemLeft" align="right" valign="top"><a id="aeb5b1f1f78760f5068e34cf77a2c64fd" name="aeb5b1f1f78760f5068e34cf77a2c64fd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectInput</b> (Component::SPtr const &amp;fromComponent, int fromOutput, int toInput)</td></tr>
-<tr class="separator:aeb5b1f1f78760f5068e34cf77a2c64fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f9acaeadceff6655bee24e048b3f36d"><td class="memItemLeft" align="right" valign="top"><a id="a4f9acaeadceff6655bee24e048b3f36d" name="a4f9acaeadceff6655bee24e048b3f36d"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ConnectInput</b> (const Component::SPtr &amp;fromComponent, int fromOutput, int toInput)</td></tr>
+<tr class="separator:a4f9acaeadceff6655bee24e048b3f36d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5dcf30063b7dfc35ff81ca28e450746"><td class="memItemLeft" align="right" valign="top"><a id="aa5dcf30063b7dfc35ff81ca28e450746" name="aa5dcf30063b7dfc35ff81ca28e450746"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectInput</b> (int inputNo)</td></tr>
 <tr class="separator:aa5dcf30063b7dfc35ff81ca28e450746"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1f4663b779cf6a17bef7089fbf723d7"><td class="memItemLeft" align="right" valign="top"><a id="aa1f4663b779cf6a17bef7089fbf723d7" name="aa1f4663b779cf6a17bef7089fbf723d7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectInput</b> (Component::SCPtr const &amp;fromComponent)</td></tr>
-<tr class="separator:aa1f4663b779cf6a17bef7089fbf723d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc849721e57bc7451f1824028e1a1161"><td class="memItemLeft" align="right" valign="top"><a id="abc849721e57bc7451f1824028e1a1161" name="abc849721e57bc7451f1824028e1a1161"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectInput</b> (const Component::SCPtr &amp;fromComponent)</td></tr>
+<tr class="separator:abc849721e57bc7451f1824028e1a1161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aef45c9c761af8219c79439aa276dc402"><td class="memItemLeft" align="right" valign="top"><a id="aef45c9c761af8219c79439aa276dc402" name="aef45c9c761af8219c79439aa276dc402"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisconnectAllInputs</b> ()</td></tr>
 <tr class="separator:aef45c9c761af8219c79439aa276dc402"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,12 +153,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:acf6021a94dcffa96d604dbdaf7e9e852"><td class="memItemLeft" align="right" valign="top"><a id="acf6021a94dcffa96d604dbdaf7e9e852" name="acf6021a94dcffa96d604dbdaf7e9e852"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Process_</b> (<a class="el" href="class_d_s_patch_1_1_signal_bus.html">SignalBus</a> &amp;, <a class="el" href="class_d_s_patch_1_1_signal_bus.html">SignalBus</a> &amp;)=0</td></tr>
 <tr class="separator:acf6021a94dcffa96d604dbdaf7e9e852"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a558625b0b81ff0cb382f9de6f9dec955"><td class="memItemLeft" align="right" valign="top"><a id="a558625b0b81ff0cb382f9de6f9dec955" name="a558625b0b81ff0cb382f9de6f9dec955"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetInputCount_</b> (int inputCount, std::vector&lt; std::string &gt; const &amp;inputNames={})</td></tr>
-<tr class="separator:a558625b0b81ff0cb382f9de6f9dec955"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa2b8db3f7a611976971fc7b5f6fcd49"><td class="memItemLeft" align="right" valign="top"><a id="afa2b8db3f7a611976971fc7b5f6fcd49" name="afa2b8db3f7a611976971fc7b5f6fcd49"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (int outputCount, std::vector&lt; std::string &gt; const &amp;outputNames={})</td></tr>
-<tr class="separator:afa2b8db3f7a611976971fc7b5f6fcd49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9a50d24d4193b7e0a0b93a03fe5f6a"><td class="memItemLeft" align="right" valign="top"><a id="aee9a50d24d4193b7e0a0b93a03fe5f6a" name="aee9a50d24d4193b7e0a0b93a03fe5f6a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetInputCount_</b> (int inputCount, const std::vector&lt; std::string &gt; &amp;inputNames={})</td></tr>
+<tr class="separator:aee9a50d24d4193b7e0a0b93a03fe5f6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a845f59599c0b74966a3479590c5fc5e7"><td class="memItemLeft" align="right" valign="top"><a id="a845f59599c0b74966a3479590c5fc5e7" name="a845f59599c0b74966a3479590c5fc5e7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (int outputCount, const std::vector&lt; std::string &gt; &amp;outputNames={})</td></tr>
+<tr class="separator:a845f59599c0b74966a3479590c5fc5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract base class for DSPatch components. </p>
