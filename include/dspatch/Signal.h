@@ -33,6 +33,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace DSPatch
 {
 
+inline unsigned int type_id_seq = 0;
+template <typename T>
+inline const unsigned int type_id = type_id_seq++;
+
 /// Value container used to carry data between components
 
 /**
@@ -70,7 +74,7 @@ public:
 
     void ClearValue();
 
-    const std::type_info& GetType() const;
+    unsigned int GetType() const;
 
 private:
     struct _ValueHolder
@@ -80,7 +84,7 @@ private:
         _ValueHolder() = default;
         virtual ~_ValueHolder() = default;
 
-        virtual const std::type_info& GetType() const = 0;
+        virtual unsigned int GetType() const = 0;
         virtual _ValueHolder* GetCopy() const = 0;
         virtual void SetValue( _ValueHolder* valueHolder ) = 0;
     };
@@ -92,13 +96,12 @@ private:
 
         explicit _Value( const ValueType& value )
             : value( value )
-            , type( typeid( ValueType ) )
         {
         }
 
-        virtual const std::type_info& GetType() const override
+        virtual unsigned int GetType() const override
         {
-            return type;
+            return type_id<ValueType>;
         }
 
         virtual _ValueHolder* GetCopy() const override
@@ -112,7 +115,6 @@ private:
         }
 
         ValueType value;
-        const std::type_info& type;
     };
 
     _ValueHolder* _valueHolder = nullptr;
@@ -130,7 +132,7 @@ ValueType* Signal::GetValue()
     // overhead. These Get() and Set() methods are VERY frequently called, so doing as little as
     // possible with the data here is best, which actually aids in the readably of the code too.
 
-    if ( _hasValue && GetType() == typeid( ValueType ) )
+    if ( _hasValue && GetType() == type_id<ValueType> )
     {
         return &( (_Value<ValueType>*)_valueHolder )->value;
     }
@@ -143,7 +145,7 @@ ValueType* Signal::GetValue()
 template <class ValueType>
 void Signal::SetValue( const ValueType& newValue )
 {
-    if ( GetType() == typeid( ValueType ) )
+    if ( GetType() == type_id<ValueType> )
     {
         ( (_Value<ValueType>*)_valueHolder )->value = newValue;
     }
@@ -158,7 +160,7 @@ void Signal::SetValue( const ValueType& newValue )
 template <class ValueType>
 void Signal::MoveValue( ValueType&& newValue )
 {
-    if ( GetType() == typeid( ValueType ) )
+    if ( GetType() == type_id<ValueType> )
     {
         ( (_Value<ValueType>*)_valueHolder )->value = std::move( newValue );
     }

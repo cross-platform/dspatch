@@ -79,7 +79,7 @@ public:
 
     void ClearAllValues();
 
-    const std::type_info& GetType( int signalIndex ) const;
+    unsigned int GetType( int signalIndex ) const;
 
 private:
     std::vector<Signal> _signals;

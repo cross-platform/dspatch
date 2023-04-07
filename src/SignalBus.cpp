@@ -128,7 +128,7 @@ void SignalBus::ClearAllValues()
     }
 }
 
-const std::type_info& SignalBus::GetType( int signalIndex ) const
+unsigned int SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -136,6 +136,6 @@ const std::type_info& SignalBus::GetType( int signalIndex ) const
     }
     else
     {
-        return typeid( void );
+        return type_id<void>;
     }
 }

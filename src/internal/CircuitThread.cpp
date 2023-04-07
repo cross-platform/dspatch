@@ -107,7 +107,9 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
     if ( _gotSync )
     {
         std::lock_guard<std::mutex> lock( _resumeMutex );
-        _gotSync = false;   // reset the sync flag
+        _gotSync = false;  // reset the sync flag
+
+        _mode = mode;
 
         _gotResume = true;  // set the resume flag
         _resumeCondt.notify_all();
@@ -116,6 +118,7 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
 
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
+    // cppcheck-suppress knownConditionTrueFalse
     if ( !_gotSync )              // if haven't already got sync
     {
         _syncCondt.wait( lock );  // wait for sync

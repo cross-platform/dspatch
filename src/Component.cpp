@@ -282,12 +282,12 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
     {
-        // 1. set tickStatus -> TickStarted
-        p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
-
         if ( mode == TickMode::Parallel )
         {
-            // 2. tick incoming components
+            // set tickStatus -> TickStarted
+            p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
+
+            // tick incoming components
             for ( auto& wire : p->inputWires )
             {
                 if ( !wire.fromComponent->Tick( mode, bufferNo ) )
@@ -296,14 +296,14 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
                 }
             }
 
-            // 3. set tickStatus -> Ticking
+            // set tickStatus -> Ticking
             p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
             p->componentThreads[bufferNo].Resume( mode );
         }
         else
         {
-            // 2. set tickStatus -> Ticking
+            // set tickStatus -> Ticking
             p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
 
             _DoTick( mode, bufferNo );
@@ -365,7 +365,6 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
 {
     if ( mode == Component::TickMode::Parallel )
     {
-        // 4. get new inputs from incoming components
         for ( auto& wire : p->inputWires )
         {
             // wait for non-feedback incoming components to finish ticking
@@ -378,17 +377,18 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
                 p->feedbackWires[bufferNo].erase( &wire );
             }
 
+            // get new inputs from incoming components
             wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
         }
     }
     else
     {
-        // 3. tick incoming components
         for ( auto& wire : p->inputWires )
         {
+            // tick incoming components
             wire.fromComponent->Tick( mode, bufferNo );
 
-            // 4. get new inputs from incoming components
+            // get new inputs from incoming components
             wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo], mode );
         }
     }
@@ -400,23 +400,23 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
     // output reference counting in internal::Component::GetOutput(), reseting the counter upon
     // the final request rather than in Reset().
 
-    // 5. clear outputs
+    // clear outputs
     p->outputBuses[bufferNo].ClearAllValues();
 
     if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
     {
-        // 6. wait for our turn to process
+        // wait for our turn to process
         p->WaitForRelease( bufferNo );
 
-        // 7. call Process_() with newly aquired inputs
+        // call Process_() with newly aquired inputs
         Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
 
-        // 8. signal that we're done processing
+        // signal that we're done processing
         p->ReleaseThread( bufferNo );
     }
     else
     {
-        // 6. call Process_() with newly aquired inputs
+        // call Process_() with newly aquired inputs
         Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
     }
 }

@@ -78,8 +78,8 @@ bool Signal::MoveSignal( Signal& fromSignal )
         // You might be thinking: Why std::swap and not std::move here?
 
         // This is a really nifty little optimisation actually. When we move a signal value from an
-        // output to an input (or vice-versa within a component) we move it's type_info along with
-        // it. If you look at SetValue(), you'll see that type_info is really useful in determining
+        // output to an input (or vice-versa within a component) we move it's type_id along with
+        // it. If you look at SetValue(), you'll see that type_id is really useful in determining
         // whether we have to delete and copy (re)construct our contained value, or can simply copy
         // assign. To avoid the former as much as possible, a swap is done between source and
         // target signals such that, between these two points, just two value holders need to be
@@ -102,7 +102,7 @@ void Signal::ClearValue()
     _hasValue = false;
 }
 
-const std::type_info& Signal::GetType() const
+unsigned int Signal::GetType() const
 {
     if ( _valueHolder != nullptr )
     {
@@ -110,6 +110,6 @@ const std::type_info& Signal::GetType() const
     }
     else
     {
-        return typeid( void );
+        return type_id<void>;
     }
 }
