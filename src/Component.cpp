@@ -83,7 +83,7 @@ public:
     }
 
     void WaitForRelease( int threadNo );
-    void ReleaseThread( int threadNo );
+    void ReleaseNextThread( int threadNo );
 
     void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode );
 
@@ -412,7 +412,7 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
         Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
 
         // signal that we're done processing
-        p->ReleaseThread( bufferNo );
+        p->ReleaseNextThread( bufferNo );
     }
     else
     {
@@ -440,7 +440,7 @@ void internal::Component::WaitForRelease( int threadNo )
     releaseFlag.gotRelease = false;      // reset the release flag
 }
 
-void internal::Component::ReleaseThread( int threadNo )
+void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
