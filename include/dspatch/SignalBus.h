@@ -66,7 +66,7 @@ public:
     bool HasValue( int signalIndex ) const;
 
     template <class ValueType>
-    ValueType* GetValue( int signalIndex );
+    ValueType* GetValue( int signalIndex ) const;
 
     template <class ValueType>
     bool SetValue( int signalIndex, const ValueType& newValue );
@@ -88,7 +88,7 @@ private:
 };
 
 template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex )
+ValueType* SignalBus::GetValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {

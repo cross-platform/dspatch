@@ -61,7 +61,7 @@ public:
     bool HasValue() const;
 
     template <class ValueType>
-    ValueType* GetValue();
+    ValueType* GetValue() const;
 
     template <class ValueType>
     void SetValue( const ValueType& newValue );
@@ -122,7 +122,7 @@ private:
 };
 
 template <class ValueType>
-ValueType* Signal::GetValue()
+ValueType* Signal::GetValue() const
 {
     // You might be thinking: Why the raw pointer return here?
 
