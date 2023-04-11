@@ -54,8 +54,8 @@ class DLLEXPORT Signal final
 public:
     NONCOPYABLE( Signal );
 
-    inline Signal() = default;
-    inline Signal( Signal&& ) = default;
+    inline Signal();
+    inline Signal( Signal&& );
     inline ~Signal();
 
     inline bool HasValue() const;
@@ -116,6 +116,12 @@ private:
     _ValueHolder* _valueHolder = nullptr;
     bool _hasValue = false;
 };
+
+inline Signal::Signal() = default;
+
+inline Signal::Signal( Signal&& )
+{
+}
 
 inline Signal::~Signal()
 {

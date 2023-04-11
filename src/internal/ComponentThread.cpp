@@ -30,9 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace DSPatch::internal;
 
-ComponentThread::ComponentThread()
-{
-}
+ComponentThread::ComponentThread() = default;
 
 // cppcheck-suppress missingMemberCopy
 ComponentThread::ComponentThread( ComponentThread&& )

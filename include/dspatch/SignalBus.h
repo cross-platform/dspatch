@@ -49,9 +49,8 @@ class DLLEXPORT SignalBus final
 public:
     NONCOPYABLE( SignalBus );
 
-    inline SignalBus() = default;
-    inline SignalBus( SignalBus&& ) = default;
-    inline ~SignalBus() = default;
+    inline SignalBus();
+    inline SignalBus( SignalBus&& );
 
     inline void SetSignalCount( int signalCount );
     inline int GetSignalCount() const;
@@ -80,6 +79,14 @@ private:
     std::vector<Signal> _signals;
     Signal _emptySignal;
 };
+
+inline SignalBus::SignalBus() = default;
+
+// cppcheck-suppress missingMemberCopy
+inline SignalBus::SignalBus( SignalBus&& rhs )
+    : _signals( std::move( rhs._signals ) )
+{
+}
 
 inline void SignalBus::SetSignalCount( int signalCount )
 {
