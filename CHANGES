@@ -1,3 +1,6 @@
+v.9.2.4 (11 April 2023)
+    - Fixed Signal & SignalBus move constructors.
+
 v.9.2.3 (11 April 2023)
     - Inlined all Signal and SignalBus methods.
     - Optimized type comparisons in Signal.
