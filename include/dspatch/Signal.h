@@ -54,11 +54,11 @@ class DLLEXPORT Signal final
 public:
     NONCOPYABLE( Signal );
 
-    Signal();
-    Signal( Signal&& );
-    ~Signal();
+    inline Signal() = default;
+    inline Signal( Signal&& ) = default;
+    inline ~Signal();
 
-    bool HasValue() const;
+    inline bool HasValue() const;
 
     template <class ValueType>
     ValueType* GetValue() const;
@@ -69,23 +69,23 @@ public:
     template <class ValueType>
     void MoveValue( ValueType&& newValue );
 
-    bool SetSignal( const Signal& fromSignal );
-    bool MoveSignal( Signal& fromSignal );
+    inline bool SetSignal( const Signal& fromSignal );
+    inline bool MoveSignal( Signal& fromSignal );
 
-    void ClearValue();
+    inline void ClearValue();
 
-    unsigned int GetType() const;
+    inline unsigned int GetType() const;
 
 private:
     struct _ValueHolder
     {
         NONCOPYABLE( _ValueHolder );
 
-        _ValueHolder() = default;
-        virtual ~_ValueHolder() = default;
+        inline _ValueHolder() = default;
+        virtual inline ~_ValueHolder() = default;
 
-        virtual _ValueHolder* GetCopy() const = 0;
-        virtual void SetValue( _ValueHolder* valueHolder ) = 0;
+        virtual inline _ValueHolder* GetCopy() const = 0;
+        virtual inline void SetValue( _ValueHolder* valueHolder ) = 0;
     };
 
     template <class ValueType>
@@ -93,18 +93,18 @@ private:
     {
         NONCOPYABLE( _Value );
 
-        explicit _Value( const ValueType& value )
+        explicit inline _Value( const ValueType& value )
             : type( type_id<ValueType> )
             , value( value )
         {
         }
 
-        virtual _ValueHolder* GetCopy() const override
+        virtual inline _ValueHolder* GetCopy() const override
         {
             return new _Value( value );
         }
 
-        virtual void SetValue( _ValueHolder* valueHolder ) override
+        virtual inline void SetValue( _ValueHolder* valueHolder ) override
         {
             value = ( (_Value<ValueType>*)valueHolder )->value;
         }
@@ -117,6 +117,16 @@ private:
     bool _hasValue = false;
 };
 
+inline Signal::~Signal()
+{
+    delete _valueHolder;
+}
+
+inline bool Signal::HasValue() const
+{
+    return _hasValue;
+}
+
 template <class ValueType>
 ValueType* Signal::GetValue() const
 {
@@ -128,6 +138,7 @@ ValueType* Signal::GetValue() const
     // overhead. These Get() and Set() methods are VERY frequently called, so doing as little as
     // possible with the data here is best, which actually aids in the readably of the code too.
 
+    // cppcheck-suppress cstyleCast
     if ( _hasValue && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
     {
         return &( (_Value<ValueType>*)_valueHolder )->value;
@@ -141,6 +152,7 @@ ValueType* Signal::GetValue() const
 template <class ValueType>
 void Signal::SetValue( const ValueType& newValue )
 {
+    // cppcheck-suppress cstyleCast
     if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
     {
         ( (_Value<ValueType>*)_valueHolder )->value = newValue;
@@ -156,6 +168,7 @@ void Signal::SetValue( const ValueType& newValue )
 template <class ValueType>
 void Signal::MoveValue( ValueType&& newValue )
 {
+    // cppcheck-suppress cstyleCast
     if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
     {
         ( (_Value<ValueType>*)_valueHolder )->value = std::move( newValue );
@@ -166,6 +179,74 @@ void Signal::MoveValue( ValueType&& newValue )
         _valueHolder = new _Value<ValueType>( std::move( newValue ) );
     }
     _hasValue = true;
+}
+
+inline bool Signal::SetSignal( const Signal& fromSignal )
+{
+    if ( fromSignal._hasValue && fromSignal._valueHolder )
+    {
+        // cppcheck-suppress cstyleCast
+        if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == ( (_Value<nullptr_t>*)fromSignal._valueHolder )->type )
+        {
+            _valueHolder->SetValue( fromSignal._valueHolder );
+        }
+        else
+        {
+            delete _valueHolder;
+            _valueHolder = fromSignal._valueHolder->GetCopy();
+        }
+
+        _hasValue = true;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+inline bool Signal::MoveSignal( Signal& fromSignal )
+{
+    if ( fromSignal._hasValue )
+    {
+        // You might be thinking: Why std::swap and not std::move here?
+
+        // This is a really nifty little optimisation actually. When we move a signal value from an
+        // output to an input (or vice-versa within a component) we move it's type_id along with
+        // it. If you look at SetValue(), you'll see that type_id is really useful in determining
+        // whether we have to delete and copy (re)construct our contained value, or can simply copy
+        // assign. To avoid the former as much as possible, a swap is done between source and
+        // target signals such that, between these two points, just two value holders need to be
+        // constructed, and shared back and forth from then on.
+
+        std::swap( fromSignal._valueHolder, _valueHolder );
+        fromSignal._hasValue = false;
+
+        _hasValue = true;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+inline void Signal::ClearValue()
+{
+    _hasValue = false;
+}
+
+inline unsigned int Signal::GetType() const
+{
+    if ( _valueHolder )
+    {
+        // cppcheck-suppress cstyleCast
+        return ( (_Value<nullptr_t>*)_valueHolder )->type;
+    }
+    else
+    {
+        return type_id<void>;
+    }
 }
 
 }  // namespace DSPatch
