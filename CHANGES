@@ -1,3 +1,11 @@
+v.9.2.3 (11 April 2023)
+    - Inlined all Signal and SignalBus methods.
+    - Optimized type comparisons in Signal.
+    - Made GetValue() methods const-correct.
+    - Renamed ReleaseThread() to ReleaseNextThread().
+    - Updated Catch test framework.
+    - Updated docs.
+
 v.9.2.2 (07 April 2023)
     - Corrected SignalBus move constructor.
     - Removed all deque usage in Component.
