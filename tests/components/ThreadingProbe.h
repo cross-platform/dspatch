@@ -29,7 +29,7 @@ protected:
         for ( int i = 0; i < _inputCount; ++i )
         {
             auto in = inputs.GetValue<int>( i );
-            REQUIRE( in != nullptr );
+            REQUIRE( in );
             REQUIRE( *in == _count );
         }
 

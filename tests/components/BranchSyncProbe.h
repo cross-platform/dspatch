@@ -16,13 +16,13 @@ protected:
     virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
         auto in0 = inputs.GetValue<int>( 0 );
-        REQUIRE( in0 != nullptr );
+        REQUIRE( in0 );
 
         auto in1 = inputs.GetValue<int>( 1 );
-        REQUIRE( in1 != nullptr );
+        REQUIRE( in1 );
 
         auto in2 = inputs.GetValue<int>( 2 );
-        REQUIRE( in2 != nullptr );
+        REQUIRE( in2 );
 
         REQUIRE( *in0 == 4 + _count );
         REQUIRE( *in1 == 2 + _count );

@@ -133,7 +133,7 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
 
 void CircuitThread::_Run()
 {
-    if ( _components != nullptr )
+    if ( _components )
     {
         while ( !_stop )
         {

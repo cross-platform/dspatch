@@ -50,9 +50,9 @@ bool Signal::HasValue() const
 
 bool Signal::SetSignal( const Signal& fromSignal )
 {
-    if ( fromSignal._hasValue && fromSignal._valueHolder != nullptr )
+    if ( fromSignal._hasValue && fromSignal._valueHolder )
     {
-        if ( _valueHolder != nullptr && _valueHolder->GetType() == fromSignal._valueHolder->GetType() )
+        if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == ( (_Value<nullptr_t>*)fromSignal._valueHolder )->type )
         {
             _valueHolder->SetValue( fromSignal._valueHolder );
         }
@@ -104,9 +104,9 @@ void Signal::ClearValue()
 
 unsigned int Signal::GetType() const
 {
-    if ( _valueHolder != nullptr )
+    if ( _valueHolder )
     {
-        return _valueHolder->GetType();
+        return ( (_Value<nullptr_t>*)_valueHolder )->type;
     }
     else
     {

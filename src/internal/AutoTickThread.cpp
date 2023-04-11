@@ -130,7 +130,7 @@ void AutoTickThread::Resume()
 
 void AutoTickThread::_Run()
 {
-    if ( _circuit != nullptr )
+    if ( _circuit )
     {
         while ( !_stop )
         {

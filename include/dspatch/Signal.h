@@ -84,7 +84,6 @@ private:
         _ValueHolder() = default;
         virtual ~_ValueHolder() = default;
 
-        virtual unsigned int GetType() const = 0;
         virtual _ValueHolder* GetCopy() const = 0;
         virtual void SetValue( _ValueHolder* valueHolder ) = 0;
     };
@@ -95,13 +94,9 @@ private:
         NONCOPYABLE( _Value );
 
         explicit _Value( const ValueType& value )
-            : value( value )
+            : type( type_id<ValueType> )
+            , value( value )
         {
-        }
-
-        virtual unsigned int GetType() const override
-        {
-            return type_id<ValueType>;
         }
 
         virtual _ValueHolder* GetCopy() const override
@@ -114,6 +109,7 @@ private:
             value = ( (_Value<ValueType>*)valueHolder )->value;
         }
 
+        const unsigned int type;
         ValueType value;
     };
 
@@ -132,7 +128,7 @@ ValueType* Signal::GetValue() const
     // overhead. These Get() and Set() methods are VERY frequently called, so doing as little as
     // possible with the data here is best, which actually aids in the readably of the code too.
 
-    if ( _hasValue && GetType() == type_id<ValueType> )
+    if ( _hasValue && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
     {
         return &( (_Value<ValueType>*)_valueHolder )->value;
     }
@@ -145,7 +141,7 @@ ValueType* Signal::GetValue() const
 template <class ValueType>
 void Signal::SetValue( const ValueType& newValue )
 {
-    if ( GetType() == type_id<ValueType> )
+    if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
     {
         ( (_Value<ValueType>*)_valueHolder )->value = newValue;
     }
@@ -160,7 +156,7 @@ void Signal::SetValue( const ValueType& newValue )
 template <class ValueType>
 void Signal::MoveValue( ValueType&& newValue )
 {
-    if ( GetType() == type_id<ValueType> )
+    if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
     {
         ( (_Value<ValueType>*)_valueHolder )->value = std::move( newValue );
     }

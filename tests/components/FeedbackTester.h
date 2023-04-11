@@ -26,7 +26,7 @@ protected:
             auto in = inputs.GetValue<int>( i );
             if ( _counter >= _bufferCount )
             {
-                REQUIRE( in != nullptr );
+                REQUIRE( in );
                 REQUIRE( *in == _counter - ( _bufferCount - 1 ) );
             }
         }

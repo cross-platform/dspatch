@@ -72,7 +72,7 @@ Circuit::~Circuit()
 
 int Circuit::AddComponent( const Component::SPtr& component )
 {
-    if ( component != nullptr )
+    if ( component )
     {
         int componentIndex;
 
