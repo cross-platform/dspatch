@@ -319,10 +319,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
     return true;
 }
 
-void Component::Reset( int bufferNo )
+void Component::Reset( Component::TickMode mode, int bufferNo )
 {
-    // wait for ticking to complete
-    p->componentThreads[bufferNo].Sync();
+    if ( mode == TickMode::Parallel )
+    {
+        // wait for ticking to complete
+        p->componentThreads[bufferNo].Sync();
+    }
 
     // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();

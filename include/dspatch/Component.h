@@ -110,7 +110,7 @@ public:
     int GetBufferCount() const;
 
     bool Tick( TickMode mode = TickMode::Series, int bufferNo = 0 );
-    void Reset( int bufferNo = 0 );
+    void Reset( TickMode mode = TickMode::Series, int bufferNo = 0 );
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;

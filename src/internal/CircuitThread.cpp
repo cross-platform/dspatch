@@ -165,7 +165,7 @@ void CircuitThread::_Run()
                 }
                 for ( auto& component : *_components )
                 {
-                    component->Reset( _threadNo );
+                    component->Reset( _mode, _threadNo );
                 }
             }
         }

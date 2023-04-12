@@ -259,7 +259,7 @@ void Circuit::Tick( Component::TickMode mode )
         // reset all internal components
         for ( auto& component : p->components )
         {
-            component->Reset();
+            component->Reset( mode );
         }
     }
     // process in multiple threads if this circuit has threads

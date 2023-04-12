@@ -206,10 +206,10 @@ TEST_CASE( "FeedbackTestNoCircuit" )
         passthrough->Tick( Component::TickMode::Series );
         probe->Tick( Component::TickMode::Series );
 
-        counter->Reset();
-        adder->Reset();
-        passthrough->Reset();
-        probe->Reset();
+        counter->Reset( Component::TickMode::Series );
+        adder->Reset( Component::TickMode::Series );
+        passthrough->Reset( Component::TickMode::Series );
+        probe->Reset( Component::TickMode::Series );
     }
 }
 
@@ -737,10 +737,10 @@ TEST_CASE( "FeedbackTestNoCircuit2" )
         passthrough->Tick( Component::TickMode::Parallel );
         probe->Tick( Component::TickMode::Parallel );
 
-        counter->Reset();
-        adder->Reset();
-        passthrough->Reset();
-        probe->Reset();
+        counter->Reset( Component::TickMode::Parallel );
+        adder->Reset( Component::TickMode::Parallel );
+        passthrough->Reset( Component::TickMode::Parallel );
+        probe->Reset( Component::TickMode::Parallel );
     }
 }
 
@@ -1205,9 +1205,25 @@ TEST_CASE( "TenThousandComponents" )
     }
 
     {
+        int iterationCount = 1000;
+
+        auto begin = std::chrono::high_resolution_clock::now();
+
+        for ( int i = 0; i < iterationCount; i++ )
+        {
+            circuit->Tick( Component::TickMode::Series );
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+
+        std::cout << "0x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
+    }
+    {
         circuit->SetBufferCount( 1 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1225,7 +1241,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 2 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1243,7 +1259,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 3 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1261,7 +1277,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 4 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
