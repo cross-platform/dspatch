@@ -28,7 +28,7 @@
 
 using namespace DSPatch;
 
-static double refEff;
+// static double refEff;
 
 // TEST_CASE( "SerialTest" )
 // {

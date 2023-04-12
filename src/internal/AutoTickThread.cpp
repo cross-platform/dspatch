@@ -34,9 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace DSPatch::internal;
 
-AutoTickThread::AutoTickThread()
-{
-}
+AutoTickThread::AutoTickThread() = default;
 
 AutoTickThread::~AutoTickThread()
 {
@@ -124,7 +122,7 @@ void AutoTickThread::Resume()
 
 void AutoTickThread::_Run()
 {
-    if ( _circuit != nullptr )
+    if ( _circuit )
     {
         while ( !_stop )
         {

@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 3.4)
 
 project(DSPatch)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Set version information.
 set(DSPATCH_MAJOR 9)
 set(DSPATCH_MINOR 2)
-set(DSPATCH_MICRO 1)
+set(DSPATCH_MICRO 4)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")

@@ -35,11 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace DSPatch
 {
 
-namespace internal
-{
-class SignalBus;
-}
-
 /// Signal container
 
 /**
@@ -54,19 +49,18 @@ class DLLEXPORT SignalBus final
 public:
     NONCOPYABLE( SignalBus );
 
-    SignalBus();
-    SignalBus( SignalBus&& );
-    ~SignalBus();
+    inline SignalBus();
+    inline SignalBus( SignalBus&& );
 
-    void SetSignalCount( int signalCount );
-    int GetSignalCount() const;
+    inline void SetSignalCount( int signalCount );
+    inline int GetSignalCount() const;
 
-    Signal& GetSignal( int signalIndex );
+    inline Signal& GetSignal( int signalIndex );
 
-    bool HasValue( int signalIndex ) const;
+    inline bool HasValue( int signalIndex ) const;
 
     template <class ValueType>
-    ValueType* GetValue( int signalIndex );
+    ValueType* GetValue( int signalIndex ) const;
 
     template <class ValueType>
     bool SetValue( int signalIndex, const ValueType& newValue );
@@ -74,21 +68,63 @@ public:
     template <class ValueType>
     bool MoveValue( int signalIndex, ValueType&& newValue );
 
-    bool SetSignal( int toSignalIndex, const Signal& fromSignal );
-    bool MoveSignal( int toSignalIndex, Signal& fromSignal );
+    inline bool SetSignal( int toSignalIndex, const Signal& fromSignal );
+    inline bool MoveSignal( int toSignalIndex, Signal& fromSignal );
 
-    void ClearAllValues();
+    inline void ClearAllValues();
 
-    const std::type_info& GetType( int signalIndex ) const;
+    inline unsigned int GetType( int signalIndex ) const;
 
 private:
     std::vector<Signal> _signals;
-
-    internal::SignalBus* p;
+    Signal _emptySignal;
 };
 
+inline SignalBus::SignalBus() = default;
+
+// cppcheck-suppress missingMemberCopy
+inline SignalBus::SignalBus( SignalBus&& rhs )
+    : _signals( std::move( rhs._signals ) )
+{
+}
+
+inline void SignalBus::SetSignalCount( int signalCount )
+{
+    _signals.resize( signalCount );
+}
+
+inline int SignalBus::GetSignalCount() const
+{
+    return (int)_signals.size();
+}
+
+inline Signal& SignalBus::GetSignal( int signalIndex )
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex];
+    }
+    else
+    {
+        _emptySignal.ClearValue();
+        return _emptySignal;
+    }
+}
+
+inline bool SignalBus::HasValue( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex].HasValue();
+    }
+    else
+    {
+        return false;
+    }
+}
+
 template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex )
+ValueType* SignalBus::GetValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -125,6 +161,50 @@ bool SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
     else
     {
         return false;
+    }
+}
+
+inline bool SignalBus::SetSignal( int toSignalIndex, const Signal& fromSignal )
+{
+    if ( (size_t)toSignalIndex < _signals.size() )
+    {
+        return _signals[toSignalIndex].SetSignal( fromSignal );
+    }
+    else
+    {
+        return false;
+    }
+}
+
+inline bool SignalBus::MoveSignal( int toSignalIndex, Signal& fromSignal )
+{
+    if ( (size_t)toSignalIndex < _signals.size() )
+    {
+        return _signals[toSignalIndex].MoveSignal( fromSignal );
+    }
+    else
+    {
+        return false;
+    }
+}
+
+inline void SignalBus::ClearAllValues()
+{
+    for ( auto& signal : _signals )
+    {
+        signal.ClearValue();
+    }
+}
+
+inline unsigned int SignalBus::GetType( int signalIndex ) const
+{
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex].GetType();
+    }
+    else
+    {
+        return type_id<void>;
     }
 }
 

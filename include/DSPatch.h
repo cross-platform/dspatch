@@ -234,9 +234,9 @@ _   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
     \endcode
 
     Lastly, in order for our circuit to do any work it must be ticked. This is performed by
-    repeatedly calling the circuit's Tick() method. This method can be called manually in a loop
-    from the main application thread, or alternatively, by calling StartAutoTick(), a seperate
-    thread will spawn, automatically calling Tick() continuously.
+    repeatedly calling the circuit's Tick() method. This method can be called manually in a loop,
+    or alternatively, by calling StartAutoTick(), a seperate thread will spawn, automatically
+    calling Tick() continuously.
 
     Furthermore, to boost performance, multi-buffering can be enabled via the SetThreadPool() method:
 

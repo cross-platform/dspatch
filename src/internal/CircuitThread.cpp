@@ -30,9 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace DSPatch::internal;
 
-CircuitThread::CircuitThread()
-{
-}
+CircuitThread::CircuitThread() = default;
 
 // cppcheck-suppress missingMemberCopy
 CircuitThread::CircuitThread( CircuitThread&& )
@@ -128,7 +126,7 @@ void CircuitThread::SyncAndResume()
 
 void CircuitThread::_Run()
 {
-    if ( _components != nullptr )
+    if ( _components )
     {
         while ( !_stop )
         {

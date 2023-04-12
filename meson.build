@@ -1,6 +1,6 @@
 project('DSPatch', 'cpp',
     default_options: [
-        'cpp_std=c++14',
+        'cpp_std=c++17',
         'warning_level=3',
         'werror=true'
     ]
@@ -91,8 +91,6 @@ dspatch_src = [
     'src/Circuit.cpp',
     'src/Component.cpp',
     'src/Plugin.cpp',
-    'src/Signal.cpp',
-    'src/SignalBus.cpp',
     'src/ThreadPool.cpp'
 ]
 
