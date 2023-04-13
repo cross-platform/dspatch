@@ -469,7 +469,13 @@ void internal::Component::GetOutput(
     auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( mode == DSPatch::Component::TickMode::Parallel && ref.first > 1 )
+    if ( ref.first == 1 )
+    {
+        // there's only one reference, move the signal immediately
+        toBus.MoveSignal( toInput, signal );
+        return;
+    }
+    else if ( mode == DSPatch::Component::TickMode::Parallel )
     {
         std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput].mutex );
         if ( ++ref.second != ref.first )
