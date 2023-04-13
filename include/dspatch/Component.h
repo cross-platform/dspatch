@@ -109,7 +109,7 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    bool Tick( TickMode mode = TickMode::Series, int bufferNo = 0 );
+    void Tick( TickMode mode = TickMode::Series, int bufferNo = 0 );
     void Reset( TickMode mode = TickMode::Series, int bufferNo = 0 );
 
 protected:

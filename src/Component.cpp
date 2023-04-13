@@ -103,7 +103,7 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<ComponentThread> componentThreads;
-    std::vector<std::unordered_set<Wire*>> feedbackWires;
+    std::vector<std::unordered_set<const Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<ReleaseFlag> releaseFlags;
@@ -277,7 +277,7 @@ int Component::GetBufferCount() const
     return (int)p->inputBuses.size();
 }
 
-bool Component::Tick( Component::TickMode mode, int bufferNo )
+void Component::Tick( Component::TickMode mode, int bufferNo )
 {
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
@@ -288,9 +288,13 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
             p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
             // tick incoming components
-            for ( auto& wire : p->inputWires )
+            for ( const auto& wire : p->inputWires )
             {
-                if ( !wire.fromComponent->Tick( mode, bufferNo ) )
+                try
+                {
+                    wire.fromComponent->Tick( mode, bufferNo );
+                }
+                catch ( const std::exception& )
                 {
                     p->feedbackWires[bufferNo].emplace( &wire );
                 }
@@ -311,12 +315,9 @@ bool Component::Tick( Component::TickMode mode, int bufferNo )
     }
     else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
     {
-        // return false to indicate that we have already started a tick, and hence, are a feedback component.
-        return false;
+        // throw an exception to indicate that we have already started a tick, and hence, are a feedback component.
+        throw std::exception();
     }
-
-    // return true to indicate that we are now in "Ticking" state.
-    return true;
 }
 
 void Component::Reset( Component::TickMode mode, int bufferNo )
@@ -368,7 +369,7 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
 {
     if ( mode == Component::TickMode::Parallel )
     {
-        for ( auto& wire : p->inputWires )
+        for ( const auto& wire : p->inputWires )
         {
             // wait for non-feedback incoming components to finish ticking
             if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
@@ -386,7 +387,7 @@ void Component::_DoTick( Component::TickMode mode, int bufferNo )
     }
     else
     {
-        for ( auto& wire : p->inputWires )
+        for ( const auto& wire : p->inputWires )
         {
             // tick incoming components
             wire.fromComponent->Tick( mode, bufferNo );
