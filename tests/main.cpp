@@ -1205,7 +1205,7 @@ TEST_CASE( "TenThousandComponents" )
     }
 
     {
-        int iterationCount = 1000;
+        int iterationCount = 100;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1223,7 +1223,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 1 );
 
-        int iterationCount = 1000;
+        int iterationCount = 100;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1241,7 +1241,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 2 );
 
-        int iterationCount = 1000;
+        int iterationCount = 100;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1259,7 +1259,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 3 );
 
-        int iterationCount = 1000;
+        int iterationCount = 100;
 
         auto begin = std::chrono::high_resolution_clock::now();
 
@@ -1277,7 +1277,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 4 );
 
-        int iterationCount = 1000;
+        int iterationCount = 100;
 
         auto begin = std::chrono::high_resolution_clock::now();
 

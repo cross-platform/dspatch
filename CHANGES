@@ -1,3 +1,8 @@
+v.9.3.0 (14 April 2023)
+    - Made Component::Tick() void to optimize recursion.
+    - Added TickMode argument to Component::Reset().
+    - Optimized internal::Component::GetOutput().
+
 v.9.2.4 (11 April 2023)
     - Fixed Signal & SignalBus move constructors.
 
