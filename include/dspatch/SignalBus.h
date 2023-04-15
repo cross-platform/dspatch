@@ -59,14 +59,14 @@ public:
 
     inline bool HasValue( int signalIndex ) const;
 
-    template <class ValueType>
-    ValueType* GetValue( int signalIndex ) const;
+    template <typename ValueType>
+    inline ValueType* GetValue( int signalIndex ) const;
 
-    template <class ValueType>
-    bool SetValue( int signalIndex, const ValueType& newValue );
+    template <typename ValueType>
+    inline bool SetValue( int signalIndex, const ValueType& newValue );
 
-    template <class ValueType>
-    bool MoveValue( int signalIndex, ValueType&& newValue );
+    template <typename ValueType>
+    inline bool MoveValue( int signalIndex, ValueType&& newValue );
 
     inline bool SetSignal( int toSignalIndex, const Signal& fromSignal );
     inline bool MoveSignal( int toSignalIndex, Signal& fromSignal );
@@ -123,8 +123,8 @@ inline bool SignalBus::HasValue( int signalIndex ) const
     }
 }
 
-template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex ) const
+template <typename ValueType>
+inline ValueType* SignalBus::GetValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -136,8 +136,8 @@ ValueType* SignalBus::GetValue( int signalIndex ) const
     }
 }
 
-template <class ValueType>
-bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
+template <typename ValueType>
+inline bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -150,8 +150,8 @@ bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
     }
 }
 
-template <class ValueType>
-bool SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
+template <typename ValueType>
+inline bool SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {

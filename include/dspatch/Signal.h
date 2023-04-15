@@ -60,14 +60,14 @@ public:
 
     inline bool HasValue() const;
 
-    template <class ValueType>
-    ValueType* GetValue() const;
+    template <typename ValueType>
+    inline ValueType* GetValue() const;
 
-    template <class ValueType>
-    void SetValue( const ValueType& newValue );
+    template <typename ValueType>
+    inline void SetValue( const ValueType& newValue );
 
-    template <class ValueType>
-    void MoveValue( ValueType&& newValue );
+    template <typename ValueType>
+    inline void MoveValue( ValueType&& newValue );
 
     inline bool SetSignal( const Signal& fromSignal );
     inline bool MoveSignal( Signal& fromSignal );
@@ -88,7 +88,7 @@ private:
         virtual inline void SetValue( _ValueHolder* valueHolder ) = 0;
     };
 
-    template <class ValueType>
+    template <typename ValueType>
     struct _Value final : _ValueHolder
     {
         NONCOPYABLE( _Value );
@@ -133,8 +133,8 @@ inline bool Signal::HasValue() const
     return _hasValue;
 }
 
-template <class ValueType>
-ValueType* Signal::GetValue() const
+template <typename ValueType>
+inline ValueType* Signal::GetValue() const
 {
     // You might be thinking: Why the raw pointer return here?
 
@@ -155,8 +155,8 @@ ValueType* Signal::GetValue() const
     }
 }
 
-template <class ValueType>
-void Signal::SetValue( const ValueType& newValue )
+template <typename ValueType>
+inline void Signal::SetValue( const ValueType& newValue )
 {
     // cppcheck-suppress cstyleCast
     if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
@@ -171,8 +171,8 @@ void Signal::SetValue( const ValueType& newValue )
     _hasValue = true;
 }
 
-template <class ValueType>
-void Signal::MoveValue( ValueType&& newValue )
+template <typename ValueType>
+inline void Signal::MoveValue( ValueType&& newValue )
 {
     // cppcheck-suppress cstyleCast
     if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == type_id<ValueType> )
