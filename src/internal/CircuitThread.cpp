@@ -104,13 +104,14 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
 
     if ( _gotSync )
     {
-        std::lock_guard<std::mutex> lock( _resumeMutex );
         _gotSync = false;  // reset the sync flag
-
         _mode = mode;
+
+        std::lock_guard<std::mutex> lock( _resumeMutex );
 
         _gotResume = true;  // set the resume flag
         _resumeCondt.notify_all();
+
         return;
     }
 
@@ -120,8 +121,8 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
     {
         _syncCondt.wait( lock );  // wait for sync
     }
-    _gotSync = false;             // reset the sync flag
 
+    _gotSync = false;  // reset the sync flag
     _mode = mode;
 
     _gotResume = true;  // set the resume flag
