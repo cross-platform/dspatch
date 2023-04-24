@@ -1,3 +1,7 @@
+v.9.3.1 (24 April 2023)
+    - Explicitly declared Signal template methods inline.
+    - Reduced lock scope in CircuitThread::SyncAndResume().
+
 v.9.3.0 (14 April 2023)
     - Made Component::Tick() void to optimize recursion.
     - Added TickMode argument to Component::Reset().

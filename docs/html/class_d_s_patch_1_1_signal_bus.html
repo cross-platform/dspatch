@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.3.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.3.1</span>
    </div>
   </td>
  </tr>
@@ -101,13 +101,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af433388d57c946584d51607b5fed0efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3390bfb346f5811de611c3e01a4c2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1f3390bfb346f5811de611c3e01a4c2a">HasValue</a> (int signalIndex) const</td></tr>
 <tr class="separator:a1f3390bfb346f5811de611c3e01a4c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e47338f3f18f1b7be4fa3c828feccfc"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
+<tr class="memitem:a8e47338f3f18f1b7be4fa3c828feccfc"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a8e47338f3f18f1b7be4fa3c828feccfc"><td class="memTemplItemLeft" align="right" valign="top">ValueType *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a8e47338f3f18f1b7be4fa3c828feccfc">GetValue</a> (int signalIndex) const</td></tr>
 <tr class="separator:a8e47338f3f18f1b7be4fa3c828feccfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a82b674abd2f5c80c99b94e643fcb6c95"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
+<tr class="memitem:a82b674abd2f5c80c99b94e643fcb6c95"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a82b674abd2f5c80c99b94e643fcb6c95"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a82b674abd2f5c80c99b94e643fcb6c95">SetValue</a> (int signalIndex, const ValueType &amp;newValue)</td></tr>
 <tr class="separator:a82b674abd2f5c80c99b94e643fcb6c95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memTemplParams" colspan="2">template&lt;class ValueType &gt; </td></tr>
+<tr class="memitem:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1e647e83ce944d66604c4ad01fb51e5e">MoveValue</a> (int signalIndex, ValueType &amp;&amp;newValue)</td></tr>
 <tr class="separator:a1e647e83ce944d66604c4ad01fb51e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42d8a2a8919f1e35ea0ae20ac0443007"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a42d8a2a8919f1e35ea0ae20ac0443007">SetSignal</a> (int toSignalIndex, const <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;fromSignal)</td></tr>
@@ -270,7 +270,10 @@ Public Member Functions</h2></td></tr>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class ValueType &gt; </div>
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">ValueType * DSPatch::SignalBus::GetValue </td>
@@ -280,6 +283,11 @@ template&lt;class ValueType &gt; </div>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00127">127</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
@@ -358,7 +366,10 @@ template&lt;class ValueType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class ValueType &gt; </div>
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool DSPatch::SignalBus::MoveValue </td>
@@ -378,6 +389,11 @@ template&lt;class ValueType &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00154">154</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
@@ -456,7 +472,10 @@ template&lt;class ValueType &gt; </div>
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;class ValueType &gt; </div>
+template&lt;typename ValueType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool DSPatch::SignalBus::SetValue </td>
@@ -476,6 +495,11 @@ template&lt;class ValueType &gt; </div>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00140">140</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
