@@ -1,3 +1,6 @@
+v.9.3.2 (22 May 2023)
+    - More optimizations to Component::Tick()/_DoTick().
+
 v.9.3.1 (24 April 2023)
     - Explicitly declared Signal template methods inline.
     - Reduced lock scope in CircuitThread::SyncAndResume().
