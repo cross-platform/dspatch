@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.3.2</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.4.0</span>
    </div>
   </td>
  </tr>
@@ -137,8 +137,8 @@ $(function() {
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueType&gt;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> MoveValue( ValueType&amp;&amp; newValue );</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> SetSignal( <span class="keyword">const</span> <a class="code hl_class" href="class_d_s_patch_1_1_signal.html">Signal</a>&amp; fromSignal );</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">inline</span> <span class="keywordtype">bool</span> MoveSignal( <a class="code hl_class" href="class_d_s_patch_1_1_signal.html">Signal</a>&amp; fromSignal );</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> SetSignal( <span class="keyword">const</span> <a class="code hl_class" href="class_d_s_patch_1_1_signal.html">Signal</a>&amp; fromSignal );</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> MoveSignal( <a class="code hl_class" href="class_d_s_patch_1_1_signal.html">Signal</a>&amp; fromSignal );</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> ClearValue();</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
@@ -255,7 +255,7 @@ $(function() {
 <div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    _hasValue = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>}</div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> Signal::SetSignal( <span class="keyword">const</span> Signal&amp; fromSignal )</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Signal::SetSignal( <span class="keyword">const</span> Signal&amp; fromSignal )</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>{</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">if</span> ( fromSignal._hasValue &amp;&amp; fromSignal._valueHolder )</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    {</div>
@@ -271,59 +271,49 @@ $(function() {
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        _hasValue = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    {</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>}</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> Signal::MoveSignal( Signal&amp; fromSignal )</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>{</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="keywordflow">if</span> ( fromSignal._hasValue )</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    {</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="comment">// You might be thinking: Why std::swap and not std::move here?</span></div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="comment">// This is a really nifty little optimisation actually. When we move a signal value from an</span></div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="comment">// output to an input (or vice-versa within a component) we move it&#39;s type_id along with</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="comment">// it. If you look at SetValue(), you&#39;ll see that type_id is really useful in determining</span></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="comment">// whether we have to delete and copy (re)construct our contained value, or can simply copy</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="comment">// assign. To avoid the former as much as possible, a swap is done between source and</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="comment">// target signals such that, between these two points, just two value holders need to be</span></div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="comment">// constructed, and shared back and forth from then on.</span></div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        std::swap( fromSignal._valueHolder, _valueHolder );</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        fromSignal._hasValue = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        _hasValue = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    }</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    {</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    }</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>}</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Signal::ClearValue()</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>{</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    _hasValue = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>}</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Signal::GetType()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keywordflow">if</span> ( _valueHolder )</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    {</div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="comment">// cppcheck-suppress cstyleCast</span></div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">return</span> ( (_Value&lt;nullptr_t&gt;*)_valueHolder )-&gt;type;</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    }</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    {</div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <span class="keywordflow">return</span> type_id&lt;void&gt;;</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    }</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>}</div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>}  <span class="comment">// namespace DSPatch</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    }</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>}</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Signal::MoveSignal( Signal&amp; fromSignal )</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>{</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">if</span> ( fromSignal._hasValue )</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="comment">// You might be thinking: Why std::swap and not std::move here?</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="comment">// This is a really nifty little optimisation actually. When we move a signal value from an</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="comment">// output to an input (or vice-versa within a component) we move it&#39;s type_id along with</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="comment">// it. If you look at SetValue(), you&#39;ll see that type_id is really useful in determining</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="comment">// whether we have to delete and copy (re)construct our contained value, or can simply copy</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="comment">// assign. To avoid the former as much as possible, a swap is done between source and</span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <span class="comment">// target signals such that, between these two points, just two value holders need to be</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="comment">// constructed, and shared back and forth from then on.</span></div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        std::swap( fromSignal._valueHolder, _valueHolder );</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        fromSignal._hasValue = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        _hasValue = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>}</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Signal::ClearValue()</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>{</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    _hasValue = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>}</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="keyword">inline</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Signal::GetType()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="keyword"></span>{</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordflow">if</span> ( _valueHolder )</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    {</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="comment">// cppcheck-suppress cstyleCast</span></div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="keywordflow">return</span> ( (_Value&lt;nullptr_t&gt;*)_valueHolder )-&gt;type;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    }</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    {</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keywordflow">return</span> type_id&lt;void&gt;;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    }</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>}</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>}  <span class="comment">// namespace DSPatch</span></div>
 <div class="ttc" id="aclass_d_s_patch_1_1_signal_html"><div class="ttname"><a href="class_d_s_patch_1_1_signal.html">DSPatch::Signal</a></div><div class="ttdoc">Value container used to carry data between components.</div><div class="ttdef"><b>Definition:</b> <a href="_signal_8h_source.html#l00052">Signal.h:53</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
