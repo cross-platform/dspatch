@@ -120,7 +120,7 @@ protected:
 
 private:
     friend class internal::ComponentThread;
-    void _DoTick( Component::TickMode mode, int bufferNo );
+    void _TickParallel( int bufferNo );
 
     internal::Component* p;
 };

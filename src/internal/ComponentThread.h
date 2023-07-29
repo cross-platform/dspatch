@@ -63,7 +63,7 @@ public:
     void Start();
     void Stop();
     void Sync();
-    void Resume( DSPatch::Component::TickMode mode );
+    void Resume();
 
 private:
     void _Run();
@@ -72,7 +72,6 @@ private:
     std::thread _thread;
 
     DSPatch::Component* _component = nullptr;
-    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Series;
     int _bufferNo = 0;
 
     bool _stop = false;

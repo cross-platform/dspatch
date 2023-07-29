@@ -76,7 +76,7 @@ void ComponentThread::Stop()
 
     _stop = true;
 
-    Resume( _mode );
+    Resume();
 
     if ( _thread.joinable() )
     {
@@ -100,7 +100,7 @@ void ComponentThread::Sync()
     }
 }
 
-void ComponentThread::Resume( DSPatch::Component::TickMode mode )
+void ComponentThread::Resume()
 {
     if ( _stopped )
     {
@@ -109,9 +109,7 @@ void ComponentThread::Resume( DSPatch::Component::TickMode mode )
 
     std::lock_guard<std::mutex> lock( _resumeMutex );
 
-    _gotSync = false;  // reset the sync flag
-
-    _mode = mode;
+    _gotSync = false;   // reset the sync flag
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
@@ -136,7 +134,7 @@ void ComponentThread::_Run()
 
         if ( !_stop )
         {
-            _component->_DoTick( _mode, _bufferNo );
+            _component->_TickParallel( _bufferNo );
         }
     }
 
