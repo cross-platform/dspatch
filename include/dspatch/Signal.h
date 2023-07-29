@@ -69,8 +69,8 @@ public:
     template <typename ValueType>
     inline void MoveValue( ValueType&& newValue );
 
-    inline bool SetSignal( const Signal& fromSignal );
-    inline bool MoveSignal( Signal& fromSignal );
+    inline void SetSignal( const Signal& fromSignal );
+    inline void MoveSignal( Signal& fromSignal );
 
     inline void ClearValue();
 
@@ -187,7 +187,7 @@ inline void Signal::MoveValue( ValueType&& newValue )
     _hasValue = true;
 }
 
-inline bool Signal::SetSignal( const Signal& fromSignal )
+inline void Signal::SetSignal( const Signal& fromSignal )
 {
     if ( fromSignal._hasValue && fromSignal._valueHolder )
     {
@@ -203,15 +203,10 @@ inline bool Signal::SetSignal( const Signal& fromSignal )
         }
 
         _hasValue = true;
-        return true;
-    }
-    else
-    {
-        return false;
     }
 }
 
-inline bool Signal::MoveSignal( Signal& fromSignal )
+inline void Signal::MoveSignal( Signal& fromSignal )
 {
     if ( fromSignal._hasValue )
     {
@@ -229,11 +224,6 @@ inline bool Signal::MoveSignal( Signal& fromSignal )
         fromSignal._hasValue = false;
 
         _hasValue = true;
-        return true;
-    }
-    else
-    {
-        return false;
     }
 }
 

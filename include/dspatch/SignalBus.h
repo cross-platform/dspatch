@@ -63,13 +63,13 @@ public:
     inline ValueType* GetValue( int signalIndex ) const;
 
     template <typename ValueType>
-    inline bool SetValue( int signalIndex, const ValueType& newValue );
+    inline void SetValue( int signalIndex, const ValueType& newValue );
 
     template <typename ValueType>
-    inline bool MoveValue( int signalIndex, ValueType&& newValue );
+    inline void MoveValue( int signalIndex, ValueType&& newValue );
 
-    inline bool SetSignal( int toSignalIndex, const Signal& fromSignal );
-    inline bool MoveSignal( int toSignalIndex, Signal& fromSignal );
+    inline void SetSignal( int toSignalIndex, const Signal& fromSignal );
+    inline void MoveSignal( int toSignalIndex, Signal& fromSignal );
 
     inline void ClearAllValues();
 
@@ -137,54 +137,36 @@ inline ValueType* SignalBus::GetValue( int signalIndex ) const
 }
 
 template <typename ValueType>
-inline bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
+inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
         _signals[signalIndex].SetValue( newValue );
-        return true;
-    }
-    else
-    {
-        return false;
     }
 }
 
 template <typename ValueType>
-inline bool SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
+inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
         _signals[signalIndex].MoveValue( std::move( newValue ) );
-        return true;
-    }
-    else
-    {
-        return false;
     }
 }
 
-inline bool SignalBus::SetSignal( int toSignalIndex, const Signal& fromSignal )
+inline void SignalBus::SetSignal( int toSignalIndex, const Signal& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex].SetSignal( fromSignal );
-    }
-    else
-    {
-        return false;
+        _signals[toSignalIndex].SetSignal( fromSignal );
     }
 }
 
-inline bool SignalBus::MoveSignal( int toSignalIndex, Signal& fromSignal )
+inline void SignalBus::MoveSignal( int toSignalIndex, Signal& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex].MoveSignal( fromSignal );
-    }
-    else
-    {
-        return false;
+        _signals[toSignalIndex].MoveSignal( fromSignal );
     }
 }
 
