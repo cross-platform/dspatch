@@ -77,7 +77,6 @@ public:
     NONCOPYABLE( Component );
 
     using SPtr = std::shared_ptr<Component>;
-    using SCPtr = std::shared_ptr<const Component>;
 
     enum class ProcessOrder
     {
@@ -97,7 +96,7 @@ public:
     bool ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput );
 
     void DisconnectInput( int inputNo );
-    void DisconnectInput( const Component::SCPtr& fromComponent );
+    void DisconnectInput( const Component::SPtr& fromComponent );
     void DisconnectAllInputs();
 
     int GetInputCount() const;

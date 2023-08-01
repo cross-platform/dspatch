@@ -163,7 +163,7 @@ void Component::DisconnectInput( int inputNo )
     }
 }
 
-void Component::DisconnectInput( const Component::SCPtr& fromComponent )
+void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
     // remove fromComponent from inputWires
     for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )

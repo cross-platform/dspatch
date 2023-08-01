@@ -41,7 +41,7 @@ namespace internal
 class Circuit
 {
 public:
-    bool FindComponent( const DSPatch::Component::SCPtr& component, int& returnIndex ) const;
+    bool FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const;
 
     int pauseCount = 0;
     size_t currentThreadNo = 0;
@@ -94,7 +94,7 @@ int Circuit::AddComponent( const Component::SPtr& component )
     return -1;
 }
 
-void Circuit::RemoveComponent( const Component::SCPtr& component )
+void Circuit::RemoveComponent( const Component::SPtr& component )
 {
     int componentIndex;
 
@@ -148,7 +148,7 @@ bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutp
     return result;
 }
 
-bool Circuit::ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, int toComponent, int toInput )
+bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, int toComponent, int toInput )
 {
     int fromComponentIndex;
     if ( p->FindComponent( fromComponent, fromComponentIndex ) )
@@ -159,7 +159,7 @@ bool Circuit::ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOut
     return false;
 }
 
-bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput )
+bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput )
 {
     int toComponentIndex;
     if ( p->FindComponent( toComponent, toComponentIndex ) )
@@ -367,7 +367,7 @@ void Circuit::ResumeAutoTick()
     }
 }
 
-bool internal::Circuit::FindComponent( const DSPatch::Component::SCPtr& component, int& returnIndex ) const
+bool internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const
 {
     for ( size_t i = 0; i < components.size(); ++i )
     {
