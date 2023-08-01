@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/ComponentThread.h>
 #include <internal/Wire.h>
 
+#include <algorithm>
 #include <condition_variable>
 #include <unordered_set>
 
@@ -149,36 +150,29 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
 void Component::DisconnectInput( int inputNo )
 {
     // remove wires connected to inputNo from inputWires
-    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); ++it )
-    {
-        if ( it->toInput == inputNo )
-        // cppcheck-suppress useStlAlgorithm
-        {
-            // update source output's reference count
-            it->fromComponent->p->DecRefs( it->fromOutput );
+    auto findFn = [&inputNo]( const auto& wire ) { return wire.toInput == inputNo; };
 
-            p->inputWires.erase( it );
-            break;
-        }
+    if ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end() )
+    {
+        // update source output's reference count
+        it->fromComponent->p->DecRefs( it->fromOutput );
+
+        p->inputWires.erase( it );
     }
 }
 
 void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
     // remove fromComponent from inputWires
-    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )
-    {
-        if ( it->fromComponent == fromComponent )
-        {
-            // update source output's reference count
-            fromComponent->p->DecRefs( it->fromOutput );
+    auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent; };
 
-            it = p->inputWires.erase( it );
-        }
-        else
-        {
-            ++it;
-        }
+    for ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end();
+          it = std::find_if( it, p->inputWires.end(), findFn ) )
+    {
+        // update source output's reference count
+        fromComponent->p->DecRefs( it->fromOutput );
+
+        p->inputWires.erase( it );
     }
 }
 

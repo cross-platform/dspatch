@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/AutoTickThread.h>
 #include <internal/CircuitThread.h>
 
+#include <algorithm>
+
 using namespace DSPatch;
 
 namespace DSPatch
@@ -41,7 +43,7 @@ namespace internal
 class Circuit
 {
 public:
-    bool FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const;
+    inline bool FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const;
 
     int pauseCount = 0;
     size_t currentThreadNo = 0;
@@ -367,15 +369,14 @@ void Circuit::ResumeAutoTick()
     }
 }
 
-bool internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const
+inline bool internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const
 {
-    for ( size_t i = 0; i < components.size(); ++i )
+    auto findFn = [&component]( const auto& comp ) { return comp == component; };
+
+    if ( auto it = std::find_if( components.begin(), components.end(), findFn ); it != components.end() )
     {
-        if ( components[i] == component )
-        {
-            returnIndex = (int)i;
-            return true;
-        }
+        returnIndex = (int)( it - components.begin() );
+        return true;
     }
 
     return false;
