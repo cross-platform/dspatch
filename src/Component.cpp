@@ -185,9 +185,12 @@ void Component::DisconnectInput( const Component::SCPtr& fromComponent )
 void Component::DisconnectAllInputs()
 {
     // remove all wires from inputWires
-    for ( int i = 0; i < p->inputBuses[0].GetSignalCount(); ++i )
+    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )
     {
-        DisconnectInput( i );
+        // update source output's reference count
+        it->fromComponent->p->DecRefs( it->fromOutput );
+
+        it = p->inputWires.erase( it );
     }
 }
 

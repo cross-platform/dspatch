@@ -86,6 +86,7 @@ public:
 
     void DisconnectComponent( const Component::SCPtr& component );
     void DisconnectComponent( int componentIndex );
+    void DisconnectAllComponents();
 
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;

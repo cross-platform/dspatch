@@ -120,10 +120,12 @@ void Circuit::RemoveComponent( int componentIndex )
 
 void Circuit::RemoveAllComponents()
 {
-    for ( size_t i = 0; i < p->components.size(); ++i )
-    {
-        RemoveComponent( (int)i-- );  // size drops as one is removed
-    }
+    PauseAutoTick();
+
+    DisconnectAllComponents();
+    p->components.clear();
+
+    ResumeAutoTick();
 }
 
 // cppcheck-suppress unusedFunction
@@ -201,6 +203,18 @@ void Circuit::DisconnectComponent( int componentIndex )
     for ( auto& component : p->components )
     {
         component->DisconnectInput( p->components[componentIndex] );
+    }
+
+    ResumeAutoTick();
+}
+
+void Circuit::DisconnectAllComponents()
+{
+    PauseAutoTick();
+
+    for ( auto& component : p->components )
+    {
+        component->DisconnectAllInputs();
     }
 
     ResumeAutoTick();
