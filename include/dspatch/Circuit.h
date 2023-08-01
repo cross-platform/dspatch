@@ -79,12 +79,12 @@ public:
 
     int GetComponentCount() const;
 
-    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
+    bool ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput );
     bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, int toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
     bool ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput );
 
-    void DisconnectComponent( const Component::SCPtr& component );
+    void DisconnectComponent( const Component::SPtr& component );
     void DisconnectComponent( int componentIndex );
     void DisconnectAllComponents();
 

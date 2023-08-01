@@ -106,6 +106,11 @@ void Circuit::RemoveComponent( const Component::SCPtr& component )
 
 void Circuit::RemoveComponent( int componentIndex )
 {
+    if ( (size_t)componentIndex >= p->components.size() )
+    {
+        return;
+    }
+
     PauseAutoTick();
 
     DisconnectComponent( componentIndex );
@@ -134,16 +139,13 @@ int Circuit::GetComponentCount() const
     return (int)p->components.size();
 }
 
-bool Circuit::ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput )
+bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput )
 {
-    int toComponentIndex;
-    int fromComponentIndex;
-    if ( p->FindComponent( fromComponent, fromComponentIndex ) && p->FindComponent( toComponent, toComponentIndex ) )
-    {
-        return ConnectOutToIn( fromComponentIndex, fromOutput, toComponentIndex, toInput );
-    }
+    PauseAutoTick();
+    bool result = toComponent->ConnectInput( fromComponent, fromOutput, toInput );
+    ResumeAutoTick();
 
-    return false;
+    return result;
 }
 
 bool Circuit::ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, int toComponent, int toInput )
@@ -182,18 +184,29 @@ bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, int toComponent
     return result;
 }
 
-void Circuit::DisconnectComponent( const Component::SCPtr& component )
+void Circuit::DisconnectComponent( const Component::SPtr& component )
 {
-    int componentIndex;
+    PauseAutoTick();
 
-    if ( p->FindComponent( component, componentIndex ) )
+    // remove component from _inputComponents and _inputWires
+    component->DisconnectAllInputs();
+
+    // remove any connections this component has to other components
+    for ( auto& comp : p->components )
     {
-        DisconnectComponent( componentIndex );
+        comp->DisconnectInput( component );
     }
+
+    ResumeAutoTick();
 }
 
 void Circuit::DisconnectComponent( int componentIndex )
 {
+    if ( (size_t)componentIndex >= p->components.size() )
+    {
+        return;
+    }
+
     PauseAutoTick();
 
     // remove component from _inputComponents and _inputWires

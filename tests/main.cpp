@@ -1184,6 +1184,8 @@ TEST_CASE( "AutoTickOnBuffersUpdateRegressionTest" )
 
 TEST_CASE( "TenThousandComponents" )
 {
+    auto begin = std::chrono::high_resolution_clock::now();
+
     auto circuit = std::make_shared<Circuit>();
 
     auto source = std::make_shared<Counter>();
@@ -1204,19 +1206,25 @@ TEST_CASE( "TenThousandComponents" )
         circuit->ConnectOutToIn( last, 0, dest, i );
     }
 
+    auto end = std::chrono::high_resolution_clock::now();
+
+    auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+
+    std::cout << "Construction, 10000 Components: " << diff_ms << "ms\n";
+
     {
         int iterationCount = 100;
 
-        auto begin = std::chrono::high_resolution_clock::now();
+        begin = std::chrono::high_resolution_clock::now();
 
         for ( int i = 0; i < iterationCount; i++ )
         {
             circuit->Tick( Component::TickMode::Series );
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
+        end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "0x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1225,16 +1233,16 @@ TEST_CASE( "TenThousandComponents" )
 
         int iterationCount = 100;
 
-        auto begin = std::chrono::high_resolution_clock::now();
+        begin = std::chrono::high_resolution_clock::now();
 
         for ( int i = 0; i < iterationCount; i++ )
         {
             circuit->Tick( Component::TickMode::Series );
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
+        end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "1x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1243,16 +1251,16 @@ TEST_CASE( "TenThousandComponents" )
 
         int iterationCount = 100;
 
-        auto begin = std::chrono::high_resolution_clock::now();
+        begin = std::chrono::high_resolution_clock::now();
 
         for ( int i = 0; i < iterationCount; i++ )
         {
             circuit->Tick( Component::TickMode::Series );
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
+        end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "2x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1261,16 +1269,16 @@ TEST_CASE( "TenThousandComponents" )
 
         int iterationCount = 100;
 
-        auto begin = std::chrono::high_resolution_clock::now();
+        begin = std::chrono::high_resolution_clock::now();
 
         for ( int i = 0; i < iterationCount; i++ )
         {
             circuit->Tick( Component::TickMode::Series );
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
+        end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "3x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
@@ -1279,17 +1287,27 @@ TEST_CASE( "TenThousandComponents" )
 
         int iterationCount = 100;
 
-        auto begin = std::chrono::high_resolution_clock::now();
+        begin = std::chrono::high_resolution_clock::now();
 
         for ( int i = 0; i < iterationCount; i++ )
         {
             circuit->Tick( Component::TickMode::Series );
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
+        end = std::chrono::high_resolution_clock::now();
 
-        auto diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
         std::cout << "4x Buffer, 10000 Components (Series Mode): " << diff_ms / iterationCount << "ms\n";
     }
+
+    begin = std::chrono::high_resolution_clock::now();
+
+    circuit.reset();
+
+    end = std::chrono::high_resolution_clock::now();
+
+    diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+
+    std::cout << "Destruction, 10000 Components: " << diff_ms << "ms\n";
 }
