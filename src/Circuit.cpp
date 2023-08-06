@@ -43,7 +43,7 @@ namespace internal
 class Circuit
 {
 public:
-    inline bool FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const;
+    bool FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const;
 
     int pauseCount = 0;
     size_t currentThreadNo = 0;
@@ -369,7 +369,7 @@ void Circuit::ResumeAutoTick()
     }
 }
 
-inline bool internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const
+bool internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const
 {
     auto findFn = [&component]( const auto& comp ) { return comp == component; };
 

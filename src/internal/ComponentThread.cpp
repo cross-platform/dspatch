@@ -94,7 +94,7 @@ void ComponentThread::Sync()
     std::unique_lock<std::mutex> lock( _resumeMutex );
 
     // cppcheck-suppress knownConditionTrueFalse
-    if ( !_gotSync )              // if haven't already got sync
+    if ( !_gotSync )  // if haven't already got sync
     {
         _syncCondt.wait( lock );  // wait for sync
     }
@@ -109,7 +109,7 @@ void ComponentThread::Resume()
 
     std::lock_guard<std::mutex> lock( _resumeMutex );
 
-    _gotSync = false;   // reset the sync flag
+    _gotSync = false;  // reset the sync flag
 
     _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
@@ -125,11 +125,11 @@ void ComponentThread::_Run()
             _gotSync = true;  // set the sync flag
             _syncCondt.notify_all();
 
-            if ( !_gotResume )              // if haven't already got resume
+            if ( !_gotResume )  // if haven't already got resume
             {
                 _resumeCondt.wait( lock );  // wait for resume
             }
-            _gotResume = false;             // reset the resume flag
+            _gotResume = false;  // reset the resume flag
         }
 
         if ( !_stop )

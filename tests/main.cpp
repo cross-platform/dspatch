@@ -327,10 +327,11 @@ TEST_CASE( "ThreadPerformanceTest" )
     auto t1 = std::thread( [&measureRef, &counter1]() { measureRef( counter1 ); } );
     auto t2 = std::thread( [&measureRef, &counter2]() { measureRef( counter2 ); } );
     auto t3 = std::thread( [&measureRef, &counter3]() { measureRef( counter3 ); } );
-    measureRef( counter4 );
+    auto t4 = std::thread( [&measureRef, &counter4]() { measureRef( counter4 ); } );
     t1.join();
     t2.join();
     t3.join();
+    t4.join();
     auto end = std::chrono::high_resolution_clock::now();
     refEff = 100000.0 / std::chrono::duration_cast<std::chrono::milliseconds>( end - begin ).count();
 

@@ -179,13 +179,13 @@ void Component::DisconnectInput( const Component::SPtr& fromComponent )
 void Component::DisconnectAllInputs()
 {
     // remove all wires from inputWires
-    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )
+    for ( const auto& inputWires : p->inputWires )
     {
         // update source output's reference count
-        it->fromComponent->p->DecRefs( it->fromOutput );
-
-        it = p->inputWires.erase( it );
+        inputWires.fromComponent->p->DecRefs( inputWires.fromOutput );
     }
+
+    p->inputWires.clear();
 }
 
 // cppcheck-suppress unusedFunction
@@ -463,7 +463,7 @@ void internal::Component::WaitForRelease( int threadNo )
     {
         releaseFlag.condt.wait( lock );  // wait for release
     }
-    releaseFlag.gotRelease = false;      // reset the release flag
+    releaseFlag.gotRelease = false;  // reset the release flag
 }
 
 void internal::Component::ReleaseNextThread( int threadNo )
