@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/CircuitThread.h>
 
 #include <algorithm>
+#include <unordered_set>
 
 using namespace DSPatch;
 
@@ -43,13 +44,14 @@ namespace internal
 class Circuit
 {
 public:
-    bool FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const;
+    int FindComponent( const DSPatch::Component::SPtr& component ) const;
 
     int pauseCount = 0;
     size_t currentThreadNo = 0;
 
     AutoTickThread autoTickThread;
 
+    std::unordered_set<DSPatch::Component::SPtr> componentsSet;
     std::vector<DSPatch::Component::SPtr> components;
 
     std::vector<CircuitThread> circuitThreads;
@@ -72,57 +74,45 @@ Circuit::~Circuit()
     delete p;
 }
 
-int Circuit::AddComponent( const Component::SPtr& component )
+bool Circuit::AddComponent( const Component::SPtr& component )
 {
-    if ( component )
+    if ( !component || p->componentsSet.find( component ) != p->componentsSet.end() )
     {
-        int componentIndex;
-
-        if ( p->FindComponent( component, componentIndex ) )
-        {
-            return componentIndex;  // if the component is already in the array
-        }
-
-        // components within the circuit need to have as many buffers as there are threads in the circuit
-        component->SetBufferCount( (int)p->circuitThreads.size() );
-
-        PauseAutoTick();
-        p->components.emplace_back( component );
-        ResumeAutoTick();
-
-        return (int)p->components.size() - 1;
+        return false;
     }
 
-    return -1;
-}
+    // components within the circuit need to have as many buffers as there are threads in the circuit
+    component->SetBufferCount( (int)p->circuitThreads.size() );
 
-void Circuit::RemoveComponent( const Component::SPtr& component )
-{
-    int componentIndex;
-
-    if ( p->FindComponent( component, componentIndex ) )
-    {
-        RemoveComponent( componentIndex );
-    }
-}
-
-void Circuit::RemoveComponent( int componentIndex )
-{
-    if ( (size_t)componentIndex >= p->components.size() )
-    {
-        return;
-    }
+    p->componentsSet.emplace( component );
 
     PauseAutoTick();
+    p->components.emplace_back( component );
+    ResumeAutoTick();
 
-    DisconnectComponent( componentIndex );
+    return true;
+}
 
-    if ( !p->components.empty() )
+bool Circuit::RemoveComponent( const Component::SPtr& component )
+{
+    auto componentIndex = p->FindComponent( component );
+
+    if ( componentIndex != -1 )
     {
+        p->componentsSet.erase( p->components[componentIndex] );
+
+        PauseAutoTick();
+
+        DisconnectComponent( component );
+
         p->components.erase( p->components.begin() + componentIndex );
+
+        ResumeAutoTick();
+
+        return true;
     }
 
-    ResumeAutoTick();
+    return false;
 }
 
 void Circuit::RemoveAllComponents()
@@ -130,6 +120,8 @@ void Circuit::RemoveAllComponents()
     PauseAutoTick();
 
     DisconnectAllComponents();
+
+    p->componentsSet.clear();
     p->components.clear();
 
     ResumeAutoTick();
@@ -143,6 +135,12 @@ int Circuit::GetComponentCount() const
 
 bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput )
 {
+    if ( p->componentsSet.find( fromComponent ) == p->componentsSet.end() ||
+         p->componentsSet.find( toComponent ) == p->componentsSet.end() )
+    {
+        return false;
+    }
+
     PauseAutoTick();
     bool result = toComponent->ConnectInput( fromComponent, fromOutput, toInput );
     ResumeAutoTick();
@@ -150,44 +148,13 @@ bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutp
     return result;
 }
 
-bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, int toComponent, int toInput )
+bool Circuit::DisconnectComponent( const Component::SPtr& component )
 {
-    int fromComponentIndex;
-    if ( p->FindComponent( fromComponent, fromComponentIndex ) )
-    {
-        return ConnectOutToIn( fromComponentIndex, fromOutput, toComponent, toInput );
-    }
-
-    return false;
-}
-
-bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput )
-{
-    int toComponentIndex;
-    if ( p->FindComponent( toComponent, toComponentIndex ) )
-    {
-        return ConnectOutToIn( fromComponent, fromOutput, toComponentIndex, toInput );
-    }
-
-    return false;
-}
-
-bool Circuit::ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput )
-{
-    if ( (size_t)fromComponent >= p->components.size() || (size_t)toComponent >= p->components.size() )
+    if ( p->componentsSet.find( component ) == p->componentsSet.end() )
     {
         return false;
     }
 
-    PauseAutoTick();
-    bool result = p->components[toComponent]->ConnectInput( p->components[fromComponent], fromOutput, toInput );
-    ResumeAutoTick();
-
-    return result;
-}
-
-void Circuit::DisconnectComponent( const Component::SPtr& component )
-{
     PauseAutoTick();
 
     // remove component from _inputComponents and _inputWires
@@ -200,27 +167,8 @@ void Circuit::DisconnectComponent( const Component::SPtr& component )
     }
 
     ResumeAutoTick();
-}
 
-void Circuit::DisconnectComponent( int componentIndex )
-{
-    if ( (size_t)componentIndex >= p->components.size() )
-    {
-        return;
-    }
-
-    PauseAutoTick();
-
-    // remove component from _inputComponents and _inputWires
-    p->components[componentIndex]->DisconnectAllInputs();
-
-    // remove any connections this component has to other components
-    for ( auto& component : p->components )
-    {
-        component->DisconnectInput( p->components[componentIndex] );
-    }
-
-    ResumeAutoTick();
+    return true;
 }
 
 void Circuit::DisconnectAllComponents()
@@ -369,15 +317,19 @@ void Circuit::ResumeAutoTick()
     }
 }
 
-bool internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component, int& returnIndex ) const
+int internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component ) const
 {
+    if ( componentsSet.find( component ) == componentsSet.end() )
+    {
+        return -1;
+    }
+
     auto findFn = [&component]( const auto& comp ) { return comp == component; };
 
     if ( auto it = std::find_if( components.begin(), components.end(), findFn ); it != components.end() )
     {
-        returnIndex = (int)( it - components.begin() );
-        return true;
+        return (int)( it - components.begin() );
     }
 
-    return false;
+    return -1;
 }

@@ -514,11 +514,8 @@ TEST_CASE( "WiringTest" )
     auto counter = std::make_shared<CircuitCounter>();
     auto probe = std::make_shared<CircuitProbe>();
 
-    auto counter_id = circuit->AddComponent( counter );
-    auto probe_id = circuit->AddComponent( probe );
-
-    circuit->ConnectOutToIn( counter_id, 0, probe, 0 );
-    circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
+    circuit->ConnectOutToIn( counter, 0, probe, 0 );
+    circuit->ConnectOutToIn( probe, 0, counter, 0 );
 
     // Tick the circuit for 100ms with 1 thread
     circuit->StartAutoTick( Component::TickMode::Series );
@@ -529,7 +526,7 @@ TEST_CASE( "WiringTest" )
     auto pass_s1 = std::make_shared<PassThrough>();
     circuit->AddComponent( pass_s1 );
 
-    circuit->ConnectOutToIn( pass_s1, 0, probe_id, 0 );
+    circuit->ConnectOutToIn( pass_s1, 0, probe, 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     circuit->ConnectOutToIn( counter, 0, pass_s1, 0 );
@@ -549,7 +546,7 @@ TEST_CASE( "WiringTest" )
     auto pass_s2 = std::make_shared<PassThrough>();
     circuit->AddComponent( pass_s2 );
 
-    circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
+    circuit->ConnectOutToIn( probe, 0, counter, 0 );
     circuit->ConnectOutToIn( pass_s2, 0, probe, 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
@@ -1021,11 +1018,8 @@ TEST_CASE( "WiringTest2" )
     auto counter = std::make_shared<CircuitCounter>();
     auto probe = std::make_shared<CircuitProbe>();
 
-    auto counter_id = circuit->AddComponent( counter );
-    auto probe_id = circuit->AddComponent( probe );
-
-    circuit->ConnectOutToIn( counter_id, 0, probe, 0 );
-    circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
+    circuit->ConnectOutToIn( counter, 0, probe, 0 );
+    circuit->ConnectOutToIn( probe, 0, counter, 0 );
 
     // Tick the circuit for 100ms with 1 thread
     circuit->StartAutoTick( Component::TickMode::Parallel );
@@ -1036,7 +1030,7 @@ TEST_CASE( "WiringTest2" )
     auto pass_s1 = std::make_shared<PassThrough>();
     circuit->AddComponent( pass_s1 );
 
-    circuit->ConnectOutToIn( pass_s1, 0, probe_id, 0 );
+    circuit->ConnectOutToIn( pass_s1, 0, probe, 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
     circuit->ConnectOutToIn( counter, 0, pass_s1, 0 );
@@ -1056,7 +1050,7 @@ TEST_CASE( "WiringTest2" )
     auto pass_s2 = std::make_shared<PassThrough>();
     circuit->AddComponent( pass_s2 );
 
-    circuit->ConnectOutToIn( probe, 0, counter_id, 0 );
+    circuit->ConnectOutToIn( probe, 0, counter, 0 );
     circuit->ConnectOutToIn( pass_s2, 0, probe, 0 );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 
