@@ -51,8 +51,8 @@ public:
 
     AutoTickThread autoTickThread;
 
-    std::unordered_set<DSPatch::Component::SPtr> componentsSet;
     std::vector<DSPatch::Component::SPtr> components;
+    std::unordered_set<DSPatch::Component::SPtr> componentsSet;
 
     std::vector<CircuitThread> circuitThreads;
 };
@@ -84,11 +84,11 @@ bool Circuit::AddComponent( const Component::SPtr& component )
     // components within the circuit need to have as many buffers as there are threads in the circuit
     component->SetBufferCount( (int)p->circuitThreads.size() );
 
-    p->componentsSet.emplace( component );
-
     PauseAutoTick();
     p->components.emplace_back( component );
     ResumeAutoTick();
+
+    p->componentsSet.emplace( component );
 
     return true;
 }
@@ -99,8 +99,6 @@ bool Circuit::RemoveComponent( const Component::SPtr& component )
 
     if ( componentIndex != -1 )
     {
-        p->componentsSet.erase( p->components[componentIndex] );
-
         PauseAutoTick();
 
         DisconnectComponent( component );
@@ -108,6 +106,8 @@ bool Circuit::RemoveComponent( const Component::SPtr& component )
         p->components.erase( p->components.begin() + componentIndex );
 
         ResumeAutoTick();
+
+        p->componentsSet.erase( component );
 
         return true;
     }
@@ -121,10 +121,11 @@ void Circuit::RemoveAllComponents()
 
     DisconnectAllComponents();
 
-    p->componentsSet.clear();
     p->components.clear();
 
     ResumeAutoTick();
+
+    p->componentsSet.clear();
 }
 
 // cppcheck-suppress unusedFunction
