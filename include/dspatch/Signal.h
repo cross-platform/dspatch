@@ -221,9 +221,7 @@ inline void Signal::MoveSignal( Signal& fromSignal )
         // constructed, and shared back and forth from then on.
 
         std::swap( fromSignal._valueHolder, _valueHolder );
-        fromSignal._hasValue = false;
-
-        _hasValue = true;
+        std::swap( fromSignal._hasValue, _hasValue );
     }
 }
 
