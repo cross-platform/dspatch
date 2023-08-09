@@ -44,8 +44,6 @@ namespace internal
 class Circuit
 {
 public:
-    int FindComponent( const DSPatch::Component::SPtr& component ) const;
-
     int pauseCount = 0;
     size_t currentThreadNo = 0;
 
@@ -95,15 +93,20 @@ bool Circuit::AddComponent( const Component::SPtr& component )
 
 bool Circuit::RemoveComponent( const Component::SPtr& component )
 {
-    auto componentIndex = p->FindComponent( component );
+    if ( p->componentsSet.find( component ) == p->componentsSet.end() )
+    {
+        return false;
+    }
 
-    if ( componentIndex != -1 )
+    auto findFn = [&component]( const auto& comp ) { return comp == component; };
+
+    if ( auto it = std::find_if( p->components.begin(), p->components.end(), findFn ); it != p->components.end() )
     {
         PauseAutoTick();
 
         DisconnectComponent( component );
 
-        p->components.erase( p->components.begin() + componentIndex );
+        p->components.erase( it );
 
         ResumeAutoTick();
 
@@ -316,21 +319,4 @@ void Circuit::ResumeAutoTick()
     {
         p->autoTickThread.Resume();
     }
-}
-
-int internal::Circuit::FindComponent( const DSPatch::Component::SPtr& component ) const
-{
-    if ( componentsSet.find( component ) == componentsSet.end() )
-    {
-        return -1;
-    }
-
-    auto findFn = [&component]( const auto& comp ) { return comp == component; };
-
-    if ( auto it = std::find_if( components.begin(), components.end(), findFn ); it != components.end() )
-    {
-        return (int)( it - components.begin() );
-    }
-
-    return -1;
 }
