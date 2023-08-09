@@ -55,7 +55,7 @@ public:
     inline void SetSignalCount( int signalCount );
     inline int GetSignalCount() const;
 
-    inline Signal& GetSignal( int signalIndex );
+    inline Signal* GetSignal( int signalIndex );
 
     inline bool HasValue( int signalIndex ) const;
 
@@ -77,7 +77,6 @@ public:
 
 private:
     std::vector<Signal> _signals;
-    Signal _emptySignal;
 };
 
 inline SignalBus::SignalBus() = default;
@@ -98,16 +97,15 @@ inline int SignalBus::GetSignalCount() const
     return (int)_signals.size();
 }
 
-inline Signal& SignalBus::GetSignal( int signalIndex )
+inline Signal* SignalBus::GetSignal( int signalIndex )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex];
+        return &_signals[signalIndex];
     }
     else
     {
-        _emptySignal.ClearValue();
-        return _emptySignal;
+        return nullptr;
     }
 }
 

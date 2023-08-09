@@ -489,7 +489,7 @@ void internal::Component::GetOutput(
         return;
     }
 
-    auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
+    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
     if ( ref.first == 1 )
