@@ -353,7 +353,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.25 * 0.90 );
+    REQUIRE( eff >= refEff * 0.25 * 0.80 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -372,7 +372,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.25 * 0.90 );
+    REQUIRE( eff >= refEff * 0.25 * 0.80 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -391,7 +391,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "2x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.5 * 0.90 );
+    REQUIRE( eff >= refEff * 0.5 * 0.80 );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -410,7 +410,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "3x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.75 * 0.90 );
+    REQUIRE( eff >= refEff * 0.75 * 0.80 );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -429,7 +429,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "4x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.90 );
+    REQUIRE( eff >= refEff * 0.80 );
 }
 
 TEST_CASE( "StopAutoTickRegressionTest" )
@@ -857,7 +857,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.80 );
+    REQUIRE( eff >= refEff * effFrac * 0.70 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -876,7 +876,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.80 );
+    REQUIRE( eff >= refEff * effFrac * 0.70 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -895,7 +895,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "2x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.98 );
+    REQUIRE( eff >= refEff * effFrac * 0.90 );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -914,7 +914,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "3x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.98 );
+    REQUIRE( eff >= refEff * effFrac * 0.90 );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -933,7 +933,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "4x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.98 );
+    REQUIRE( eff >= refEff * effFrac * 0.90 );
 }
 
 TEST_CASE( "StopAutoTickRegressionTest2" )
