@@ -189,7 +189,7 @@ inline void Signal::MoveValue( ValueType&& newValue )
 
 inline void Signal::SetSignal( const Signal& fromSignal )
 {
-    if ( fromSignal._hasValue && fromSignal._valueHolder )
+    if ( fromSignal._hasValue )
     {
         // cppcheck-suppress cstyleCast
         if ( _valueHolder && ( (_Value<nullptr_t>*)_valueHolder )->type == ( (_Value<nullptr_t>*)fromSignal._valueHolder )->type )
