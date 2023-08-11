@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.5.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.5.1</span>
    </div>
   </td>
  </tr>
@@ -257,7 +257,7 @@ $(function() {
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Signal::SetSignal( <span class="keyword">const</span> Signal&amp; fromSignal )</div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>{</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">if</span> ( fromSignal._hasValue &amp;&amp; fromSignal._valueHolder )</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">if</span> ( fromSignal._hasValue )</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    {</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="comment">// cppcheck-suppress cstyleCast</span></div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keywordflow">if</span> ( _valueHolder &amp;&amp; ( (_Value&lt;nullptr_t&gt;*)_valueHolder )-&gt;type == ( (_Value&lt;nullptr_t&gt;*)fromSignal._valueHolder )-&gt;type )</div>

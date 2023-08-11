@@ -1,3 +1,7 @@
+v.9.5.1 (11 August 2023)
+    - Further optimized Circuit::RemoveComponent()
+    - Further optimized Signal::Get/SetSignal()
+
 v.9.5.0 (08 August 2023)
     - Greatly optimized circuit construction & destruction.
     - Slightly optimized Signal::MoveSignal().
