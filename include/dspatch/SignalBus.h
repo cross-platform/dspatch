@@ -128,7 +128,14 @@ inline ValueType* SignalBus::GetValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return const_cast<ValueType*>( &std::any_cast<const ValueType&>( _signals[signalIndex] ) );
+        try
+        {
+            return const_cast<ValueType*>( &std::any_cast<const ValueType&>( _signals[signalIndex] ) );
+        }
+        catch ( const std::exception& )
+        {
+            return nullptr;
+        }
     }
     else
     {
