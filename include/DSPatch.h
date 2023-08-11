@@ -131,7 +131,7 @@ public:
     \endcode
 
     Lastly, our component must implement the virtual Process_() method. This is where our component
-    does it's work. The Process_() method provides us with 2 arguments: the input bus and the
+    does its work. The Process_() method provides us with 2 arguments: the input bus and the
     output bus. It is our duty as the component designer to pull the inputs we require out of the
     input bus, process them accordingly, then populate the output bus with the results.
 

@@ -95,7 +95,8 @@ dspatch_src = [
 
 dspatch_inc = include_directories(
     'include',
-    'src'
+    'src',
+    'subprojects'
 )
 
 dspatch_lib = static_library(

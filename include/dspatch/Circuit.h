@@ -51,7 +51,7 @@ One output, on the other hand, can be distributed to multiple inputs.
 To boost performance in stream processing circuits, multi-buffering can be enabled via the
 SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.
 
-The Circuit Tick() method runs through it's internal array of components and calls each component's
+The Circuit Tick() method runs through its internal array of components and calls each component's
 Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
 application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn,
 automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.

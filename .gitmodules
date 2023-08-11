@@ -1,0 +1,3 @@
+[submodule "subprojects/fast_any"]
+	path = subprojects/fast_any
+	url = https://github.com/cross-platform/fast_any.git
