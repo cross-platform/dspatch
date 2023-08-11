@@ -75,7 +75,7 @@ public:
 
     inline void ClearAllValues();
 
-    inline fast_any::fast_any_type GetType( int signalIndex ) const;
+    inline const fast_any::type_info& GetType( int signalIndex ) const;
 
 private:
     std::vector<fast_any::fast_any> _signals;
@@ -141,7 +141,7 @@ inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        _signals[signalIndex].emplace( newValue );
+        _signals[signalIndex].emplace<ValueType>( newValue );
     }
 }
 
@@ -150,7 +150,7 @@ inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        _signals[signalIndex].emplace( std::move( newValue ) );
+        _signals[signalIndex].emplace<ValueType>( std::move( newValue ) );
     }
 }
 
@@ -158,7 +158,7 @@ inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::fast_any& f
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        _signals[toSignalIndex].emplace( fromSignal );
+        _signals[toSignalIndex] = fromSignal;
     }
 }
 
@@ -178,7 +178,7 @@ inline void SignalBus::ClearAllValues()
     }
 }
 
-inline fast_any::fast_any_type SignalBus::GetType( int signalIndex ) const
+inline const fast_any::type_info& SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
