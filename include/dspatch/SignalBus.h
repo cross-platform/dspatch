@@ -171,7 +171,7 @@ inline void SignalBus::SetSignal( int toSignalIndex, const std::any& fromSignal 
 
 inline void SignalBus::MoveSignal( int toSignalIndex, std::any& fromSignal )
 {
-    if ( (size_t)toSignalIndex < _signals.size() )
+    if ( (size_t)toSignalIndex < _signals.size() && fromSignal.has_value() )
     {
         _signals[toSignalIndex].swap( fromSignal );
     }
