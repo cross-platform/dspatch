@@ -131,7 +131,6 @@ void Circuit::RemoveAllComponents()
     p->componentsSet.clear();
 }
 
-// cppcheck-suppress unusedFunction
 int Circuit::GetComponentCount() const
 {
     return (int)p->components.size();

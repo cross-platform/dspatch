@@ -15,19 +15,19 @@ public:
 protected:
     virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
-        if ( auto integer = inputs.GetValue<int>( 0 ) )
+        if ( const auto* integer = inputs.GetValue<int>( 0 ) )
         {
             REQUIRE( *integer == _count++ );
         }
-        else if ( auto floating = inputs.GetValue<float>( 0 ) )
+        else if ( const auto* floating = inputs.GetValue<float>( 0 ) )
         {
             REQUIRE( *floating == (float)_count++ );
         }
-        else if ( auto string = inputs.GetValue<std::string>( 0 ) )
+        else if ( const auto* string = inputs.GetValue<std::string>( 0 ) )
         {
             REQUIRE( *string == std::to_string( _count++ ) );
         }
-        else if ( auto vector = inputs.GetValue<std::vector<int>>( 0 ) )
+        else if ( const auto* vector = inputs.GetValue<std::vector<int>>( 0 ) )
         {
             REQUIRE( ( *vector )[0] == _count++ );
             REQUIRE( ( *vector )[1] == _count++ );
