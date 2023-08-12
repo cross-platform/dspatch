@@ -40,10 +40,17 @@ namespace DSPatch
 /// Signal container
 
 /**
-A SignalBus contains signals. Via the Process_() method, a Component receives signals into
-its "inputs" SignalBus and provides signals to its "outputs" SignalBus. The SignalBus class
-provides public getters and setters for manipulating its internal signal values directly,
-abstracting the need to retrieve and interface with the contained Signals themself.
+Components process and transfer data between each other in the form of "signals" via interconnected
+wires. SignalBuses are signal containers. Via the Process_() method, a Component receives signals
+into its "inputs" SignalBus and provides signals to its "outputs" SignalBus. The SignalBus class
+provides public getters and setters for manipulating its internal signal values, abstracting the
+need to retrieve and interface with them directly.
+
+Signals can be dynamically typed at runtime, this means a signal has the ability to change its data
+type at any point during program execution. This is designed such that a SignalBus can hold any
+number of different typed variables, as well as to allow for a variable to dynamically change its
+type when needed - this can be useful for inputs that accept a number of different data types
+(E.g. Varying sample size in an audio buffer: array of byte / int / float).
 */
 
 class DLLEXPORT SignalBus final
@@ -101,6 +108,15 @@ inline int SignalBus::GetSignalCount() const
 
 inline fast_any::any* SignalBus::GetSignal( int signalIndex )
 {
+    // You might be thinking: Why the raw pointer return here?
+
+    // This is for usability, performance, and readably. Usability, because a pointer allows the
+    // user to manipulate the contained value externally. Performance, because returning a smart
+    // pointer here means having to store the value as a smart pointer too. This adds yet another
+    // level of indirection to the value, as well as some reference counting overhead. These Get()
+    // and Set() methods are VERY frequently called, so doing as little as possible with the data
+    // here is best, which ultimately aids in the readably of the code too.
+
     if ( (size_t)signalIndex < _signals.size() )
     {
         return &_signals[signalIndex];
@@ -164,6 +180,16 @@ inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSi
 
 inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
 {
+    // You might be thinking: Why swap and not move here?
+
+    // This is a really nifty little optimisation actually. When we move a signal value from an
+    // output to an input (or vice-versa within a component) we move its type_info along with it.
+    // If you look at any::emplace(), you'll see that type_info is really useful in determining
+    // whether we need to delete and copy (re)construct our contained value, or can simply copy
+    // assign. To avoid the former as much as possible, a swap is done between source and target
+    // signals such that, between these two points, just two value holders need to be constructed,
+    // and shared back and forth from then on.
+
     if ( (size_t)toSignalIndex < _signals.size() && fromSignal.has_value() )
     {
         _signals[toSignalIndex].swap( fromSignal );
