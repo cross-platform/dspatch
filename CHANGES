@@ -1,3 +1,8 @@
+v.9.5.2 (12 August 2023)
+    - Replaced Signal class with fast_any.
+    - Fixed Component::DisconnectInput() hang on Windows.
+    - Added more test coverage.
+
 v.9.5.1 (11 August 2023)
     - Further optimized Circuit::RemoveComponent()
     - Further optimized Signal::Get/SetSignal()

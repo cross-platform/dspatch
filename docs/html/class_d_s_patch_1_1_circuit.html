@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.5.1</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.5.2</span>
    </div>
   </td>
  </tr>
@@ -139,7 +139,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ResumeAutoTick</b> ()
 <p>Components can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> via the AddComponent() method, and routed to and from other components via the ConnectOutToIn() methods.</p>
 <p><b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is connected to an input that already has a connected wire, that wire is replaced with the new one. One output, on the other hand, can be distributed to multiple inputs.</p>
 <p>To boost performance in stream processing circuits, multi-buffering can be enabled via the SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.</p>
-<p>The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> Tick() method runs through it's internal array of components and calls each component's Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.</p>
+<p>The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> Tick() method runs through its internal array of components and calls each component's Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.</p>
 <p>TickMode::Parallel will spawn a thread per component in a circuit. The aim of this mode is to improve the performance of small circuits that contain parallel branches. TickMode::Series (default) on the other hand, tells the circuit to tick its components one-by-one in a single thread per buffer. This mode aims to improve the performance of large circuits, as well as small circuits that do not contain parallel branches. </p>
 
 <p class="definition">Definition at line <a class="el" href="_circuit_8h_source.html#l00066">66</a> of file <a class="el" href="_circuit_8h_source.html">Circuit.h</a>.</p>

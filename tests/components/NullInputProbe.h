@@ -14,10 +14,10 @@ public:
 protected:
     virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
-        auto in0 = inputs.GetValue<int>( 0 );
+        const auto* in0 = inputs.GetValue<int>( 0 );
         REQUIRE( !in0 );
 
-        auto in1 = inputs.GetValue<int>( 1 );
+        const auto* in1 = inputs.GetValue<int>( 1 );
         REQUIRE( !in1 );
     }
 };

@@ -29,6 +29,39 @@ using namespace DSPatch;
 
 static double refEff;
 
+TEST_CASE( "SignalBusTest" )
+{
+    SignalBus signalBus;
+
+    signalBus.SetSignalCount( 4 );
+
+    signalBus.SetValue( 0, 1.0 );
+    REQUIRE( signalBus.HasValue( 0 ) );
+    REQUIRE( *signalBus.GetValue<double>( 0 ) == 1.0 );
+
+    signalBus.SetValue( 1, 1.0f );
+    REQUIRE( signalBus.HasValue( 1 ) );
+    REQUIRE( *signalBus.GetValue<float>( 1 ) == 1.0f );
+
+    signalBus.SetValue( 2, 1u );
+    REQUIRE( signalBus.HasValue( 2 ) );
+    REQUIRE( *signalBus.GetValue<unsigned int>( 2 ) == 1u );
+
+    signalBus.SetValue( 3, 1 );
+    REQUIRE( signalBus.HasValue( 3 ) );
+    REQUIRE( *signalBus.GetValue<int>( 3 ) == 1 );
+
+    // no 5th input so should return false and nullptr
+    REQUIRE( !signalBus.HasValue( 4 ) );
+    REQUIRE( signalBus.GetValue<int>( 4 ) == nullptr );
+
+    REQUIRE( signalBus.GetType( 0 ) != signalBus.GetType( 1 ) );
+    REQUIRE( signalBus.GetType( 1 ) != signalBus.GetType( 2 ) );
+    REQUIRE( signalBus.GetType( 2 ) != signalBus.GetType( 3 ) );
+    // no 5th input so should return void type_info
+    REQUIRE( signalBus.GetType( 3 ) != signalBus.GetType( 4 ) );
+}
+
 TEST_CASE( "SerialTest" )
 {
     // Configure a circuit made up of a counter and 5 incrementers in series
@@ -77,6 +110,10 @@ TEST_CASE( "ParallelTest" )
     auto inc_p5 = std::make_shared<Incrementer>( 5 );
     auto probe = std::make_shared<ParallelProbe>();
 
+    REQUIRE( counter->GetInputCount() == 0 );
+    REQUIRE( inc_p1->GetInputCount() == 1 );
+    REQUIRE( probe->GetInputCount() == 5 );
+
     circuit->AddComponent( counter );
     circuit->AddComponent( inc_p1 );
     circuit->AddComponent( inc_p2 );
@@ -84,6 +121,12 @@ TEST_CASE( "ParallelTest" )
     circuit->AddComponent( inc_p4 );
     circuit->AddComponent( inc_p5 );
     circuit->AddComponent( probe );
+
+    REQUIRE( circuit->GetComponentCount() == 7 );
+
+    REQUIRE( !circuit->AddComponent( counter ) );
+    REQUIRE( !circuit->AddComponent( inc_p1 ) );
+    REQUIRE( !circuit->AddComponent( probe ) );
 
     circuit->ConnectOutToIn( counter, 0, inc_p1, 0 );
     circuit->ConnectOutToIn( counter, 0, inc_p2, 0 );
@@ -98,6 +141,11 @@ TEST_CASE( "ParallelTest" )
 
     // Tick the circuit for 100ms with 3 threads
     circuit->SetBufferCount( 3 );
+
+    REQUIRE( counter->GetBufferCount() == 3 );
+    REQUIRE( inc_p1->GetBufferCount() == 3 );
+    REQUIRE( probe->GetBufferCount() == 3 );
+
     circuit->StartAutoTick( Component::TickMode::Series );
     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
     circuit->StopAutoTick();
@@ -463,6 +511,8 @@ TEST_CASE( "StopAutoTickRegressionTest" )
     circuit->RemoveComponent( counter3 );
     circuit->RemoveComponent( counter4 );
     circuit->RemoveComponent( probe );
+
+    REQUIRE( !circuit->RemoveComponent( counter1 ) );
 }
 
 TEST_CASE( "ThreadAdjustmentTest" )
