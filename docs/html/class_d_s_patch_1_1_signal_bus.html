@@ -97,7 +97,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6786002831def3390ea72efeef7a0de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b92743d199ac062bf690e28d994abdd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a9b92743d199ac062bf690e28d994abdd">GetSignalCount</a> () const</td></tr>
 <tr class="separator:a9b92743d199ac062bf690e28d994abdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1280224d90597b48db074d886d3a3ee6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classfast__any_1_1any.html">fast_any::any</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1280224d90597b48db074d886d3a3ee6">GetSignal</a> (int signalIndex)</td></tr>
+<tr class="memitem:a1280224d90597b48db074d886d3a3ee6"><td class="memItemLeft" align="right" valign="top">fast_any::any *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1280224d90597b48db074d886d3a3ee6">GetSignal</a> (int signalIndex)</td></tr>
 <tr class="separator:a1280224d90597b48db074d886d3a3ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3390bfb346f5811de611c3e01a4c2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1f3390bfb346f5811de611c3e01a4c2a">HasValue</a> (int signalIndex) const</td></tr>
 <tr class="separator:a1f3390bfb346f5811de611c3e01a4c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,9 +110,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a78a7c9596f2349d59d5df80441dc536f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a78a7c9596f2349d59d5df80441dc536f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a78a7c9596f2349d59d5df80441dc536f">MoveValue</a> (int signalIndex, ValueType &amp;&amp;newValue)</td></tr>
 <tr class="separator:a78a7c9596f2349d59d5df80441dc536f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac06e93d58059ca24ec1ef63ee070b41d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#ac06e93d58059ca24ec1ef63ee070b41d">SetSignal</a> (int toSignalIndex, const <a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;fromSignal)</td></tr>
+<tr class="memitem:ac06e93d58059ca24ec1ef63ee070b41d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#ac06e93d58059ca24ec1ef63ee070b41d">SetSignal</a> (int toSignalIndex, const fast_any::any &amp;fromSignal)</td></tr>
 <tr class="separator:ac06e93d58059ca24ec1ef63ee070b41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd3e3c1716eb6e339e9b8b99abb8937e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#afd3e3c1716eb6e339e9b8b99abb8937e">MoveSignal</a> (int toSignalIndex, <a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;fromSignal)</td></tr>
+<tr class="memitem:afd3e3c1716eb6e339e9b8b99abb8937e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#afd3e3c1716eb6e339e9b8b99abb8937e">MoveSignal</a> (int toSignalIndex, fast_any::any &amp;fromSignal)</td></tr>
 <tr class="separator:afd3e3c1716eb6e339e9b8b99abb8937e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0339a9ef3882958813e84aceaa66a712"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a0339a9ef3882958813e84aceaa66a712">ClearAllValues</a> ()</td></tr>
 <tr class="separator:a0339a9ef3882958813e84aceaa66a712"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,7 +192,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classfast__any_1_1any.html">fast_any::any</a> * DSPatch::SignalBus::GetSignal </td>
+          <td class="memname">fast_any::any * DSPatch::SignalBus::GetSignal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>signalIndex</em></td><td>)</td>
@@ -341,7 +341,7 @@ template&lt;typename ValueType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;&#160;</td>
+          <td class="paramtype">fast_any::any &amp;&#160;</td>
           <td class="paramname"><em>fromSignal</em>&#160;</td>
         </tr>
         <tr>
@@ -419,7 +419,7 @@ template&lt;typename ValueType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;&#160;</td>
+          <td class="paramtype">const fast_any::any &amp;&#160;</td>
           <td class="paramname"><em>fromSignal</em>&#160;</td>
         </tr>
         <tr>
