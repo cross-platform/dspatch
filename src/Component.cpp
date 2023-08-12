@@ -172,7 +172,7 @@ void Component::DisconnectInput( const Component::SPtr& fromComponent )
         // update source output's reference count
         fromComponent->p->DecRefs( it->fromOutput );
 
-        p->inputWires.erase( it );
+        it = p->inputWires.erase( it );
     }
 }
 
