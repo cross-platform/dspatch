@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.5.1</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.5.2</span>
    </div>
   </td>
  </tr>
@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="class_d_s_patch_1_1_signal.html" title="Value container used to carry data between components.">Signal</a> container.  
+<p>Signal container.  
  <a href="class_d_s_patch_1_1_signal_bus.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>&gt;</code></p>
@@ -97,8 +97,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6786002831def3390ea72efeef7a0de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b92743d199ac062bf690e28d994abdd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a9b92743d199ac062bf690e28d994abdd">GetSignalCount</a> () const</td></tr>
 <tr class="separator:a9b92743d199ac062bf690e28d994abdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d3f7c7556f4bb08af650b152c4d65b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a7d3f7c7556f4bb08af650b152c4d65b8">GetSignal</a> (int signalIndex)</td></tr>
-<tr class="separator:a7d3f7c7556f4bb08af650b152c4d65b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1280224d90597b48db074d886d3a3ee6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classfast__any_1_1any.html">fast_any::any</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1280224d90597b48db074d886d3a3ee6">GetSignal</a> (int signalIndex)</td></tr>
+<tr class="separator:a1280224d90597b48db074d886d3a3ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f3390bfb346f5811de611c3e01a4c2a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a1f3390bfb346f5811de611c3e01a4c2a">HasValue</a> (int signalIndex) const</td></tr>
 <tr class="separator:a1f3390bfb346f5811de611c3e01a4c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e47338f3f18f1b7be4fa3c828feccfc"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
@@ -110,20 +110,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a78a7c9596f2349d59d5df80441dc536f"><td class="memTemplParams" colspan="2">template&lt;typename ValueType &gt; </td></tr>
 <tr class="memitem:a78a7c9596f2349d59d5df80441dc536f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a78a7c9596f2349d59d5df80441dc536f">MoveValue</a> (int signalIndex, ValueType &amp;&amp;newValue)</td></tr>
 <tr class="separator:a78a7c9596f2349d59d5df80441dc536f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad50dd198504d2912751e9adcb3ea744a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#ad50dd198504d2912751e9adcb3ea744a">SetSignal</a> (int toSignalIndex, const <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;fromSignal)</td></tr>
-<tr class="separator:ad50dd198504d2912751e9adcb3ea744a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30c38bd9f12d77a8ed54b314a2123b62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a30c38bd9f12d77a8ed54b314a2123b62">MoveSignal</a> (int toSignalIndex, <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;fromSignal)</td></tr>
-<tr class="separator:a30c38bd9f12d77a8ed54b314a2123b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac06e93d58059ca24ec1ef63ee070b41d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#ac06e93d58059ca24ec1ef63ee070b41d">SetSignal</a> (int toSignalIndex, const <a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;fromSignal)</td></tr>
+<tr class="separator:ac06e93d58059ca24ec1ef63ee070b41d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd3e3c1716eb6e339e9b8b99abb8937e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#afd3e3c1716eb6e339e9b8b99abb8937e">MoveSignal</a> (int toSignalIndex, <a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;fromSignal)</td></tr>
+<tr class="separator:afd3e3c1716eb6e339e9b8b99abb8937e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0339a9ef3882958813e84aceaa66a712"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a0339a9ef3882958813e84aceaa66a712">ClearAllValues</a> ()</td></tr>
 <tr class="separator:a0339a9ef3882958813e84aceaa66a712"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9853017d745ca419239f3dfe109b3e02"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a9853017d745ca419239f3dfe109b3e02">GetType</a> (int signalIndex) const</td></tr>
-<tr class="separator:a9853017d745ca419239f3dfe109b3e02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2de30fe60da35ca069cae1ff4c5906"><td class="memItemLeft" align="right" valign="top">const fast_any::type_info &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_signal_bus.html#a7d2de30fe60da35ca069cae1ff4c5906">GetType</a> (int signalIndex) const</td></tr>
+<tr class="separator:a7d2de30fe60da35ca069cae1ff4c5906"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="class_d_s_patch_1_1_signal.html" title="Value container used to carry data between components.">Signal</a> container. </p>
-<p>A <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a> contains Signals (see <a class="el" href="class_d_s_patch_1_1_signal.html" title="Value container used to carry data between components.">Signal</a>). Via the Process_() method, a <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> receives signals into it's "inputs" <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a> and provides signals to it's "outputs" <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a>. The <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a> class provides public getters and setters for manipulating it's internal <a class="el" href="class_d_s_patch_1_1_signal.html" title="Value container used to carry data between components.">Signal</a> values directly, abstracting the need to retrieve and interface with the contained Signals themself. </p>
+<div class="textblock"><p>Signal container. </p>
+<p>Components process and transfer data between each other in the form of "signals" via interconnected wires. SignalBuses are signal containers. Via the Process_() method, a <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> receives signals into its "inputs" <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a> and provides signals to its "outputs" <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a>. The <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a> class provides public getters and setters for manipulating its internal signal values, abstracting the need to retrieve and interface with them directly.</p>
+<p>Signals can be dynamically typed at runtime, this means a signal has the ability to change its data type at any point during program execution. This is designed such that a <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a> can hold any number of different typed variables, as well as to allow for a variable to dynamically change its type when needed - this can be useful for inputs that accept a number of different data types (E.g. Varying sample size in an audio buffer: array of byte / int / float). </p>
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00047">47</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00056">56</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a24f228f25dbff57b353b5a5f61a1b370" name="a24f228f25dbff57b353b5a5f61a1b370"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a24f228f25dbff57b353b5a5f61a1b370">&#9670;&#160;</a></span>SignalBus()</h2>
@@ -149,7 +150,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00085">85</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00094">94</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -177,12 +178,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00171">171</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00199">199</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
-<a id="a7d3f7c7556f4bb08af650b152c4d65b8" name="a7d3f7c7556f4bb08af650b152c4d65b8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d3f7c7556f4bb08af650b152c4d65b8">&#9670;&#160;</a></span>GetSignal()</h2>
+<a id="a1280224d90597b48db074d886d3a3ee6" name="a1280224d90597b48db074d886d3a3ee6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1280224d90597b48db074d886d3a3ee6">&#9670;&#160;</a></span>GetSignal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,7 +192,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> * DSPatch::SignalBus::GetSignal </td>
+          <td class="memname"><a class="el" href="classfast__any_1_1any.html">fast_any::any</a> * DSPatch::SignalBus::GetSignal </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>signalIndex</em></td><td>)</td>
@@ -205,7 +206,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00100">100</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00109">109</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -232,12 +233,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00095">95</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00104">104</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
-<a id="a9853017d745ca419239f3dfe109b3e02" name="a9853017d745ca419239f3dfe109b3e02"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9853017d745ca419239f3dfe109b3e02">&#9670;&#160;</a></span>GetType()</h2>
+<a id="a7d2de30fe60da35ca069cae1ff4c5906" name="a7d2de30fe60da35ca069cae1ff4c5906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d2de30fe60da35ca069cae1ff4c5906">&#9670;&#160;</a></span>GetType()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -246,7 +247,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int DSPatch::SignalBus::GetType </td>
+          <td class="memname">const fast_any::type_info &amp; DSPatch::SignalBus::GetType </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>signalIndex</em></td><td>)</td>
@@ -260,7 +261,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00179">179</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00207">207</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -290,7 +291,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00125">125</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00143">143</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -318,12 +319,12 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00112">112</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00130">130</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
-<a id="a30c38bd9f12d77a8ed54b314a2123b62" name="a30c38bd9f12d77a8ed54b314a2123b62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30c38bd9f12d77a8ed54b314a2123b62">&#9670;&#160;</a></span>MoveSignal()</h2>
+<a id="afd3e3c1716eb6e339e9b8b99abb8937e" name="afd3e3c1716eb6e339e9b8b99abb8937e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd3e3c1716eb6e339e9b8b99abb8937e">&#9670;&#160;</a></span>MoveSignal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -340,7 +341,7 @@ template&lt;typename ValueType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;&#160;</td>
           <td class="paramname"><em>fromSignal</em>&#160;</td>
         </tr>
         <tr>
@@ -356,7 +357,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00163">163</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00181">181</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -396,12 +397,12 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00147">147</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00165">165</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
-<a id="ad50dd198504d2912751e9adcb3ea744a" name="ad50dd198504d2912751e9adcb3ea744a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad50dd198504d2912751e9adcb3ea744a">&#9670;&#160;</a></span>SetSignal()</h2>
+<a id="ac06e93d58059ca24ec1ef63ee070b41d" name="ac06e93d58059ca24ec1ef63ee070b41d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac06e93d58059ca24ec1ef63ee070b41d">&#9670;&#160;</a></span>SetSignal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -418,7 +419,7 @@ template&lt;typename ValueType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="class_d_s_patch_1_1_signal.html">Signal</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classfast__any_1_1any.html">fast_any::any</a> &amp;&#160;</td>
           <td class="paramname"><em>fromSignal</em>&#160;</td>
         </tr>
         <tr>
@@ -434,7 +435,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00155">155</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00173">173</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -462,7 +463,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00090">90</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00099">99</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
@@ -502,7 +503,7 @@ template&lt;typename ValueType &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00138">138</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_signal_bus_8h_source.html#l00156">156</a> of file <a class="el" href="_signal_bus_8h_source.html">SignalBus.h</a>.</p>
 
 </div>
 </div>
