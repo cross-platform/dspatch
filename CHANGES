@@ -1,3 +1,8 @@
+v.9.5.3 (12 August 2023)
+    - Updated fast_any submodule (incl. C-style cast fixes).
+    - Moved fast_any to include/ to simplify the build.
+    - Cleaned up in-line documentation.
+
 v.9.5.2 (12 August 2023)
     - Replaced Signal class with fast_any.
     - Fixed Component::DisconnectInput() hang on Windows.
