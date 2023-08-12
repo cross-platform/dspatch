@@ -33,7 +33,6 @@ enable_testing()
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/subprojects
 )
 
 file(GLOB root_hdrs include/*.h)
