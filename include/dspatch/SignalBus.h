@@ -110,12 +110,13 @@ inline fast_any::any* SignalBus::GetSignal( int signalIndex )
 {
     // You might be thinking: Why the raw pointer return here?
 
-    // This is for usability, performance, and readably. Usability, because a pointer allows the
-    // user to manipulate the contained value externally. Performance, because returning a smart
-    // pointer here means having to store the value as a smart pointer too. This adds yet another
-    // level of indirection to the value, as well as some reference counting overhead. These Get()
-    // and Set() methods are VERY frequently called, so doing as little as possible with the data
-    // here is best, which ultimately aids in the readably of the code too.
+    // This is for usability, design, and performance reasons. Usability, because a pointer allows
+    // the user to manipulate the contained value externally. Design, because DSPatch doesn't use
+    // exceptions - a nullptr return here is the equivalent of "signal does not exist".
+    // Performance, because returning a smart pointer means having to store the value as a smart
+    // pointer too - this adds yet another level of indirection to the value, as well as some
+    // reference counting overhead. These Get() and Set() methods are VERY frequently called, so
+    // doing as little as possible with the data here is best.
 
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -142,6 +143,10 @@ inline bool SignalBus::HasValue( int signalIndex ) const
 template <typename ValueType>
 inline ValueType* SignalBus::GetValue( int signalIndex ) const
 {
+    // You might be thinking: Why the raw pointer return here?
+
+    // See: GetSignal().
+
     if ( (size_t)signalIndex < _signals.size() )
     {
         return _signals[signalIndex].as<ValueType>();
