@@ -65,6 +65,7 @@ if find_program('cppcheck', required: false).found()
             '--force',
             '--quiet',
             '--suppress=missingIncludeSystem',
+            '--suppress=*:' + meson.current_source_dir() + '/include/fast_any/any.h',
 
             '-i', meson.current_source_dir() + '/build',
             '-i', meson.current_source_dir() + '/builddir',
