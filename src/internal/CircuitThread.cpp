@@ -54,7 +54,6 @@ void CircuitThread::Start( std::vector<DSPatch::Component::SPtr>* components, in
 
     _stop = false;
     _stopped = false;
-    _gotResume = false;
     _gotSync = false;
 
     _thread = std::thread( &CircuitThread::_Run, this );
@@ -86,7 +85,7 @@ void CircuitThread::Sync()
         return;
     }
 
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _syncMutex );
 
     // cppcheck-suppress knownConditionTrueFalse
     if ( !_gotSync )  // if haven't already got sync
@@ -107,15 +106,14 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
         _gotSync = false;  // reset the sync flag
         _mode = mode;
 
-        std::lock_guard<std::mutex> lock( _resumeMutex );
+        std::lock_guard<std::mutex> lock( _syncMutex );
 
-        _gotResume = true;  // set the resume flag
         _resumeCondt.notify_all();
 
         return;
     }
 
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _syncMutex );
 
     if ( !_gotSync )  // if haven't already got sync
     {
@@ -125,7 +123,6 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
     _gotSync = false;  // reset the sync flag
     _mode = mode;
 
-    _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
 }
 
@@ -136,18 +133,14 @@ void CircuitThread::_Run()
         while ( !_stop )
         {
             {
-                std::unique_lock<std::mutex> lock( _resumeMutex );
+                std::unique_lock<std::mutex> lock( _syncMutex );
 
                 _gotSync = true;  // set the sync flag
                 _syncCondt.notify_all();
-
-                if ( !_gotResume )  // if haven't already got resume
-                {
-                    _resumeCondt.wait( lock );  // wait for resume
-                }
-                _gotResume = false;  // reset the resume flag
+                _resumeCondt.wait( lock );  // wait for resume
             }
 
+            // cppcheck-suppress knownConditionTrueFalse
             if ( !_stop )
             {
                 // You might be thinking: Can't we have each thread start on a different component?

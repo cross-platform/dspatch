@@ -82,9 +82,8 @@ private:
     int _threadNo = 0;
     bool _stop = false;
     bool _stopped = true;
-    bool _gotResume = false;
     bool _gotSync = true;
-    std::mutex _resumeMutex;
+    std::mutex _syncMutex;
     std::condition_variable _resumeCondt, _syncCondt;
 };
 
