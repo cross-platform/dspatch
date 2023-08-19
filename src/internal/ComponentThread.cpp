@@ -57,7 +57,6 @@ void ComponentThread::Start()
 
     _stop = false;
     _stopped = false;
-    _gotResume = false;
     _gotSync = false;
 
     _thread = std::thread( &ComponentThread::_Run, this );
@@ -111,12 +110,13 @@ void ComponentThread::Resume()
 
     _gotSync = false;  // reset the sync flag
 
-    _gotResume = true;  // set the resume flag
     _resumeCondt.notify_all();
 }
 
 void ComponentThread::_Run()
 {
+    SetThreadHighPriority();
+
     while ( !_stop )
     {
         {
@@ -124,14 +124,10 @@ void ComponentThread::_Run()
 
             _gotSync = true;  // set the sync flag
             _syncCondt.notify_all();
-
-            if ( !_gotResume )  // if haven't already got resume
-            {
-                _resumeCondt.wait( lock );  // wait for resume
-            }
-            _gotResume = false;  // reset the resume flag
+            _resumeCondt.wait( lock );  // wait for resume
         }
 
+        // cppcheck-suppress knownConditionTrueFalse
         if ( !_stop )
         {
             _component->_TickParallel( _bufferNo );

@@ -76,7 +76,6 @@ private:
 
     bool _stop = false;
     bool _stopped = true;
-    bool _gotResume = false;
     bool _gotSync = true;
     std::mutex _resumeMutex;
     std::condition_variable _resumeCondt, _syncCondt;
