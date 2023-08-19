@@ -115,6 +115,8 @@ void ComponentThread::Resume()
 
 void ComponentThread::_Run()
 {
+    SetThreadHighPriority();
+
     while ( !_stop )
     {
         {

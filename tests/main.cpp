@@ -401,7 +401,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.25 * 0.80 );
+    REQUIRE( eff >= refEff * 0.25 * 0.90 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -420,7 +420,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.25 * 0.80 );
+    REQUIRE( eff >= refEff * 0.25 * 0.90 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -439,7 +439,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "2x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.5 * 0.80 );
+    REQUIRE( eff >= refEff * 0.5 * 0.90 );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -458,7 +458,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "3x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.75 * 0.80 );
+    REQUIRE( eff >= refEff * 0.75 * 0.90 );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 4 )
@@ -477,7 +477,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "4x Buffer Efficiency (Series Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.80 );
+    REQUIRE( eff >= refEff * 0.90 );
 }
 
 TEST_CASE( "StopAutoTickRegressionTest" )
@@ -907,7 +907,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.70 );
+    REQUIRE( eff >= refEff * effFrac * 0.85 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -926,7 +926,7 @@ TEST_CASE( "ThreadPerformanceTest2" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency (Parallel Mode): " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * effFrac * 0.70 );
+    REQUIRE( eff >= refEff * effFrac * 0.85 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -1258,7 +1258,7 @@ TEST_CASE( "TenThousandComponents" )
     std::cout << "Construction, 10000 Components: " << diff_ms << "ms\n";
 
     {
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         begin = std::chrono::high_resolution_clock::now();
 
@@ -1276,7 +1276,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 1 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         begin = std::chrono::high_resolution_clock::now();
 
@@ -1294,7 +1294,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 2 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         begin = std::chrono::high_resolution_clock::now();
 
@@ -1312,7 +1312,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 3 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         begin = std::chrono::high_resolution_clock::now();
 
@@ -1330,7 +1330,7 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->SetBufferCount( 4 );
 
-        int iterationCount = 100;
+        int iterationCount = 1000;
 
         begin = std::chrono::high_resolution_clock::now();
 

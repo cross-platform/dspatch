@@ -128,6 +128,8 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
 
 void CircuitThread::_Run()
 {
+    SetThreadHighPriority();
+
     if ( _components )
     {
         while ( !_stop )

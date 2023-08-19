@@ -128,6 +128,8 @@ void AutoTickThread::Resume()
 
 void AutoTickThread::_Run()
 {
+    SetThreadHighPriority();
+
     if ( _circuit )
     {
         while ( !_stop )
