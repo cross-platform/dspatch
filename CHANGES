@@ -1,3 +1,7 @@
+v.9.5.4 (19 August 2023)
+    - Updated fast_any submodule (incl. optimizations & bug fixes).
+    - Optimized AutoTickThread, CircuitThread & ComponentThread.
+
 v.9.5.3 (12 August 2023)
     - Updated fast_any submodule (incl. C-style cast fixes).
     - Moved fast_any to include/ to simplify the build.
