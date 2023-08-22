@@ -64,18 +64,15 @@ public:
         std::mutex mutex;
     };
 
-    struct ReleaseFlag
+    struct MovableAtomicFlag
     {
-        ReleaseFlag() = default;
+        MovableAtomicFlag() = default;
 
-        // cppcheck-suppress missingMemberCopy
-        ReleaseFlag( ReleaseFlag&& )
+        MovableAtomicFlag( MovableAtomicFlag&& )
         {
         }
 
-        bool gotRelease = false;
-        std::mutex mutex;
-        std::condition_variable condt;
+        std::atomic_flag flag = ATOMIC_FLAG_INIT;
     };
 
     explicit Component( DSPatch::Component::ProcessOrder processOrder )
@@ -107,7 +104,7 @@ public:
     std::vector<std::unordered_set<const Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
-    std::vector<ReleaseFlag> releaseFlags;
+    std::vector<MovableAtomicFlag> releaseFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
@@ -251,7 +248,7 @@ void Component::SetBufferCount( int bufferCount )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        p->releaseFlags[i].gotRelease = false;
+        p->releaseFlags[i].flag.test_and_set();
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -263,7 +260,7 @@ void Component::SetBufferCount( int bufferCount )
         p->refMutexes[i].resize( p->refMutexes[0].size() );
     }
 
-    p->releaseFlags[0].gotRelease = true;
+    p->releaseFlags[0].flag.clear();
 
     p->bufferCount = bufferCount;
 }
@@ -448,36 +445,24 @@ void Component::_TickParallel( int bufferNo )
 
 void internal::Component::WaitForRelease( int threadNo )
 {
-    auto& releaseFlag = releaseFlags[threadNo];
+    auto& releaseFlag = releaseFlags[threadNo].flag;
 
-    if ( releaseFlag.gotRelease )
+    while ( releaseFlag.test_and_set( std::memory_order_acquire ) )
     {
-        releaseFlag.gotRelease = false;  // reset the release flag
-        return;
+        YieldThread();
     }
-
-    std::unique_lock<std::mutex> lock( releaseFlag.mutex );
-
-    if ( !releaseFlag.gotRelease )
-    {
-        releaseFlag.condt.wait( lock );  // wait for release
-    }
-    releaseFlag.gotRelease = false;  // reset the release flag
 }
 
 void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
-        threadNo = 0;
+        releaseFlags[0].flag.clear( std::memory_order_release );
     }
-
-    auto& releaseFlag = releaseFlags[threadNo];
-
-    std::lock_guard<std::mutex> lock( releaseFlag.mutex );
-
-    releaseFlag.gotRelease = true;
-    releaseFlag.condt.notify_all();
+    else
+    {
+        releaseFlags[threadNo].flag.clear( std::memory_order_release );
+    }
 }
 
 void internal::Component::GetOutput(
