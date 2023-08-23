@@ -304,7 +304,7 @@ void Component::Tick( Component::TickMode mode, int bufferNo )
         // clear outputs
         outputBus.ClearAllValues();
 
-        if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+        if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
         {
             // wait for our turn to process
             p->WaitForRelease( bufferNo );
@@ -435,7 +435,7 @@ void Component::_TickParallel( int bufferNo )
     // clear outputs
     outputBus.ClearAllValues();
 
-    if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
     {
         // wait for our turn to process
         p->WaitForRelease( bufferNo );
@@ -483,13 +483,12 @@ void internal::Component::GetOutput(
         return;
     }
 
-    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
     if ( ref.first == 1 )
     {
         // there's only one reference, move the signal immediately
-        toBus.MoveSignal( toInput, signal );
+        toBus.MoveSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
         return;
     }
     else if ( mode == DSPatch::Component::TickMode::Parallel )
@@ -497,7 +496,7 @@ void internal::Component::GetOutput(
         std::lock_guard<std::mutex> lock( *refMutexes[bufferNo][fromOutput] );
         if ( ++ref.second != ref.first )
         {
-            toBus.SetSignal( toInput, signal );
+            toBus.SetSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
             return;
         }
         else
@@ -508,7 +507,7 @@ void internal::Component::GetOutput(
     }
     else if ( ++ref.second != ref.first )
     {
-        toBus.SetSignal( toInput, signal );
+        toBus.SetSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
         return;
     }
     else
@@ -517,7 +516,7 @@ void internal::Component::GetOutput(
         ref.second = 0;
     }
 
-    toBus.MoveSignal( toInput, signal );
+    toBus.MoveSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
 }
 
 void internal::Component::IncRefs( int output )
