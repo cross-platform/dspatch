@@ -52,38 +52,12 @@ public:
         Ticking
     };
 
-    struct MovableMutex
-    {
-        MovableMutex() = default;
-
-        // cppcheck-suppress missingMemberCopy
-        MovableMutex( MovableMutex&& )
-        {
-        }
-
-        std::mutex mutex;
-    };
-
-    struct ReleaseFlag
-    {
-        ReleaseFlag() = default;
-
-        // cppcheck-suppress missingMemberCopy
-        ReleaseFlag( ReleaseFlag&& )
-        {
-        }
-
-        bool gotRelease = false;
-        std::mutex mutex;
-        std::condition_variable condt;
-    };
-
     explicit Component( DSPatch::Component::ProcessOrder processOrder )
         : processOrder( processOrder )
     {
     }
 
-    void WaitForRelease( int threadNo );
+    void WaitForRelease( int threadNo ) const;
     void ReleaseNextThread( int threadNo );
 
     void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode );
@@ -99,7 +73,7 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::vector<std::vector<MovableMutex>> refMutexes;
+    std::vector<std::vector<std::mutex*>> refMutexes;
 
     std::vector<Wire> inputWires;
 
@@ -107,7 +81,7 @@ public:
     std::vector<std::unordered_set<const Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
-    std::vector<ReleaseFlag> releaseFlags;
+    std::vector<std::atomic_flag*> releaseFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
@@ -237,7 +211,18 @@ void Component::SetBufferCount( int bufferCount )
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
 
+    auto oldSize = p->releaseFlags.size();
+
     p->releaseFlags.resize( bufferCount );
+
+    for ( size_t i = p->releaseFlags.size(); i < oldSize; ++i )
+    {
+        delete p->releaseFlags[i];
+    }
+    for ( size_t i = oldSize; i < p->releaseFlags.size(); ++i )
+    {
+        p->releaseFlags[i] = new std::atomic_flag();
+    }
 
     p->refs.resize( bufferCount );
     p->refMutexes.resize( bufferCount );
@@ -252,7 +237,7 @@ void Component::SetBufferCount( int bufferCount )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        p->releaseFlags[i].gotRelease = false;
+        p->releaseFlags[i]->test_and_set();
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -261,10 +246,21 @@ void Component::SetBufferCount( int bufferCount )
             p->refs[i][j] = p->refs[0][j];
         }
 
+        oldSize = p->refMutexes[i].size();
+
         p->refMutexes[i].resize( p->refMutexes[0].size() );
+
+        for ( size_t j = p->refMutexes[i].size(); j < oldSize; ++j )
+        {
+            delete p->refMutexes[i][j];
+        }
+        for ( size_t j = oldSize; j < p->refMutexes[i].size(); ++j )
+        {
+            p->refMutexes[i][j] = new std::mutex();
+        }
     }
 
-    p->releaseFlags[0].gotRelease = true;
+    p->releaseFlags[0]->clear();
 
     p->bufferCount = bufferCount;
 }
@@ -309,7 +305,7 @@ void Component::Tick( Component::TickMode mode, int bufferNo )
         // clear outputs
         outputBus.ClearAllValues();
 
-        if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+        if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
         {
             // wait for our turn to process
             p->WaitForRelease( bufferNo );
@@ -399,7 +395,18 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
     for ( auto& refMutexes : p->refMutexes )
     {
+        auto oldSize = refMutexes.size();
+
         refMutexes.resize( outputCount );
+
+        for ( size_t i = refMutexes.size(); i < oldSize; ++i )
+        {
+            delete refMutexes[i];
+        }
+        for ( size_t i = oldSize; i < refMutexes.size(); ++i )
+        {
+            refMutexes[i] = new std::mutex();
+        }
     }
 }
 
@@ -429,7 +436,7 @@ void Component::_TickParallel( int bufferNo )
     // clear outputs
     outputBus.ClearAllValues();
 
-    if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
     {
         // wait for our turn to process
         p->WaitForRelease( bufferNo );
@@ -447,38 +454,26 @@ void Component::_TickParallel( int bufferNo )
     }
 }
 
-void internal::Component::WaitForRelease( int threadNo )
+void internal::Component::WaitForRelease( int threadNo ) const
 {
-    auto& releaseFlag = releaseFlags[threadNo];
+    auto releaseFlag = releaseFlags[threadNo];
 
-    if ( releaseFlag.gotRelease )
+    while ( releaseFlag->test_and_set( std::memory_order_acquire ) )
     {
-        releaseFlag.gotRelease = false;  // reset the release flag
-        return;
+        YieldThread();
     }
-
-    std::unique_lock<std::mutex> lock( releaseFlag.mutex );
-
-    if ( !releaseFlag.gotRelease )
-    {
-        releaseFlag.condt.wait( lock );  // wait for release
-    }
-    releaseFlag.gotRelease = false;  // reset the release flag
 }
 
 void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
-        threadNo = 0;
+        releaseFlags[0]->clear( std::memory_order_release );
     }
-
-    auto& releaseFlag = releaseFlags[threadNo];
-
-    std::lock_guard<std::mutex> lock( releaseFlag.mutex );
-
-    releaseFlag.gotRelease = true;
-    releaseFlag.condt.notify_all();
+    else
+    {
+        releaseFlags[threadNo]->clear( std::memory_order_release );
+    }
 }
 
 void internal::Component::GetOutput(
@@ -489,21 +484,20 @@ void internal::Component::GetOutput(
         return;
     }
 
-    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
     if ( ref.first == 1 )
     {
         // there's only one reference, move the signal immediately
-        toBus.MoveSignal( toInput, signal );
+        toBus.MoveSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
         return;
     }
     else if ( mode == DSPatch::Component::TickMode::Parallel )
     {
-        std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput].mutex );
+        std::lock_guard<std::mutex> lock( *refMutexes[bufferNo][fromOutput] );
         if ( ++ref.second != ref.first )
         {
-            toBus.SetSignal( toInput, signal );
+            toBus.SetSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
             return;
         }
         else
@@ -514,7 +508,7 @@ void internal::Component::GetOutput(
     }
     else if ( ++ref.second != ref.first )
     {
-        toBus.SetSignal( toInput, signal );
+        toBus.SetSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
         return;
     }
     else
@@ -523,7 +517,7 @@ void internal::Component::GetOutput(
         ref.second = 0;
     }
 
-    toBus.MoveSignal( toInput, signal );
+    toBus.MoveSignal( toInput, *outputBuses[bufferNo].GetSignal( fromOutput ) );
 }
 
 void internal::Component::IncRefs( int output )

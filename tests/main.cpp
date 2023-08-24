@@ -1164,7 +1164,7 @@ using namespace DSPatch;
 //         circuit->Tick( Component::TickMode::Parallel );
 //     }
 
-//     circuit->SetBufferCount( 30 );
+//     circuit->SetBufferCount( std::thread::hardware_concurrency() );
 
 //     for ( int i = 0; i < 100; ++i )
 //     {
