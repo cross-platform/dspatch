@@ -1,3 +1,8 @@
+v.9.6.0 (24 August 2023)
+    - Made WaitForRelease() and ReleaseNextThread() lock-free.
+    - Replaced custom structs in Component with mutex* & atomic_flag*.
+    - Slightly optimized Tick() and GetOutput() logic.
+
 v.9.5.4 (19 August 2023)
     - Updated fast_any submodule (incl. optimizations & bug fixes).
     - Optimized AutoTickThread, CircuitThread & ComponentThread.
