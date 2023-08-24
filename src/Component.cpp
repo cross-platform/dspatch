@@ -305,7 +305,7 @@ void Component::Tick( Component::TickMode mode, int bufferNo )
         // clear outputs
         outputBus.ClearAllValues();
 
-        if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+        if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
         {
             // wait for our turn to process
             p->WaitForRelease( bufferNo );
@@ -425,7 +425,7 @@ void Component::_TickParallel( int bufferNo )
     // clear outputs
     outputBus.ClearAllValues();
 
-    if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
     {
         // wait for our turn to process
         p->WaitForRelease( bufferNo );
