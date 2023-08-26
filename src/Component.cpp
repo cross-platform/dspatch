@@ -187,6 +187,20 @@ void Component::DisconnectAllInputs()
     p->inputWires.clear();
 }
 
+int Component::GetCircuitPosition( int offset )
+{
+    int furthestPos = 0;
+    for ( auto& wire : p->inputWires )
+    {
+        int pos = wire.fromComponent->GetCircuitPosition( 1 );
+        if ( pos > furthestPos )
+        {
+            furthestPos = pos;
+        }
+    }
+    return offset += furthestPos;
+}
+
 // cppcheck-suppress unusedFunction
 int Component::GetInputCount() const
 {

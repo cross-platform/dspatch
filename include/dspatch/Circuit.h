@@ -78,6 +78,8 @@ public:
     bool DisconnectComponent( const Component::SPtr& component );
     void DisconnectAllComponents();
 
+    void Sort();
+
     void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
     void Tick();

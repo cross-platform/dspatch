@@ -93,7 +93,6 @@ bool Circuit::AddComponent( const Component::SPtr& component )
     return true;
 }
 
-// cppcheck-suppress unusedFunction
 bool Circuit::RemoveComponent( const Component::SPtr& component )
 {
     if ( p->componentsSet.find( component ) == p->componentsSet.end() )
@@ -188,6 +187,12 @@ void Circuit::DisconnectAllComponents()
     }
 
     ResumeAutoTick();
+}
+
+void Circuit::Sort()
+{
+    std::sort( p->components.begin(), p->components.end(),
+               []( const Component::SPtr& a, const Component::SPtr& b ) { return a->GetCircuitPosition() < b->GetCircuitPosition(); } );
 }
 
 void Circuit::SetThreadPool( const ThreadPool::SPtr& threadPool )

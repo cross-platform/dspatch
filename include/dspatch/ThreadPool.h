@@ -56,7 +56,6 @@ public:
     NONCOPYABLE( ThreadPool );
 
     using SPtr = std::shared_ptr<ThreadPool>;
-    using SCPtr = std::shared_ptr<const ThreadPool>;
 
     explicit ThreadPool( int bufferCount, int threadsPerBuffer = 1 );
     ~ThreadPool();

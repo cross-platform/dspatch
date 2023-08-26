@@ -94,6 +94,8 @@ public:
     void DisconnectInput( const Component::SPtr& fromComponent );
     void DisconnectAllInputs();
 
+    int GetCircuitPosition( int offset = 0 );
+
     int GetInputCount() const;
     int GetOutputCount() const;
 
