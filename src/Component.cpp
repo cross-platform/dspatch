@@ -449,7 +449,7 @@ void internal::Component::WaitForRelease( int threadNo )
 
     while ( releaseFlag.test_and_set( std::memory_order_acquire ) )
     {
-        YieldThread();
+        std::this_thread::yield();
     }
 }
 
