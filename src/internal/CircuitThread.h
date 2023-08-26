@@ -46,7 +46,7 @@ initialisation, a reference to the vector of circuit components must be provided
 _Run() method to loop through. Each CircuitThread has a thread number (threadNo), which is also
 provided upon initialisation. When creating multiple CircuitThreads, each thread must have their
 own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This thread
-number corresponds with the Component's buffer number when calling it's Tick() and Reset() methods
+number corresponds with the Component's buffer number when calling its Tick() and Reset() methods
 in the CircuitThread's component loop. Hence, for every circuit thread created, each component's
 buffer count within that circuit must be incremented to match.
 
@@ -81,9 +81,8 @@ private:
     int _threadNo = 0;
     bool _stop = false;
     bool _stopped = true;
-    bool _gotResume = false;
     bool _gotSync = true;
-    std::mutex _resumeMutex;
+    std::mutex _syncMutex;
     std::condition_variable _resumeCondt, _syncCondt;
 };
 

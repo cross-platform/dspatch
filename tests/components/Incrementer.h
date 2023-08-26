@@ -21,7 +21,7 @@ protected:
         if ( in )
         {
             *in += _increment;
-            outputs.MoveSignal( 0, inputs.GetSignal( 0 ) );  // pass the adjusted signal through (no copy)
+            outputs.MoveValue( 0, std::move( *in ) );  // pass the adjusted signal through (no copy)
         }
         // else set no output
     }

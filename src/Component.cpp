@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/ComponentThread.h>
 #include <internal/Wire.h>
 
+#include <algorithm>
 #include <condition_variable>
 #include <unordered_set>
 
@@ -63,18 +64,15 @@ public:
         std::mutex mutex;
     };
 
-    struct ReleaseFlag
+    struct MovableAtomicFlag
     {
-        ReleaseFlag() = default;
+        MovableAtomicFlag() = default;
 
-        // cppcheck-suppress missingMemberCopy
-        ReleaseFlag( ReleaseFlag&& )
+        MovableAtomicFlag( MovableAtomicFlag&& )
         {
         }
 
-        bool gotRelease = false;
-        std::mutex mutex;
-        std::condition_variable condt;
+        std::atomic_flag flag = ATOMIC_FLAG_INIT;
     };
 
     explicit Component( DSPatch::Component::ProcessOrder processOrder )
@@ -103,10 +101,10 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<ComponentThread> componentThreads;
-    std::vector<std::unordered_set<Wire*>> feedbackWires;
+    std::vector<std::unordered_set<const Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
-    std::vector<ReleaseFlag> releaseFlags;
+    std::vector<MovableAtomicFlag> releaseFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
@@ -151,60 +149,42 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
 void Component::DisconnectInput( int inputNo )
 {
     // remove wires connected to inputNo from inputWires
-    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); ++it )
-    {
-        if ( it->toInput == inputNo )
-        // cppcheck-suppress useStlAlgorithm
-        {
-            // update source output's reference count
-            it->fromComponent->p->DecRefs( it->fromOutput );
+    auto findFn = [&inputNo]( const auto& wire ) { return wire.toInput == inputNo; };
 
-            p->inputWires.erase( it );
-            break;
-        }
+    if ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end() )
+    {
+        // update source output's reference count
+        it->fromComponent->p->DecRefs( it->fromOutput );
+
+        p->inputWires.erase( it );
     }
 }
 
-void Component::DisconnectInput( const Component::SCPtr& fromComponent )
+void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
     // remove fromComponent from inputWires
-    for ( auto it = p->inputWires.begin(); it != p->inputWires.end(); )
-    {
-        if ( it->fromComponent == fromComponent )
-        {
-            // update source output's reference count
-            fromComponent->p->DecRefs( it->fromOutput );
+    auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent; };
 
-            it = p->inputWires.erase( it );
-        }
-        else
-        {
-            ++it;
-        }
+    for ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end();
+          it = std::find_if( it, p->inputWires.end(), findFn ) )
+    {
+        // update source output's reference count
+        fromComponent->p->DecRefs( it->fromOutput );
+
+        it = p->inputWires.erase( it );
     }
 }
 
 void Component::DisconnectAllInputs()
 {
     // remove all wires from inputWires
-    for ( int i = 0; i < p->inputBuses[0].GetSignalCount(); ++i )
+    for ( const auto& inputWires : p->inputWires )
     {
-        DisconnectInput( i );
+        // update source output's reference count
+        inputWires.fromComponent->p->DecRefs( inputWires.fromOutput );
     }
-}
 
-int Component::GetCircuitPosition( int offset )
-{
-    int furthestPos = 0;
-    for ( auto& wire : p->inputWires )
-    {
-        int pos = wire.fromComponent->GetCircuitPosition( 1 );
-        if ( pos > furthestPos )
-        {
-            furthestPos = pos;
-        }
-    }
-    return offset += furthestPos;
+    p->inputWires.clear();
 }
 
 // cppcheck-suppress unusedFunction
@@ -286,7 +266,7 @@ void Component::SetThreadPool( const ThreadPool::SPtr& threadPool )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        p->releaseFlags[i].gotRelease = false;
+        p->releaseFlags[i].flag.test_and_set();
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -298,51 +278,93 @@ void Component::SetThreadPool( const ThreadPool::SPtr& threadPool )
         p->refMutexes[i].resize( p->refMutexes[0].size() );
     }
 
-    p->releaseFlags[0].gotRelease = true;
+    p->releaseFlags[0].flag.clear();
 
     p->bufferCount = bufferCount;
 }
 
-bool Component::Tick( int bufferNo )
+void Component::Tick( int bufferNo )
 {
     // continue only if this component has not already been ticked
-    if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
+    if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::Ticking )
     {
-        if ( p->threadPool )
+        return;
+    }
+
+    if ( !p->threadPool )
+    {
+        // set tickStatus -> Ticking
+        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+
+        auto& inputBus = p->inputBuses[bufferNo];
+        auto& outputBus = p->outputBuses[bufferNo];
+
+        for ( const auto& wire : p->inputWires )
         {
-            // set tickStatus -> TickStarted
-            p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
-
             // tick incoming components
-            for ( auto& wire : p->inputWires )
-            {
-                if ( !wire.fromComponent->Tick( bufferNo ) )
-                {
-                    p->feedbackWires[bufferNo].emplace( &wire );
-                }
-            }
+            wire.fromComponent->Tick( bufferNo );
 
-            // set tickStatus -> Ticking
-            p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+            // get new inputs from incoming components
+            wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus );
+        }
 
-            p->componentThreads[bufferNo].TickAsync();
+        // You might be thinking: Why not clear the outputs in Reset()?
+
+        // This is because we need components to hold onto their outputs long enough for any
+        // loopback wires to grab them during the next tick. The same applies to how we handle
+        // output reference counting in internal::Component::GetOutput(), reseting the counter upon
+        // the final request rather than in Reset().
+
+        // clear outputs
+        outputBus.ClearAllValues();
+
+        if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
+        {
+            // wait for our turn to process
+            p->WaitForRelease( bufferNo );
+
+            // call Process_() with newly aquired inputs
+            Process_( inputBus, outputBus );
+
+            // signal that we're done processing
+            p->ReleaseNextThread( bufferNo );
         }
         else
         {
-            // set tickStatus -> Ticking
-            p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
-
-            _DoTick( bufferNo );
+            // call Process_() with newly aquired inputs
+            Process_( inputBus, outputBus );
         }
     }
-    else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::TickStarted )
+    else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
     {
-        // return false to indicate that we have already started a tick, and hence, are a feedback component.
-        return false;
-    }
+        // set tickStatus -> TickStarted
+        p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
 
-    // return true to indicate that we are now in "Ticking" state.
-    return true;
+        auto& feedbackWires = p->feedbackWires[bufferNo];
+
+        // tick incoming components
+        for ( const auto& wire : p->inputWires )
+        {
+            try
+            {
+                wire.fromComponent->Tick( bufferNo );
+            }
+            catch ( const std::exception& )
+            {
+                feedbackWires.emplace( &wire );
+            }
+        }
+
+        // set tickStatus -> Ticking
+        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+
+        p->componentThreads[bufferNo].TickAsync();
+    }
+    else
+    {
+        // throw an exception to indicate that we have already started a tick, and hence, are a feedback component.
+        throw std::exception();
+    }
 }
 
 void Component::Reset( int bufferNo )
@@ -390,53 +412,39 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
 }
 
-void Component::_DoTick( int bufferNo )
+void Component::_TickParallel( int bufferNo )
 {
-    if ( p->threadPool )
+    auto& inputBus = p->inputBuses[bufferNo];
+    auto& outputBus = p->outputBuses[bufferNo];
+
+    auto& feedbackWires = p->feedbackWires[bufferNo];
+
+    for ( const auto& wire : p->inputWires )
     {
-        for ( auto& wire : p->inputWires )
+        // wait for non-feedback incoming components to finish ticking
+        if ( feedbackWires.find( &wire ) == feedbackWires.end() )
         {
-            // wait for non-feedback incoming components to finish ticking
-            if ( p->feedbackWires[bufferNo].find( &wire ) == p->feedbackWires[bufferNo].end() )
-            {
-                wire.fromComponent->p->componentThreads[bufferNo].Wait();
-            }
-            else
-            {
-                p->feedbackWires[bufferNo].erase( &wire );
-            }
-
-            wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
+            wire.fromComponent->p->componentThreads[bufferNo].Wait();
         }
-    }
-    else
-    {
-        for ( auto& wire : p->inputWires )
+        else
         {
-            wire.fromComponent->Tick( bufferNo );
-
-            // 4. get new inputs from incoming components
-            wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, p->inputBuses[bufferNo] );
+            feedbackWires.erase( &wire );
         }
+
+        // get new inputs from incoming components
+        wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus );
     }
-
-    // You might be thinking: Why not clear the outputs in Reset()?
-
-    // This is because we need components to hold onto their outputs long enough for any
-    // loopback wires to grab them during the next tick. The same applies to how we handle
-    // output reference counting in internal::Component::GetOutput(), reseting the counter upon
-    // the final request rather than in Reset().
 
     // clear outputs
-    p->outputBuses[bufferNo].ClearAllValues();
+    outputBus.ClearAllValues();
 
-    if ( p->processOrder == ProcessOrder::InOrder && p->bufferCount > 1 )
+    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
     {
         // wait for our turn to process
         p->WaitForRelease( bufferNo );
 
         // call Process_() with newly aquired inputs
-        Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
+        Process_( inputBus, outputBus );
 
         // signal that we're done processing
         p->ReleaseNextThread( bufferNo );
@@ -444,42 +452,30 @@ void Component::_DoTick( int bufferNo )
     else
     {
         // call Process_() with newly aquired inputs
-        Process_( p->inputBuses[bufferNo], p->outputBuses[bufferNo] );
+        Process_( inputBus, outputBus );
     }
 }
 
 void internal::Component::WaitForRelease( int threadNo )
 {
-    auto& releaseFlag = releaseFlags[threadNo];
+    auto& releaseFlag = releaseFlags[threadNo].flag;
 
-    if ( releaseFlag.gotRelease )
+    while ( releaseFlag.test_and_set( std::memory_order_acquire ) )
     {
-        releaseFlag.gotRelease = false;  // reset the release flag
-        return;
+        YieldThread();
     }
-
-    std::unique_lock<std::mutex> lock( releaseFlag.mutex );
-
-    if ( !releaseFlag.gotRelease )
-    {
-        releaseFlag.condt.wait( lock );  // wait for release
-    }
-    releaseFlag.gotRelease = false;      // reset the release flag
 }
 
 void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
-        threadNo = 0;
+        releaseFlags[0].flag.clear( std::memory_order_release );
     }
-
-    auto& releaseFlag = releaseFlags[threadNo];
-
-    std::lock_guard<std::mutex> lock( releaseFlag.mutex );
-
-    releaseFlag.gotRelease = true;
-    releaseFlag.condt.notify_all();
+    else
+    {
+        releaseFlags[threadNo].flag.clear( std::memory_order_release );
+    }
 }
 
 void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
@@ -489,10 +485,16 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
         return;
     }
 
-    auto& signal = outputBuses[bufferNo].GetSignal( fromOutput );
+    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( threadPool && ref.first > 1 )
+    if ( ref.first == 1 )
+    {
+        // there's only one reference, move the signal immediately
+        toBus.MoveSignal( toInput, signal );
+        return;
+    }
+    else if ( threadPool )
     {
         std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput].mutex );
         if ( ++ref.second != ref.first )

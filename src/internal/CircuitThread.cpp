@@ -54,7 +54,6 @@ void CircuitThread::Start( std::vector<DSPatch::Component::SPtr>* components, in
 
     _stop = false;
     _stopped = false;
-    _gotResume = false;
     _gotSync = false;
 
     _thread = std::thread( &CircuitThread::_Run, this );
@@ -86,10 +85,10 @@ void CircuitThread::Sync()
         return;
     }
 
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _syncMutex );
 
     // cppcheck-suppress knownConditionTrueFalse
-    if ( !_gotSync )              // if haven't already got sync
+    if ( !_gotSync )  // if haven't already got sync
     {
         _syncCondt.wait( lock );  // wait for sync
     }
@@ -104,45 +103,44 @@ void CircuitThread::SyncAndResume()
 
     if ( _gotSync )
     {
-        std::lock_guard<std::mutex> lock( _resumeMutex );
-        _gotSync = false;   // reset the sync flag
+        _gotSync = false;  // reset the sync flag
 
-        _gotResume = true;  // set the resume flag
+        std::lock_guard<std::mutex> lock( _syncMutex );
+
         _resumeCondt.notify_all();
+
         return;
     }
 
-    std::unique_lock<std::mutex> lock( _resumeMutex );
+    std::unique_lock<std::mutex> lock( _syncMutex );
 
-    if ( !_gotSync )              // if haven't already got sync
+    if ( !_gotSync )  // if haven't already got sync
     {
         _syncCondt.wait( lock );  // wait for sync
     }
-    _gotSync = false;             // reset the sync flag
 
-    _gotResume = true;            // set the resume flag
+    _gotSync = false;  // reset the sync flag
+
     _resumeCondt.notify_all();
 }
 
 void CircuitThread::_Run()
 {
+    SetThreadHighPriority();
+
     if ( _components )
     {
         while ( !_stop )
         {
             {
-                std::unique_lock<std::mutex> lock( _resumeMutex );
+                std::unique_lock<std::mutex> lock( _syncMutex );
 
                 _gotSync = true;  // set the sync flag
                 _syncCondt.notify_all();
-
-                if ( !_gotResume )              // if haven't already got resume
-                {
-                    _resumeCondt.wait( lock );  // wait for resume
-                }
-                _gotResume = false;             // reset the resume flag
+                _resumeCondt.wait( lock );  // wait for resume
             }
 
+            // cppcheck-suppress knownConditionTrueFalse
             if ( !_stop )
             {
                 // You might be thinking: Can't we have each thread start on a different component?

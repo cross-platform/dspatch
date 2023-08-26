@@ -1,3 +1,50 @@
+v.9.6.1 (24 August 2023)
+    - Reverted some "optimizations" that actually made things slower.
+
+v.9.6.0 (24 August 2023)
+    - Made WaitForRelease() and ReleaseNextThread() lock-free.
+    - Replaced custom structs in Component with mutex* & atomic_flag*.
+    - Slightly optimized Tick() and GetOutput() logic.
+
+v.9.5.4 (19 August 2023)
+    - Updated fast_any submodule (incl. optimizations & bug fixes).
+    - Optimized AutoTickThread, CircuitThread & ComponentThread.
+
+v.9.5.3 (12 August 2023)
+    - Updated fast_any submodule (incl. C-style cast fixes).
+    - Moved fast_any to include/ to simplify the build.
+    - Cleaned up in-line documentation.
+
+v.9.5.2 (12 August 2023)
+    - Replaced Signal class with fast_any.
+    - Fixed Component::DisconnectInput() hang on Windows.
+    - Added more test coverage.
+
+v.9.5.1 (11 August 2023)
+    - Further optimized Circuit::RemoveComponent()
+    - Further optimized Signal::Get/SetSignal()
+
+v.9.5.0 (08 August 2023)
+    - Greatly optimized circuit construction & destruction.
+    - Slightly optimized Signal::MoveSignal().
+
+v.9.4.0 (29 July 2023)
+    - Optimized signal assignment methods by removing bool return.
+    - Renamed Component::_DoTick to Component::_TickParallel().
+    - Optimized Component::Tick().
+
+v.9.3.2 (22 May 2023)
+    - More optimizations to Component::Tick()/_DoTick().
+
+v.9.3.1 (24 April 2023)
+    - Explicitly declared Signal template methods inline.
+    - Reduced lock scope in CircuitThread::SyncAndResume().
+
+v.9.3.0 (14 April 2023)
+    - Made Component::Tick() void to optimize recursion.
+    - Added TickMode argument to Component::Reset().
+    - Optimized internal::Component::GetOutput().
+
 v.9.2.4 (11 April 2023)
     - Fixed Signal & SignalBus move constructors.
 

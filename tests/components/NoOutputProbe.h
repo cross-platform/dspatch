@@ -15,7 +15,7 @@ public:
 protected:
     virtual void Process_( SignalBus& inputs, SignalBus& ) override
     {
-        auto in = inputs.GetValue<int>( 0 );
+        const auto* in = inputs.GetValue<int>( 0 );
 
         if ( in )
         {

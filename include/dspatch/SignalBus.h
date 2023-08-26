@@ -28,7 +28,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/Signal.h>
+#include <dspatch/Common.h>
+
+#include <fast_any/any.h>
 
 #include <vector>
 
@@ -38,10 +40,17 @@ namespace DSPatch
 /// Signal container
 
 /**
-A SignalBus contains Signals (see Signal). Via the Process_() method, a Component receives signals
-into it's "inputs" SignalBus and provides signals to it's "outputs" SignalBus. The SignalBus class
-provides public getters and setters for manipulating it's internal Signal values directly,
-abstracting the need to retrieve and interface with the contained Signals themself.
+Components process and transfer data between each other in the form of "signals" via interconnected
+wires. SignalBuses are signal containers. Via the Process_() method, a Component receives signals
+into its "inputs" SignalBus and provides signals to its "outputs" SignalBus. The SignalBus class
+provides public getters and setters for manipulating its internal signal values, abstracting the
+need to retrieve and interface with them directly.
+
+Signals can be dynamically typed at runtime, this means a signal has the ability to change its data
+type at any point during program execution. This is designed such that a SignalBus can hold any
+number of different typed variables, as well as to allow for a variable to dynamically change its
+type when needed - this can be useful for inputs that accept a number of different data types
+(E.g. Varying sample size in an audio buffer: array of byte / int / float).
 */
 
 class DLLEXPORT SignalBus final
@@ -55,29 +64,28 @@ public:
     inline void SetSignalCount( int signalCount );
     inline int GetSignalCount() const;
 
-    inline Signal& GetSignal( int signalIndex );
+    inline fast_any::any* GetSignal( int signalIndex );
 
     inline bool HasValue( int signalIndex ) const;
 
-    template <class ValueType>
-    ValueType* GetValue( int signalIndex ) const;
+    template <typename ValueType>
+    inline ValueType* GetValue( int signalIndex ) const;
 
-    template <class ValueType>
-    bool SetValue( int signalIndex, const ValueType& newValue );
+    template <typename ValueType>
+    inline void SetValue( int signalIndex, const ValueType& newValue );
 
-    template <class ValueType>
-    bool MoveValue( int signalIndex, ValueType&& newValue );
+    template <typename ValueType>
+    inline void MoveValue( int signalIndex, ValueType&& newValue );
 
-    inline bool SetSignal( int toSignalIndex, const Signal& fromSignal );
-    inline bool MoveSignal( int toSignalIndex, Signal& fromSignal );
+    inline void SetSignal( int toSignalIndex, const fast_any::any& fromSignal );
+    inline void MoveSignal( int toSignalIndex, fast_any::any& fromSignal );
 
     inline void ClearAllValues();
 
-    inline unsigned int GetType( int signalIndex ) const;
+    inline const fast_any::type_info& GetType( int signalIndex ) const;
 
 private:
-    std::vector<Signal> _signals;
-    Signal _emptySignal;
+    std::vector<fast_any::any> _signals;
 };
 
 inline SignalBus::SignalBus() = default;
@@ -98,37 +106,21 @@ inline int SignalBus::GetSignalCount() const
     return (int)_signals.size();
 }
 
-inline Signal& SignalBus::GetSignal( int signalIndex )
+inline fast_any::any* SignalBus::GetSignal( int signalIndex )
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex];
-    }
-    else
-    {
-        _emptySignal.ClearValue();
-        return _emptySignal;
-    }
-}
+    // You might be thinking: Why the raw pointer return here?
 
-inline bool SignalBus::HasValue( int signalIndex ) const
-{
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex].HasValue();
-    }
-    else
-    {
-        return false;
-    }
-}
+    // This is for usability, design, and performance reasons. Usability, because a pointer allows
+    // the user to manipulate the contained value externally. Design, because DSPatch doesn't use
+    // exceptions - a nullptr return here is the equivalent of "signal does not exist".
+    // Performance, because returning a smart pointer means having to store the value as a smart
+    // pointer too - this adds yet another level of indirection to the value, as well as some
+    // reference counting overhead. These Get() and Set() methods are VERY frequently called, so
+    // doing as little as possible with the data here is best.
 
-template <class ValueType>
-ValueType* SignalBus::GetValue( int signalIndex ) const
-{
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex].GetValue<ValueType>();
+        return &_signals[signalIndex];
     }
     else
     {
@@ -136,13 +128,11 @@ ValueType* SignalBus::GetValue( int signalIndex ) const
     }
 }
 
-template <class ValueType>
-bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
+inline bool SignalBus::HasValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        _signals[signalIndex].SetValue( newValue );
-        return true;
+        return _signals[signalIndex].has_value();
     }
     else
     {
@@ -150,41 +140,64 @@ bool SignalBus::SetValue( int signalIndex, const ValueType& newValue )
     }
 }
 
-template <class ValueType>
-bool SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
+template <typename ValueType>
+inline ValueType* SignalBus::GetValue( int signalIndex ) const
+{
+    // You might be thinking: Why the raw pointer return here?
+
+    // See: GetSignal().
+
+    if ( (size_t)signalIndex < _signals.size() )
+    {
+        return _signals[signalIndex].as<ValueType>();
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+template <typename ValueType>
+inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        _signals[signalIndex].MoveValue( std::move( newValue ) );
-        return true;
-    }
-    else
-    {
-        return false;
+        _signals[signalIndex].emplace<ValueType>( newValue );
     }
 }
 
-inline bool SignalBus::SetSignal( int toSignalIndex, const Signal& fromSignal )
+template <typename ValueType>
+inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
-    if ( (size_t)toSignalIndex < _signals.size() )
+    if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex].SetSignal( fromSignal );
-    }
-    else
-    {
-        return false;
+        _signals[signalIndex].emplace<ValueType>( std::move( newValue ) );
     }
 }
 
-inline bool SignalBus::MoveSignal( int toSignalIndex, Signal& fromSignal )
+inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        return _signals[toSignalIndex].MoveSignal( fromSignal );
+        _signals[toSignalIndex] = fromSignal;
     }
-    else
+}
+
+inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
+{
+    // You might be thinking: Why swap and not move here?
+
+    // This is a really nifty little optimisation actually. When we move a signal value from an
+    // output to an input (or vice-versa within a component) we move its type_info along with it.
+    // If you look at any::emplace(), you'll see that type_info is really useful in determining
+    // whether we need to delete and copy (re)construct our contained value, or can simply copy
+    // assign. To avoid the former as much as possible, a swap is done between source and target
+    // signals such that, between these two points, just two value holders need to be constructed,
+    // and shared back and forth from then on.
+
+    if ( (size_t)toSignalIndex < _signals.size() && fromSignal.has_value() )
     {
-        return false;
+        _signals[toSignalIndex].swap( fromSignal );
     }
 }
 
@@ -192,19 +205,19 @@ inline void SignalBus::ClearAllValues()
 {
     for ( auto& signal : _signals )
     {
-        signal.ClearValue();
+        signal.reset();
     }
 }
 
-inline unsigned int SignalBus::GetType( int signalIndex ) const
+inline const fast_any::type_info& SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        return _signals[signalIndex].GetType();
+        return _signals[signalIndex].type();
     }
     else
     {
-        return type_id<void>;
+        return fast_any::type_id<void>;
     }
 }
 

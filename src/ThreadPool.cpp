@@ -72,6 +72,7 @@ public:
             }
             // cppcheck-suppress containerOutOfBounds
             auto job = queue.front();
+            // cppcheck-suppress containerOutOfBounds
             queue.pop();
             return job;
         }

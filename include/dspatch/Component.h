@@ -78,7 +78,6 @@ public:
     NONCOPYABLE( Component );
 
     using SPtr = std::shared_ptr<Component>;
-    using SCPtr = std::shared_ptr<const Component>;
 
     enum class ProcessOrder
     {
@@ -92,10 +91,8 @@ public:
     bool ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput );
 
     void DisconnectInput( int inputNo );
-    void DisconnectInput( const Component::SCPtr& fromComponent );
+    void DisconnectInput( const Component::SPtr& fromComponent );
     void DisconnectAllInputs();
-
-    int GetCircuitPosition( int offset = 0 );
 
     int GetInputCount() const;
     int GetOutputCount() const;
@@ -105,7 +102,7 @@ public:
 
     void SetThreadPool( const ThreadPool::SPtr& threadPool );
 
-    bool Tick( int bufferNo = 0 );
+    void Tick( int bufferNo = 0 );
     void Reset( int bufferNo = 0 );
 
 protected:
@@ -116,7 +113,7 @@ protected:
 
 private:
     friend class internal::ComponentThread;
-    void _DoTick( int bufferNo );
+    void _TickParallel( int bufferNo );
 
     internal::Component* p;
 };

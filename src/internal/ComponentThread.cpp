@@ -60,7 +60,7 @@ void ComponentThread::Wait()
     std::unique_lock<std::mutex> lock( _doneMutex );
 
     // cppcheck-suppress knownConditionTrueFalse
-    if ( !_gotDone )              // if haven't already got sync
+    if ( !_gotDone )  // if haven't already got sync
     {
         _doneCondt.wait( lock );  // wait for sync
     }
@@ -68,7 +68,7 @@ void ComponentThread::Wait()
 
 void ComponentThread::Run()
 {
-    _component->_DoTick( _bufferNo );
+    _component->_TickParallel( _bufferNo );
 
     std::lock_guard<std::mutex> lock( _doneMutex );
 

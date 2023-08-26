@@ -52,7 +52,7 @@ One output, on the other hand, can be distributed to multiple inputs.
 To boost performance, multi-buffering can be enabled via the SetThreadPool() method. A circuit's
 buffer count and threads per buffer can be adjusted at runtime.
 
-The Circuit Tick() method runs through it's internal array of components and calls each component's
+The Circuit Tick() method runs through its internal array of components and calls each component's
 Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
 application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn,
 automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
@@ -66,23 +66,17 @@ public:
     Circuit();
     ~Circuit();
 
-    int AddComponent( const Component::SPtr& component );
+    bool AddComponent( const Component::SPtr& component );
 
-    void RemoveComponent( const Component::SCPtr& component );
-    void RemoveComponent( int componentIndex );
+    bool RemoveComponent( const Component::SPtr& component );
     void RemoveAllComponents();
 
     int GetComponentCount() const;
 
-    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
-    bool ConnectOutToIn( const Component::SCPtr& fromComponent, int fromOutput, int toComponent, int toInput );
-    bool ConnectOutToIn( int fromComponent, int fromOutput, const Component::SCPtr& toComponent, int toInput );
-    bool ConnectOutToIn( int fromComponent, int fromOutput, int toComponent, int toInput );
+    bool ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput );
 
-    void DisconnectComponent( const Component::SCPtr& component );
-    void DisconnectComponent( int componentIndex );
-
-    void Sort();
+    bool DisconnectComponent( const Component::SPtr& component );
+    void DisconnectAllComponents();
 
     void SetThreadPool( const ThreadPool::SPtr& threadPool );
 

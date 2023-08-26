@@ -49,8 +49,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma warning( disable : 4251 )  // disable class needs to have dll-interface warning
 
+#include <windows.h>
+
+namespace DSPatch
+{
+
+inline void SetThreadHighPriority()
+{
+    SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );
+}
+
+inline void YieldThread()
+{
+    Sleep( 0 );
+}
+
+}  // namespace DSPatch
+
 #else
 
 #define DLLEXPORT
+
+namespace DSPatch
+{
+
+inline void SetThreadHighPriority()
+{
+    sched_param sch_params;
+    sch_params.sched_priority = sched_get_priority_max( SCHED_RR );
+    pthread_setschedparam( pthread_self(), SCHED_RR, &sch_params );
+}
+
+inline void YieldThread()
+{
+    sched_yield();
+}
+
+}  // namespace DSPatch
 
 #endif
