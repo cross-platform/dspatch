@@ -39,7 +39,6 @@ namespace DSPatch
 namespace internal
 {
 class Component;
-class ComponentThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components

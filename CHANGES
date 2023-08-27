@@ -1,3 +1,8 @@
+v.9.7.0 (27 August 2023)
+    - Improved tick performance by removing non-scalable "Parallel" mode.
+    - Replaced custom YieldThread() method with std::this_thread::yield().
+    - Updated fast_any submodule (incl. inline initialization of value type).
+
 v.9.6.1 (24 August 2023)
     - Reverted some "optimizations" that actually made things slower.
 
