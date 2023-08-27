@@ -55,12 +55,6 @@ The Circuit Tick() method runs through its internal array of components and call
 Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main
 application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn,
 automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
-
-TickMode::Parallel will spawn a thread per component in a circuit. The aim of this mode is to
-improve the performance of small circuits that contain parallel branches. TickMode::Series
-(default) on the other hand, tells the circuit to tick its components one-by-one in a single thread
-per buffer. This mode aims to improve the performance of large circuits, as well as small circuits
-that do not contain parallel branches.
 */
 
 class DLLEXPORT Circuit final
@@ -86,9 +80,9 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    void Tick( Component::TickMode mode = Component::TickMode::Series );
+    void Tick();
 
-    void StartAutoTick( Component::TickMode mode = Component::TickMode::Series );
+    void StartAutoTick();
     void StopAutoTick();
     void PauseAutoTick();
     void ResumeAutoTick();

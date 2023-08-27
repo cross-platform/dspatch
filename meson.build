@@ -88,7 +88,6 @@ endif
 dspatch_src = [
     'src/internal/AutoTickThread.cpp',
     'src/internal/CircuitThread.cpp',
-    'src/internal/ComponentThread.cpp',
     'src/Circuit.cpp',
     'src/Component.cpp',
     'src/Plugin.cpp'
