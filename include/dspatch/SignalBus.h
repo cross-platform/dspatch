@@ -179,7 +179,7 @@ inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSi
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        _signals[toSignalIndex] = fromSignal;
+        _signals[toSignalIndex].emplace( fromSignal );
     }
 }
 
@@ -195,7 +195,7 @@ inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal 
     // signals such that, between these two points, just two value holders need to be constructed,
     // and shared back and forth from then on.
 
-    if ( (size_t)toSignalIndex < _signals.size() && fromSignal.has_value() )
+    if ( (size_t)toSignalIndex < _signals.size() )
     {
         _signals[toSignalIndex].swap( fromSignal );
     }
