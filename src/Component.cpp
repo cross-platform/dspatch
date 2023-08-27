@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/Wire.h>
 
 #include <algorithm>
+#include <mutex>
 #include <thread>
 
 using namespace DSPatch;
