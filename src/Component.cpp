@@ -47,20 +47,7 @@ public:
     enum class TickStatus
     {
         NotTicked,
-        TickStarted,
         Ticking
-    };
-
-    struct MovableMutex
-    {
-        MovableMutex() = default;
-
-        // cppcheck-suppress missingMemberCopy
-        MovableMutex( MovableMutex&& )
-        {
-        }
-
-        std::mutex mutex;
     };
 
     struct MovableAtomicFlag
@@ -95,7 +82,6 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::vector<std::vector<MovableMutex>> refMutexes;
 
     std::vector<Wire> inputWires;
 
@@ -229,7 +215,6 @@ void Component::SetBufferCount( int bufferCount )
     p->releaseFlags.resize( bufferCount );
 
     p->refs.resize( bufferCount );
-    p->refMutexes.resize( bufferCount );
 
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
@@ -247,8 +232,6 @@ void Component::SetBufferCount( int bufferCount )
             // sync output reference counts
             p->refs[i][j] = p->refs[0][j];
         }
-
-        p->refMutexes[i].resize( p->refMutexes[0].size() );
     }
 
     p->releaseFlags[0].flag.clear();
@@ -345,10 +328,6 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     {
         ref.resize( outputCount );
     }
-    for ( auto& refMutexes : p->refMutexes )
-    {
-        refMutexes.resize( outputCount );
-    }
 }
 
 void internal::Component::WaitForRelease( int threadNo )
@@ -391,15 +370,13 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
     }
     else if ( ++ref.second != ref.first )
     {
+        // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
         return;
     }
-    else
-    {
-        // this is the final reference, reset the counter, move the signal
-        ref.second = 0;
-    }
 
+    // this is the final reference, reset the counter, move the signal
+    ref.second = 0;
     toBus.MoveSignal( toInput, signal );
 }
 
