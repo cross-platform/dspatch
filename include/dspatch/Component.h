@@ -39,7 +39,6 @@ namespace DSPatch
 namespace internal
 {
 class Component;
-class ComponentThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -84,12 +83,6 @@ public:
         OutOfOrder
     };
 
-    enum class TickMode
-    {
-        Series,
-        Parallel
-    };
-
     Component( ProcessOrder processOrder = ProcessOrder::InOrder );
     virtual ~Component();
 
@@ -108,8 +101,8 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
-    void Tick( TickMode mode = TickMode::Series, int bufferNo = 0 );
-    void Reset( TickMode mode = TickMode::Series, int bufferNo = 0 );
+    void Tick( int bufferNo = 0 );
+    void Reset( int bufferNo = 0 );
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
@@ -118,9 +111,6 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
-    friend class internal::ComponentThread;
-    void _TickParallel( int bufferNo );
-
     internal::Component* p;
 };
 

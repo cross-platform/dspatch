@@ -28,12 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Component.h>
 
-#include <internal/ComponentThread.h>
 #include <internal/Wire.h>
 
 #include <algorithm>
-#include <condition_variable>
-#include <unordered_set>
+#include <mutex>
+#include <thread>
 
 using namespace DSPatch;
 
@@ -48,20 +47,7 @@ public:
     enum class TickStatus
     {
         NotTicked,
-        TickStarted,
         Ticking
-    };
-
-    struct MovableMutex
-    {
-        MovableMutex() = default;
-
-        // cppcheck-suppress missingMemberCopy
-        MovableMutex( MovableMutex&& )
-        {
-        }
-
-        std::mutex mutex;
     };
 
     struct MovableAtomicFlag
@@ -83,7 +69,7 @@ public:
     void WaitForRelease( int threadNo );
     void ReleaseNextThread( int threadNo );
 
-    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode );
+    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
 
     void IncRefs( int output );
     void DecRefs( int output );
@@ -96,12 +82,8 @@ public:
     std::vector<DSPatch::SignalBus> outputBuses;
 
     std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
-    std::vector<std::vector<MovableMutex>> refMutexes;
 
     std::vector<Wire> inputWires;
-
-    std::vector<ComponentThread> componentThreads;
-    std::vector<std::unordered_set<const Wire*>> feedbackWires;
 
     std::vector<TickStatus> tickStatuses;
     std::vector<MovableAtomicFlag> releaseFlags;
@@ -226,9 +208,6 @@ void Component::SetBufferCount( int bufferCount )
     }
 
     // resize vectors
-    p->componentThreads.resize( bufferCount );
-    p->feedbackWires.resize( bufferCount );
-
     p->tickStatuses.resize( bufferCount );
 
     p->inputBuses.resize( bufferCount );
@@ -237,13 +216,10 @@ void Component::SetBufferCount( int bufferCount )
     p->releaseFlags.resize( bufferCount );
 
     p->refs.resize( bufferCount );
-    p->refMutexes.resize( bufferCount );
 
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
-        p->componentThreads[i].Setup( this, i );
-
         p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
 
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
@@ -257,8 +233,6 @@ void Component::SetBufferCount( int bufferCount )
             // sync output reference counts
             p->refs[i][j] = p->refs[0][j];
         }
-
-        p->refMutexes[i].resize( p->refMutexes[0].size() );
     }
 
     p->releaseFlags[0].flag.clear();
@@ -271,7 +245,7 @@ int Component::GetBufferCount() const
     return (int)p->inputBuses.size();
 }
 
-void Component::Tick( Component::TickMode mode, int bufferNo )
+void Component::Tick( int bufferNo )
 {
     // continue only if this component has not already been ticked
     if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::Ticking )
@@ -279,90 +253,51 @@ void Component::Tick( Component::TickMode mode, int bufferNo )
         return;
     }
 
-    if ( mode == TickMode::Series )
+    // set tickStatus -> Ticking
+    p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+
+    auto& inputBus = p->inputBuses[bufferNo];
+    auto& outputBus = p->outputBuses[bufferNo];
+
+    for ( const auto& wire : p->inputWires )
     {
-        // set tickStatus -> Ticking
-        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
-
-        auto& inputBus = p->inputBuses[bufferNo];
-        auto& outputBus = p->outputBuses[bufferNo];
-
-        for ( const auto& wire : p->inputWires )
-        {
-            // tick incoming components
-            wire.fromComponent->Tick( TickMode::Series, bufferNo );
-
-            // get new inputs from incoming components
-            wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus, TickMode::Series );
-        }
-
-        // You might be thinking: Why not clear the outputs in Reset()?
-
-        // This is because we need components to hold onto their outputs long enough for any
-        // loopback wires to grab them during the next tick. The same applies to how we handle
-        // output reference counting in internal::Component::GetOutput(), reseting the counter upon
-        // the final request rather than in Reset().
-
-        // clear outputs
-        outputBus.ClearAllValues();
-
-        if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
-        {
-            // wait for our turn to process
-            p->WaitForRelease( bufferNo );
-
-            // call Process_() with newly aquired inputs
-            Process_( inputBus, outputBus );
-
-            // signal that we're done processing
-            p->ReleaseNextThread( bufferNo );
-        }
-        else
-        {
-            // call Process_() with newly aquired inputs
-            Process_( inputBus, outputBus );
-        }
-    }
-    else if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::NotTicked )
-    {
-        // set tickStatus -> TickStarted
-        p->tickStatuses[bufferNo] = internal::Component::TickStatus::TickStarted;
-
-        auto& feedbackWires = p->feedbackWires[bufferNo];
-
         // tick incoming components
-        for ( const auto& wire : p->inputWires )
-        {
-            try
-            {
-                wire.fromComponent->Tick( TickMode::Parallel, bufferNo );
-            }
-            catch ( const std::exception& )
-            {
-                feedbackWires.emplace( &wire );
-            }
-        }
+        wire.fromComponent->Tick( bufferNo );
 
-        // set tickStatus -> Ticking
-        p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
+        // get new inputs from incoming components
+        wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus );
+    }
 
-        p->componentThreads[bufferNo].Resume();
+    // You might be thinking: Why not clear the outputs in Reset()?
+
+    // This is because we need components to hold onto their outputs long enough for any
+    // loopback wires to grab them during the next tick. The same applies to how we handle
+    // output reference counting in internal::Component::GetOutput(), reseting the counter upon
+    // the final request rather than in Reset().
+
+    // clear outputs
+    outputBus.ClearAllValues();
+
+    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
+    {
+        // wait for our turn to process
+        p->WaitForRelease( bufferNo );
+
+        // call Process_() with newly aquired inputs
+        Process_( inputBus, outputBus );
+
+        // signal that we're done processing
+        p->ReleaseNextThread( bufferNo );
     }
     else
     {
-        // throw an exception to indicate that we have already started a tick, and hence, are a feedback component.
-        throw std::exception();
+        // call Process_() with newly aquired inputs
+        Process_( inputBus, outputBus );
     }
 }
 
-void Component::Reset( Component::TickMode mode, int bufferNo )
+void Component::Reset( int bufferNo )
 {
-    if ( mode == TickMode::Parallel )
-    {
-        // wait for ticking to complete
-        p->componentThreads[bufferNo].Sync();
-    }
-
     // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();
 
@@ -394,54 +329,6 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     {
         ref.resize( outputCount );
     }
-    for ( auto& refMutexes : p->refMutexes )
-    {
-        refMutexes.resize( outputCount );
-    }
-}
-
-void Component::_TickParallel( int bufferNo )
-{
-    auto& inputBus = p->inputBuses[bufferNo];
-    auto& outputBus = p->outputBuses[bufferNo];
-
-    auto& feedbackWires = p->feedbackWires[bufferNo];
-
-    for ( const auto& wire : p->inputWires )
-    {
-        // wait for non-feedback incoming components to finish ticking
-        if ( feedbackWires.find( &wire ) == feedbackWires.end() )
-        {
-            wire.fromComponent->p->componentThreads[bufferNo].Sync();
-        }
-        else
-        {
-            feedbackWires.erase( &wire );
-        }
-
-        // get new inputs from incoming components
-        wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus, Component::TickMode::Parallel );
-    }
-
-    // clear outputs
-    outputBus.ClearAllValues();
-
-    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
-    {
-        // wait for our turn to process
-        p->WaitForRelease( bufferNo );
-
-        // call Process_() with newly aquired inputs
-        Process_( inputBus, outputBus );
-
-        // signal that we're done processing
-        p->ReleaseNextThread( bufferNo );
-    }
-    else
-    {
-        // call Process_() with newly aquired inputs
-        Process_( inputBus, outputBus );
-    }
 }
 
 void internal::Component::WaitForRelease( int threadNo )
@@ -466,8 +353,7 @@ void internal::Component::ReleaseNextThread( int threadNo )
     }
 }
 
-void internal::Component::GetOutput(
-    int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus, DSPatch::Component::TickMode mode )
+void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
     if ( !outputBuses[bufferNo].HasValue( fromOutput ) )
     {
@@ -483,31 +369,15 @@ void internal::Component::GetOutput(
         toBus.MoveSignal( toInput, signal );
         return;
     }
-    else if ( mode == DSPatch::Component::TickMode::Parallel )
-    {
-        std::lock_guard<std::mutex> lock( refMutexes[bufferNo][fromOutput].mutex );
-        if ( ++ref.second != ref.first )
-        {
-            toBus.SetSignal( toInput, signal );
-            return;
-        }
-        else
-        {
-            // this is the final reference, reset the counter, move the signal
-            ref.second = 0;
-        }
-    }
     else if ( ++ref.second != ref.first )
     {
+        // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
         return;
     }
-    else
-    {
-        // this is the final reference, reset the counter, move the signal
-        ref.second = 0;
-    }
 
+    // this is the final reference, reset the counter, move the signal
+    ref.second = 0;
     toBus.MoveSignal( toInput, signal );
 }
 

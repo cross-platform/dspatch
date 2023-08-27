@@ -67,10 +67,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     entities and concepts, making code more readable and easy to understand.
     - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back
     into previous component inputs.
-    - <b>High performance parallel processing</b> - Circuits use advanced multi-threaded scheduling
-    to maximize dataflow efficiency across parallel branches.
-    - <b>High performance stream processing</b> - Utilize multi-buffering in stream processing
-    circuits to further boost dataflow efficiency.
+    - <b>High performance parallel processing</b> - Utilize parallel multi-buffering in stream
+    processing circuits to maximize dataflow efficiency.
     - <b>Optimised signal transfers</b> - Wherever possible, data between components is transferred
     via move rather than copy.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time

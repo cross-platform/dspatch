@@ -70,13 +70,12 @@ public:
     void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
     void Stop();
     void Sync();
-    void SyncAndResume( DSPatch::Component::TickMode mode );
+    void SyncAndResume();
 
 private:
     void _Run();
 
 private:
-    DSPatch::Component::TickMode _mode = DSPatch::Component::TickMode::Series;
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

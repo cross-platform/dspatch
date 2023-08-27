@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.6.1</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.7.0</span>
    </div>
   </td>
  </tr>
@@ -94,10 +94,6 @@ Public Types</h2></td></tr>
 , <b>OutOfOrder</b>
  }</td></tr>
 <tr class="separator:a922d0d4acb680cd2f0474aa60eb60883"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d31508c8915a415db1fe0203e140561"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><b>TickMode</b> { <b>Series</b>
-, <b>Parallel</b>
- }</td></tr>
-<tr class="separator:a2d31508c8915a415db1fe0203e140561"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0b72c3454652f20f734d81e3600021b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#af0b72c3454652f20f734d81e3600021b">SPtr</a> = std::shared_ptr&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> &gt;</td></tr>
 <tr class="separator:af0b72c3454652f20f734d81e3600021b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -139,12 +135,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (i
 <tr class="memitem:a5ea6f3a8e8da3c84692912462702e161"><td class="memItemLeft" align="right" valign="top"><a id="a5ea6f3a8e8da3c84692912462702e161" name="a5ea6f3a8e8da3c84692912462702e161"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBufferCount</b> () const</td></tr>
 <tr class="separator:a5ea6f3a8e8da3c84692912462702e161"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97aae2847650b1f36d57185b60dd3b99"><td class="memItemLeft" align="right" valign="top"><a id="a97aae2847650b1f36d57185b60dd3b99" name="a97aae2847650b1f36d57185b60dd3b99"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (TickMode mode=TickMode::Series, int bufferNo=0)</td></tr>
-<tr class="separator:a97aae2847650b1f36d57185b60dd3b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2867c2012f4634b3960d066311971c2"><td class="memItemLeft" align="right" valign="top"><a id="ac2867c2012f4634b3960d066311971c2" name="ac2867c2012f4634b3960d066311971c2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> (TickMode mode=TickMode::Series, int bufferNo=0)</td></tr>
-<tr class="separator:ac2867c2012f4634b3960d066311971c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memItemLeft" align="right" valign="top"><a id="ab1af9c4f9b5e72e0785cd58e5cc4d673" name="ab1af9c4f9b5e72e0785cd58e5cc4d673"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (int bufferNo=0)</td></tr>
+<tr class="separator:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac6f3616dadd4a400fac90e0f549fb29d"><td class="memItemLeft" align="right" valign="top"><a id="ac6f3616dadd4a400fac90e0f549fb29d" name="ac6f3616dadd4a400fac90e0f549fb29d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> (int bufferNo=0)</td></tr>
+<tr class="separator:ac6f3616dadd4a400fac90e0f549fb29d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -166,7 +162,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 <p>In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of input signals from component input wires and populating the component's input bus. To insure that these inputs are up-to-date, the dependent component first calls all of its input components' Tick() methods - hence recursively called in all components going backward through the circuit. The acquired input bus is then passed to the Process_() method. The Reset() method informs the component that the last circuit traversal has completed and hence can execute the next Tick() request.</p>
 <p><b>PERFORMANCE TIP:</b> If a component's Process_() method is capable of processing buffers out-of-order within a stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve performance. Note however that Process_() must be thread-safe to operate in this mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00074">74</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00073">73</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af0b72c3454652f20f734d81e3600021b" name="af0b72c3454652f20f734d81e3600021b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0b72c3454652f20f734d81e3600021b">&#9670;&#160;</a></span>SPtr</h2>
@@ -180,7 +176,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00079">79</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00078">78</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>
@@ -205,31 +201,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00081">81</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
-
-</div>
-</div>
-<a id="a2d31508c8915a415db1fe0203e140561" name="a2d31508c8915a415db1fe0203e140561"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d31508c8915a415db1fe0203e140561">&#9670;&#160;</a></span>TickMode</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum class DSPatch::Component::TickMode</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00087">87</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00080">80</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>

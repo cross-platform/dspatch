@@ -70,7 +70,7 @@ void CircuitThread::Stop()
 
     _stop = true;
 
-    SyncAndResume( _mode );
+    SyncAndResume();
 
     if ( _thread.joinable() )
     {
@@ -94,7 +94,7 @@ void CircuitThread::Sync()
     }
 }
 
-void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
+void CircuitThread::SyncAndResume()
 {
     if ( _stopped )
     {
@@ -104,7 +104,6 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
     if ( _gotSync )
     {
         _gotSync = false;  // reset the sync flag
-        _mode = mode;
 
         std::lock_guard<std::mutex> lock( _syncMutex );
 
@@ -121,7 +120,6 @@ void CircuitThread::SyncAndResume( DSPatch::Component::TickMode mode )
     }
 
     _gotSync = false;  // reset the sync flag
-    _mode = mode;
 
     _resumeCondt.notify_all();
 }
@@ -157,11 +155,11 @@ void CircuitThread::_Run()
 
                 for ( auto& component : *_components )
                 {
-                    component->Tick( _mode, _threadNo );
+                    component->Tick( _threadNo );
                 }
                 for ( auto& component : *_components )
                 {
-                    component->Reset( _mode, _threadNo );
+                    component->Reset( _threadNo );
                 }
             }
         }
