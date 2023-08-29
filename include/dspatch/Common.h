@@ -49,6 +49,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma warning( disable : 4251 )  // disable class needs to have dll-interface warning
 
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
 
 namespace DSPatch
