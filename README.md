@@ -21,8 +21,8 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build . --config Release
 ```
 
-- *`cmake ..` will auto-detect your IDE / compiler. To manually select one, use `cmake -G`.*
-- *When building for an IDE, instead of `make`, simply open the cmake generated project file.*
+- *`cmake` will auto-detect your IDE / compiler. To manually select one, use `cmake -G`.*
+- *When building for an IDE, instead of `cmake --build`, simply open the cmake generated project file.*
 
 
 ### See also:
