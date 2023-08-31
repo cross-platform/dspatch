@@ -255,6 +255,15 @@ void Circuit::Tick()
     }
 }
 
+void Circuit::Sync()
+{
+    // sync all threads
+    for ( auto& circuitThread : p->circuitThreads )
+    {
+        circuitThread.Sync();
+    }
+}
+
 void Circuit::StartAutoTick()
 {
     if ( p->autoTickThread.IsStopped() )
