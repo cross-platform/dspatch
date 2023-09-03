@@ -28,8 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Component.h>
 
-#include <internal/Wire.h>
-
 #include <algorithm>
 #include <mutex>
 #include <thread>
@@ -50,7 +48,7 @@ public:
         Ticking
     };
 
-    struct MovableAtomicFlag
+    struct MovableAtomicFlag final
     {
         MovableAtomicFlag() = default;
 
@@ -59,6 +57,13 @@ public:
         }
 
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
+    };
+
+    struct Wire final
+    {
+        DSPatch::Component::SPtr fromComponent;
+        int fromOutput;
+        int toInput;
     };
 
     explicit Component( DSPatch::Component::ProcessOrder processOrder )
@@ -118,7 +123,7 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
     // first make sure there are no wires already connected to this input
     DisconnectInput( toInput );
 
-    p->inputWires.emplace_back( fromComponent, fromOutput, toInput );
+    p->inputWires.emplace_back( internal::Component::Wire{ fromComponent, fromOutput, toInput } );
 
     // update source output's reference count
     fromComponent->p->IncRefs( fromOutput );
