@@ -1,3 +1,10 @@
+v.9.7.2 (03 September 2023)
+    - Updated fast_any submodule (incl. updated benchmark figures).
+    - Fixed Windows build failure in Common.h.
+    - Moved Wire struct to Component::internal.
+    - Added Circuit::Sync() method.
+    - Updated build instructions in README.
+
 v.9.7.1 (28 August 2023)
     - Tidied up Component.cpp code.
     - Replaced use of unordered_set with regular set.
