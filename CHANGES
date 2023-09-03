@@ -1,3 +1,8 @@
+v.9.7.1 (28 August 2023)
+    - Tidied up Component.cpp code.
+    - Replaced use of unordered_set with regular set.
+    - Set ProcessOrder::OutOfOrder on PassThrough test component.
+
 v.9.7.0 (27 August 2023)
     - Improved tick performance by removing non-scalable "Parallel" mode.
     - Replaced custom YieldThread() method with std::this_thread::yield().

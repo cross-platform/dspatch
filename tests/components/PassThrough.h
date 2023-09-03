@@ -7,6 +7,7 @@ class PassThrough : public Component
 {
 public:
     PassThrough()
+        : Component( ProcessOrder::OutOfOrder )
     {
         SetInputCount_( 1 );
         SetOutputCount_( 1 );

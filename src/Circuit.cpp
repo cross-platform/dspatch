@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <internal/CircuitThread.h>
 
 #include <algorithm>
-#include <unordered_set>
+#include <set>
 
 using namespace DSPatch;
 
@@ -50,7 +50,7 @@ public:
     AutoTickThread autoTickThread;
 
     std::vector<DSPatch::Component::SPtr> components;
-    std::unordered_set<DSPatch::Component::SPtr> componentsSet;
+    std::set<DSPatch::Component::SPtr> componentsSet;
 
     std::vector<CircuitThread> circuitThreads;
 };
@@ -255,6 +255,15 @@ void Circuit::Tick()
         {
             p->currentThreadNo = 0;
         }
+    }
+}
+
+void Circuit::Sync()
+{
+    // sync all threads
+    for ( auto& circuitThread : p->circuitThreads )
+    {
+        circuitThread.Sync();
     }
 }
 

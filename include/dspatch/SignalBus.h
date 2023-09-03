@@ -202,7 +202,7 @@ inline void SignalBus::MoveSignal( int toSignalIndex, std::any& fromSignal )
     // signals such that, between these two points, just two value holders need to be constructed,
     // and shared back and forth from then on.
 
-    if ( (size_t)toSignalIndex < _signals.size() && fromSignal.has_value() )
+    if ( (size_t)toSignalIndex < _signals.size() )
     {
         _signals[toSignalIndex].swap( fromSignal );
     }

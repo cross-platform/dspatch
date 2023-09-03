@@ -81,6 +81,7 @@ public:
     int GetBufferCount() const;
 
     void Tick();
+    void Sync();
 
     void StartAutoTick();
     void StopAutoTick();
