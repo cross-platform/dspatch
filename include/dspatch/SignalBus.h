@@ -179,7 +179,7 @@ inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSi
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
-        _signals[toSignalIndex].emplace( fromSignal );
+        _signals[toSignalIndex] = fromSignal;
     }
 }
 
