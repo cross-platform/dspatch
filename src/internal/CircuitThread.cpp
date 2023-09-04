@@ -28,6 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <internal/CircuitThread.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 using namespace DSPatch::internal;
 
 CircuitThread::CircuitThread() = default;
@@ -126,7 +131,13 @@ void CircuitThread::SyncAndResume()
 
 void CircuitThread::_Run()
 {
-    SetThreadHighPriority();
+#ifdef _WIN32
+    SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );
+#else
+    sched_param sch_params;
+    sch_params.sched_priority = sched_get_priority_max( SCHED_RR );
+    pthread_setschedparam( pthread_self(), SCHED_RR, &sch_params );
+#endif
 
     if ( _components )
     {

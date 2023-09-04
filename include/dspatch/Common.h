@@ -28,8 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <memory>
-
 #define NONCOPYABLE( classname )            \
     classname( const classname& ) = delete; \
     classname& operator=( const classname& ) = delete
@@ -49,34 +47,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma warning( disable : 4251 )  // disable class needs to have dll-interface warning
 
-#define WIN32_LEAN_AND_MEAN
-
-#include <windows.h>
-
-namespace DSPatch
-{
-
-inline void SetThreadHighPriority()
-{
-    SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );
-}
-
-}  // namespace DSPatch
-
 #else
 
 #define DLLEXPORT
-
-namespace DSPatch
-{
-
-inline void SetThreadHighPriority()
-{
-    sched_param sch_params;
-    sch_params.sched_priority = sched_get_priority_max( SCHED_RR );
-    pthread_setschedparam( pthread_self(), SCHED_RR, &sch_params );
-}
-
-}  // namespace DSPatch
 
 #endif
