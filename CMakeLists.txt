@@ -36,6 +36,7 @@ include_directories(
 
 file(GLOB root_hdrs include/*.h)
 file(GLOB dspatch_hdrs include/dspatch/*.h)
+file(GLOB fast_any_hdrs include/fast_any/*.h)
 file(GLOB srcs src/*.cpp)
 
 option(BUILD_STATIC "Build static library" OFF)
@@ -84,6 +85,7 @@ endif(UNIX)
 
 install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
+install(FILES ${fast_any_hdrs} DESTINATION include/fast_any)
 install(FILES ${dspatch_dbg} DESTINATION lib)
 install(TARGETS
   ${PROJECT_NAME}
