@@ -262,6 +262,16 @@ void Circuit::Sync()
     {
         circuitThread.Sync();
     }
+
+    if ( p->currentThreadNo != 0 )
+    {
+        for ( auto& component : p->components )
+        {
+            component->SetBufferCount( p->circuitThreads.size() );
+        }
+
+        p->currentThreadNo = 0;
+    }
 }
 
 void Circuit::StartAutoTick()
@@ -281,44 +291,19 @@ void Circuit::StopAutoTick()
     if ( !p->autoTickThread.IsStopped() )
     {
         p->autoTickThread.Stop();
-
-        // manually tick until 0
-        while ( p->currentThreadNo != 0 )
-        {
-            Tick();
-        }
-
-        // sync all threads
-        for ( auto& circuitThread : p->circuitThreads )
-        {
-            circuitThread.Sync();
-        }
     }
+
+    Sync();
 }
 
 void Circuit::PauseAutoTick()
 {
-    if ( p->autoTickThread.IsStopped() )
-    {
-        return;
-    }
-
-    if ( ++p->pauseCount == 1 && !p->autoTickThread.IsPaused() )
+    if ( !p->autoTickThread.IsStopped() && ++p->pauseCount == 1 && !p->autoTickThread.IsPaused() )
     {
         p->autoTickThread.Pause();
-
-        // manually tick until 0
-        while ( p->currentThreadNo != 0 )
-        {
-            Tick();
-        }
-
-        // sync all threads
-        for ( auto& circuitThread : p->circuitThreads )
-        {
-            circuitThread.Sync();
-        }
     }
+
+    Sync();
 }
 
 void Circuit::ResumeAutoTick()

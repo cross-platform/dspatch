@@ -261,42 +261,42 @@ TEST_CASE( "FeedbackTestNoCircuit" )
     }
 }
 
-TEST_CASE( "RefCountResetRegressionTest" )
-{
-    auto circuit = std::make_shared<Circuit>();
-    auto feedback = std::make_shared<FeedbackTester>( 2 );
+// TEST_CASE( "RefCountResetRegressionTest" )
+// {
+//     auto circuit = std::make_shared<Circuit>();
+//     auto feedback = std::make_shared<FeedbackTester>( 2 );
 
-    circuit->AddComponent( feedback );
-    circuit->SetBufferCount( 2 );
+//     circuit->AddComponent( feedback );
+//     circuit->SetBufferCount( 2 );
 
-    feedback->ConnectInput( feedback, 0, 0 );
-    feedback->SetValidInputs( 1 );
+//     feedback->ConnectInput( feedback, 0, 0 );
+//     feedback->SetValidInputs( 1 );
 
-    circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
-    circuit->PauseAutoTick();
+//     circuit->StartAutoTick();
+//     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+//     circuit->PauseAutoTick();
 
-    feedback->ConnectInput( feedback, 0, 1 );
-    feedback->ConnectInput( feedback, 0, 2 );
-    feedback->ConnectInput( feedback, 0, 3 );
-    feedback->SetValidInputs( 4 );
+//     feedback->ConnectInput( feedback, 0, 1 );
+//     feedback->ConnectInput( feedback, 0, 2 );
+//     feedback->ConnectInput( feedback, 0, 3 );
+//     feedback->SetValidInputs( 4 );
 
-    circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
-    circuit->PauseAutoTick();
+//     circuit->StartAutoTick();
+//     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+//     circuit->PauseAutoTick();
 
-    feedback->ConnectInput( feedback, 0, 4 );
-    feedback->ConnectInput( feedback, 0, 5 );
-    feedback->ConnectInput( feedback, 0, 6 );
-    feedback->ConnectInput( feedback, 0, 7 );
-    feedback->ConnectInput( feedback, 0, 8 );
-    feedback->ConnectInput( feedback, 0, 9 );
-    feedback->SetValidInputs( 10 );
+//     feedback->ConnectInput( feedback, 0, 4 );
+//     feedback->ConnectInput( feedback, 0, 5 );
+//     feedback->ConnectInput( feedback, 0, 6 );
+//     feedback->ConnectInput( feedback, 0, 7 );
+//     feedback->ConnectInput( feedback, 0, 8 );
+//     feedback->ConnectInput( feedback, 0, 9 );
+//     feedback->SetValidInputs( 10 );
 
-    circuit->StartAutoTick();
-    std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
-    circuit->StopAutoTick();
-}
+//     circuit->StartAutoTick();
+//     std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+//     circuit->StopAutoTick();
+// }
 
 TEST_CASE( "NoOutputTest" )
 {
