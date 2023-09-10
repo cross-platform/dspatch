@@ -28,8 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Circuit.h>
 
-#include <internal/AutoTickThread.h>
-#include <internal/CircuitThread.h>
+#include "internal/AutoTickThread.h"
+#include "internal/CircuitThread.h"
 
 #include <algorithm>
 #include <set>
