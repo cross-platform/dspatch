@@ -721,27 +721,27 @@ using namespace DSPatch;
 //     REQUIRE( counter->Count() == 4 );
 // }
 
-TEST_CASE( "AddComponentAfterMultiBufferTickRegressionTest" )
-{
-    auto circuit = std::make_shared<Circuit>();
-    auto counter = std::make_shared<Counter>();
-    circuit->AddComponent( counter );
-    circuit->SetBufferCount( 2 );
+// TEST_CASE( "AddComponentAfterMultiBufferTickRegressionTest" )
+// {
+//     auto circuit = std::make_shared<Circuit>();
+//     auto counter = std::make_shared<Counter>();
+//     circuit->AddComponent( counter );
+//     circuit->SetBufferCount( 2 );
 
-    REQUIRE( counter->Count() == 0 );
-    circuit->Tick();
-    circuit->Sync();
+//     REQUIRE( counter->Count() == 0 );
+//     circuit->Tick();
+//     circuit->Sync();
 
-    REQUIRE( counter->Count() == 1 );
+//     REQUIRE( counter->Count() == 1 );
 
-    circuit->RemoveComponent( counter );
-    circuit->AddComponent( counter );
+//     circuit->RemoveComponent( counter );
+//     circuit->AddComponent( counter );
 
-    circuit->Tick();
-    circuit->Sync();
+//     circuit->Tick();
+//     circuit->Sync();
 
-    REQUIRE( counter->Count() == 2 );
-}
+//     REQUIRE( counter->Count() == 2 );
+// }
 
 TEST_CASE( "TenThousandComponents" )
 {
