@@ -267,7 +267,7 @@ void Circuit::Sync()
     {
         for ( auto& component : p->components )
         {
-            component->SetBufferCount( p->circuitThreads.size() );
+            component->SetBufferCount( (int)p->circuitThreads.size() );
         }
 
         p->currentThreadNo = 0;
