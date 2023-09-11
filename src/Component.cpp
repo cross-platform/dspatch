@@ -202,13 +202,18 @@ std::string Component::GetOutputName( int outputNo ) const
     return "";
 }
 
-void Component::SetBufferCount( int bufferCount )
+void Component::SetBufferCount( int bufferCount, int startBuffer )
 {
     // p->bufferCount is the current thread count / bufferCount is new thread count
 
     if ( bufferCount <= 0 )
     {
         bufferCount = 1;  // there needs to be at least 1 buffer
+    }
+
+    if ( startBuffer >= bufferCount )
+    {
+        startBuffer = 0;
     }
 
     // resize vectors
@@ -239,7 +244,7 @@ void Component::SetBufferCount( int bufferCount )
         }
     }
 
-    p->releaseFlags[0].flag.clear();
+    p->releaseFlags[startBuffer].flag.clear();
 
     p->bufferCount = bufferCount;
 }
