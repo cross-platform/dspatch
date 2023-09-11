@@ -1,3 +1,8 @@
+v.9.7.4 (11 September 2023)
+    - Fixed hang in Circuit::Sync() when multi-buffer ticking.
+    - Cleaned up includes such that "src" is not needed.
+    - Added fast_any to installed headers.
+
 v.9.7.3 (10 September 2023)
     - Updated fast_any submodule (incl. updated LICENSE + README).
     - Removed public SetThreadHighPriority() method.
