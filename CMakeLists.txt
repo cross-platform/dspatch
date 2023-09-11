@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Set version information.
 set(DSPATCH_MAJOR 9)
 set(DSPATCH_MINOR 7)
-set(DSPATCH_MICRO 2)
+set(DSPATCH_MICRO 4)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4")
@@ -32,12 +32,12 @@ enable_testing()
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 file(GLOB root_hdrs include/*.h)
 file(GLOB dspatch_hdrs include/dspatch/*.h)
-file(GLOB srcs src/*.cpp src/internal/*.cpp)
+file(GLOB fast_any_hdrs include/fast_any/*.h)
+file(GLOB srcs src/*.cpp)
 
 option(BUILD_STATIC "Build static library" OFF)
 
@@ -85,6 +85,7 @@ endif(UNIX)
 
 install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
+install(FILES ${fast_any_hdrs} DESTINATION include/fast_any)
 install(FILES ${dspatch_dbg} DESTINATION lib)
 install(TARGETS
   ${PROJECT_NAME}

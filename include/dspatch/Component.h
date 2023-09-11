@@ -98,7 +98,7 @@ public:
     std::string GetInputName( int inputNo ) const;
     std::string GetOutputName( int outputNo ) const;
 
-    void SetBufferCount( int bufferCount );
+    void SetBufferCount( int bufferCount, int startBuffer = 0 );
     int GetBufferCount() const;
 
     void Tick( int bufferNo = 0 );

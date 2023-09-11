@@ -72,7 +72,6 @@ if find_program('cppcheck', required: false).found()
             '-i', meson.current_source_dir() + '/subprojects',
 
             '-I', meson.current_source_dir() + '/include',
-            '-I', meson.current_source_dir() + '/src',
             '-I', meson.current_source_dir() + '/tests',
 
             extra_cppcheck_args,
@@ -86,16 +85,13 @@ endif
 # Configure DSPatch
 
 dspatch_src = [
-    'src/internal/AutoTickThread.cpp',
-    'src/internal/CircuitThread.cpp',
     'src/Circuit.cpp',
     'src/Component.cpp',
     'src/Plugin.cpp'
 ]
 
 dspatch_inc = include_directories(
-    'include',
-    'src'
+    'include'
 )
 
 dspatch_lib = static_library(

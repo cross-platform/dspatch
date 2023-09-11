@@ -30,6 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Component.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <condition_variable>
 #include <thread>
 
@@ -63,19 +68,151 @@ class CircuitThread final
 public:
     NONCOPYABLE( CircuitThread );
 
-    CircuitThread();
-    CircuitThread( CircuitThread&& );
-    ~CircuitThread();
+    inline CircuitThread() = default;
 
-    void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo );
-    void Stop();
-    void Sync();
-    void SyncAndResume();
+    // cppcheck-suppress missingMemberCopy
+    inline CircuitThread( CircuitThread&& )
+    {
+    }
+
+    inline ~CircuitThread()
+    {
+        Stop();
+    }
+
+    inline void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
+    {
+        if ( !_stopped )
+        {
+            return;
+        }
+
+        _components = components;
+        _threadNo = threadNo;
+
+        _stop = false;
+        _stopped = false;
+        _gotSync = false;
+
+        _thread = std::thread( &CircuitThread::_Run, this );
+    }
+
+    inline void Stop()
+    {
+        if ( _stopped )
+        {
+            return;
+        }
+
+        Sync();
+
+        _stop = true;
+
+        SyncAndResume();
+
+        if ( _thread.joinable() )
+        {
+            _thread.join();
+        }
+    }
+
+    inline void Sync()
+    {
+        if ( _stopped || _gotSync )
+        {
+            return;
+        }
+
+        std::unique_lock<std::mutex> lock( _syncMutex );
+
+        // cppcheck-suppress knownConditionTrueFalse
+        if ( !_gotSync )  // if haven't already got sync
+        {
+            _syncCondt.wait( lock );  // wait for sync
+        }
+    }
+
+    inline void SyncAndResume()
+    {
+        if ( _stopped )
+        {
+            return;
+        }
+
+        if ( _gotSync )
+        {
+            _gotSync = false;  // reset the sync flag
+
+            std::lock_guard<std::mutex> lock( _syncMutex );
+
+            _resumeCondt.notify_all();
+
+            return;
+        }
+
+        std::unique_lock<std::mutex> lock( _syncMutex );
+
+        if ( !_gotSync )  // if haven't already got sync
+        {
+            _syncCondt.wait( lock );  // wait for sync
+        }
+
+        _gotSync = false;  // reset the sync flag
+
+        _resumeCondt.notify_all();
+    }
 
 private:
-    void _Run();
+    inline void _Run()
+    {
+#ifdef _WIN32
+        SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );
+#else
+        sched_param sch_params;
+        sch_params.sched_priority = sched_get_priority_max( SCHED_RR );
+        pthread_setschedparam( pthread_self(), SCHED_RR, &sch_params );
+#endif
 
-private:
+        if ( _components )
+        {
+            while ( !_stop )
+            {
+                {
+                    std::unique_lock<std::mutex> lock( _syncMutex );
+
+                    _gotSync = true;  // set the sync flag
+                    _syncCondt.notify_all();
+                    _resumeCondt.wait( lock );  // wait for resume
+                }
+
+                // cppcheck-suppress knownConditionTrueFalse
+                if ( !_stop )
+                {
+                    // You might be thinking: Can't we have each thread start on a different component?
+
+                    // Well no. Because threadNo == bufferNo, in order to maintain synchronisation
+                    // within the circuit, when a component wants to process its buffers in-order, it
+                    // requires that every other in-order component in the system has not only
+                    // processed its buffers in the same order, but has processed the same number of
+                    // buffers too.
+
+                    // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
+
+                    for ( auto& component : *_components )
+                    {
+                        component->Tick( _threadNo );
+                    }
+                    for ( auto& component : *_components )
+                    {
+                        component->Reset( _threadNo );
+                    }
+                }
+            }
+        }
+
+        _stopped = true;
+    }
+
     std::thread _thread;
     std::vector<DSPatch::Component::SPtr>* _components = nullptr;
     int _threadNo = 0;

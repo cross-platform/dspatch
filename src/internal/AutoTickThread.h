@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <dspatch/Circuit.h>
-#include <dspatch/Common.h>
 
 #include <condition_variable>
 #include <thread>
@@ -53,21 +52,114 @@ class AutoTickThread final
 public:
     NONCOPYABLE( AutoTickThread );
 
-    AutoTickThread();
-    ~AutoTickThread();
+    inline AutoTickThread() = default;
+    inline ~AutoTickThread()
+    {
+        Stop();
+    }
 
-    bool IsStopped() const;
-    bool IsPaused() const;
+    inline bool IsStopped() const
+    {
+        return _stopped;
+    }
 
-    void Start( DSPatch::Circuit* circuit );
-    void Stop();
-    void Pause();
-    void Resume();
+    inline bool IsPaused() const
+    {
+        return _pause;
+    }
+
+    inline void Start( DSPatch::Circuit* circuit )
+    {
+        if ( !_stopped )
+        {
+            return;
+        }
+
+        _circuit = circuit;
+
+        _stop = false;
+        _stopped = false;
+        _pause = false;
+
+        _thread = std::thread( &AutoTickThread::_Run, this );
+    }
+
+    inline void Stop()
+    {
+        if ( _stopped )
+        {
+            return;
+        }
+
+        Pause();
+
+        _stop = true;
+
+        Resume();
+
+        if ( _thread.joinable() )
+        {
+            _thread.join();
+        }
+    }
+
+    inline void Pause()
+    {
+        if ( _pause || _stopped )
+        {
+            return;
+        }
+
+        std::unique_lock<std::mutex> lock( _resumeMutex );
+
+        // cppcheck-suppress knownConditionTrueFalse
+        if ( !_pause && !_stopped )
+        {
+            _pause = true;
+            _pauseCondt.wait( lock );  // wait for pause
+        }
+    }
+
+    inline void Resume()
+    {
+        if ( !_pause )
+        {
+            return;
+        }
+
+        std::lock_guard<std::mutex> lock( _resumeMutex );
+
+        // cppcheck-suppress knownConditionTrueFalse
+        if ( _pause )
+        {
+            _resumeCondt.notify_all();
+            _pause = false;
+        }
+    }
 
 private:
-    void _Run();
+    inline void _Run()
+    {
+        if ( _circuit )
+        {
+            while ( !_stop )
+            {
+                _circuit->Tick();
 
-private:
+                if ( _pause )
+                {
+                    std::unique_lock<std::mutex> lock( _resumeMutex );
+
+                    _pauseCondt.notify_all();
+
+                    _resumeCondt.wait( lock );  // wait for resume
+                }
+            }
+        }
+
+        _stopped = true;
+    }
+
     std::thread _thread;
     DSPatch::Circuit* _circuit = nullptr;
     bool _stop = false;
