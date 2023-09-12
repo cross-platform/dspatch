@@ -172,7 +172,6 @@ void Component::DisconnectAllInputs()
     p->inputWires.clear();
 }
 
-// cppcheck-suppress unusedFunction
 int Component::GetInputCount() const
 {
     return p->inputBuses[0].GetSignalCount();

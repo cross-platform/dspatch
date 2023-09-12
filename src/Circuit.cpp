@@ -91,7 +91,6 @@ bool Circuit::AddComponent( const Component::SPtr& component )
     return true;
 }
 
-// cppcheck-suppress unusedFunction
 bool Circuit::RemoveComponent( const Component::SPtr& component )
 {
     if ( p->componentsSet.find( component ) == p->componentsSet.end() )
@@ -132,7 +131,6 @@ void Circuit::RemoveAllComponents()
     p->componentsSet.clear();
 }
 
-// cppcheck-suppress unusedFunction
 int Circuit::GetComponentCount() const
 {
     return (int)p->components.size();
@@ -224,7 +222,6 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 }
 
-// cppcheck-suppress unusedFunction
 int Circuit::GetBufferCount() const
 {
     return (int)p->circuitThreads.size();
