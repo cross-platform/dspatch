@@ -42,7 +42,7 @@ class Circuit;
 
 /**
 Components can be added to a Circuit via the AddComponent() method, and routed to and from other
-components via the ConnectOutToIn() methods.
+components via the ConnectOutToIn() method.
 
 <b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is
 connected to an input that already has a connected wire, that wire is replaced with the new one.
