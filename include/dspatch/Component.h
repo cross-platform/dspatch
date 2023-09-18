@@ -64,10 +64,9 @@ acquired input bus is then passed to the Process_() method. The Reset() method i
 component that the last circuit traversal has completed and hence can execute the next Tick()
 request.
 
-<b>PERFORMANCE TIP:</b> If a component's Process_() method is capable of processing buffers
-out-of-order within a stream processing circuit, consider initialising its base with
-ProcessOrder::OutOfOrder to improve performance. Note however that Process_() must be thread-safe
-to operate in this mode.
+<b>PERFORMANCE TIP:</b> If a component is capable of processing its buffers out-of-order within a
+stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve
+performance. Note however that Process_() must be thread-safe to operate in this mode.
 */
 
 class DLLEXPORT Component

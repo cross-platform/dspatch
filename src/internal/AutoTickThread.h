@@ -53,6 +53,7 @@ public:
     NONCOPYABLE( AutoTickThread );
 
     inline AutoTickThread() = default;
+
     inline ~AutoTickThread()
     {
         Stop();
