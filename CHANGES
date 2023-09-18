@@ -1,3 +1,8 @@
+v.9.7.5 (18 September 2023)
+    - Move Wire struct back into its own header.
+    - Moved EXPORT_PLUGIN macro to Plugin.h.
+    - Cleaned up documentation / website.
+
 v.9.7.4 (11 September 2023)
     - Fixed hang in Circuit::Sync() when multi-buffer ticking.
     - Cleaned up includes such that "src" is not needed.
