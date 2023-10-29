@@ -81,7 +81,13 @@ public:
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
 
-    std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
+    struct RefCounter final
+    {
+        int count = 0;
+        int total = 0;
+    };
+
+    std::vector<std::vector<RefCounter>> refs;  // RefCounter per output, per buffer
 
     std::vector<Wire> inputWires;
 
@@ -368,13 +374,13 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
 
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( ref.first == 1 )
+    if ( ref.total == 1 )
     {
         // there's only one reference, move the signal immediately
         toBus.MoveSignal( toInput, signal );
         return;
     }
-    else if ( ++ref.second != ref.first )
+    else if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
@@ -382,7 +388,7 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
     }
 
     // this is the final reference, reset the counter, move the signal
-    ref.second = 0;
+    ref.count = 0;
     toBus.MoveSignal( toInput, signal );
 }
 
@@ -390,7 +396,7 @@ void internal::Component::IncRefs( int output )
 {
     for ( auto& ref : refs )
     {
-        ++ref[output].first;
+        ++ref[output].total;
     }
 }
 
@@ -398,6 +404,6 @@ void internal::Component::DecRefs( int output )
 {
     for ( auto& ref : refs )
     {
-        --ref[output].first;
+        --ref[output].total;
     }
 }
