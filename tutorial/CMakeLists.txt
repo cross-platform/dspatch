@@ -43,4 +43,4 @@ if(NOT ${BUILD_STATIC} AND WIN32)
         )
     endif(MINGW)
 
-endif(WIN32)
+endif()
