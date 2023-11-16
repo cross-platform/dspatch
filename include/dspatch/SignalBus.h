@@ -82,7 +82,7 @@ public:
 
     inline void ClearAllValues();
 
-    inline const fast_any::type_info& GetType( int signalIndex ) const;
+    inline fast_any::type_info GetType( int signalIndex ) const;
 
 private:
     std::vector<fast_any::any> _signals;
@@ -209,7 +209,7 @@ inline void SignalBus::ClearAllValues()
     }
 }
 
-inline const fast_any::type_info& SignalBus::GetType( int signalIndex ) const
+inline fast_any::type_info SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
