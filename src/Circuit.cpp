@@ -69,7 +69,6 @@ Circuit::~Circuit()
 {
     StopAutoTick();
     SetBufferCount( 0 );
-    RemoveAllComponents();
 
     delete p;
 }
@@ -120,11 +119,10 @@ bool Circuit::RemoveComponent( const Component::SPtr& component )
     return false;
 }
 
+// cppcheck-suppress unusedFunction
 void Circuit::RemoveAllComponents()
 {
     PauseAutoTick();
-
-    DisconnectAllComponents();
 
     p->components.clear();
 
@@ -176,6 +174,7 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
     return true;
 }
 
+// cppcheck-suppress unusedFunction
 void Circuit::DisconnectAllComponents()
 {
     PauseAutoTick();
