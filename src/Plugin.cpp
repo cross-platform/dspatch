@@ -46,12 +46,12 @@ namespace internal
 class Plugin
 {
 public:
-    explicit Plugin( const std::string& pluginPath )
+    inline explicit Plugin( const std::string& pluginPath )
     {
         LoadPlugin( pluginPath );
     }
 
-    void LoadPlugin( const std::string& pluginPath );
+    inline void LoadPlugin( const std::string& pluginPath );
 
     typedef DSPatch::Component* ( *Create_t )();
 
@@ -98,7 +98,7 @@ Component::SPtr Plugin::Create() const
     return nullptr;
 }
 
-void internal::Plugin::LoadPlugin( const std::string& pluginPath )
+inline void internal::Plugin::LoadPlugin( const std::string& pluginPath )
 {
     // open library
 #ifdef _WIN32
