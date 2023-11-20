@@ -26,105 +26,28 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
-#include <dspatch/Plugin.h>
-
-#include <string>
-
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#endif
-
-using namespace DSPatch;
+#pragma once
 
 namespace DSPatch
 {
 namespace internal
 {
 
-class Plugin
+/// Connection between two components
+
+/**
+Components process and transfer data between each other in the form of signals via interconnected
+"wires". Each wire contains references to the fromComponent, the fromOutput signal, and the toInput
+signal. The Wire struct simply stores these references for use in retrieving and providing signals
+across component connections.
+*/
+
+struct Wire final
 {
-public:
-    inline explicit Plugin( const std::string& pluginPath )
-    {
-        LoadPlugin( pluginPath );
-    }
-
-    inline void LoadPlugin( const std::string& pluginPath );
-
-    typedef DSPatch::Component* ( *Create_t )();
-
-    void* handle = nullptr;
-    Create_t create = nullptr;
+    DSPatch::Component::SPtr fromComponent;
+    int fromOutput;
+    int toInput;
 };
 
 }  // namespace internal
 }  // namespace DSPatch
-
-Plugin::Plugin( const std::string& pluginPath )
-    : p( new internal::Plugin( pluginPath ) )
-{
-}
-
-Plugin::~Plugin()
-{
-    // close library
-    if ( p->handle )
-    {
-#ifdef _WIN32
-        FreeLibrary( (HMODULE)p->handle );
-#else
-        dlclose( p->handle );
-#endif
-    }
-
-    delete p;
-}
-
-// cppcheck-suppress unusedFunction
-bool Plugin::IsLoaded() const
-{
-    return p->handle;
-}
-
-// cppcheck-suppress unusedFunction
-Component::SPtr Plugin::Create() const
-{
-    if ( p->handle )
-    {
-        return Component::SPtr( p->create() );
-    }
-    return nullptr;
-}
-
-inline void internal::Plugin::LoadPlugin( const std::string& pluginPath )
-{
-    // open library
-#ifdef _WIN32
-    handle = LoadLibrary( pluginPath.c_str() );
-#else
-    handle = dlopen( pluginPath.c_str(), RTLD_NOW );
-#endif
-
-    if ( handle )
-    {
-        // load symbols
-#ifdef _WIN32
-        create = (Create_t)GetProcAddress( (HMODULE)handle, "Create" );
-#else
-        create = (Create_t)dlsym( handle, "Create" );
-#endif
-
-        if ( !create )
-        {
-#ifdef _WIN32
-            FreeLibrary( (HMODULE)handle );
-#else
-            dlclose( handle );
-#endif
-
-            handle = nullptr;
-        }
-    }
-}

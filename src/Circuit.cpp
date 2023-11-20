@@ -45,7 +45,9 @@ class Circuit
 {
 public:
     int pauseCount = 0;
-    int currentThreadNo = 0;
+
+    int bufferCount = 0;
+    int currentBuffer = 0;
 
     AutoTickThread autoTickThread;
 
@@ -67,7 +69,6 @@ Circuit::~Circuit()
 {
     StopAutoTick();
     SetBufferCount( 0 );
-    RemoveAllComponents();
 
     delete p;
 }
@@ -80,7 +81,7 @@ bool Circuit::AddComponent( const Component::SPtr& component )
     }
 
     // components within the circuit need to have as many buffers as there are threads in the circuit
-    component->SetBufferCount( (int)p->circuitThreads.size(), p->currentThreadNo );
+    component->SetBufferCount( p->bufferCount, p->currentBuffer );
 
     PauseAutoTick();
     p->components.emplace_back( component );
@@ -118,11 +119,10 @@ bool Circuit::RemoveComponent( const Component::SPtr& component )
     return false;
 }
 
+// cppcheck-suppress unusedFunction
 void Circuit::RemoveAllComponents()
 {
     PauseAutoTick();
-
-    DisconnectAllComponents();
 
     p->components.clear();
 
@@ -174,6 +174,7 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
     return true;
 }
 
+// cppcheck-suppress unusedFunction
 void Circuit::DisconnectAllComponents()
 {
     PauseAutoTick();
@@ -188,50 +189,54 @@ void Circuit::DisconnectAllComponents()
 
 void Circuit::SetBufferCount( int bufferCount )
 {
-    if ( (size_t)bufferCount != p->circuitThreads.size() )
+    if ( p->bufferCount == bufferCount )
     {
-        PauseAutoTick();
-
-        // stop all threads
-        for ( auto& circuitThread : p->circuitThreads )
-        {
-            circuitThread.Stop();
-        }
-
-        // resize thread array
-        p->circuitThreads.resize( bufferCount );
-
-        // initialise and start all threads
-        for ( size_t i = 0; i < p->circuitThreads.size(); ++i )
-        {
-            p->circuitThreads[i].Start( &p->components, (int)i );
-        }
-
-        if ( p->currentThreadNo >= bufferCount )
-        {
-            p->currentThreadNo = 0;
-        }
-
-        // set all components to the new buffer count
-        for ( auto& component : p->components )
-        {
-            component->SetBufferCount( bufferCount, p->currentThreadNo );
-        }
-
-        ResumeAutoTick();
+        return;
     }
+
+    PauseAutoTick();
+
+    p->bufferCount = bufferCount;
+
+    // stop all threads
+    for ( auto& circuitThread : p->circuitThreads )
+    {
+        circuitThread.Stop();
+    }
+
+    // resize thread array
+    p->circuitThreads.resize( p->bufferCount );
+
+    // initialise and start all threads
+    for ( int i = 0; i < p->bufferCount; ++i )
+    {
+        p->circuitThreads[i].Start( &p->components, i );
+    }
+
+    if ( p->currentBuffer >= p->bufferCount )
+    {
+        p->currentBuffer = 0;
+    }
+
+    // set all components to the new buffer count
+    for ( auto& component : p->components )
+    {
+        component->SetBufferCount( p->bufferCount, p->currentBuffer );
+    }
+
+    ResumeAutoTick();
 }
 
 int Circuit::GetBufferCount() const
 {
-    return (int)p->circuitThreads.size();
+    return p->bufferCount;
 }
 
 void Circuit::Tick()
 {
     // process in a single thread if this circuit has no threads
     // =========================================================
-    if ( p->circuitThreads.empty() )
+    if ( p->bufferCount == 0 )
     {
         // tick all internal components
         for ( auto& component : p->components )
@@ -249,11 +254,11 @@ void Circuit::Tick()
     // =======================================================
     else
     {
-        p->circuitThreads[p->currentThreadNo].SyncAndResume();  // sync and resume thread x
+        p->circuitThreads[p->currentBuffer].SyncAndResume();  // sync and resume thread x
 
-        if ( ++p->currentThreadNo == (int)p->circuitThreads.size() )
+        if ( ++p->currentBuffer == p->bufferCount )
         {
-            p->currentThreadNo = 0;
+            p->currentBuffer = 0;
         }
     }
 }

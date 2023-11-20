@@ -17,7 +17,7 @@ target_link_libraries(
     DSPatch
 )
 
-if(WIN32)
+if(NOT ${BUILD_STATIC} AND WIN32)
     if(MSVC)
         add_custom_command(
             TARGET ${PROJECT_NAME} POST_BUILD
@@ -43,4 +43,4 @@ if(WIN32)
         )
     endif(MINGW)
 
-endif(WIN32)
+endif()

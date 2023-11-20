@@ -32,15 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     classname( const classname& ) = delete; \
     classname& operator=( const classname& ) = delete
 
-#define EXPORT_PLUGIN( classname, ... )          \
-    extern "C"                                   \
-    {                                            \
-        DLLEXPORT Component* Create()            \
-        {                                        \
-            return new classname( __VA_ARGS__ ); \
-        }                                        \
-    }
-
 #ifdef _WIN32
 
 #define DLLEXPORT __declspec( dllexport )

@@ -28,8 +28,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/Component.h>
 
+#include "internal/Wire.h"
+
 #include <algorithm>
-#include <mutex>
+#include <atomic>
 #include <thread>
 
 using namespace DSPatch;
@@ -59,25 +61,18 @@ public:
         std::atomic_flag flag = ATOMIC_FLAG_INIT;
     };
 
-    struct Wire final
-    {
-        DSPatch::Component::SPtr fromComponent;
-        int fromOutput;
-        int toInput;
-    };
-
-    explicit Component( DSPatch::Component::ProcessOrder processOrder )
+    inline explicit Component( DSPatch::Component::ProcessOrder processOrder )
         : processOrder( processOrder )
     {
     }
 
-    void WaitForRelease( int threadNo );
-    void ReleaseNextThread( int threadNo );
+    inline void WaitForRelease( int threadNo );
+    inline void ReleaseNextThread( int threadNo );
 
-    void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
+    inline void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
 
-    void IncRefs( int output );
-    void DecRefs( int output );
+    inline void IncRefs( int output );
+    inline void DecRefs( int output );
 
     const DSPatch::Component::ProcessOrder processOrder;
 
@@ -86,7 +81,13 @@ public:
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
 
-    std::vector<std::vector<std::pair<int, int>>> refs;  // ref_total:ref_counter per output, per buffer
+    struct RefCounter final
+    {
+        int count = 0;
+        int total = 0;
+    };
+
+    std::vector<std::vector<RefCounter>> refs;  // RefCounter per output, per buffer
 
     std::vector<Wire> inputWires;
 
@@ -123,7 +124,7 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
     // first make sure there are no wires already connected to this input
     DisconnectInput( toInput );
 
-    p->inputWires.emplace_back( internal::Component::Wire{ fromComponent, fromOutput, toInput } );
+    p->inputWires.emplace_back( internal::Wire{ fromComponent, fromOutput, toInput } );
 
     // update source output's reference count
     fromComponent->p->IncRefs( fromOutput );
@@ -234,7 +235,14 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
-        p->releaseFlags[i].flag.test_and_set();
+        if ( i == startBuffer )
+        {
+            p->releaseFlags[i].flag.clear();
+        }
+        else
+        {
+            p->releaseFlags[i].flag.test_and_set();
+        }
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -243,8 +251,6 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
             p->refs[i][j] = p->refs[0][j];
         }
     }
-
-    p->releaseFlags[startBuffer].flag.clear();
 
     p->bufferCount = bufferCount;
 }
@@ -340,7 +346,7 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
 }
 
-void internal::Component::WaitForRelease( int threadNo )
+inline void internal::Component::WaitForRelease( int threadNo )
 {
     auto& releaseFlag = releaseFlags[threadNo].flag;
 
@@ -350,7 +356,7 @@ void internal::Component::WaitForRelease( int threadNo )
     }
 }
 
-void internal::Component::ReleaseNextThread( int threadNo )
+inline void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
@@ -362,7 +368,7 @@ void internal::Component::ReleaseNextThread( int threadNo )
     }
 }
 
-void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
@@ -373,13 +379,13 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
 
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( ref.first == 1 )
+    if ( ref.total == 1 )
     {
         // there's only one reference, move the signal immediately
         toBus.MoveSignal( toInput, signal );
         return;
     }
-    else if ( ++ref.second != ref.first )
+    else if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
@@ -387,22 +393,22 @@ void internal::Component::GetOutput( int bufferNo, int fromOutput, int toInput, 
     }
 
     // this is the final reference, reset the counter, move the signal
-    ref.second = 0;
+    ref.count = 0;
     toBus.MoveSignal( toInput, signal );
 }
 
-void internal::Component::IncRefs( int output )
+inline void internal::Component::IncRefs( int output )
 {
     for ( auto& ref : refs )
     {
-        ++ref[output].first;
+        ++ref[output].total;
     }
 }
 
-void internal::Component::DecRefs( int output )
+inline void internal::Component::DecRefs( int output )
 {
     for ( auto& ref : refs )
     {
-        --ref[output].first;
+        --ref[output].total;
     }
 }

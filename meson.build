@@ -39,7 +39,7 @@ if find_program('clang-format', required: false).found()
     format_first = custom_target(
         output: 'formatting',
         command: format_command,
-        build_by_default: true
+        build_always: true
     )
 endif
 
@@ -78,7 +78,7 @@ if find_program('cppcheck', required: false).found()
 
             meson.current_source_dir()
         ],
-        build_by_default: true
+        build_always: true
     )
 endif
 

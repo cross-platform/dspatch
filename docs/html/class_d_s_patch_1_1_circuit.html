@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.7.4</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.0.0</span>
    </div>
   </td>
  </tr>
@@ -139,7 +139,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ResumeAutoTick</b> ()
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Workspace for adding and routing components. </p>
-<p>Components can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> via the AddComponent() method, and routed to and from other components via the ConnectOutToIn() methods.</p>
+<p>Components can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> via the AddComponent() method, and routed to and from other components via the ConnectOutToIn() method.</p>
 <p><b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is connected to an input that already has a connected wire, that wire is replaced with the new one. One output, on the other hand, can be distributed to multiple inputs.</p>
 <p>To boost performance in stream processing circuits, multi-buffering can be enabled via the SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.</p>
 <p>The <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> Tick() method runs through its internal array of components and calls each component's Tick() and Reset() methods once. A circuit's Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called. </p>

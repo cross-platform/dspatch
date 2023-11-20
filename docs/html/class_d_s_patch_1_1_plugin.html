@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.9.7.4</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.0.0</span>
    </div>
   </td>
  </tr>
@@ -103,10 +103,10 @@ Component::SPtr&#160;</td><td class="memItemRight" valign="bottom"><b>Create</b>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> plugin loader. </p>
-<p>A component, packaged into a shared library (.so / .dylib / .dll) and exported via the EXPORT_PLUGIN macro, can be dynamically loaded into a host application using the <a class="el" href="class_d_s_patch_1_1_plugin.html" title="Component plugin loader.">Plugin</a> class. Each <a class="el" href="class_d_s_patch_1_1_plugin.html" title="Component plugin loader.">Plugin</a> object represents one <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> class.</p>
+<p>A component, packaged into a shared library (.so / .dylib / .dll) and exported via the EXPORT_PLUGIN macro, can be dynamically loaded into a host application using the <a class="el" href="class_d_s_patch_1_1_plugin.html" title="Component plugin loader.">Plugin</a> class. Each <a class="el" href="class_d_s_patch_1_1_plugin.html" title="Component plugin loader.">Plugin</a> object represents one <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> class. (<a href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Example component plugins</b></a>)</p>
 <p>A <a class="el" href="class_d_s_patch_1_1_plugin.html" title="Component plugin loader.">Plugin</a> should be constructed with the absolute path of the plugin (shared library) to be loaded. Once instantiated you should check that the plugin was successfully loaded by calling IsLoaded(). Thereafter, the contained component type can be instantiated (mutiple times) via the Create() method. </p>
 
-<p class="definition">Definition at line <a class="el" href="_plugin_8h_source.html#l00054">54</a> of file <a class="el" href="_plugin_8h_source.html">Plugin.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_plugin_8h_source.html#l00065">65</a> of file <a class="el" href="_plugin_8h_source.html">Plugin.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="_plugin_8h_source.html">Plugin.h</a></li>
 </ul>
