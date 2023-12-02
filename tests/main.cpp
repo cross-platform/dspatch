@@ -773,12 +773,15 @@ TEST_CASE( "TenThousandComponents" )
 
     std::cout << "Construction, 10000 Components: " << diff_ms << "ms\n";
 
+    int iterationCount = 1000;
+
+    for ( int i = 0; i <= 4; ++i )
     {
-        int iterationCount = 1000;
+        circuit->SetBufferCount( i );
 
         begin = std::chrono::high_resolution_clock::now();
 
-        for ( int i = 0; i < iterationCount; i++ )
+        for ( int j = 0; j < iterationCount; j++ )
         {
             circuit->Tick();
         }
@@ -787,79 +790,7 @@ TEST_CASE( "TenThousandComponents" )
 
         diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
-        std::cout << "0x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
-    }
-    {
-        circuit->SetBufferCount( 1 );
-
-        int iterationCount = 1000;
-
-        begin = std::chrono::high_resolution_clock::now();
-
-        for ( int i = 0; i < iterationCount; i++ )
-        {
-            circuit->Tick();
-        }
-
-        end = std::chrono::high_resolution_clock::now();
-
-        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
-
-        std::cout << "1x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
-    }
-    {
-        circuit->SetBufferCount( 2 );
-
-        int iterationCount = 1000;
-
-        begin = std::chrono::high_resolution_clock::now();
-
-        for ( int i = 0; i < iterationCount; i++ )
-        {
-            circuit->Tick();
-        }
-
-        end = std::chrono::high_resolution_clock::now();
-
-        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
-
-        std::cout << "2x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
-    }
-    {
-        circuit->SetBufferCount( 3 );
-
-        int iterationCount = 1000;
-
-        begin = std::chrono::high_resolution_clock::now();
-
-        for ( int i = 0; i < iterationCount; i++ )
-        {
-            circuit->Tick();
-        }
-
-        end = std::chrono::high_resolution_clock::now();
-
-        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
-
-        std::cout << "3x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
-    }
-    {
-        circuit->SetBufferCount( 4 );
-
-        int iterationCount = 1000;
-
-        begin = std::chrono::high_resolution_clock::now();
-
-        for ( int i = 0; i < iterationCount; i++ )
-        {
-            circuit->Tick();
-        }
-
-        end = std::chrono::high_resolution_clock::now();
-
-        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
-
-        std::cout << "4x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
+        std::cout << i << "x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
     }
 
     begin = std::chrono::high_resolution_clock::now();

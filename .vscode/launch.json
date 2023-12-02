@@ -9,8 +9,7 @@
             "request": "launch",
             "type": "cppvsdbg",
             "osx": {
-                "type": "cppdbg",
-                "MIMode": "lldb"
+                "type": "lldb"
             }
         },
         {
@@ -21,8 +20,7 @@
             "request": "launch",
             "type": "cppvsdbg",
             "osx": {
-                "type": "cppdbg",
-                "MIMode": "lldb"
+                "type": "lldb"
             }
         }
     ]
