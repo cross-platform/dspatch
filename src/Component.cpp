@@ -109,8 +109,6 @@ Component::Component( ProcessOrder processOrder )
 
 Component::~Component()
 {
-    DisconnectAllInputs();
-
     delete p;
 }
 
@@ -124,7 +122,7 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
     // first make sure there are no wires already connected to this input
     DisconnectInput( toInput );
 
-    p->inputWires.emplace_back( internal::Wire{ fromComponent, fromOutput, toInput } );
+    p->inputWires.emplace_back( internal::Wire{ fromComponent.get(), fromOutput, toInput } );
 
     // update source output's reference count
     fromComponent->p->IncRefs( fromOutput );
@@ -149,7 +147,7 @@ void Component::DisconnectInput( int inputNo )
 void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
     // remove fromComponent from inputWires
-    auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent; };
+    auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent.get(); };
 
     for ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end();
           it = std::find_if( it, p->inputWires.end(), findFn ) )
@@ -274,13 +272,13 @@ void Component::Tick( int bufferNo )
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
 
-    for ( const auto& wire : p->inputWires )
+    for ( auto [fromComponent, fromOutput, toInput] : p->inputWires )
     {
         // tick incoming components
-        wire.fromComponent->Tick( bufferNo );
+        fromComponent->Tick( bufferNo );
 
         // get new inputs from incoming components
-        wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus );
+        fromComponent->p->GetOutput( bufferNo, fromOutput, toInput, inputBus );
     }
 
     // You might be thinking: Why not clear the outputs in Reset()?

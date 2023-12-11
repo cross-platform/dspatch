@@ -754,10 +754,10 @@ TEST_CASE( "TenThousandComponents" )
     circuit->AddComponent( source );
     circuit->AddComponent( dest );
 
-    for ( int i = 0; i < 500; i++ )
+    for ( int i = 0; i < 500; ++i )
     {
         Component::SPtr last = source;
-        for ( int j = 0; j < 20; j++ )
+        for ( int j = 0; j < 20; ++j )
         {
             auto passthrough = std::make_shared<PassThrough>();
             circuit->AddComponent( passthrough );
@@ -775,13 +775,13 @@ TEST_CASE( "TenThousandComponents" )
 
     int iterationCount = 1000;
 
-    for ( int i = 0; i <= 4; ++i )
+    for ( unsigned int i = 0; i <= std::thread::hardware_concurrency(); ++i )
     {
         circuit->SetBufferCount( i );
 
         begin = std::chrono::high_resolution_clock::now();
 
-        for ( int j = 0; j < iterationCount; j++ )
+        for ( int j = 0; j < iterationCount; ++j )
         {
             circuit->Tick();
         }
