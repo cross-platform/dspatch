@@ -63,16 +63,14 @@ public:
 
     struct TickStatus final
     {
-        // cppcheck-suppress uninitMemberVar
         TickStatus() = default;
 
-        // cppcheck-suppress missingMemberCopy
         TickStatus( TickStatus&& )
         {
         }
 
-        bool isTicking;
-        std::atomic_flag releaseFlag;
+        bool isTicking = false;
+        std::atomic_flag releaseFlag = ATOMIC_FLAG_INIT;
     };
 
     std::vector<TickStatus> tickStatuses;
@@ -256,14 +254,16 @@ int Component::GetBufferCount() const
 
 void Component::Tick( int bufferNo )
 {
+    auto& tickStatus = p->tickStatuses[bufferNo];
+
     // continue only if this component has not already been ticked
-    if ( p->tickStatuses[bufferNo].isTicking )
+    if ( tickStatus.isTicking )
     {
         return;
     }
 
     // set isTicking
-    p->tickStatuses[bufferNo].isTicking = true;
+    tickStatus.isTicking = true;
 
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
