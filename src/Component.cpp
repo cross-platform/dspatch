@@ -262,7 +262,7 @@ void Component::Tick( int bufferNo )
         return;
     }
 
-    // set isTicking -> Ticking
+    // set isTicking
     p->tickStatuses[bufferNo].isTicking = true;
 
     auto& inputBus = p->inputBuses[bufferNo];
@@ -310,7 +310,7 @@ void Component::Reset( int bufferNo )
     // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();
 
-    // reset isTicking
+    // clear isTicking
     p->tickStatuses[bufferNo].isTicking = false;
 }
 
