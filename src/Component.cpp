@@ -44,12 +44,6 @@ namespace internal
 class Component
 {
 public:
-    enum class TickStatus
-    {
-        NotTicked,
-        Ticking
-    };
-
     inline explicit Component( DSPatch::Component::ProcessOrder processOrder )
         : processOrder( processOrder )
     {
@@ -67,32 +61,27 @@ public:
 
     int bufferCount = 0;
 
+    struct TickStatus final
+    {
+        TickStatus() = default;
+
+        TickStatus( TickStatus&& )
+        {
+        }
+
+        bool isTicking;
+        std::atomic_flag releaseFlag;
+    };
+
+    std::vector<TickStatus> tickStatuses;
+
     struct RefCounter final
     {
         int count = 0;
         int total = 0;
     };
 
-    struct MovableAtomicFlag final
-    {
-        MovableAtomicFlag() = default;
-
-        MovableAtomicFlag( MovableAtomicFlag&& )
-        {
-        }
-
-        std::atomic_flag flag = ATOMIC_FLAG_INIT;
-    };
-
-    struct Buffer final
-    {
-        std::vector<RefCounter> refs;  // RefCounter per output
-
-        TickStatus tickStatus;
-        MovableAtomicFlag releaseFlag;
-    };
-
-    std::vector<Buffer> buffers;
+    std::vector<std::vector<RefCounter>> refs;  // RefCounter per output, per buffer
 
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
@@ -222,39 +211,39 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         startBuffer = 0;
     }
 
-    // resize buffers vector
-    p->buffers.resize( bufferCount );
+    // resize vectors
+    p->tickStatuses.resize( bufferCount );
 
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
 
-    auto& firstBuffer = p->buffers[0];
+    p->refs.resize( bufferCount );
 
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
-        p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
-        p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
+        auto& tickStatus = p->tickStatuses[i];
 
-        auto& buffer = p->buffers[i];
-
-        buffer.tickStatus = internal::Component::TickStatus::NotTicked;
+        tickStatus.isTicking = false;
 
         if ( i == startBuffer )
         {
-            buffer.releaseFlag.flag.clear();
+            tickStatus.releaseFlag.clear();
         }
         else
         {
-            buffer.releaseFlag.flag.test_and_set();
+            tickStatus.releaseFlag.test_and_set();
         }
 
-        buffer.refs.resize( firstBuffer.refs.size() );
-        for ( size_t j = 0; j < firstBuffer.refs.size(); ++j )
+        p->refs[i].resize( p->refs[0].size() );
+        for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
-            buffer.refs[j] = firstBuffer.refs[j];
+            p->refs[i][j] = p->refs[0][j];
         }
+
+        p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
+        p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
     }
 
     p->bufferCount = bufferCount;
@@ -267,16 +256,16 @@ int Component::GetBufferCount() const
 
 void Component::Tick( int bufferNo )
 {
-    auto& buffer = p->buffers[bufferNo];
+    auto& tickStatus = p->tickStatuses[bufferNo];
 
     // continue only if this component has not already been ticked
-    if ( buffer.tickStatus == internal::Component::TickStatus::Ticking )
+    if ( tickStatus.isTicking )
     {
         return;
     }
 
-    // set tickStatus -> Ticking
-    buffer.tickStatus = internal::Component::TickStatus::Ticking;
+    // set isTicking -> Ticking
+    tickStatus.isTicking = true;
 
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
@@ -323,8 +312,8 @@ void Component::Reset( int bufferNo )
     // clear inputs
     p->inputBuses[bufferNo].ClearAllValues();
 
-    // reset tickStatus
-    p->buffers[bufferNo].tickStatus = internal::Component::TickStatus::NotTicked;
+    // reset isTicking
+    p->tickStatuses[bufferNo].isTicking = false;
 }
 
 void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
@@ -347,15 +336,15 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
 
     // add reference counters for our new outputs
-    for ( auto& buffer : p->buffers )
+    for ( auto& ref : p->refs )
     {
-        buffer.refs.resize( outputCount );
+        ref.resize( outputCount );
     }
 }
 
 inline void internal::Component::WaitForRelease( int threadNo )
 {
-    auto& releaseFlag = buffers[threadNo].releaseFlag.flag;
+    auto& releaseFlag = tickStatuses[threadNo].releaseFlag;
 
     while ( releaseFlag.test_and_set( std::memory_order_acquire ) )
     {
@@ -367,11 +356,11 @@ inline void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
-        buffers[0].releaseFlag.flag.clear( std::memory_order_release );
+        tickStatuses[0].releaseFlag.clear( std::memory_order_release );
     }
     else
     {
-        buffers[threadNo].releaseFlag.flag.clear( std::memory_order_release );
+        tickStatuses[threadNo].releaseFlag.clear( std::memory_order_release );
     }
 }
 
@@ -384,7 +373,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
         return;
     }
 
-    auto& ref = buffers[bufferNo].refs[fromOutput];
+    auto& ref = refs[bufferNo][fromOutput];
 
     if ( ref.total == 1 )
     {
@@ -406,16 +395,16 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 
 inline void internal::Component::IncRefs( int output )
 {
-    for ( auto& buffer : buffers )
+    for ( auto& ref : refs )
     {
-        ++buffer.refs[output].total;
+        ++ref[output].total;
     }
 }
 
 inline void internal::Component::DecRefs( int output )
 {
-    for ( auto& buffer : buffers )
+    for ( auto& ref : refs )
     {
-        --buffer.refs[output].total;
+        --ref[output].total;
     }
 }
