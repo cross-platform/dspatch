@@ -216,25 +216,23 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     // resize vectors
     p->tickStatuses.resize( bufferCount );
 
+    p->refs.resize( bufferCount );
+
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
-
-    p->refs.resize( bufferCount );
 
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
-        auto& tickStatus = p->tickStatuses[i];
-
-        tickStatus.isTicking = false;
+        p->tickStatuses[i].isTicking = false;
 
         if ( i == startBuffer )
         {
-            tickStatus.releaseFlag.clear();
+            p->tickStatuses[i].releaseFlag.clear();
         }
         else
         {
-            tickStatus.releaseFlag.test_and_set();
+            p->tickStatuses[i].releaseFlag.test_and_set();
         }
 
         p->refs[i].resize( p->refs[0].size() );
@@ -258,16 +256,14 @@ int Component::GetBufferCount() const
 
 void Component::Tick( int bufferNo )
 {
-    auto& tickStatus = p->tickStatuses[bufferNo];
-
     // continue only if this component has not already been ticked
-    if ( tickStatus.isTicking )
+    if ( p->tickStatuses[bufferNo].isTicking )
     {
         return;
     }
 
     // set isTicking -> Ticking
-    tickStatus.isTicking = true;
+    p->tickStatuses[bufferNo].isTicking = true;
 
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
