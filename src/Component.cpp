@@ -254,16 +254,16 @@ int Component::GetBufferCount() const
 
 void Component::Tick( int bufferNo )
 {
-    auto& tickStatus = p->tickStatuses[bufferNo];
+    auto& isTicking = p->tickStatuses[bufferNo].isTicking;
 
     // continue only if this component has not already been ticked
-    if ( tickStatus.isTicking )
+    if ( isTicking )
     {
         return;
     }
 
     // set isTicking
-    tickStatus.isTicking = true;
+    isTicking = true;
 
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
