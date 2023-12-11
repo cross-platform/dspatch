@@ -63,8 +63,10 @@ public:
 
     struct TickStatus final
     {
+        // cppcheck-suppress uninitMemberVar
         TickStatus() = default;
 
+        // cppcheck-suppress missingMemberCopy
         TickStatus( TickStatus&& )
         {
         }
