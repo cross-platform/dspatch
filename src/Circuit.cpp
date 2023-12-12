@@ -51,7 +51,7 @@ public:
 
     AutoTickThread autoTickThread;
 
-    std::vector<DSPatch::Component::SPtr> components;
+    std::vector<DSPatch::Component*> components;
     std::set<DSPatch::Component::SPtr> componentsSet;
 
     std::vector<CircuitThread> circuitThreads;
@@ -84,7 +84,7 @@ bool Circuit::AddComponent( const Component::SPtr& component )
     component->SetBufferCount( p->bufferCount, p->currentBuffer );
 
     PauseAutoTick();
-    p->components.emplace_back( component );
+    p->components.emplace_back( component.get() );
     ResumeAutoTick();
 
     p->componentsSet.emplace( component );
@@ -99,7 +99,7 @@ bool Circuit::RemoveComponent( const Component::SPtr& component )
         return false;
     }
 
-    auto findFn = [&component]( const auto& comp ) { return comp == component; };
+    auto findFn = [&component]( auto comp ) { return comp == component.get(); };
 
     if ( auto it = std::find_if( p->components.begin(), p->components.end(), findFn ); it != p->components.end() )
     {

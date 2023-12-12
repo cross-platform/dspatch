@@ -80,7 +80,7 @@ public:
         Stop();
     }
 
-    inline void Start( std::vector<DSPatch::Component::SPtr>* components, int threadNo )
+    inline void Start( std::vector<DSPatch::Component*>* components, int threadNo )
     {
         if ( !_stopped )
         {
@@ -198,11 +198,11 @@ private:
 
                     // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
 
-                    for ( auto& component : *_components )
+                    for ( auto component : *_components )
                     {
                         component->Tick( _threadNo );
                     }
-                    for ( auto& component : *_components )
+                    for ( auto component : *_components )
                     {
                         component->Reset( _threadNo );
                     }
@@ -214,7 +214,7 @@ private:
     }
 
     std::thread _thread;
-    std::vector<DSPatch::Component::SPtr>* _components = nullptr;
+    std::vector<DSPatch::Component*>* _components = nullptr;
     int _threadNo = 0;
     bool _stop = false;
     bool _stopped = true;
