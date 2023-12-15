@@ -1,5 +1,18 @@
 {
     "version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": [
+                    "/c",
+                    "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/Common7/Tools/VsDevCmd.bat\"",
+                    "-arch=amd64",
+                    "&&"
+                ]
+            }
+        }
+    },
     "tasks": [
         {
             "label": "Build",
@@ -10,8 +23,8 @@
             },
             "windows": {
                 "command": [
-                    "cp .vscode/_settings.json .vscode/settings.json;",
-                    "meson setup builddir --buildtype=debug;",
+                    "copy /y .vscode\\_settings.json .vscode\\settings.json &&",
+                    "meson setup builddir --buildtype=debug &&",
                     "meson compile -C builddir"
                 ],
                 "problemMatcher": {
