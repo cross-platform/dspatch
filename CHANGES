@@ -1,3 +1,9 @@
+v.10.0.1 (12 December 2023)
+    - Optimized Circuit components vector with raw pointers.
+    - Optimized Wire struct with raw pointer fromComponent.
+    - Cleaned up "TenThousandComponents" test.
+    - Further stabilized thread performance tests.
+
 v.10.0.0 (19 November 2023)
     - Updated fast_any submodule (incl. optimized type()).
     - Greatly improved Circuit teardown time.

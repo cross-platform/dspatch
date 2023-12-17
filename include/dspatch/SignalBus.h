@@ -178,7 +178,7 @@ inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
-        _signals[signalIndex].emplace<ValueType>( std::move( newValue ) );
+        _signals[signalIndex].emplace<ValueType>( std::forward<ValueType>( newValue ) );
     }
 }
 

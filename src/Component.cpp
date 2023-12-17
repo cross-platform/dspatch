@@ -109,8 +109,6 @@ Component::Component( ProcessOrder processOrder )
 
 Component::~Component()
 {
-    DisconnectAllInputs();
-
     delete p;
 }
 
@@ -124,7 +122,7 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
     // first make sure there are no wires already connected to this input
     DisconnectInput( toInput );
 
-    p->inputWires.emplace_back( internal::Wire{ fromComponent, fromOutput, toInput } );
+    p->inputWires.emplace_back( internal::Wire{ fromComponent.get(), fromOutput, toInput } );
 
     // update source output's reference count
     fromComponent->p->IncRefs( fromOutput );
@@ -149,7 +147,7 @@ void Component::DisconnectInput( int inputNo )
 void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
     // remove fromComponent from inputWires
-    auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent; };
+    auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent.get(); };
 
     for ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end();
           it = std::find_if( it, p->inputWires.end(), findFn ) )

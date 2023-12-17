@@ -44,7 +44,7 @@ across component connections.
 
 struct Wire final
 {
-    DSPatch::Component::SPtr fromComponent;
+    DSPatch::Component* fromComponent;
     int fromOutput;
     int toInput;
 };
