@@ -41,7 +41,7 @@ namespace DSPatch
 namespace internal
 {
 
-class Circuit
+class Circuit final
 {
 public:
     int pauseCount = 0;

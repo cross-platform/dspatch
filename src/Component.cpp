@@ -41,7 +41,7 @@ namespace DSPatch
 namespace internal
 {
 
-class Component
+class Component final
 {
 public:
     enum class TickStatus
