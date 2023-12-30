@@ -56,13 +56,9 @@ purpose is to pull its required inputs out of the input bus, process these input
 output bus with the results (see SignalBus).
 
 In order for a component to do any work it must be ticked. This is performed by repeatedly calling
-the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of
-input signals from component input wires and populating the component's input bus. To insure that
-these inputs are up-to-date, the dependent component first calls all of its input components'
-Tick() methods - hence recursively called in all components going backward through the circuit. The
-acquired input bus is then passed to the Process_() method. The Reset() method informs the
-component that the last circuit traversal has completed and hence can execute the next Tick()
-request.
+the Tick() method. This method is responsible for acquiring the next set of input signals from its
+input wires and populating the component's input bus. The acquired input bus is then passed to the
+Process_() method.
 
 <b>PERFORMANCE TIP:</b> If a component is capable of processing its buffers out-of-order within a
 stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve
@@ -101,7 +97,6 @@ public:
     int GetBufferCount() const;
 
     void Tick( int bufferNo = 0 );
-    void Reset( int bufferNo = 0 );
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;

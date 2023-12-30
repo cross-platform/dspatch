@@ -281,11 +281,6 @@ TEST_CASE( "FeedbackTestNoCircuit" )
         adder->Tick();
         passthrough->Tick();
         probe->Tick();
-
-        counter->Reset();
-        adder->Reset();
-        passthrough->Reset();
-        probe->Reset();
     }
 }
 
