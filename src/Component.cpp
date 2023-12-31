@@ -89,6 +89,8 @@ public:
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
+
+    bool isScanning = false;
 };
 
 }  // namespace internal
@@ -306,6 +308,32 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     {
         ref.resize( outputCount );
     }
+}
+
+void Component::_Scan( std::vector<DSPatch::Component*>& components )
+{
+    // continue only if this component has not already been scanned
+    if ( p->isScanning )
+    {
+        return;
+    }
+
+    // set isScanning
+    p->isScanning = true;
+
+    for ( const auto& wire : p->inputWires )
+    {
+        // scan incoming components
+        wire.fromComponent->_Scan( components );
+    }
+
+    components.emplace_back( this );
+}
+
+void Component::_EndScan()
+{
+    // reset isScanning
+    p->isScanning = false;
 }
 
 inline void internal::Component::WaitForRelease( int threadNo )

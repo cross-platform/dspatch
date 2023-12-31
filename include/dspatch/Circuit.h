@@ -88,6 +88,8 @@ public:
     void PauseAutoTick();
     void ResumeAutoTick();
 
+    void Optimize();
+
 private:
     internal::Circuit* p;
 };

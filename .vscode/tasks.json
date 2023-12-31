@@ -34,7 +34,7 @@
             "osx": {
                 "command": [
                     "cp .vscode/_settings.json .vscode/settings.json &&",
-                    "meson setup builddir --buildtype=debug &&",
+                    "meson setup builddir --buildtype=release &&",
                     "meson compile -C builddir"
                 ],
                 "problemMatcher": {

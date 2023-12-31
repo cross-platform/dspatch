@@ -146,6 +146,7 @@ bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutp
 
     PauseAutoTick();
     bool result = toComponent->ConnectInput( fromComponent, fromOutput, toInput );
+    Optimize();
     ResumeAutoTick();
 
     return result;
@@ -304,4 +305,26 @@ void Circuit::ResumeAutoTick()
     {
         p->autoTickThread.Resume();
     }
+}
+
+void Circuit::Optimize()
+{
+    PauseAutoTick();
+
+    std::vector<DSPatch::Component*> components;
+
+    for ( auto& component : p->components )
+    {
+        component->_Scan( components );
+    }
+
+    // reset all internal components
+    for ( auto& component : p->components )
+    {
+        component->_EndScan();
+    }
+
+    p->components = components;
+
+    ResumeAutoTick();
 }

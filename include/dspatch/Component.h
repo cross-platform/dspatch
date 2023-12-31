@@ -105,6 +105,11 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
+    friend class Circuit;
+
+    void _Scan( std::vector<DSPatch::Component*>& components );
+    void _EndScan();
+
     internal::Component* p;
 };
 
