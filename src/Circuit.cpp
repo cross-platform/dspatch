@@ -144,36 +144,8 @@ bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutp
         return false;
     }
 
-    int fromComponentIndex = -1;
-    int toComponentIndex = -1;
-    for ( size_t i = 0; i < p->components.size(); ++i )
-    {
-        if ( p->components[i] == fromComponent.get() )
-        {
-            fromComponentIndex = i;
-        }
-        else if ( p->components[i] == toComponent.get() )
-        {
-            toComponentIndex = i;
-        }
-
-        if ( fromComponentIndex != -1 && toComponentIndex != -1 )
-        {
-            break;
-        }
-    }
-
     PauseAutoTick();
-
     bool result = toComponent->ConnectInput( fromComponent, fromOutput, toInput );
-
-    // if toComponent is before fromComponent, put toComponent after fromComponent
-    if ( result && toComponentIndex < fromComponentIndex )
-    {
-        std::rotate( p->components.begin() + toComponentIndex, p->components.begin() + toComponentIndex + 1,
-                     p->components.begin() + fromComponentIndex + 1 );
-    }
-
     ResumeAutoTick();
 
     return result;
