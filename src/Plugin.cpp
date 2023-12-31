@@ -43,7 +43,7 @@ namespace DSPatch
 namespace internal
 {
 
-class Plugin
+class Plugin final
 {
 public:
     inline explicit Plugin( const std::string& pluginPath )

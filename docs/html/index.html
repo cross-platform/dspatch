@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.0.1</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.1.0</span>
    </div>
   </td>
  </tr>
@@ -100,10 +100,8 @@ Features</h1>
 Getting Started</h1>
 <ol type="1">
 <li>Download DSPatch:<ul>
-<li><a href="https://github.com/cross-platform/dspatch"><b>Source</b></a></li>
-<li><a href="https://github.com/cross-platform/dspatch/releases/tag/latest-linux"><b>Binary (Linux)</b></a></li>
-<li><a href="https://github.com/cross-platform/dspatch/releases/tag/latest-mac"><b>Binary (macOS)</b></a></li>
-<li><a href="https://github.com/cross-platform/dspatch/releases/tag/latest-win"><b>Binary (Windows)</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatch"><b>GitHub repository</b></a></li>
+<li><a href="https://github.com/cross-platform/dspatch-template"><b>DSPatch project template</b></a></li>
 </ul>
 </li>
 <li><a class="el" href="index.html#tutorial_sec">Read the tutorials</a></li>
@@ -140,7 +138,7 @@ Tutorials</h1>
 <div class="fragment"><div class="line"><span class="keyword">protected</span>:</div>
 <div class="line">    <span class="comment">// 3. Implement virtual Process_() method</span></div>
 <div class="line">    <span class="comment">// ======================================</span></div>
-<div class="line">    <span class="keyword">virtual</span> <span class="keywordtype">void</span> Process_( SignalBus&amp; inputs, SignalBus&amp; outputs )<span class="keyword"> override</span></div>
+<div class="line">    <span class="keywordtype">void</span> Process_( SignalBus&amp; inputs, SignalBus&amp; outputs )<span class="keyword"> override</span></div>
 <div class="line"><span class="keyword">    </span>{</div>
 <div class="line">        <span class="comment">// create some local pointers to hold our input values</span></div>
 <div class="line">        <span class="keyword">auto</span> bool1 = inputs.GetValue&lt;<span class="keywordtype">bool</span>&gt;( 0 );</div>

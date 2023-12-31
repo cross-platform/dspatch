@@ -51,9 +51,9 @@ initialisation, a reference to the vector of circuit components must be provided
 _Run() method to loop through. Each CircuitThread has a thread number (threadNo), which is also
 provided upon initialisation. When creating multiple CircuitThreads, each thread must have their
 own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This thread
-number corresponds with the Component's buffer number when calling its Tick() and Reset() methods
-in the CircuitThread's component loop. Hence, for every circuit thread created, each component's
-buffer count within that circuit must be incremented to match.
+number corresponds with the Component's buffer number when calling its Tick() method in the
+CircuitThread's component loop. Hence, for every circuit thread created, each component's buffer
+count within that circuit must be incremented to match.
 
 The SyncAndResume() method causes the CircuitThread to tick and reset all circuit components once,
 after which the thread will wait until instructed to resume again. As each component is done
@@ -201,10 +201,6 @@ private:
                     for ( auto component : *_components )
                     {
                         component->Tick( _threadNo );
-                    }
-                    for ( auto component : *_components )
-                    {
-                        component->Reset( _threadNo );
                     }
                 }
             }

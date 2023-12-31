@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.0.1</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.1.0</span>
    </div>
   </td>
  </tr>
@@ -138,9 +138,6 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBufferCount</b> () 
 <tr class="memitem:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memItemLeft" align="right" valign="top"><a id="ab1af9c4f9b5e72e0785cd58e5cc4d673" name="ab1af9c4f9b5e72e0785cd58e5cc4d673"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (int bufferNo=0)</td></tr>
 <tr class="separator:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6f3616dadd4a400fac90e0f549fb29d"><td class="memItemLeft" align="right" valign="top"><a id="ac6f3616dadd4a400fac90e0f549fb29d" name="ac6f3616dadd4a400fac90e0f549fb29d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> (int bufferNo=0)</td></tr>
-<tr class="separator:ac6f3616dadd4a400fac90e0f549fb29d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -159,10 +156,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 <p>Classes derived from <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a> can be added to a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a> and routed to and from other Components.</p>
 <p>On construction, derived classes must configure the component's IO buses by calling SetInputCount_() and SetOutputCount_() respectively.</p>
 <p>Derived classes must also implement the virtual method: Process_(). The Process_() method is a callback from the DSPatch engine that occurs when a new set of input signals is ready for processing. The Process_() method has 2 arguments: the input bus, and the output bus. This method's purpose is to pull its required inputs out of the input bus, process these inputs, and populate the output bus with the results (see <a class="el" href="class_d_s_patch_1_1_signal_bus.html" title="Signal container.">SignalBus</a>).</p>
-<p>In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() and Reset() methods. The Tick() method is responsible for acquiring the next set of input signals from component input wires and populating the component's input bus. To insure that these inputs are up-to-date, the dependent component first calls all of its input components' Tick() methods - hence recursively called in all components going backward through the circuit. The acquired input bus is then passed to the Process_() method. The Reset() method informs the component that the last circuit traversal has completed and hence can execute the next Tick() request.</p>
+<p>In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() method. This method is responsible for acquiring the next set of input signals from its input wires and populating the component's input bus. The acquired input bus is then passed to the Process_() method.</p>
 <p><b>PERFORMANCE TIP:</b> If a component is capable of processing its buffers out-of-order within a stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve performance. Note however that Process_() must be thread-safe to operate in this mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00072">72</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00069">69</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af0b72c3454652f20f734d81e3600021b" name="af0b72c3454652f20f734d81e3600021b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0b72c3454652f20f734d81e3600021b">&#9670;&#160;</a></span>SPtr</h2>
@@ -176,7 +173,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00077">77</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00074">74</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>
@@ -201,7 +198,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00079">79</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00076">76</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>

@@ -41,9 +41,11 @@ namespace DSPatch
 namespace internal
 {
 
-class Circuit
+class Circuit final
 {
 public:
+    inline void Optimize();
+
     int pauseCount = 0;
 
     int bufferCount = 0;
@@ -55,6 +57,8 @@ public:
     std::set<DSPatch::Component::SPtr> componentsSet;
 
     std::vector<CircuitThread> circuitThreads;
+
+    bool circuitDirty = false;
 };
 
 }  // namespace internal
@@ -145,7 +149,11 @@ bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutp
     }
 
     PauseAutoTick();
+
     bool result = toComponent->ConnectInput( fromComponent, fromOutput, toInput );
+
+    p->circuitDirty = result;
+
     ResumeAutoTick();
 
     return result;
@@ -168,6 +176,8 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
     {
         comp->DisconnectInput( component );
     }
+
+    p->circuitDirty = true;
 
     ResumeAutoTick();
 
@@ -234,6 +244,8 @@ int Circuit::GetBufferCount() const
 
 void Circuit::Tick()
 {
+    p->Optimize();
+
     // process in a single thread if this circuit has no threads
     // =========================================================
     if ( p->bufferCount == 0 )
@@ -242,12 +254,6 @@ void Circuit::Tick()
         for ( auto& component : p->components )
         {
             component->Tick();
-        }
-
-        // reset all internal components
-        for ( auto& component : p->components )
-        {
-            component->Reset();
         }
     }
     // process in multiple threads if this circuit has threads
@@ -309,5 +315,35 @@ void Circuit::ResumeAutoTick()
     if ( p->autoTickThread.IsPaused() && --p->pauseCount == 0 )
     {
         p->autoTickThread.Resume();
+    }
+}
+
+void Circuit::Optimize()
+{
+    PauseAutoTick();
+    p->Optimize();
+    ResumeAutoTick();
+}
+
+inline void internal::Circuit::Optimize()
+{
+    if ( circuitDirty )
+    {
+        std::vector<DSPatch::Component*> orderedComponents;
+
+        for ( auto& component : components )
+        {
+            component->_Scan( orderedComponents );
+        }
+
+        // reset all internal components
+        for ( auto& component : components )
+        {
+            component->_EndScan();
+        }
+
+        components = orderedComponents;
+
+        circuitDirty = false;
     }
 }

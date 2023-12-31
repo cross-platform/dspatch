@@ -41,15 +41,9 @@ namespace DSPatch
 namespace internal
 {
 
-class Component
+class Component final
 {
 public:
-    enum class TickStatus
-    {
-        NotTicked,
-        Ticking
-    };
-
     struct MovableAtomicFlag final
     {
         MovableAtomicFlag() = default;
@@ -91,11 +85,12 @@ public:
 
     std::vector<Wire> inputWires;
 
-    std::vector<TickStatus> tickStatuses;
     std::vector<MovableAtomicFlag> releaseFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
+
+    bool isScanning = false;
 };
 
 }  // namespace internal
@@ -216,8 +211,6 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     }
 
     // resize vectors
-    p->tickStatuses.resize( bufferCount );
-
     p->inputBuses.resize( bufferCount );
     p->outputBuses.resize( bufferCount );
 
@@ -228,8 +221,6 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
-        p->tickStatuses[i] = internal::Component::TickStatus::NotTicked;
-
         p->inputBuses[i].SetSignalCount( p->inputBuses[0].GetSignalCount() );
         p->outputBuses[i].SetSignalCount( p->outputBuses[0].GetSignalCount() );
 
@@ -260,33 +251,17 @@ int Component::GetBufferCount() const
 
 void Component::Tick( int bufferNo )
 {
-    // continue only if this component has not already been ticked
-    if ( p->tickStatuses[bufferNo] == internal::Component::TickStatus::Ticking )
-    {
-        return;
-    }
-
-    // set tickStatus -> Ticking
-    p->tickStatuses[bufferNo] = internal::Component::TickStatus::Ticking;
-
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
 
+    // clear inputs
+    inputBus.ClearAllValues();
+
     for ( const auto& wire : p->inputWires )
     {
-        // tick incoming components
-        wire.fromComponent->Tick( bufferNo );
-
         // get new inputs from incoming components
         wire.fromComponent->p->GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus );
     }
-
-    // You might be thinking: Why not clear the outputs in Reset()?
-
-    // This is because we need components to hold onto their outputs long enough for any
-    // loopback wires to grab them during the next tick. The same applies to how we handle
-    // output reference counting in internal::Component::GetOutput(), reseting the counter upon
-    // the final request rather than in Reset().
 
     // clear outputs
     outputBus.ClearAllValues();
@@ -307,15 +282,6 @@ void Component::Tick( int bufferNo )
         // call Process_() with newly aquired inputs
         Process_( inputBus, outputBus );
     }
-}
-
-void Component::Reset( int bufferNo )
-{
-    // clear inputs
-    p->inputBuses[bufferNo].ClearAllValues();
-
-    // reset tickStatus
-    p->tickStatuses[bufferNo] = internal::Component::TickStatus::NotTicked;
 }
 
 void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
@@ -342,6 +308,32 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     {
         ref.resize( outputCount );
     }
+}
+
+void Component::_Scan( std::vector<DSPatch::Component*>& components )
+{
+    // continue only if this component has not already been scanned
+    if ( p->isScanning )
+    {
+        return;
+    }
+
+    // set isScanning
+    p->isScanning = true;
+
+    for ( const auto& wire : p->inputWires )
+    {
+        // scan incoming components
+        wire.fromComponent->_Scan( components );
+    }
+
+    components.emplace_back( this );
+}
+
+void Component::_EndScan()
+{
+    // reset isScanning
+    p->isScanning = false;
 }
 
 inline void internal::Component::WaitForRelease( int threadNo )

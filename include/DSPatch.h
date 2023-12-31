@@ -80,10 +80,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 \section start_sec Getting Started
     1. Download DSPatch:
-        - <a href="https://github.com/cross-platform/dspatch"><b>Source</b></a>
-        - <a href="https://github.com/cross-platform/dspatch/releases/tag/latest-linux"><b>Binary (Linux)</b></a>
-        - <a href="https://github.com/cross-platform/dspatch/releases/tag/latest-mac"><b>Binary (macOS)</b></a>
-        - <a href="https://github.com/cross-platform/dspatch/releases/tag/latest-win"><b>Binary (Windows)</b></a>
+        - <a href="https://github.com/cross-platform/dspatch"><b>GitHub repository</b></a>
+        - <a href="https://github.com/cross-platform/dspatch-template"><b>DSPatch project template</b></a>
     2. \ref tutorial_sec "Read the tutorials"
     3. <a href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Browse some example components</b></a>
     4. <a href="annotated.html"><b>Refer to the API docs</b></a>
@@ -139,7 +137,7 @@ public:
 protected:
     // 3. Implement virtual Process_() method
     // ======================================
-    virtual void Process_( SignalBus& inputs, SignalBus& outputs ) override
+    void Process_( SignalBus& inputs, SignalBus& outputs ) override
     {
         // create some local pointers to hold our input values
         auto bool1 = inputs.GetValue<bool>( 0 );
