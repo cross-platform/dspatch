@@ -1,3 +1,7 @@
+v.10.1.0 (31 December 2023)
+    - Greatly improved circuit performace with component auto-ordering.
+    - Added Circuit::Optimize() to manually order components pre-tick.
+
 v.10.0.2 (29 December 2023)
     - Optimized Tick() by avoiding unnecessary wire copying.
     - Declared all non-abstract classes "final".

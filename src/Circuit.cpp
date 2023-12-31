@@ -318,6 +318,13 @@ void Circuit::ResumeAutoTick()
     }
 }
 
+void Circuit::Optimize()
+{
+    PauseAutoTick();
+    p->Optimize();
+    ResumeAutoTick();
+}
+
 inline void internal::Circuit::Optimize()
 {
     if ( circuitDirty )
