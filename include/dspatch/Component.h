@@ -38,6 +38,7 @@ namespace DSPatch
 
 namespace internal
 {
+class Circuit;
 class Component;
 }  // namespace internal
 
@@ -105,7 +106,7 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
-    friend class Circuit;
+    friend class internal::Circuit;
 
     void _Scan( std::vector<DSPatch::Component*>& components );
     void _EndScan();
