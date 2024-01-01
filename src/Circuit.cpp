@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2023, Marcus Tomlinson
+Copyright (c) 2024, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -177,8 +177,6 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
         comp->DisconnectInput( component );
     }
 
-    p->circuitDirty = true;
-
     ResumeAutoTick();
 
     return true;
@@ -330,6 +328,7 @@ inline void internal::Circuit::Optimize()
     if ( circuitDirty )
     {
         std::vector<DSPatch::Component*> orderedComponents;
+        orderedComponents.reserve( components.size() );
 
         for ( auto& component : components )
         {
@@ -342,7 +341,7 @@ inline void internal::Circuit::Optimize()
             component->_EndScan();
         }
 
-        components = orderedComponents;
+        components = std::move( orderedComponents );
 
         circuitDirty = false;
     }

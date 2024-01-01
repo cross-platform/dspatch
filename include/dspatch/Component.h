@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2023, Marcus Tomlinson
+Copyright (c) 2024, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -108,7 +108,7 @@ protected:
 private:
     friend class internal::Circuit;
 
-    void _Scan( std::vector<DSPatch::Component*>& components );
+    void _Scan( std::vector<Component*>& components );
     void _EndScan();
 
     internal::Component* p;

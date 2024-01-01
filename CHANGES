@@ -1,3 +1,7 @@
+v.10.1.1 (01 January 2024)
+    - Clean up and document new Circuit::Optimize() method.
+    - Update copyright notices.
+
 v.10.1.0 (31 December 2023)
     - Greatly improved circuit performace with component auto-ordering.
     - Added Circuit::Optimize() to manually order components pre-tick.

@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2023, Marcus Tomlinson
+Copyright (c) 2024, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -55,6 +55,11 @@ The Circuit Tick() method runs through its internal array of components and call
 Tick() method. A circuit's Tick() method can be called in a loop from the main application thread,
 or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling
 Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
+
+The Circuit Optimize() method rearranges components such that they process in the most optimal
+order during Tick(). This optimization will occur automatically during the first Tick() proceeding
+any calls to ConnectOutToIn(), however, if you'd like to pre-order components before the next
+Tick() is processed, you can call Optimize() manually.
 */
 
 class DLLEXPORT Circuit final
