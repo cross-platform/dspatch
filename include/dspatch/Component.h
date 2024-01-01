@@ -108,7 +108,7 @@ protected:
 private:
     friend class internal::Circuit;
 
-    void _Scan( std::vector<DSPatch::Component*>& components );
+    void _Scan( std::vector<Component*>& components );
     void _EndScan();
 
     internal::Component* p;

@@ -310,7 +310,7 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
 }
 
-void Component::_Scan( std::vector<DSPatch::Component*>& components )
+void Component::_Scan( std::vector<Component*>& components )
 {
     // continue only if this component has not already been scanned
     if ( p->isScanning )
