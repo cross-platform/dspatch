@@ -63,7 +63,7 @@ protected:
     }
 
 private:
-    int _bufferCount = 0;
+    const int _bufferCount = 0;
     int _inputs = 0;
     int _counter = 0;
 };

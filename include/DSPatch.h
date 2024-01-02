@@ -98,12 +98,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     Lets take a look at how we would go about creating a very simple boolean logic "AND" component.
     This component will accept 2 boolean input values and output the result of: input 1 && input 2.
 
-    We begin by deriving our new "And" component from Component:
+    We begin by deriving our new "AndBool" component from Component:
 
     \code
-// 1. Derive And class from Component
-// ==================================
-class And final : public Component
+// 1. Derive AndBool class from Component
+// ======================================
+class AndBool final : public DSPatch::Component
 {
     \endcode
 
@@ -116,7 +116,7 @@ class And final : public Component
 public:
     // 2. Configure component IO buses
     // ===============================
-    And()
+    AndBool()
     {
         // add 2 inputs
         SetInputCount_( 2 );
@@ -137,7 +137,7 @@ public:
 protected:
     // 3. Implement virtual Process_() method
     // ======================================
-    void Process_( SignalBus& inputs, SignalBus& outputs ) override
+    void Process_( DSPatch::SignalBus& inputs, DSPatch::SignalBus& outputs ) override
     {
         // create some local pointers to hold our input values
         auto bool1 = inputs.GetValue<bool>( 0 );
@@ -169,15 +169,14 @@ protected:
     wish to use in our application:
 
     \code
-#include <DSPatch.h>
-#include <components.h>
+#include "components.h"
 
-using namespace DSPatch;
+#include <DSPatch.h>
     \endcode
 
     Next, we must instantiate our circuit object and all component objects needed for our
-    circuit. Lets say we had 2 other components included with "And" (from the first tutorial):
-    "RandBool" (generates a random boolean value then outputs the result) and "PrintBool"
+    circuit. Lets say we had 2 other components included with "AndBool" (from the first tutorial):
+    "GenBool" (generates a random boolean value then outputs the result) and "PrintBool"
     (receives a boolean value and outputs it to the console):
 
     \code
@@ -185,14 +184,14 @@ int main()
 {
     // 1. Create a circuit where we can route our components
     // =====================================================
-    auto circuit = std::make_shared<Circuit>();
+    auto circuit = std::make_shared<DSPatch::Circuit>();
 
     // 2. Create instances of the components needed for our circuit
     // ============================================================
-    auto randBoolGen1 = std::make_shared<RandBool>();
-    auto randBoolGen2 = std::make_shared<RandBool>();
-    auto logicAnd = std::make_shared<And>();
-    auto boolPrinter = std::make_shared<PrintBool>();
+    auto genBool1 = std::make_shared<GenBool>();
+    auto genBool2 = std::make_shared<GenBool>();
+    auto andBool = std::make_shared<AndBool>();
+    auto printBool = std::make_shared<PrintBool>();
     \endcode
 
     Now that we have a circuit and some components, lets add all of our components to the circuit:
@@ -200,10 +199,10 @@ int main()
     \code
     // 3. Add component instances to circuit
     // =====================================
-    circuit->AddComponent( randBoolGen1 );
-    circuit->AddComponent( randBoolGen2 );
-    circuit->AddComponent( logicAnd );
-_   circuit->AddComponent( boolPrinter );
+    circuit->AddComponent( genBool1 );
+    circuit->AddComponent( genBool2 );
+    circuit->AddComponent( andBool );
+_   circuit->AddComponent( printBool );
     \endcode
 
     We are now ready to begin wiring the circuit:
@@ -211,21 +210,21 @@ _   circuit->AddComponent( boolPrinter );
     \code
     // 4. Wire up the components inside the circuit
     // ============================================
-    circuit->ConnectOutToIn( randBoolGen1, 0, logicAnd, 0 );
-    circuit->ConnectOutToIn( randBoolGen2, 0, logicAnd, 1 );
-_   circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
+    circuit->ConnectOutToIn( genBool1, 0, andBool, 0 );
+    circuit->ConnectOutToIn( genBool2, 0, andBool, 1 );
+_   circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
     \endcode
 
     The code above results in the following wiring configuration:
     \code
-      ______________            __________
-     |              |          |          |
-     | randBoolGen1 |-0 ===> 0-|          |           _____________
-     |______________|          |          |          |             |
-      ______________           | logicAnd |-0 ===> 0-| boolPrinter |
-     |              |          |          |          |_____________|
-     | randBoolGen2 |-0 ===> 1-|          |
-     |______________|          |__________|
+      __________            _________
+     |          |          |         |
+     | genBool1 |-0 ===> 0-|         |           ___________
+     |__________|          |         |          |           |
+      __________           | andBool |-0 ===> 0-| printBool |
+     |          |          |         |          |___________|
+     | genBool2 |-0 ===> 1-|         |
+     |__________|          |_________|
     _
     \endcode
 
