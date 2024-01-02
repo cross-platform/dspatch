@@ -242,7 +242,10 @@ int Circuit::GetBufferCount() const
 
 void Circuit::Tick()
 {
-    p->Optimize();
+    if ( p->circuitDirty )
+    {
+        p->Optimize();
+    }
 
     // process in a single thread if this circuit has no threads
     // =========================================================
@@ -318,31 +321,32 @@ void Circuit::ResumeAutoTick()
 
 void Circuit::Optimize()
 {
-    PauseAutoTick();
-    p->Optimize();
-    ResumeAutoTick();
+    if ( p->circuitDirty )
+    {
+        PauseAutoTick();
+        p->Optimize();
+        ResumeAutoTick();
+    }
 }
 
 inline void internal::Circuit::Optimize()
 {
-    if ( circuitDirty )
+    std::vector<DSPatch::Component*> orderedComponents;
+    orderedComponents.reserve( components.size() );
+
+    // scan for optimal component order
+    for ( auto& component : components )
     {
-        std::vector<DSPatch::Component*> orderedComponents;
-        orderedComponents.reserve( components.size() );
-
-        for ( auto& component : components )
-        {
-            component->_Scan( orderedComponents );
-        }
-
-        // reset all internal components
-        for ( auto& component : components )
-        {
-            component->_EndScan();
-        }
-
-        components = std::move( orderedComponents );
-
-        circuitDirty = false;
+        component->_Scan( orderedComponents );
     }
+
+    // reset all isScanning flags
+    for ( auto& component : components )
+    {
+        component->_EndScan();
+    }
+
+    components = std::move( orderedComponents );
+
+    circuitDirty = false;
 }
