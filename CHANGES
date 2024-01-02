@@ -1,6 +1,12 @@
+v.10.1.2 (02 January 2024)
+    - Removed unnecessary auto-tick pause in Optimize().
+    - Removed unnecessary re-ordering on redundant ConnectOutToIn() calls.
+    - Cleaned up tutorial components and application code.
+    - Made thread performance tests stricter.
+
 v.10.1.1 (01 January 2024)
-    - Clean up and document new Circuit::Optimize() method.
-    - Update copyright notices.
+    - Cleaned up and documented new Circuit::Optimize() method.
+    - Updated copyright notices.
 
 v.10.1.0 (31 December 2023)
     - Greatly improved circuit performace with component auto-ordering.
