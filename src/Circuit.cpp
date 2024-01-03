@@ -172,7 +172,7 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
     component->DisconnectAllInputs();
 
     // remove any connections this component has to other components
-    for ( auto& comp : p->components )
+    for ( auto comp : p->components )
     {
         comp->DisconnectInput( component );
     }
@@ -187,7 +187,7 @@ void Circuit::DisconnectAllComponents()
 {
     PauseAutoTick();
 
-    for ( auto& component : p->components )
+    for ( auto component : p->components )
     {
         component->DisconnectAllInputs();
     }
@@ -227,7 +227,7 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 
     // set all components to the new buffer count
-    for ( auto& component : p->components )
+    for ( auto component : p->components )
     {
         component->SetBufferCount( p->bufferCount, p->currentBuffer );
     }
@@ -252,7 +252,7 @@ void Circuit::Tick()
     if ( p->bufferCount == 0 )
     {
         // tick all internal components
-        for ( auto& component : p->components )
+        for ( auto component : p->components )
         {
             component->Tick();
         }
@@ -335,13 +335,13 @@ inline void internal::Circuit::Optimize()
     orderedComponents.reserve( components.size() );
 
     // scan for optimal component order
-    for ( auto& component : components )
+    for ( auto component : components )
     {
         component->_Scan( orderedComponents );
     }
 
     // reset all isScanning flags
-    for ( auto& component : components )
+    for ( auto component : components )
     {
         component->_EndScan();
     }
