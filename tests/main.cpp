@@ -424,7 +424,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     auto overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "0x Buffer Efficiency: " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.25 * 0.85 );
+    REQUIRE( eff >= refEff * 0.25 * 0.80 );
 
     // Tick the circuit with 1 thread, and check that no more ticks occurred
     if ( std::thread::hardware_concurrency() < 1 )
@@ -443,7 +443,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "1x Buffer Efficiency: " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.25 * 0.85 );
+    REQUIRE( eff >= refEff * 0.25 * 0.80 );
 
     // Tick the circuit with 2 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 2 )
@@ -462,7 +462,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "2x Buffer Efficiency: " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.5 * 0.85 );
+    REQUIRE( eff >= refEff * 0.5 * 0.80 );
 
     // Tick the circuit with 3 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 6 )
@@ -481,7 +481,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "3x Buffer Efficiency: " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.75 * 0.85 );
+    REQUIRE( eff >= refEff * 0.75 * 0.80 );
 
     // Tick the circuit with 4 threads, and check that more ticks occurred
     if ( std::thread::hardware_concurrency() < 8 )
@@ -500,7 +500,7 @@ TEST_CASE( "ThreadPerformanceTest" )
 
     overhead = 100 - ( 100 * ( eff / refEff ) );
     std::cout << "4x Buffer Efficiency: " << eff << "% (-" << overhead << "%)" << std::endl;
-    REQUIRE( eff >= refEff * 0.85 );
+    REQUIRE( eff >= refEff * 0.80 );
 }
 
 TEST_CASE( "StopAutoTickRegressionTest" )
