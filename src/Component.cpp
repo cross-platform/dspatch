@@ -306,6 +306,8 @@ void Component::SetInputCount_( int inputCount, const std::vector<std::string>& 
     {
         inputBus.SetSignalCount( inputCount );
     }
+
+    p->inputWires.reserve( inputCount );
 }
 
 void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
