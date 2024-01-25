@@ -41,24 +41,12 @@ public:
         SetInputCount_( _inputCount );
     }
 
-    int GetCount() const
-    {
-        return _count;
-    }
-
-    void ResetCount()
-    {
-        _count = 0;
-    }
-
 protected:
     void Process_( SignalBus& inputs, SignalBus& ) override
     {
         for ( int i = 0; i < _inputCount; ++i )
         {
-            auto in = inputs.GetValue<int>( i );
-            REQUIRE( in );
-            REQUIRE( *in == _count );
+            REQUIRE( *inputs.GetValue<int>( i ) == _count );
         }
 
         ++_count;

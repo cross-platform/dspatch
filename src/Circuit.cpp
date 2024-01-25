@@ -172,7 +172,7 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
     component->DisconnectAllInputs();
 
     // remove any connections this component has to other components
-    for ( auto& comp : p->components )
+    for ( auto comp : p->components )
     {
         comp->DisconnectInput( component );
     }
@@ -187,7 +187,7 @@ void Circuit::DisconnectAllComponents()
 {
     PauseAutoTick();
 
-    for ( auto& component : p->components )
+    for ( auto component : p->components )
     {
         component->DisconnectAllInputs();
     }
@@ -227,7 +227,7 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 
     // set all components to the new buffer count
-    for ( auto& component : p->components )
+    for ( auto component : p->components )
     {
         component->SetBufferCount( p->bufferCount, p->currentBuffer );
     }
@@ -242,14 +242,17 @@ int Circuit::GetBufferCount() const
 
 void Circuit::Tick()
 {
-    p->Optimize();
+    if ( p->circuitDirty )
+    {
+        p->Optimize();
+    }
 
     // process in a single thread if this circuit has no threads
     // =========================================================
     if ( p->bufferCount == 0 )
     {
         // tick all internal components
-        for ( auto& component : p->components )
+        for ( auto component : p->components )
         {
             component->Tick();
         }
@@ -318,31 +321,32 @@ void Circuit::ResumeAutoTick()
 
 void Circuit::Optimize()
 {
-    PauseAutoTick();
-    p->Optimize();
-    ResumeAutoTick();
+    if ( p->circuitDirty )
+    {
+        PauseAutoTick();
+        p->Optimize();
+        ResumeAutoTick();
+    }
 }
 
 inline void internal::Circuit::Optimize()
 {
-    if ( circuitDirty )
+    std::vector<DSPatch::Component*> orderedComponents;
+    orderedComponents.reserve( components.size() );
+
+    // scan for optimal component order
+    for ( auto component : components )
     {
-        std::vector<DSPatch::Component*> orderedComponents;
-        orderedComponents.reserve( components.size() );
-
-        for ( auto& component : components )
-        {
-            component->_Scan( orderedComponents );
-        }
-
-        // reset all internal components
-        for ( auto& component : components )
-        {
-            component->_EndScan();
-        }
-
-        components = std::move( orderedComponents );
-
-        circuitDirty = false;
+        component->_Scan( orderedComponents );
     }
+
+    // reset all isScanning flags
+    for ( auto component : components )
+    {
+        component->_EndScan();
+    }
+
+    components = std::move( orderedComponents );
+
+    circuitDirty = false;
 }

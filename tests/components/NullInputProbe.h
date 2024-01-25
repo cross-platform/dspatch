@@ -35,6 +35,7 @@ class NullInputProbe final : public Component
 {
 public:
     NullInputProbe()
+        : Component( ProcessOrder::OutOfOrder )
     {
         SetInputCount_( 2 );
     }

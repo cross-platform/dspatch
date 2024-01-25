@@ -55,7 +55,7 @@ protected:
 
 private:
     int _count;
-    int _increment;
+    const int _increment;
 };
 
 }  // namespace DSPatch

@@ -115,7 +115,21 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
     }
 
     // first make sure there are no wires already connected to this input
-    DisconnectInput( toInput );
+    auto findFn = [&toInput]( const auto& wire ) { return wire.toInput == toInput; };
+
+    if ( auto it = std::find_if( p->inputWires.begin(), p->inputWires.end(), findFn ); it != p->inputWires.end() )
+    {
+        if ( it->fromComponent == fromComponent.get() && it->fromOutput == fromOutput )
+        {
+            // this wire already exists
+            return false;
+        }
+
+        // update source output's reference count
+        it->fromComponent->p->DecRefs( it->fromOutput );
+
+        p->inputWires.erase( it );
+    }
 
     p->inputWires.emplace_back( internal::Wire{ fromComponent.get(), fromOutput, toInput } );
 
@@ -292,6 +306,8 @@ void Component::SetInputCount_( int inputCount, const std::vector<std::string>& 
     {
         inputBus.SetSignalCount( inputCount );
     }
+
+    p->inputWires.reserve( inputCount );
 }
 
 void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )

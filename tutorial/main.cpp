@@ -30,43 +30,41 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DSPatch.h>
 
-using namespace DSPatch;
-
 //  The code below results in the following wiring configuration:
-//   ______________            __________
-//  |              |          |          |
-//  | randBoolGen1 |-0 ===> 0-|          |           _____________
-//  |______________|          |          |          |             |
-//   ______________           | logicAnd |-0 ===> 0-| boolPrinter |
-//  |              |          |          |          |_____________|
-//  | randBoolGen2 |-0 ===> 1-|          |
-//  |______________|          |__________|
+//   __________            _________
+//  |          |          |         |
+//  | genBool1 |-0 ===> 0-|         |           ___________
+//  |__________|          |         |          |           |
+//   __________           | andBool |-0 ===> 0-| printBool |
+//  |          |          |         |          |___________|
+//  | genBool2 |-0 ===> 1-|         |
+//  |__________|          |_________|
 
 int main()
 {
     // 1. Create a circuit where we can route our components
     // =====================================================
-    auto circuit = std::make_shared<Circuit>();
+    auto circuit = std::make_shared<DSPatch::Circuit>();
 
     // 2. Create instances of the components needed for our circuit
     // ============================================================
-    auto randBoolGen1 = std::make_shared<RandBool>();
-    auto randBoolGen2 = std::make_shared<RandBool>();
-    auto logicAnd = std::make_shared<And>();
-    auto boolPrinter = std::make_shared<PrintBool>();
+    auto genBool1 = std::make_shared<GenBool>();
+    auto genBool2 = std::make_shared<GenBool>();
+    auto andBool = std::make_shared<AndBool>();
+    auto printBool = std::make_shared<PrintBool>();
 
     // 3. Add component instances to circuit
     // =====================================
-    circuit->AddComponent( randBoolGen1 );
-    circuit->AddComponent( randBoolGen2 );
-    circuit->AddComponent( logicAnd );
-    circuit->AddComponent( boolPrinter );
+    circuit->AddComponent( genBool1 );
+    circuit->AddComponent( genBool2 );
+    circuit->AddComponent( andBool );
+    circuit->AddComponent( printBool );
 
     // 4. Wire up the components inside the circuit
     // ============================================
-    circuit->ConnectOutToIn( randBoolGen1, 0, logicAnd, 0 );
-    circuit->ConnectOutToIn( randBoolGen2, 0, logicAnd, 1 );
-    circuit->ConnectOutToIn( logicAnd, 0, boolPrinter, 0 );
+    circuit->ConnectOutToIn( genBool1, 0, andBool, 0 );
+    circuit->ConnectOutToIn( genBool2, 0, andBool, 1 );
+    circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
 
     // 5. Tick the circuit
     // ===================
