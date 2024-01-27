@@ -30,6 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/SignalBus.h>
 
+#include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -110,6 +112,9 @@ private:
 
     void _Scan( std::vector<Component*>& components );
     void _EndScan();
+
+    void _ParallelScan( std::map<int, std::set<DSPatch::Component*>>& components );
+    void _EndParallelScan();
 
     internal::Component* p;
 };

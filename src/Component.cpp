@@ -91,6 +91,7 @@ public:
     std::vector<std::string> outputNames;
 
     bool isScanning = false;
+    bool isParallelScanning = false;
 };
 
 }  // namespace internal
@@ -350,6 +351,32 @@ void Component::_EndScan()
 {
     // reset isScanning
     p->isScanning = false;
+}
+
+void Component::_ParallelScan( std::map<int, std::set<DSPatch::Component*>>& components )
+{
+    // continue only if this component has not already been scanned
+    if ( p->isParallelScanning )
+    {
+        return;
+    }
+
+    // set isParallelScanning
+    p->isParallelScanning = true;
+
+    for ( const auto& wire : p->inputWires )
+    {
+        // scan incoming components
+        wire.fromComponent->_ParallelScan( components );
+    }
+
+    components[0].emplace( this );
+}
+
+void Component::_EndParallelScan()
+{
+    // reset isParallelScanning
+    p->isParallelScanning = false;
 }
 
 inline void internal::Component::WaitForRelease( int threadNo )

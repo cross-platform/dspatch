@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "internal/CircuitThread.h"
 
 #include <algorithm>
+#include <map>
 #include <set>
 
 using namespace DSPatch;
@@ -55,6 +56,7 @@ public:
 
     std::vector<DSPatch::Component*> components;
     std::set<DSPatch::Component::SPtr> componentsSet;
+    std::map<int, std::set<DSPatch::Component*>> componentsMap;
 
     std::vector<CircuitThread> circuitThreads;
 
@@ -334,19 +336,24 @@ inline void internal::Circuit::Optimize()
     std::vector<DSPatch::Component*> orderedComponents;
     orderedComponents.reserve( components.size() );
 
+    std::map<int, std::set<DSPatch::Component*>> orderedComponentsMap;
+
     // scan for optimal component order
     for ( auto component : components )
     {
         component->_Scan( orderedComponents );
+        component->_ParallelScan( orderedComponentsMap );
     }
 
     // reset all isScanning flags
     for ( auto component : components )
     {
         component->_EndScan();
+        component->_EndParallelScan();
     }
 
     components = std::move( orderedComponents );
+    componentsMap = std::move( orderedComponentsMap );
 
     circuitDirty = false;
 }
