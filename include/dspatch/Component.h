@@ -112,7 +112,7 @@ private:
 
     void _Scan( std::vector<Component*>& orderedComponents,
                 std::map<int, std::set<DSPatch::Component*>>& orderedComponentsMap,
-                int& parallelOrder );
+                int& scanPosition );
     void _EndScan();
 
     internal::Component* p;

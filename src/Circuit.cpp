@@ -341,8 +341,8 @@ inline void internal::Circuit::Optimize()
     // scan for optimal component order
     for ( auto component : components )
     {
-        int parallelOrder = -1;
-        component->_Scan( orderedComponents, componentsMap, parallelOrder );
+        int scanPosition = -1;
+        component->_Scan( orderedComponents, componentsMap, scanPosition );
     }
 
     // reset all isScanning flags

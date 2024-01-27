@@ -90,8 +90,7 @@ public:
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
 
-    bool isScanning = false;
-    int parallelOrder = -1;
+    int scanPosition = -1;
 };
 
 }  // namespace internal
@@ -329,32 +328,32 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
 
 void Component::_Scan( std::vector<Component*>& orderedComponents,
                        std::map<int, std::set<DSPatch::Component*>>& orderedComponentsMap,
-                       int& parallelOrder )
+                       int& scanPosition )
 {
     // continue only if this component has not already been scanned
-    if ( p->parallelOrder != -1 )
+    if ( p->scanPosition != -1 )
     {
-        parallelOrder = p->parallelOrder;
+        scanPosition = p->scanPosition;
         return;
     }
 
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        wire.fromComponent->_Scan( orderedComponents, orderedComponentsMap, parallelOrder );
+        wire.fromComponent->_Scan( orderedComponents, orderedComponentsMap, scanPosition );
     }
 
-    // set parallelOrder
-    p->parallelOrder = ++parallelOrder;
+    // set scanPosition
+    p->scanPosition = ++scanPosition;
 
     orderedComponents.emplace_back( this );
-    orderedComponentsMap[parallelOrder].emplace( this );
+    orderedComponentsMap[scanPosition].emplace( this );
 }
 
 void Component::_EndScan()
 {
-    // reset parallelOrder
-    p->parallelOrder = -1;
+    // reset scanPosition
+    p->scanPosition = -1;
 }
 
 inline void internal::Component::WaitForRelease( int threadNo )
