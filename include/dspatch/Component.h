@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dspatch/SignalBus.h>
 
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -111,7 +110,7 @@ private:
     friend class internal::Circuit;
 
     void _Scan( std::vector<Component*>& orderedComponents,
-                std::map<int, std::set<DSPatch::Component*>>& orderedComponentsMap,
+                std::map<int, std::vector<DSPatch::Component*>>& orderedComponentsMap,
                 int& scanPosition );
     void _EndScan();
 

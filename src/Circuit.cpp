@@ -56,7 +56,7 @@ public:
 
     std::vector<DSPatch::Component*> components;
     std::set<DSPatch::Component::SPtr> componentsSet;
-    std::map<int, std::set<DSPatch::Component*>> componentsMap;
+    std::map<int, std::vector<DSPatch::Component*>> componentsMap;
 
     std::vector<CircuitThread> circuitThreads;
 

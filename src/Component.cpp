@@ -327,7 +327,7 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
 }
 
 void Component::_Scan( std::vector<Component*>& orderedComponents,
-                       std::map<int, std::set<DSPatch::Component*>>& orderedComponentsMap,
+                       std::map<int, std::vector<DSPatch::Component*>>& orderedComponentsMap,
                        int& scanPosition )
 {
     // continue only if this component has not already been scanned
@@ -347,7 +347,7 @@ void Component::_Scan( std::vector<Component*>& orderedComponents,
     p->scanPosition = ++scanPosition;
 
     orderedComponents.emplace_back( this );
-    orderedComponentsMap[scanPosition].emplace( this );
+    orderedComponentsMap[scanPosition].emplace_back( this );
 }
 
 void Component::_EndScan()
