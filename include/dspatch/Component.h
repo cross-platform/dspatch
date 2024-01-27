@@ -110,7 +110,7 @@ private:
     friend class internal::Circuit;
 
     void _Scan( std::vector<Component*>& orderedComponents,
-                std::map<int, std::vector<DSPatch::Component*>>& orderedComponentsMap,
+                std::vector<std::vector<DSPatch::Component*>>& orderedComponentsMap,
                 int& scanPosition );
     void _EndScan();
 
