@@ -113,7 +113,7 @@ private:
     void _Scan( std::vector<Component*>& components );
     void _EndScan();
 
-    void _ParallelScan( std::map<int, std::set<DSPatch::Component*>>& components );
+    void _ParallelScan( std::map<int, std::set<DSPatch::Component*>>& components, int& parallelOrder );
     void _EndParallelScan();
 
     internal::Component* p;

@@ -342,7 +342,9 @@ inline void internal::Circuit::Optimize()
     for ( auto component : components )
     {
         component->_Scan( orderedComponents );
-        component->_ParallelScan( orderedComponentsMap );
+
+        int parallelOrder = -1;
+        component->_ParallelScan( orderedComponentsMap, parallelOrder );
     }
 
     // reset all isScanning flags
