@@ -110,11 +110,10 @@ protected:
 private:
     friend class internal::Circuit;
 
-    void _Scan( std::vector<Component*>& components );
+    void _Scan( std::vector<Component*>& orderedComponents,
+                std::map<int, std::set<DSPatch::Component*>>& orderedComponentsMap,
+                int& parallelOrder );
     void _EndScan();
-
-    void _ParallelScan( std::map<int, std::set<DSPatch::Component*>>& components, int& parallelOrder );
-    void _EndParallelScan();
 
     internal::Component* p;
 };

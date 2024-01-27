@@ -333,29 +333,25 @@ void Circuit::Optimize()
 
 inline void internal::Circuit::Optimize()
 {
+    componentsMap.clear();
+
     std::vector<DSPatch::Component*> orderedComponents;
     orderedComponents.reserve( components.size() );
-
-    std::map<int, std::set<DSPatch::Component*>> orderedComponentsMap;
 
     // scan for optimal component order
     for ( auto component : components )
     {
-        component->_Scan( orderedComponents );
-
         int parallelOrder = -1;
-        component->_ParallelScan( orderedComponentsMap, parallelOrder );
+        component->_Scan( orderedComponents, componentsMap, parallelOrder );
     }
 
     // reset all isScanning flags
     for ( auto component : components )
     {
         component->_EndScan();
-        component->_EndParallelScan();
     }
 
     components = std::move( orderedComponents );
-    componentsMap = std::move( orderedComponentsMap );
 
     circuitDirty = false;
 }

@@ -327,33 +327,9 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
 }
 
-void Component::_Scan( std::vector<Component*>& components )
-{
-    // continue only if this component has not already been scanned
-    if ( p->isScanning )
-    {
-        return;
-    }
-
-    // set isScanning
-    p->isScanning = true;
-
-    for ( const auto& wire : p->inputWires )
-    {
-        // scan incoming components
-        wire.fromComponent->_Scan( components );
-    }
-
-    components.emplace_back( this );
-}
-
-void Component::_EndScan()
-{
-    // reset isScanning
-    p->isScanning = false;
-}
-
-void Component::_ParallelScan( std::map<int, std::set<DSPatch::Component*>>& components, int& parallelOrder )
+void Component::_Scan( std::vector<Component*>& orderedComponents,
+                       std::map<int, std::set<DSPatch::Component*>>& orderedComponentsMap,
+                       int& parallelOrder )
 {
     // continue only if this component has not already been scanned
     if ( p->parallelOrder != -1 )
@@ -365,16 +341,17 @@ void Component::_ParallelScan( std::map<int, std::set<DSPatch::Component*>>& com
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        wire.fromComponent->_ParallelScan( components, parallelOrder );
+        wire.fromComponent->_Scan( orderedComponents, orderedComponentsMap, parallelOrder );
     }
 
     // set parallelOrder
     p->parallelOrder = ++parallelOrder;
 
-    components[parallelOrder].emplace( this );
+    orderedComponents.emplace_back( this );
+    orderedComponentsMap[parallelOrder].emplace( this );
 }
 
-void Component::_EndParallelScan()
+void Component::_EndScan()
 {
     // reset parallelOrder
     p->parallelOrder = -1;
