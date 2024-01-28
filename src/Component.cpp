@@ -337,6 +337,7 @@ void Component::_Scan( std::vector<Component*>& orderedComponents,
         return;
     }
 
+    // initialize scanPosition
     p->scanPosition = 0;
 
     for ( const auto& wire : p->inputWires )
