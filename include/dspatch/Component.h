@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dspatch/SignalBus.h>
 
-#include <map>
 #include <string>
 #include <vector>
 
