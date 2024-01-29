@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-12, ubuntu-20.04, windows-2022]
+        os: [macos-11, ubuntu-20.04, windows-2022]
 
     steps:
     - if: matrix.os == 'windows-2022'
@@ -25,6 +25,11 @@ jobs:
     - if: matrix.os == 'windows-2022'
       name: Configure MSVC (Windows)
       uses: ilammy/msvc-dev-cmd@v1
+
+    - if: matrix.os == 'macos-11'
+      name: Configure Xcode (MacOS)
+      run: |
+        sudo xcode-select -s /Applications/Xcode_11.7.app/Contents/Developer
 
     - name: Configure Python
       uses: actions/setup-python@v4
@@ -61,7 +66,7 @@ jobs:
         artifactContentType: application/octet-stream
         commit: ${{ github.sha }}
 
-    - if: matrix.os == 'macos-12'
+    - if: matrix.os == 'macos-11'
       name: Release (MacOS)
       uses: ncipollo/release-action@v1
       with:
