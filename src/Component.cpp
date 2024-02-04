@@ -333,7 +333,7 @@ void Component::_Scan( std::vector<Component*>& components,
     // continue only if this component has not already been scanned
     if ( p->scanPosition != -1 )
     {
-        scanPosition = p->scanPosition;
+        scanPosition = p->scanPosition == 0 ? 0 : std::max( p->scanPosition, scanPosition );
         return;
     }
 
