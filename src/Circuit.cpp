@@ -55,7 +55,7 @@ public:
 
     std::vector<DSPatch::Component*> components;
     std::set<DSPatch::Component::SPtr> componentsSet;
-    std::vector<std::vector<DSPatch::Component*>> componentsMap;
+    std::vector<DSPatch::Component*> componentsParallel;
 
     std::vector<CircuitThread> circuitThreads;
 
@@ -332,10 +332,10 @@ void Circuit::Optimize()
 
 inline void internal::Circuit::Optimize()
 {
-    componentsMap.clear();
-
     std::vector<DSPatch::Component*> orderedComponents;
     orderedComponents.reserve( components.size() );
+
+    std::vector<std::vector<DSPatch::Component*>> componentsMap;
 
     // scan for optimal component order
     for ( auto component : components )
@@ -351,6 +351,13 @@ inline void internal::Circuit::Optimize()
     }
 
     components = std::move( orderedComponents );
+
+    componentsParallel.clear();
+    componentsParallel.reserve( components.size() );
+    for ( auto& componentsMapEntry : componentsMap )
+    {
+        componentsParallel.insert( componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+    }
 
     circuitDirty = false;
 }
