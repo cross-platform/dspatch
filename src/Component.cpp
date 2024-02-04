@@ -44,6 +44,17 @@ namespace internal
 class Component final
 {
 public:
+    struct MovableMutex final
+    {
+        MovableMutex() = default;
+
+        MovableMutex( MovableMutex&& )
+        {
+        }
+
+        std::mutex mutex;
+    };
+
     struct MovableAtomicFlag final
     {
         MovableAtomicFlag() = default;
@@ -79,6 +90,7 @@ public:
     {
         int count = 0;
         int total = 0;
+        MovableMutex mutex;
     };
 
     std::vector<std::vector<RefCounter>> refs;  // RefCounter per output, per buffer
@@ -251,7 +263,7 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
-            p->refs[i][j] = p->refs[0][j];
+            p->refs[i][j].total = p->refs[0][j].total;
         }
     }
 
@@ -390,12 +402,14 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    if ( !signal.has_value() )
+    while ( !signal.has_value() )
     {
-        return;
+        std::this_thread::yield();
     }
 
     auto& ref = refs[bufferNo][fromOutput];
+
+    std::lock_guard<std::mutex> lock( ref.mutex.mutex );
 
     if ( ref.total == 1 )
     {

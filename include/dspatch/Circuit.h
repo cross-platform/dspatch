@@ -85,7 +85,10 @@ public:
     void SetBufferCount( int bufferCount );
     int GetBufferCount() const;
 
+    void SetThreadCount( int threadCount );
+
     void Tick();
+    void TickParallel();
     void Sync();
 
     void StartAutoTick();

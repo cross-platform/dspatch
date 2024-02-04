@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "internal/AutoTickThread.h"
 #include "internal/CircuitThread.h"
+#include "internal/ComponentThread.h"
 
 #include <algorithm>
 #include <set>
@@ -49,6 +50,7 @@ public:
     int pauseCount = 0;
 
     int bufferCount = 0;
+    int threadCount = 0;
     int currentBuffer = 0;
 
     AutoTickThread autoTickThread;
@@ -58,6 +60,7 @@ public:
     std::vector<DSPatch::Component*> componentsParallel;
 
     std::vector<CircuitThread> circuitThreads;
+    std::vector<ComponentThread> componentThreads;
 
     bool circuitDirty = false;
 };
@@ -241,6 +244,35 @@ int Circuit::GetBufferCount() const
     return p->bufferCount;
 }
 
+void Circuit::SetThreadCount( int threadCount )
+{
+    if ( p->threadCount == threadCount )
+    {
+        return;
+    }
+
+    PauseAutoTick();
+
+    p->threadCount = threadCount;
+
+    // stop all threads
+    for ( auto& componentThread : p->componentThreads )
+    {
+        componentThread.Stop();
+    }
+
+    // resize thread array
+    p->componentThreads.resize( p->threadCount );
+
+    // initialise and start all threads
+    for ( int i = 0; i < p->threadCount; ++i )
+    {
+        p->componentThreads[i].Start( &p->componentsParallel, i, p->threadCount );
+    }
+
+    ResumeAutoTick();
+}
+
 void Circuit::Tick()
 {
     if ( p->circuitDirty )
@@ -271,12 +303,39 @@ void Circuit::Tick()
     }
 }
 
+void Circuit::TickParallel()
+{
+    if ( p->circuitDirty )
+    {
+        p->Optimize();
+    }
+
+    if ( p->threadCount == 0 )
+    {
+        for ( auto component : p->components )
+        {
+            component->Tick();
+        }
+    }
+    else
+    {
+        for ( auto& componentThread : p->componentThreads )
+        {
+            componentThread.SyncAndResume();
+        }
+    }
+}
+
 void Circuit::Sync()
 {
     // sync all threads
     for ( auto& circuitThread : p->circuitThreads )
     {
         circuitThread.Sync();
+    }
+    for ( auto& componentThread : p->componentThreads )
+    {
+        componentThread.Sync();
     }
 }
 
