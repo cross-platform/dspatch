@@ -62,31 +62,20 @@ public:
 
     inline void Start( std::vector<DSPatch::Component*>* components, int threadNo, int threadCount )
     {
-        if ( !_stopped )
-        {
-            return;
-        }
-
         _components = components;
         _threadNo = threadNo;
         _threadCount = threadCount;
 
         _stop = false;
-        _stopped = false;
         _gotSync = false;
 
         _thread = std::thread( &ComponentThread::_Run, this );
+
+        Sync();
     }
 
     inline void Stop()
     {
-        if ( _stopped )
-        {
-            return;
-        }
-
-        Sync();
-
         _stop = true;
 
         Resume();
@@ -99,7 +88,7 @@ public:
 
     inline void Sync()
     {
-        if ( _stopped || _gotSync )
+        if ( _gotSync )
         {
             return;
         }
@@ -115,11 +104,6 @@ public:
 
     inline void Resume()
     {
-        if ( _stopped )
-        {
-            return;
-        }
-
         _gotSync = false;  // reset the sync flag
 
         std::lock_guard<std::mutex> lock( _syncMutex );
@@ -160,8 +144,6 @@ private:
                 }
             }
         }
-
-        _stopped = true;
     }
 
     std::thread _thread;
@@ -169,7 +151,6 @@ private:
     int _threadNo = 0;
     int _threadCount = 0;
     bool _stop = false;
-    bool _stopped = true;
     bool _gotSync = true;
     std::mutex _syncMutex;
     std::condition_variable _resumeCondt, _syncCondt;

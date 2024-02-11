@@ -120,7 +120,7 @@ public:
     std::vector<std::string> outputNames;
 
     int scanPosition = -1;
-    AtomicFlag ticked;
+    std::vector<AtomicFlag> tickedFlags;
 };
 
 }  // namespace internal
@@ -259,6 +259,7 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     p->outputBuses.resize( bufferCount );
 
     p->releaseFlags.resize( bufferCount );
+    p->tickedFlags.resize( bufferCount );
 
     p->refs.resize( bufferCount );
 
@@ -327,12 +328,12 @@ void Component::Tick( int bufferNo )
         Process_( inputBus, outputBus );
     }
 
-    p->ticked.Set();
+    p->tickedFlags[bufferNo].Set();
 }
 
-void Component::Reset()
+void Component::Reset( int bufferNo )
 {
-    p->ticked.Clear();
+    p->tickedFlags[bufferNo].Clear();
 }
 
 void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
@@ -422,7 +423,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    ticked.Wait();
+    tickedFlags[bufferNo].Wait();
 
     if ( !signal.has_value() )
     {

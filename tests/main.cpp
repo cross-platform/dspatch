@@ -798,26 +798,41 @@ TEST_CASE( "TenThousandComponents" )
 
     int iterationCount = 1000;
 
-    // for ( unsigned int i = 0; i <= std::thread::hardware_concurrency(); ++i )
-    // {
-    //     circuit->SetBufferCount( i );
-
-    int i = 0;
-    circuit->SetThreadCount( 8 );
-
-    begin = std::chrono::high_resolution_clock::now();
-
-    for ( int j = 0; j < iterationCount; ++j )
+    for ( unsigned int i = 0; i <= std::thread::hardware_concurrency(); ++i )
     {
-        circuit->TickParallel();
+        circuit->SetThreadCount( i );
+
+        begin = std::chrono::high_resolution_clock::now();
+
+        for ( int j = 0; j < iterationCount; ++j )
+        {
+            circuit->TickParallel();
+        }
+
+        end = std::chrono::high_resolution_clock::now();
+
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+
+        std::cout << i << "x Thread, 10000 Components: " << diff_ms / iterationCount << "ms\n";
     }
 
-    end = std::chrono::high_resolution_clock::now();
+    for ( unsigned int i = 0; i <= std::thread::hardware_concurrency(); ++i )
+    {
+        circuit->SetBufferCount( i );
 
-    diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+        begin = std::chrono::high_resolution_clock::now();
 
-    std::cout << i << "x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
-    // }
+        for ( int j = 0; j < iterationCount; ++j )
+        {
+            circuit->Tick();
+        }
+
+        end = std::chrono::high_resolution_clock::now();
+
+        diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+
+        std::cout << i << "x Buffer, 10000 Components: " << diff_ms / iterationCount << "ms\n";
+    }
 
     begin = std::chrono::high_resolution_clock::now();
 

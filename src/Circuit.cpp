@@ -336,7 +336,7 @@ void Circuit::TickParallel()
         {
             componentThread.Sync();
         }
-        for ( auto component : p->components )
+        for ( auto component : p->componentsParallel )
         {
             component->Reset();
         }

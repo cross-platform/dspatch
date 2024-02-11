@@ -98,7 +98,7 @@ public:
     int GetBufferCount() const;
 
     void Tick( int bufferNo = 0 );
-    void Reset();
+    void Reset( int bufferNo = 0 );
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;

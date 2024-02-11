@@ -204,7 +204,7 @@ private:
                     }
                     for ( auto component : *_components )
                     {
-                        component->Reset();
+                        component->Reset( _threadNo );
                     }
                 }
             }
