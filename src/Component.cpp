@@ -402,14 +402,12 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    while ( !signal.has_value() )
+    while ( !signal.has_value() )  ///!
     {
         std::this_thread::yield();
     }
 
     auto& ref = refs[bufferNo][fromOutput];
-
-    std::lock_guard<std::mutex> lock( ref.mutex.mutex );
 
     if ( ref.total == 1 )
     {
@@ -417,7 +415,10 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
         toBus.MoveSignal( toInput, signal );
         return;
     }
-    else if ( ++ref.count != ref.total )
+
+    std::lock_guard<std::mutex> lock( ref.mutex.mutex );
+
+    if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
