@@ -89,7 +89,7 @@ public:
 
         _stop = true;
 
-        SyncAndResume();
+        Resume();
 
         if ( _thread.joinable() )
         {
@@ -113,32 +113,16 @@ public:
         }
     }
 
-    inline void SyncAndResume()
+    inline void Resume()
     {
         if ( _stopped )
         {
             return;
         }
 
-        if ( _gotSync )
-        {
-            _gotSync = false;  // reset the sync flag
-
-            std::lock_guard<std::mutex> lock( _syncMutex );
-
-            _resumeCondt.notify_all();
-
-            return;
-        }
-
-        std::unique_lock<std::mutex> lock( _syncMutex );
-
-        if ( !_gotSync )  // if haven't already got sync
-        {
-            _syncCondt.wait( lock );  // wait for sync
-        }
-
         _gotSync = false;  // reset the sync flag
+
+        std::lock_guard<std::mutex> lock( _syncMutex );
 
         _resumeCondt.notify_all();
     }

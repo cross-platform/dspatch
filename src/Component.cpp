@@ -103,6 +103,7 @@ public:
     std::vector<std::string> outputNames;
 
     int scanPosition = -1;
+    bool ticked = false;
 };
 
 }  // namespace internal
@@ -308,6 +309,13 @@ void Component::Tick( int bufferNo )
         // call Process_() with newly aquired inputs
         Process_( inputBus, outputBus );
     }
+
+    p->ticked = true;
+}
+
+void Component::Reset()
+{
+    p->ticked = false;
 }
 
 void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
@@ -402,9 +410,14 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    while ( !signal.has_value() )  ///!
+    while ( !ticked )
     {
         std::this_thread::yield();
+    }
+
+    if ( !signal.has_value() )
+    {
+        return;
     }
 
     auto& ref = refs[bufferNo][fromOutput];
@@ -416,18 +429,18 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
         return;
     }
 
-    std::lock_guard<std::mutex> lock( ref.mutex.mutex );
+    // std::lock_guard<std::mutex> lock( ref.mutex.mutex );
 
-    if ( ++ref.count != ref.total )
-    {
-        // this is not the final reference, copy the signal
-        toBus.SetSignal( toInput, signal );
-        return;
-    }
+    // if ( ++ref.count != ref.total )
+    // {
+    //     // this is not the final reference, copy the signal
+    //     toBus.SetSignal( toInput, signal );
+    //     return;
+    // }
 
-    // this is the final reference, reset the counter, move the signal
-    ref.count = 0;
-    toBus.MoveSignal( toInput, signal );
+    // // this is the final reference, reset the counter, move the signal
+    // ref.count = 0;
+    toBus.SetSignal( toInput, signal );
 }
 
 inline void internal::Component::IncRefs( int output )

@@ -803,7 +803,7 @@ TEST_CASE( "TenThousandComponents" )
     //     circuit->SetBufferCount( i );
 
     int i = 0;
-    circuit->SetThreadCount( 3 );
+    circuit->SetThreadCount( 8 );
 
     begin = std::chrono::high_resolution_clock::now();
 
@@ -811,7 +811,6 @@ TEST_CASE( "TenThousandComponents" )
     {
         circuit->TickParallel();
     }
-    circuit->Sync();
 
     end = std::chrono::high_resolution_clock::now();
 

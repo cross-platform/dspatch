@@ -289,6 +289,11 @@ void Circuit::Tick()
         {
             component->Tick();
         }
+        // tick all internal components
+        for ( auto component : p->components )
+        {
+            component->Reset();
+        }
     }
     // process in multiple threads if this circuit has threads
     // =======================================================
@@ -316,12 +321,24 @@ void Circuit::TickParallel()
         {
             component->Tick();
         }
+        for ( auto component : p->components )
+        {
+            component->Reset();
+        }
     }
     else
     {
         for ( auto& componentThread : p->componentThreads )
         {
-            componentThread.SyncAndResume();
+            componentThread.Resume();
+        }
+        for ( auto& componentThread : p->componentThreads )
+        {
+            componentThread.Sync();
+        }
+        for ( auto component : p->components )
+        {
+            component->Reset();
         }
     }
 }
