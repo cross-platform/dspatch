@@ -44,26 +44,44 @@ namespace internal
 class Component final
 {
 public:
-    struct MovableMutex final
+    class AtomicFlag final
     {
-        MovableMutex() = default;
+    public:
+        AtomicFlag() = default;
 
-        MovableMutex( MovableMutex&& )
+        AtomicFlag( AtomicFlag&& )
         {
         }
 
-        std::mutex mutex;
-    };
-
-    struct MovableAtomicFlag final
-    {
-        MovableAtomicFlag() = default;
-
-        MovableAtomicFlag( MovableAtomicFlag&& )
+        inline void Wait()
         {
+            while ( flag.test_and_set( std::memory_order_acquire ) )
+            {
+                std::this_thread::yield();
+            }
+            flag.clear( std::memory_order_release );
         }
 
-        std::atomic_flag flag = ATOMIC_FLAG_INIT;
+        inline void WaitAndClear()
+        {
+            while ( flag.test_and_set( std::memory_order_acquire ) )
+            {
+                std::this_thread::yield();
+            }
+        }
+
+        inline void Set()
+        {
+            flag.clear( std::memory_order_release );
+        }
+
+        inline void Clear()
+        {
+            flag.test_and_set( std::memory_order_acquire );
+        }
+
+    private:
+        std::atomic_flag flag = true;  // true means NOT set
     };
 
     inline explicit Component( DSPatch::Component::ProcessOrder processOrder )
@@ -90,20 +108,19 @@ public:
     {
         int count = 0;
         int total = 0;
-        MovableMutex mutex;
     };
 
     std::vector<std::vector<RefCounter>> refs;  // RefCounter per output, per buffer
 
     std::vector<Wire> inputWires;
 
-    std::vector<MovableAtomicFlag> releaseFlags;
+    std::vector<AtomicFlag> releaseFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
 
     int scanPosition = -1;
-    bool ticked = false;
+    AtomicFlag ticked;
 };
 
 }  // namespace internal
@@ -253,18 +270,18 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
 
         if ( i == startBuffer )
         {
-            p->releaseFlags[i].flag.clear();
+            p->releaseFlags[i].Set();
         }
         else
         {
-            p->releaseFlags[i].flag.test_and_set();
+            p->releaseFlags[i].Clear();
         }
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
-            p->refs[i][j].total = p->refs[0][j].total;
+            p->refs[i][j] = p->refs[0][j];
         }
     }
 
@@ -310,12 +327,12 @@ void Component::Tick( int bufferNo )
         Process_( inputBus, outputBus );
     }
 
-    p->ticked = true;
+    p->ticked.Set();
 }
 
 void Component::Reset()
 {
-    p->ticked = false;
+    p->ticked.Clear();
 }
 
 void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
@@ -386,23 +403,18 @@ void Component::_EndScan()
 
 inline void internal::Component::WaitForRelease( int threadNo )
 {
-    auto& releaseFlag = releaseFlags[threadNo].flag;
-
-    while ( releaseFlag.test_and_set( std::memory_order_acquire ) )
-    {
-        std::this_thread::yield();
-    }
+    releaseFlags[threadNo].WaitAndClear();
 }
 
 inline void internal::Component::ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == bufferCount )  // we're actually releasing the next available thread
     {
-        releaseFlags[0].flag.clear( std::memory_order_release );
+        releaseFlags[0].Set();
     }
     else
     {
-        releaseFlags[threadNo].flag.clear( std::memory_order_release );
+        releaseFlags[threadNo].Set();
     }
 }
 
@@ -410,10 +422,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    while ( !ticked )
-    {
-        std::this_thread::yield();
-    }
+    ticked.Wait();
 
     if ( !signal.has_value() )
     {
