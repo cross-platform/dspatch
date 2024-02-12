@@ -290,6 +290,7 @@ void Circuit::SetThreadCount( int threadCount )
     ResumeAutoTick();
 }
 
+// cppcheck-suppress unusedFunction
 int Circuit::GetThreadCount() const
 {
     return p->threadCount;

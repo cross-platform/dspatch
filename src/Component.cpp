@@ -86,6 +86,7 @@ class RefCounter final
 public:
     RefCounter() = default;
 
+    // cppcheck-suppress missingMemberCopy
     RefCounter( RefCounter&& )
     {
     }
