@@ -484,8 +484,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
         toBus.MoveSignal( toInput, signal );
         return;
     }
-
-    if ( ++ref.count != ref.total )
+    else if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
@@ -516,8 +515,7 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
         toBus.MoveSignal( toInput, signal );
         return;
     }
-
-    if ( ++ref.atomicCount.value != ref.total )
+    else if ( ++ref.atomicCount.value != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
