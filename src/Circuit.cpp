@@ -289,11 +289,6 @@ void Circuit::Tick()
         {
             component->Tick();
         }
-        // tick all internal components
-        for ( auto component : p->components )
-        {
-            component->Reset();
-        }
     }
     // process in multiple threads if this circuit has threads
     // =======================================================
@@ -321,10 +316,6 @@ void Circuit::TickParallel()
         {
             component->Tick();
         }
-        for ( auto component : p->components )
-        {
-            component->Reset();
-        }
     }
     else
     {
@@ -338,7 +329,7 @@ void Circuit::TickParallel()
         }
         for ( auto component : p->components )
         {
-            component->Reset();
+            component->_ResetParallel( 0 );
         }
     }
 }

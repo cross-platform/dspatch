@@ -40,6 +40,7 @@ namespace internal
 {
 class Circuit;
 class Component;
+class ComponentThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -98,7 +99,6 @@ public:
     int GetBufferCount() const;
 
     void Tick( int bufferNo = 0 );
-    void Reset( int bufferNo = 0 );
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
@@ -107,7 +107,12 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
+    friend class Circuit;
     friend class internal::Circuit;
+    friend class internal::ComponentThread;
+
+    void _TickParallel( int bufferNo );
+    void _ResetParallel( int bufferNo );
 
     void _Scan( std::vector<Component*>& components, std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
     void _EndScan();

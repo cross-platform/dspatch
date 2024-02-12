@@ -93,6 +93,7 @@ public:
     inline void ReleaseNextThread( int threadNo );
 
     inline void GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
+    inline void GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
 
     inline void IncRefs( int output );
     inline void DecRefs( int output );
@@ -117,7 +118,8 @@ public:
 
     struct RefCounter final
     {
-        AtomicInt count;
+        AtomicInt atomicCount;
+        int count = 0;
         int total = 0;
     };
 
@@ -338,13 +340,6 @@ void Component::Tick( int bufferNo )
         // call Process_() with newly aquired inputs
         Process_( inputBus, outputBus );
     }
-
-    // p->tickedFlags[bufferNo].Set();
-}
-
-void Component::Reset( int bufferNo )
-{
-    p->tickedFlags[bufferNo].Clear();
 }
 
 void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
@@ -373,6 +368,48 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     {
         ref.resize( outputCount );
     }
+}
+
+void Component::_TickParallel( int bufferNo )
+{
+    auto& inputBus = p->inputBuses[bufferNo];
+    auto& outputBus = p->outputBuses[bufferNo];
+
+    // clear inputs
+    inputBus.ClearAllValues();
+
+    for ( const auto& wire : p->inputWires )
+    {
+        // get new inputs from incoming components
+        wire.fromComponent->p->GetOutputParallel( bufferNo, wire.fromOutput, wire.toInput, inputBus );
+    }
+
+    // clear outputs
+    outputBus.ClearAllValues();
+
+    if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
+    {
+        // wait for our turn to process
+        p->WaitForRelease( bufferNo );
+
+        // call Process_() with newly aquired inputs
+        Process_( inputBus, outputBus );
+
+        // signal that we're done processing
+        p->ReleaseNextThread( bufferNo );
+    }
+    else
+    {
+        // call Process_() with newly aquired inputs
+        Process_( inputBus, outputBus );
+    }
+
+    p->tickedFlags[bufferNo].Set();
+}
+
+void Component::_ResetParallel( int bufferNo )
+{
+    p->tickedFlags[bufferNo].Clear();
 }
 
 void Component::_Scan( std::vector<Component*>& components,
@@ -434,7 +471,37 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    // tickedFlags[bufferNo].Wait();
+    if ( !signal.has_value() )
+    {
+        return;
+    }
+
+    auto& ref = refs[bufferNo][fromOutput];
+
+    if ( ref.total == 1 )
+    {
+        // there's only one reference, move the signal immediately
+        toBus.MoveSignal( toInput, signal );
+        return;
+    }
+
+    if ( ++ref.count != ref.total )
+    {
+        // this is not the final reference, copy the signal
+        toBus.SetSignal( toInput, signal );
+        return;
+    }
+
+    // this is the final reference, reset the counter, move the signal
+    ref.count = 0;
+    toBus.MoveSignal( toInput, signal );
+}
+
+inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+{
+    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
+
+    tickedFlags[bufferNo].Wait();
 
     if ( !signal.has_value() )
     {
@@ -450,7 +517,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
         return;
     }
 
-    if ( ++ref.count.value != ref.total )
+    if ( ++ref.atomicCount.value != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
@@ -458,7 +525,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
     }
 
     // this is the final reference, reset the counter, move the signal
-    ref.count.value = 0;
+    ref.atomicCount.value = 0;
     toBus.MoveSignal( toInput, signal );
 }
 

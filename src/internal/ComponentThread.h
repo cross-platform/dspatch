@@ -139,7 +139,7 @@ private:
                 {
                     for ( size_t i = _threadNo; i < _components->size(); i += _threadCount )
                     {
-                        ( *_components )[i]->Tick();
+                        ( *_components )[i]->_TickParallel( 0 );
                     }
                 }
             }

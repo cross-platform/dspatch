@@ -202,10 +202,6 @@ private:
                     {
                         component->Tick( _threadNo );
                     }
-                    // for ( auto component : *_components )
-                    // {
-                    //     component->Reset( _threadNo );
-                    // }
                 }
             }
         }
