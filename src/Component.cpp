@@ -104,9 +104,20 @@ public:
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
 
+    struct AtomicInt
+    {
+        AtomicInt() = default;
+
+        AtomicInt( AtomicInt&& )
+        {
+        }
+
+        std::atomic<int> value = 0;
+    };
+
     struct RefCounter final
     {
-        int count = 0;
+        AtomicInt count;
         int total = 0;
     };
 
@@ -282,7 +293,7 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
-            p->refs[i][j] = p->refs[0][j];
+            p->refs[i][j].total = p->refs[0][j].total;
         }
     }
 
@@ -328,7 +339,7 @@ void Component::Tick( int bufferNo )
         Process_( inputBus, outputBus );
     }
 
-    p->tickedFlags[bufferNo].Set();
+    // p->tickedFlags[bufferNo].Set();
 }
 
 void Component::Reset( int bufferNo )
@@ -423,7 +434,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    tickedFlags[bufferNo].Wait();
+    // tickedFlags[bufferNo].Wait();
 
     if ( !signal.has_value() )
     {
@@ -439,18 +450,16 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
         return;
     }
 
-    // std::lock_guard<std::mutex> lock( ref.mutex.mutex );
+    if ( ++ref.count.value != ref.total )
+    {
+        // this is not the final reference, copy the signal
+        toBus.SetSignal( toInput, signal );
+        return;
+    }
 
-    // if ( ++ref.count != ref.total )
-    // {
-    //     // this is not the final reference, copy the signal
-    //     toBus.SetSignal( toInput, signal );
-    //     return;
-    // }
-
-    // // this is the final reference, reset the counter, move the signal
-    // ref.count = 0;
-    toBus.SetSignal( toInput, signal );
+    // this is the final reference, reset the counter, move the signal
+    ref.count.value = 0;
+    toBus.MoveSignal( toInput, signal );
 }
 
 inline void internal::Component::IncRefs( int output )
