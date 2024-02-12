@@ -78,7 +78,7 @@ public:
     }
 
 private:
-    std::atomic_flag flag = true;  // true means NOT set
+    std::atomic_flag flag = ATOMIC_FLAG_INIT;
 };
 
 struct RefCounter final
