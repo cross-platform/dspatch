@@ -52,10 +52,11 @@ public:
 
     inline void Wait()
     {
-        while ( flag.test( std::memory_order_acquire ) )
+        while ( flag.test_and_set( std::memory_order_acquire ) )
         {
             std::this_thread::yield();
         }
+        flag.clear( std::memory_order_release );
     }
 
     inline void WaitAndClear()
