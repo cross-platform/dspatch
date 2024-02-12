@@ -41,49 +41,70 @@ namespace DSPatch
 namespace internal
 {
 
+class AtomicFlag final
+{
+public:
+    AtomicFlag() = default;
+
+    AtomicFlag( AtomicFlag&& )
+    {
+    }
+
+    inline void Wait()
+    {
+        while ( flag.test_and_set( std::memory_order_acquire ) )
+        {
+            std::this_thread::yield();
+        }
+        flag.clear( std::memory_order_release );
+    }
+
+    inline void WaitAndClear()
+    {
+        while ( flag.test_and_set( std::memory_order_acquire ) )
+        {
+            std::this_thread::yield();
+        }
+    }
+
+    inline void Set()
+    {
+        flag.clear( std::memory_order_release );
+    }
+
+    inline void Clear()
+    {
+        flag.test_and_set( std::memory_order_acquire );
+    }
+
+private:
+    std::atomic_flag flag = true;  // true means NOT set
+};
+
+class RefCounter final
+{
+public:
+    RefCounter() = default;
+
+    RefCounter( RefCounter&& )
+    {
+    }
+
+    inline RefCounter& operator=( const RefCounter& other )
+    {
+        count = other.count;
+        total = other.total;
+        return *this;
+    }
+
+    std::mutex mutex;
+    int count = 0;
+    int total = 0;
+};
+
 class Component final
 {
 public:
-    class AtomicFlag final
-    {
-    public:
-        AtomicFlag() = default;
-
-        AtomicFlag( AtomicFlag&& )
-        {
-        }
-
-        inline void Wait()
-        {
-            while ( flag.test_and_set( std::memory_order_acquire ) )
-            {
-                std::this_thread::yield();
-            }
-            flag.clear( std::memory_order_release );
-        }
-
-        inline void WaitAndClear()
-        {
-            while ( flag.test_and_set( std::memory_order_acquire ) )
-            {
-                std::this_thread::yield();
-            }
-        }
-
-        inline void Set()
-        {
-            flag.clear( std::memory_order_release );
-        }
-
-        inline void Clear()
-        {
-            flag.test_and_set( std::memory_order_acquire );
-        }
-
-    private:
-        std::atomic_flag flag = true;  // true means NOT set
-    };
-
     inline explicit Component( DSPatch::Component::ProcessOrder processOrder )
         : processOrder( processOrder )
     {
@@ -104,24 +125,6 @@ public:
 
     std::vector<DSPatch::SignalBus> inputBuses;
     std::vector<DSPatch::SignalBus> outputBuses;
-
-    struct AtomicInt
-    {
-        AtomicInt() = default;
-
-        AtomicInt( AtomicInt&& )
-        {
-        }
-
-        std::atomic<int> value = 0;
-    };
-
-    struct RefCounter final
-    {
-        AtomicInt atomicCount;
-        int count = 0;
-        int total = 0;
-    };
 
     std::vector<std::vector<RefCounter>> refs;  // RefCounter per output, per buffer
 
@@ -290,12 +293,13 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         {
             p->releaseFlags[i].Clear();
         }
+        p->tickedFlags[i].Clear();
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
-            p->refs[i][j].total = p->refs[0][j].total;
+            p->refs[i][j] = p->refs[0][j];
         }
     }
 
@@ -515,7 +519,10 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
         toBus.MoveSignal( toInput, signal );
         return;
     }
-    else if ( ++ref.atomicCount.value != ref.total )
+
+    std::lock_guard<std::mutex> lock( ref.mutex );
+
+    if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
@@ -523,7 +530,7 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
     }
 
     // this is the final reference, reset the counter, move the signal
-    ref.atomicCount.value = 0;
+    ref.count = 0;
     toBus.MoveSignal( toInput, signal );
 }
 
