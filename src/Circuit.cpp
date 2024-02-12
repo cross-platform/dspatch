@@ -201,11 +201,6 @@ void Circuit::DisconnectAllComponents()
 
 void Circuit::SetBufferCount( int bufferCount )
 {
-    if ( p->bufferCount == bufferCount )
-    {
-        return;
-    }
-
     PauseAutoTick();
 
     p->bufferCount = bufferCount;
@@ -270,6 +265,7 @@ void Circuit::SetThreadCount( int threadCount )
     if ( p->threadCount == 0 )
     {
         p->parallelCircuitThreads.resize( 0 );
+        SetBufferCount( p->bufferCount );
     }
     else
     {
