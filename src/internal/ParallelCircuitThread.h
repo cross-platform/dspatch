@@ -125,6 +125,8 @@ private:
 
         if ( _components )
         {
+            auto& components = *_components;
+
             while ( !_stop )
             {
                 {
@@ -138,9 +140,10 @@ private:
                 // cppcheck-suppress knownConditionTrueFalse
                 if ( !_stop )
                 {
-                    for ( size_t i = _threadNo; i < _components->size(); i += _threadCount )
+                    const size_t componentsSize = components.size();
+                    for ( size_t i = _threadNo; i < componentsSize; i += _threadCount )
                     {
-                        ( *_components )[i]->_TickParallel( _bufferNo );
+                        components[i]->_TickParallel( _bufferNo );
                     }
                 }
             }
