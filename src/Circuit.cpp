@@ -337,7 +337,7 @@ void Circuit::Tick()
         p->circuitThreads[p->currentBuffer].SyncAndResume();  // sync and resume thread x
     }
 
-    if ( ++p->currentBuffer >= p->bufferCount )
+    if ( p->bufferCount != 0 && ++p->currentBuffer == p->bufferCount )
     {
         p->currentBuffer = 0;
     }
