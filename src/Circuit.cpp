@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "internal/AutoTickThread.h"
 #include "internal/CircuitThread.h"
-#include "internal/ComponentThread.h"
+#include "internal/ParallelCircuitThread.h"
 
 #include <algorithm>
 #include <set>
@@ -60,7 +60,7 @@ public:
     std::vector<DSPatch::Component*> componentsParallel;
 
     std::vector<CircuitThread> circuitThreads;
-    std::vector<std::vector<ComponentThread>> componentThreads;
+    std::vector<std::vector<ParallelCircuitThread>> parallelCircuitThreads;
 
     bool circuitDirty = false;
 };
@@ -253,35 +253,35 @@ void Circuit::SetThreadCount( int threadCount )
     p->threadCount = threadCount;
 
     // stop all threads
-    for ( auto& componentThread : p->componentThreads )
+    for ( auto& circuitThreads : p->parallelCircuitThreads )
     {
-        for ( auto& thread : componentThread )
+        for ( auto& circuitThread : circuitThreads )
         {
-            thread.Stop();
+            circuitThread.Stop();
         }
     }
 
     // resize thread array
     if ( p->threadCount == 0 )
     {
-        p->componentThreads.resize( 0 );
+        p->parallelCircuitThreads.resize( 0 );
     }
     else
     {
-        p->componentThreads.resize( p->bufferCount == 0 ? 1 : p->bufferCount );
-        for ( auto& componentThread : p->componentThreads )
+        p->parallelCircuitThreads.resize( p->bufferCount == 0 ? 1 : p->bufferCount );
+        for ( auto& circuitThread : p->parallelCircuitThreads )
         {
-            componentThread.resize( p->threadCount );
+            circuitThread.resize( p->threadCount );
         }
 
         // initialise and start all threads
         int i = 0;
-        for ( auto& componentThread : p->componentThreads )
+        for ( auto& circuitThreads : p->parallelCircuitThreads )
         {
             int j = 0;
-            for ( auto& thread : componentThread )
+            for ( auto& circuitThread : circuitThreads )
             {
-                thread.Start( &p->componentsParallel, i, j++, p->threadCount );
+                circuitThread.Start( &p->componentsParallel, i, j++, p->threadCount );
             }
             ++i;
         }
@@ -319,17 +319,17 @@ void Circuit::Tick()
     // =======================================================
     else if ( p->threadCount != 0 )
     {
-        for ( auto& componentThread : p->componentThreads[p->currentBuffer] )
+        for ( auto& circuitThread : p->parallelCircuitThreads[p->currentBuffer] )
         {
-            componentThread.Sync();
+            circuitThread.Sync();
         }
         for ( auto component : p->components )
         {
             component->_ResetParallel( p->currentBuffer );
         }
-        for ( auto& componentThread : p->componentThreads[p->currentBuffer] )
+        for ( auto& circuitThread : p->parallelCircuitThreads[p->currentBuffer] )
         {
-            componentThread.Resume();
+            circuitThread.Resume();
         }
     }
     else
@@ -350,11 +350,11 @@ void Circuit::Sync()
     {
         circuitThread.Sync();
     }
-    for ( auto& componentThread : p->componentThreads )
+    for ( auto& circuitThreads : p->parallelCircuitThreads )
     {
-        for ( auto& thread : componentThread )
+        for ( auto& circuitThread : circuitThreads )
         {
-            thread.Sync();
+            circuitThread.Sync();
         }
     }
 }

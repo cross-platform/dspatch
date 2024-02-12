@@ -132,12 +132,12 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<AtomicFlag> releaseFlags;
+    std::vector<AtomicFlag> tickedFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
 
     int scanPosition = -1;
-    std::vector<AtomicFlag> tickedFlags;
 };
 
 }  // namespace internal

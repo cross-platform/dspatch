@@ -40,7 +40,7 @@ namespace internal
 {
 class Circuit;
 class Component;
-class ComponentThread;
+class ParallelCircuitThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -109,7 +109,7 @@ protected:
 private:
     friend class Circuit;
     friend class internal::Circuit;
-    friend class internal::ComponentThread;
+    friend class internal::ParallelCircuitThread;
 
     void _TickParallel( int bufferNo );
     void _ResetParallel( int bufferNo );

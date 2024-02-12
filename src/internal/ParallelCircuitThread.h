@@ -43,19 +43,19 @@ namespace DSPatch
 namespace internal
 {
 
-class ComponentThread final
+class ParallelCircuitThread final
 {
 public:
-    NONCOPYABLE( ComponentThread );
+    NONCOPYABLE( ParallelCircuitThread );
 
-    inline ComponentThread() = default;
+    inline ParallelCircuitThread() = default;
 
     // cppcheck-suppress missingMemberCopy
-    inline ComponentThread( ComponentThread&& )
+    inline ParallelCircuitThread( ParallelCircuitThread&& )
     {
     }
 
-    inline ~ComponentThread()
+    inline ~ParallelCircuitThread()
     {
         Stop();
     }
@@ -70,7 +70,7 @@ public:
         _stop = false;
         _gotSync = false;
 
-        _thread = std::thread( &ComponentThread::_Run, this );
+        _thread = std::thread( &ParallelCircuitThread::_Run, this );
 
         Sync();
     }
