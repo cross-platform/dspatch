@@ -806,7 +806,7 @@ TEST_CASE( "TenThousandComponents" )
 
         for ( int j = 0; j < iterationCount; ++j )
         {
-            circuit->TickParallel();
+            circuit->Tick();
         }
 
         end = std::chrono::high_resolution_clock::now();
@@ -815,6 +815,8 @@ TEST_CASE( "TenThousandComponents" )
 
         std::cout << i << "x Thread, 10000 Components: " << diff_ms / iterationCount << "ms\n";
     }
+
+    circuit->SetThreadCount( 0 );
 
     for ( unsigned int i = 0; i <= std::thread::hardware_concurrency(); ++i )
     {

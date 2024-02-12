@@ -60,9 +60,10 @@ public:
         Stop();
     }
 
-    inline void Start( std::vector<DSPatch::Component*>* components, int threadNo, int threadCount )
+    inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo, int threadNo, int threadCount )
     {
         _components = components;
+        _bufferNo = bufferNo;
         _threadNo = threadNo;
         _threadCount = threadCount;
 
@@ -139,7 +140,7 @@ private:
                 {
                     for ( size_t i = _threadNo; i < _components->size(); i += _threadCount )
                     {
-                        ( *_components )[i]->_TickParallel( 0 );
+                        ( *_components )[i]->_TickParallel( _bufferNo );
                     }
                 }
             }
@@ -148,6 +149,7 @@ private:
 
     std::thread _thread;
     std::vector<DSPatch::Component*>* _components = nullptr;
+    int _bufferNo = 0;
     int _threadNo = 0;
     int _threadCount = 0;
     bool _stop = false;

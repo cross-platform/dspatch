@@ -60,7 +60,7 @@ public:
     std::vector<DSPatch::Component*> componentsParallel;
 
     std::vector<CircuitThread> circuitThreads;
-    std::vector<ComponentThread> componentThreads;
+    std::vector<std::vector<ComponentThread>> componentThreads;
 
     bool circuitDirty = false;
 };
@@ -236,6 +236,8 @@ void Circuit::SetBufferCount( int bufferCount )
         component->SetBufferCount( p->bufferCount, p->currentBuffer );
     }
 
+    SetThreadCount( p->threadCount );
+
     ResumeAutoTick();
 }
 
@@ -246,11 +248,6 @@ int Circuit::GetBufferCount() const
 
 void Circuit::SetThreadCount( int threadCount )
 {
-    if ( p->threadCount == threadCount )
-    {
-        return;
-    }
-
     PauseAutoTick();
 
     p->threadCount = threadCount;
@@ -258,19 +255,44 @@ void Circuit::SetThreadCount( int threadCount )
     // stop all threads
     for ( auto& componentThread : p->componentThreads )
     {
-        componentThread.Stop();
+        for ( auto& thread : componentThread )
+        {
+            thread.Stop();
+        }
     }
 
     // resize thread array
-    p->componentThreads.resize( p->threadCount );
-
-    // initialise and start all threads
-    for ( int i = 0; i < p->threadCount; ++i )
+    if ( p->threadCount == 0 )
     {
-        p->componentThreads[i].Start( &p->componentsParallel, i, p->threadCount );
+        p->componentThreads.resize( 0 );
+    }
+    else
+    {
+        p->componentThreads.resize( p->bufferCount == 0 ? 1 : p->bufferCount );
+        for ( auto& componentThread : p->componentThreads )
+        {
+            componentThread.resize( p->threadCount );
+        }
+
+        // initialise and start all threads
+        int i = 0;
+        for ( auto& componentThread : p->componentThreads )
+        {
+            int j = 0;
+            for ( auto& thread : componentThread )
+            {
+                thread.Start( &p->componentsParallel, i, j++, p->threadCount );
+            }
+            ++i;
+        }
     }
 
     ResumeAutoTick();
+}
+
+int Circuit::GetThreadCount() const
+{
+    return p->threadCount;
 }
 
 void Circuit::Tick()
@@ -282,55 +304,41 @@ void Circuit::Tick()
 
     // process in a single thread if this circuit has no threads
     // =========================================================
-    if ( p->bufferCount == 0 )
+    if ( p->bufferCount == 0 && p->threadCount == 0 )
     {
         // tick all internal components
         for ( auto component : p->components )
         {
             component->Tick();
         }
+
+        return;
     }
     // process in multiple threads if this circuit has threads
     // =======================================================
-    else
+    else if ( p->threadCount != 0 )
     {
-        p->circuitThreads[p->currentBuffer].SyncAndResume();  // sync and resume thread x
-
-        if ( ++p->currentBuffer == p->bufferCount )
-        {
-            p->currentBuffer = 0;
-        }
-    }
-}
-
-void Circuit::TickParallel()
-{
-    if ( p->circuitDirty )
-    {
-        p->Optimize();
-    }
-
-    if ( p->threadCount == 0 )
-    {
-        for ( auto component : p->components )
-        {
-            component->Tick();
-        }
-    }
-    else
-    {
-        for ( auto& componentThread : p->componentThreads )
-        {
-            componentThread.Resume();
-        }
-        for ( auto& componentThread : p->componentThreads )
+        for ( auto& componentThread : p->componentThreads[p->currentBuffer] )
         {
             componentThread.Sync();
         }
         for ( auto component : p->components )
         {
-            component->_ResetParallel( 0 );
+            component->_ResetParallel( p->currentBuffer );
         }
+        for ( auto& componentThread : p->componentThreads[p->currentBuffer] )
+        {
+            componentThread.Resume();
+        }
+    }
+    else
+    {
+        p->circuitThreads[p->currentBuffer].SyncAndResume();  // sync and resume thread x
+    }
+
+    if ( ++p->currentBuffer >= p->bufferCount )
+    {
+        p->currentBuffer = 0;
     }
 }
 
@@ -343,7 +351,10 @@ void Circuit::Sync()
     }
     for ( auto& componentThread : p->componentThreads )
     {
-        componentThread.Sync();
+        for ( auto& thread : componentThread )
+        {
+            thread.Sync();
+        }
     }
 }
 
