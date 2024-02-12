@@ -216,13 +216,20 @@ void Circuit::SetBufferCount( int bufferCount )
         circuitThread.Stop();
     }
 
-    // resize thread array
-    p->circuitThreads.resize( p->bufferCount );
-
-    // initialise and start all threads
-    for ( int i = 0; i < p->bufferCount; ++i )
+    if ( p->threadCount != 0 )
     {
-        p->circuitThreads[i].Start( &p->components, i );
+        SetThreadCount( p->threadCount );
+    }
+    else
+    {
+        // resize thread array
+        p->circuitThreads.resize( p->bufferCount );
+
+        // initialise and start all threads
+        for ( int i = 0; i < p->bufferCount; ++i )
+        {
+            p->circuitThreads[i].Start( &p->components, i );
+        }
     }
 
     if ( p->currentBuffer >= p->bufferCount )
@@ -235,8 +242,6 @@ void Circuit::SetBufferCount( int bufferCount )
     {
         component->SetBufferCount( p->bufferCount, p->currentBuffer );
     }
-
-    SetThreadCount( p->threadCount );
 
     ResumeAutoTick();
 }
@@ -268,6 +273,8 @@ void Circuit::SetThreadCount( int threadCount )
     }
     else
     {
+        p->circuitThreads.resize( 0 );
+
         p->parallelCircuitThreads.resize( p->bufferCount == 0 ? 1 : p->bufferCount );
         for ( auto& circuitThread : p->parallelCircuitThreads )
         {
