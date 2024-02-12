@@ -52,11 +52,10 @@ public:
 
     inline void Wait()
     {
-        while ( flag.test_and_set( std::memory_order_acquire ) )
+        while ( flag.test( std::memory_order_acquire ) )
         {
             std::this_thread::yield();
         }
-        flag.clear( std::memory_order_release );
     }
 
     inline void WaitAndClear()
@@ -81,24 +80,8 @@ private:
     std::atomic_flag flag = true;  // true means NOT set
 };
 
-class RefCounter final
+struct RefCounter final
 {
-public:
-    RefCounter() = default;
-
-    // cppcheck-suppress missingMemberCopy
-    RefCounter( RefCounter&& )
-    {
-    }
-
-    inline RefCounter& operator=( const RefCounter& other )
-    {
-        count = other.count;
-        total = other.total;
-        return *this;
-    }
-
-    std::mutex mutex;
     int count = 0;
     int total = 0;
 };
@@ -487,18 +470,18 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
     {
         // there's only one reference, move the signal immediately
         toBus.MoveSignal( toInput, signal );
-        return;
     }
     else if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
-        return;
     }
-
-    // this is the final reference, reset the counter, move the signal
-    ref.count = 0;
-    toBus.MoveSignal( toInput, signal );
+    else
+    {
+        // this is the final reference, reset the counter, move the signal
+        ref.count = 0;
+        toBus.MoveSignal( toInput, signal );
+    }
 }
 
 inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
@@ -518,21 +501,11 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
     {
         // there's only one reference, move the signal immediately
         toBus.MoveSignal( toInput, signal );
-        return;
     }
-
-    std::lock_guard<std::mutex> lock( ref.mutex );
-
-    if ( ++ref.count != ref.total )
+    else
     {
-        // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
-        return;
     }
-
-    // this is the final reference, reset the counter, move the signal
-    ref.count = 0;
-    toBus.MoveSignal( toInput, signal );
 }
 
 inline void internal::Component::IncRefs( int output )
