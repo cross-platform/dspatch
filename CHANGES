@@ -81,7 +81,7 @@ v.9.6.0 (24 August 2023)
 
 v.9.5.4 (19 August 2023)
     - Updated fast_any submodule (incl. optimizations & bug fixes).
-    - Optimized AutoTickThread, CircuitThread & ParallelCircuitThread.
+    - Optimized AutoTickThread, CircuitThread & ComponentThread.
 
 v.9.5.3 (12 August 2023)
     - Updated fast_any submodule (incl. C-style cast fixes).
@@ -190,7 +190,7 @@ v.6.00 (04 January 2019)
     - Greatly improved performance in reactive-style one-shot circuits.
     - Added Circuit::Set/GetBufferCount() for optimized stream processing.
     - Added "Series" tick mode for optimized series circuit processing.
-    - Tick parallel components in parallel with new ParallelCircuitThread class.
+    - Tick parallel components in parallel with new ComponentThread class.
     - Improved stability in *Thread classes.
 
 v.5.01 (11 November 2018)
