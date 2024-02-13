@@ -352,6 +352,7 @@ void Component::_TickParallel( int bufferNo )
 {
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
+    auto& refs = p->refs[bufferNo];
 
     // clear inputs
     inputBus.ClearAllValues();
@@ -383,7 +384,7 @@ void Component::_TickParallel( int bufferNo )
     }
 
     // signal that our outputs are ready
-    for ( auto& ref : p->refs[bufferNo] )
+    for ( auto& ref : refs )
     {
         ref.readyFlag.Set();
     }
