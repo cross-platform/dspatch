@@ -214,6 +214,7 @@ void Circuit::SetBufferCount( int bufferCount )
         circuitThread.Stop();
     }
 
+    // resize thread array
     if ( p->threadCount != 0 )
     {
         p->circuitThreads.resize( 0 );
@@ -221,7 +222,6 @@ void Circuit::SetBufferCount( int bufferCount )
     }
     else
     {
-        // resize thread array
         p->circuitThreads.resize( p->bufferCount );
 
         // initialise and start all threads
