@@ -50,15 +50,6 @@ public:
     {
     }
 
-    inline void Wait()
-    {
-        while ( flag.test_and_set( std::memory_order_acquire ) )
-        {
-            std::this_thread::yield();
-        }
-        flag.clear( std::memory_order_release );
-    }
-
     inline void WaitAndClear()
     {
         while ( flag.test_and_set( std::memory_order_acquire ) )
@@ -487,26 +478,11 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 
 inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
-    tickedFlags[bufferNo].Wait();
+    tickedFlags[bufferNo].WaitAndClear();
 
-    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
+    GetOutput( bufferNo, fromOutput, toInput, toBus );
 
-    if ( !signal.has_value() )
-    {
-        return;
-    }
-
-    auto& ref = refs[bufferNo][fromOutput];
-
-    if ( ref.total == 1 )
-    {
-        // there's only one reference, move the signal immediately
-        toBus.MoveSignal( toInput, signal );
-    }
-    else
-    {
-        toBus.SetSignal( toInput, signal );
-    }
+    tickedFlags[bufferNo].Set();
 }
 
 inline void internal::Component::IncRefs( int output )
