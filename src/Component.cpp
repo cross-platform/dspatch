@@ -50,6 +50,7 @@ public:
     {
     }
 
+    // cppcheck-suppress operatorEqVarError
     AtomicFlag& operator=( const AtomicFlag& )
     {
         return *this;
