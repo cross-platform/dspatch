@@ -88,9 +88,9 @@ Features</h1>
 <li><b>Component plugins</b> - Package components into plugins to be dynamically loaded into other host applications.</li>
 <li><b>Cross-platform</b> - DSPatch is built and tested daily on Linux, Mac and Windows. <a href="https://www.youtube.com/watch?v=u3A9x9bpbdo"><b>Here</b></a> we see DSPatch running flawlessly on a BeagleBone!</li>
 <li><b>Easy-to-use object-oriented API</b> - DSPatch is modelled around real-world circuit entities and concepts, making code more readable and easy to understand.</li>
-<li><b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back into previous component inputs.</li>
 <li><b>High performance multi-buffering</b> - Utilize parallel multi-buffering via Circuit::SetBufferCount() to maximize dataflow efficiency in stream processing circuits.</li>
-<li><b>High performance parallel processing</b> - Utilize parallel multi-threading via Circuit::SetThreadCount() to maximize dataflow efficiency across parallel branches.</li>
+<li><b>High performance multi-threading</b> - Utilize parallel multi-threading via Circuit::SetThreadCount() to maximize dataflow efficiency across parallel branches.</li>
+<li><b>Feedback loops</b> - Create true closed-circuit systems by feeding component outputs back into previous component inputs (supported in multi-buffered circuits but not multi-threaded).</li>
 <li><b>Optimised signal transfers</b> - Wherever possible, data between components is transferred via move rather than copy.</li>
 <li><b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time varying types allowing you to create more flexible, multi-purpose component processes.</li>
 <li><b>Run-time circuit wiring</b> - Connect and disconnect wires on the fly whilst maintaining steady dataflow through the system.</li>
@@ -202,7 +202,7 @@ Tutorials</h1>
 <div class="line">_</div>
 </div><!-- fragment --><p>Lastly, in order for our circuit to do any work it must be ticked. This is performed by repeatedly calling the circuit's Tick() method. This method can be called manually in a loop, or alternatively, by calling StartAutoTick(), a seperate thread will spawn, automatically calling Tick() continuously.</p>
 <p>Furthermore, to boost performance in stream processing circuits like this one, multi-buffering can be enabled via the SetBufferCount() method:</p>
-<p><b>NOTE:</b> If none of the parallel components in your circuit perform CPU-heavy operations, multi-buffering (or even zero buffering) will almost always outperform multi-threading via SetThreadCount(). The contention overhead caused by multiple threads processing a single tick must be made negligible by CPU-heavy parallel components for any performance improvement to be seen.</p>
+<p><b>NOTE:</b> If none of the parallel components in your circuit perform time-consuming operations, multi-buffering (or even zero buffering) will almost always outperform multi-threading (via SetThreadCount()). The contention overhead caused by multiple threads processing a single tick must be made negligible by time-consuming parallel components for any performance improvement to be seen.</p>
 <div class="fragment"><div class="line">    <span class="comment">// 5. Tick the circuit</span></div>
 <div class="line">    <span class="comment">// ===================</span></div>
 <div class="line"> </div>

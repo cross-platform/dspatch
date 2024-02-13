@@ -65,12 +65,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     flawlessly on a BeagleBone!
     - <b>Easy-to-use object-oriented API</b> - DSPatch is modelled around real-world circuit
     entities and concepts, making code more readable and easy to understand.
-    - <b>Feedback loops</b> - Create true closed-circuit systems by feeding resultant signals back
-    into previous component inputs.
     - <b>High performance multi-buffering</b> - Utilize parallel multi-buffering via
     Circuit::SetBufferCount() to maximize dataflow efficiency in stream processing circuits.
-    - <b>High performance parallel processing</b> - Utilize parallel multi-threading via
+    - <b>High performance multi-threading</b> - Utilize parallel multi-threading via
     Circuit::SetThreadCount() to maximize dataflow efficiency across parallel branches.
+    - <b>Feedback loops</b> - Create true closed-circuit systems by feeding component outputs back
+    into previous component inputs (supported in multi-buffered circuits but not multi-threaded).
     - <b>Optimised signal transfers</b> - Wherever possible, data between components is transferred
     via move rather than copy.
     - <b>Run-time adaptive signal types</b> - Component inputs can accept values of run-time
@@ -238,11 +238,11 @@ _   circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
     Furthermore, to boost performance in stream processing circuits like this one, multi-buffering
     can be enabled via the SetBufferCount() method:
 
-    <b>NOTE:</b> If none of the parallel components in your circuit perform CPU-heavy operations,
-    multi-buffering (or even zero buffering) will almost always outperform multi-threading via
-    SetThreadCount(). The contention overhead caused by multiple threads processing a single tick
-    must be made negligible by CPU-heavy parallel components for any performance improvement to be
-    seen.
+    <b>NOTE:</b> If none of the parallel components in your circuit perform time-consuming
+    operations, multi-buffering (or even zero buffering) will almost always outperform
+    multi-threading (via SetThreadCount()). The contention overhead caused by multiple threads
+    processing a single tick must be made negligible by time-consuming parallel components for any
+    performance improvement to be seen.
 
     \code
     // 5. Tick the circuit
