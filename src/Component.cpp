@@ -473,9 +473,9 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 
 inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
-    tickedFlags[bufferNo].WaitAndClear();
-
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
+
+    tickedFlags[bufferNo].WaitAndClear();
 
     if ( !signal.has_value() )
     {
