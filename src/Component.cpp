@@ -50,6 +50,11 @@ public:
     {
     }
 
+    AtomicFlag& operator=( const AtomicFlag& )
+    {
+        return *this;
+    }
+
     inline void WaitAndClear()
     {
         while ( flag.test_and_set( std::memory_order_acquire ) )
@@ -69,13 +74,14 @@ public:
     }
 
 private:
-    std::atomic_flag flag = ATOMIC_FLAG_INIT;
+    std::atomic_flag flag = ATOMIC_VAR_INIT( true );  // true here actually mean unset / cleared
 };
 
 struct RefCounter final
 {
     int count = 0;
     int total = 0;
+    AtomicFlag readyFlag;
 };
 
 class Component final
@@ -107,7 +113,6 @@ public:
     std::vector<Wire> inputWires;
 
     std::vector<AtomicFlag> releaseFlags;
-    std::vector<AtomicFlag> tickedFlags;
 
     std::vector<std::string> inputNames;
     std::vector<std::string> outputNames;
@@ -251,7 +256,6 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     p->outputBuses.resize( bufferCount );
 
     p->releaseFlags.resize( bufferCount );
-    p->tickedFlags.resize( bufferCount );
 
     p->refs.resize( bufferCount );
 
@@ -269,7 +273,6 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         {
             p->releaseFlags[i].Clear();
         }
-        p->tickedFlags[i].Clear();
 
         p->refs[i].resize( p->refs[0].size() );
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
@@ -384,7 +387,14 @@ void Component::_TickParallel( int bufferNo )
         Process_( inputBus, outputBus );
     }
 
-    p->tickedFlags[bufferNo].Set();
+    // signal that our outputs are ready
+    for ( auto& refs : p->refs )
+    {
+        for ( auto& ref : refs )
+        {
+            ref.readyFlag.Set();
+        }
+    }
 }
 
 void Component::_Scan( std::vector<Component*>& components,
@@ -476,23 +486,24 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
-    tickedFlags[bufferNo].WaitAndClear();
-
-    if ( !signal.has_value() )
+    if ( ref.total == 1 )
     {
+        // wait for this output to be ready
+        ref.readyFlag.WaitAndClear();
+        // there's only one reference, move the signal immediately and return
+        toBus.MoveSignal( toInput, signal );
         return;
     }
 
-    if ( ref.total == 1 )
-    {
-        // there's only one reference, move the signal immediately
-        toBus.MoveSignal( toInput, signal );
-    }
-    else if ( ++ref.count != ref.total )
+    // wait for this output to be ready
+    ref.readyFlag.WaitAndClear();
+
+    if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
-        tickedFlags[bufferNo].Set();
+        // wake next WaitAndClear()
+        ref.readyFlag.Set();
     }
     else
     {
