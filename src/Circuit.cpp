@@ -93,6 +93,7 @@ bool Circuit::AddComponent( const Component::SPtr& component )
 
     PauseAutoTick();
     p->components.emplace_back( component.get() );
+    p->componentsParallel.emplace_back( component.get() );
     ResumeAutoTick();
 
     p->componentsSet.emplace( component );
@@ -180,6 +181,8 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
     {
         comp->DisconnectInput( component );
     }
+
+    p->circuitDirty = true;
 
     ResumeAutoTick();
 
