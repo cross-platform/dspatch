@@ -216,6 +216,7 @@ void Circuit::SetBufferCount( int bufferCount )
 
     if ( p->threadCount != 0 )
     {
+        p->circuitThreads.resize( 0 );
         SetThreadCount( p->threadCount );
     }
     else
@@ -272,8 +273,6 @@ void Circuit::SetThreadCount( int threadCount )
     }
     else
     {
-        p->circuitThreads.resize( 0 );
-
         p->parallelCircuitThreads.resize( p->bufferCount == 0 ? 1 : p->bufferCount );
         for ( auto& circuitThread : p->parallelCircuitThreads )
         {
