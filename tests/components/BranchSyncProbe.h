@@ -34,8 +34,11 @@ namespace DSPatch
 class BranchSyncProbe final : public Component
 {
 public:
-    BranchSyncProbe()
-        : _count( 0 )
+    BranchSyncProbe( int p1, int p2, int p3 )
+        : _p1( p1 )
+        , _p2( p2 )
+        , _p3( p3 )
+        , _count( 0 )
     {
         SetInputCount_( 3 );
     }
@@ -52,12 +55,15 @@ protected:
         auto in2 = inputs.GetValue<int>( 2 );
         REQUIRE( in2 );
 
-        REQUIRE( *in0 == 4 + _count );
-        REQUIRE( *in1 == 2 + _count );
-        REQUIRE( *in2 == 1 + _count++ );
+        REQUIRE( *in0 == _p1 + _count );
+        REQUIRE( *in1 == _p2 + _count );
+        REQUIRE( *in2 == _p3 + _count++ );
     }
 
 private:
+    int _p1;
+    int _p2;
+    int _p3;
     int _count;
 };
 
