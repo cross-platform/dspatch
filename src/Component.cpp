@@ -50,12 +50,6 @@ public:
     {
     }
 
-    // cppcheck-suppress operatorEqVarError
-    AtomicFlag& operator=( const AtomicFlag& )
-    {
-        return *this;
-    }
-
     inline void WaitAndClear()
     {
         while ( flag.test_and_set( std::memory_order_acquire ) )
@@ -279,7 +273,7 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
         for ( size_t j = 0; j < p->refs[0].size(); ++j )
         {
             // sync output reference counts
-            p->refs[i][j] = p->refs[0][j];
+            p->refs[i][j].total = p->refs[0][j].total;
         }
     }
 
@@ -389,12 +383,9 @@ void Component::_TickParallel( int bufferNo )
     }
 
     // signal that our outputs are ready
-    for ( auto& refs : p->refs )
+    for ( auto& ref : p->refs[bufferNo] )
     {
-        for ( auto& ref : refs )
-        {
-            ref.readyFlag.Set();
-        }
+        ref.readyFlag.Set();
     }
 }
 
