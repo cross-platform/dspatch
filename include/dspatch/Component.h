@@ -107,12 +107,10 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
-    friend class Circuit;
     friend class internal::Circuit;
     friend class internal::ParallelCircuitThread;
 
     void _TickParallel( int bufferNo );
-    void _ResetParallel( int bufferNo );
 
     void _Scan( std::vector<Component*>& components, std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
     void _EndScan();

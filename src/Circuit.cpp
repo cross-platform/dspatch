@@ -326,10 +326,6 @@ void Circuit::Tick()
         {
             circuitThread.Sync();
         }
-        for ( auto component : p->components )
-        {
-            component->_ResetParallel( p->currentBuffer );
-        }
         for ( auto& circuitThread : p->parallelCircuitThreads[p->currentBuffer] )
         {
             circuitThread.Resume();

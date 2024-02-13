@@ -387,11 +387,6 @@ void Component::_TickParallel( int bufferNo )
     p->tickedFlags[bufferNo].Set();
 }
 
-void Component::_ResetParallel( int bufferNo )
-{
-    p->tickedFlags[bufferNo].Clear();
-}
-
 void Component::_Scan( std::vector<Component*>& components,
                        std::vector<std::vector<DSPatch::Component*>>& componentsMap,
                        int& scanPosition )
@@ -480,9 +475,32 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
 {
     tickedFlags[bufferNo].WaitAndClear();
 
-    GetOutput( bufferNo, fromOutput, toInput, toBus );
+    auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
 
-    tickedFlags[bufferNo].Set();
+    if ( !signal.has_value() )
+    {
+        return;
+    }
+
+    auto& ref = refs[bufferNo][fromOutput];
+
+    if ( ref.total == 1 )
+    {
+        // there's only one reference, move the signal immediately
+        toBus.MoveSignal( toInput, signal );
+    }
+    else if ( ++ref.count != ref.total )
+    {
+        // this is not the final reference, copy the signal
+        toBus.SetSignal( toInput, signal );
+        tickedFlags[bufferNo].Set();
+    }
+    else
+    {
+        // this is the final reference, reset the counter, move the signal
+        ref.count = 0;
+        toBus.MoveSignal( toInput, signal );
+    }
 }
 
 inline void internal::Component::IncRefs( int output )
