@@ -36,10 +36,9 @@ namespace internal
 /// Connection between two components
 
 /**
-Components process and transfer data between each other in the form of signals via interconnected
-"wires". Each wire contains references to the fromComponent, the fromOutput signal, and the toInput
-signal. The Wire struct simply stores these references for use in retrieving and providing signals
-across component connections.
+Components process and transfer data between each other in the form of signals via interconnected "wires". Each wire contains
+references to the fromComponent, the fromOutput signal, and the toInput signal. The Wire struct simply stores these references for
+use in retrieving and providing signals across component connections.
 */
 
 struct Wire final

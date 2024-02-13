@@ -46,21 +46,17 @@ namespace internal
 /// Thread class for asynchronously ticking circuit components
 
 /**
-A CircuitThread is responsible for ticking and reseting all components within a Circuit. Upon
-initialisation, a reference to the vector of circuit components must be provided for the thread
-_Run() method to loop through. Each CircuitThread has a thread number (threadNo), which is also
-provided upon initialisation. When creating multiple CircuitThreads, each thread must have their
-own unique thread number, beginning at 0 and incrementing by 1 for every thread added. This thread
-number corresponds with the Component's buffer number when calling its Tick() method in the
-CircuitThread's component loop. Hence, for every circuit thread created, each component's buffer
-count within that circuit must be incremented to match.
+A CircuitThread is responsible for ticking all components within a Circuit. Upon initialisation, a reference to the vector of
+circuit components must be provided for the thread _Run() method to loop through. Each CircuitThread has a buffer number
+(bufferNo), which is also provided upon initialisation. When creating multiple CircuitThreads, each thread must have their own
+unique buffer number, beginning at 0 and incrementing by 1 for every thread added. This buffer number corresponds with the
+Component's buffer number when calling its Tick() method in the CircuitThread's component loop.
 
-The SyncAndResume() method causes the CircuitThread to tick and reset all circuit components once,
-after which the thread will wait until instructed to resume again. As each component is done
-processing it hands over control to the next waiting circuit thread, therefore, from an external
-control loop (I.e. Circuit's Tick() method) we can simply loop through our array of CircuitThreads
-calling SyncAndResume() on each. If a circuit thread is busy processing, a call to SyncAndResume()
-will block momentarily until that thread is done processing.
+The SyncAndResume() method causes the CircuitThread to tick all circuit components once, after which the thread will wait until
+instructed to resume again. As each component is done processing it hands over control to the next waiting CircuitThread,
+therefore, from an external control loop (I.e. Circuit's Tick() method) we can simply loop through our array of CircuitThreads
+calling SyncAndResume() on each. If a circuit thread is busy processing, a call to SyncAndResume() will block momentarily until
+that thread is done processing.
 */
 
 class CircuitThread final
@@ -80,7 +76,7 @@ public:
         Stop();
     }
 
-    inline void Start( std::vector<DSPatch::Component*>* components, int threadNo )
+    inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo )
     {
         if ( !_stopped )
         {
@@ -88,7 +84,7 @@ public:
         }
 
         _components = components;
-        _threadNo = threadNo;
+        _bufferNo = bufferNo;
 
         _stop = false;
         _stopped = false;
@@ -190,7 +186,7 @@ private:
                 {
                     // You might be thinking: Can't we have each thread start on a different component?
 
-                    // Well no. Because threadNo == bufferNo, in order to maintain synchronisation
+                    // Well no. Because bufferNo == bufferNo, in order to maintain synchronisation
                     // within the circuit, when a component wants to process its buffers in-order, it
                     // requires that every other in-order component in the system has not only
                     // processed its buffers in the same order, but has processed the same number of
@@ -200,7 +196,7 @@ private:
 
                     for ( auto component : *_components )
                     {
-                        component->Tick( _threadNo );
+                        component->Tick( _bufferNo );
                     }
                 }
             }
@@ -211,7 +207,7 @@ private:
 
     std::thread _thread;
     std::vector<DSPatch::Component*>* _components = nullptr;
-    int _threadNo = 0;
+    int _bufferNo = 0;
     bool _stop = false;
     bool _stopped = true;
     bool _gotSync = true;

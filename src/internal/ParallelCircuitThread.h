@@ -43,6 +43,24 @@ namespace DSPatch
 namespace internal
 {
 
+/// Thread class for asynchronously ticking parallel circuit components
+
+/**
+A ParallelCircuitThread is responsible for ticking parallel components within a Circuit. Upon initialisation, a reference to the
+parallel-ordered vector of circuit components must be provided for the thread _Run() method to loop through. Each
+ParallelCircuitThread has a buffer number (bufferNo) and thread number (threadNo), which is also provided upon initialisation.
+When creating multiple ParallelCircuitThreads, each thread must have their own unique bufferNo:threadNo combination, beginning at
+0:0 and incrementing for every buffer thread added. The buffer number corresponds with the Component's buffer number when calling
+its Tick() method in the ParallelCircuitThread's component loop, and the thread number is that buffer's thread index - i.e. a
+circuit with x threads, will spawn x threads per buffer.
+
+The Sync() method will block until the thread is ready to process. The Resume() method will then signal the ParallelCircuitThread
+to tick its components once, after which the thread will wait until instructed to resume again. As each component is done
+processing it hands over control to the next waiting CircuitThread, therefore, from an external control loop (I.e. Circuit's
+Tick() method) we can simply loop through our array of ParallelCircuitThreads twice, calling Sync() on each, then Resume() on
+each.
+*/
+
 class ParallelCircuitThread final
 {
 public:
@@ -71,8 +89,6 @@ public:
         _gotSync = false;
 
         _thread = std::thread( &ParallelCircuitThread::_Run, this );
-
-        Sync();
     }
 
     inline void Stop()

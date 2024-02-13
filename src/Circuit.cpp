@@ -145,7 +145,10 @@ int Circuit::GetComponentCount() const
     return (int)p->components.size();
 }
 
-bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput )
+bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent,
+                              int fromOutput,
+                              const Component::SPtr& toComponent,
+                              int toInput )
 {
     if ( p->componentsSet.find( fromComponent ) == p->componentsSet.end() ||
          p->componentsSet.find( toComponent ) == p->componentsSet.end() )

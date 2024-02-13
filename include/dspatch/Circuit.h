@@ -41,25 +41,26 @@ class Circuit;
 /// Workspace for adding and routing components
 
 /**
-Components can be added to a Circuit via the AddComponent() method, and routed to and from other
-components via the ConnectOutToIn() method.
+Components can be added to a Circuit via the AddComponent() method, and routed to and from other components via the
+ConnectOutToIn() method.
 
-<b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is
-connected to an input that already has a connected wire, that wire is replaced with the new one.
-One output, on the other hand, can be distributed to multiple inputs.
+<b>NOTE:</b> Each component input can only accept a single "wire" at a time. When a wire is connected to an input that already has
+a connected wire, that wire is replaced with the new one. One output, on the other hand, can be distributed to multiple inputs.
 
-To boost performance in stream processing circuits, multi-buffering can be enabled via the
-SetBufferCount() method. A circuit's buffer count can be adjusted at runtime.
+To boost performance in stream processing circuits, multi-buffering can be enabled via the SetBufferCount() method. A circuit's
+buffer count can be adjusted at runtime.
 
-The Circuit Tick() method runs through its internal array of components and calls each component's
-Tick() method. A circuit's Tick() method can be called in a loop from the main application thread,
-or alternatively, by calling StartAutoTick(), a separate thread will spawn, automatically calling
-Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
+<b>NOTE:</b> If none of the parallel components in your circuit perform CPU-heavy operations, multi-buffering (or even zero
+buffering) will almost always outperform multi-threading via SetThreadCount(). The contention overhead caused by multiple threads
+processing a single tick must be made negligible by CPU-heavy parallel components for any performance improvement to be seen.
 
-The Circuit Optimize() method rearranges components such that they process in the most optimal
-order during Tick(). This optimization will occur automatically during the first Tick() proceeding
-any calls to ConnectOutToIn(), however, if you'd like to pre-order components before the next
-Tick() is processed, you can call Optimize() manually.
+The Circuit Tick() method runs through its internal array of components and calls each component's Tick() method. A circuit's
+Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate
+thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
+
+The Circuit Optimize() method rearranges components such that they process in the most optimal order during Tick(). This
+optimization will occur automatically during the first Tick() proceeding any calls to ConnectOutToIn(), however, if you'd like to
+pre-order components before the next Tick() is processed, you can call Optimize() manually.
 */
 
 class DLLEXPORT Circuit final
