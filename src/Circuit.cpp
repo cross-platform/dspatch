@@ -322,11 +322,13 @@ void Circuit::Tick()
     // =======================================================
     else if ( p->threadCount != 0 )
     {
-        for ( auto& circuitThread : p->parallelCircuitThreads[p->currentBuffer] )
+        auto& circuitThreads = p->parallelCircuitThreads[p->currentBuffer];
+
+        for ( auto& circuitThread : circuitThreads )
         {
             circuitThread.Sync();
         }
-        for ( auto& circuitThread : p->parallelCircuitThreads[p->currentBuffer] )
+        for ( auto& circuitThread : circuitThreads )
         {
             circuitThread.Resume();
         }

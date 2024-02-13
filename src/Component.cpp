@@ -474,6 +474,7 @@ inline void internal::Component::GetOutput( int bufferNo, int fromOutput, int to
 inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
+    auto& ref = refs[bufferNo][fromOutput];
 
     tickedFlags[bufferNo].WaitAndClear();
 
@@ -481,8 +482,6 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
     {
         return;
     }
-
-    auto& ref = refs[bufferNo][fromOutput];
 
     if ( ref.total == 1 )
     {
