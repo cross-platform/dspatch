@@ -40,6 +40,7 @@ namespace internal
 {
 class Circuit;
 class Component;
+class ParallelCircuitThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
@@ -47,23 +48,21 @@ class Component;
 /**
 Classes derived from Component can be added to a Circuit and routed to and from other Components.
 
-On construction, derived classes must configure the component's IO buses by calling
-SetInputCount_() and SetOutputCount_() respectively.
+On construction, derived classes must configure the component's IO buses by calling SetInputCount_() and SetOutputCount_()
+respectively.
 
-Derived classes must also implement the virtual method: Process_(). The Process_() method is a
-callback from the DSPatch engine that occurs when a new set of input signals is ready for
-processing. The Process_() method has 2 arguments: the input bus, and the output bus. This method's
-purpose is to pull its required inputs out of the input bus, process these inputs, and populate the
+Derived classes must also implement the virtual method: Process_(). The Process_() method is a callback from the DSPatch engine
+that occurs when a new set of input signals is ready for processing. The Process_() method has 2 arguments: the input bus, and the
+output bus. This method's purpose is to pull its required inputs out of the input bus, process these inputs, and populate the
 output bus with the results (see SignalBus).
 
-In order for a component to do any work it must be ticked. This is performed by repeatedly calling
-the Tick() method. This method is responsible for acquiring the next set of input signals from its
-input wires and populating the component's input bus. The acquired input bus is then passed to the
-Process_() method.
+In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() method. This method
+is responsible for acquiring the next set of input signals from its input wires and populating the component's input bus. The
+acquired input bus is then passed to the Process_() method.
 
-<b>PERFORMANCE TIP:</b> If a component is capable of processing its buffers out-of-order within a
-stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve
-performance. Note however that Process_() must be thread-safe to operate in this mode.
+<b>PERFORMANCE TIP:</b> If a component is capable of processing its buffers out-of-order within a stream processing circuit,
+consider initialising its base with ProcessOrder::OutOfOrder to improve performance. Note however that Process_() must be
+thread-safe to operate in this mode.
 */
 
 class DLLEXPORT Component
@@ -107,8 +106,13 @@ protected:
 
 private:
     friend class internal::Circuit;
+    friend class internal::ParallelCircuitThread;
 
-    void _Scan( std::vector<Component*>& components );
+    void _TickParallel( int bufferNo );
+
+    void _Scan( std::vector<Component*>& components,
+                std::vector<std::vector<DSPatch::Component*>>& componentsMap,
+                int& scanPosition );
     void _EndScan();
 
     internal::Component* p;

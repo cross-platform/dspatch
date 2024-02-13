@@ -41,10 +41,9 @@ namespace internal
 /// Thread class for auto-ticking a circuit
 
 /**
-An AutoTickThread is responsible for ticking a circuit continuously in a free-running thread. Upon
-initialisation, a reference to the circuit must be provided for the thread's _Run() method to use.
-Once Start() has been called, the thread will begin, repeatedly calling the circuit's Tick()
-method until instructed to Pause() or Stop().
+An AutoTickThread is responsible for ticking a circuit continuously in a free-running thread. Upon initialisation, a reference to
+the circuit must be provided for the thread's _Run() method to use. Once Start() has been called, the thread will begin,
+repeatedly calling the circuit's Tick() method until instructed to Pause() or Stop().
 */
 
 class AutoTickThread final
