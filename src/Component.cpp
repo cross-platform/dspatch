@@ -419,23 +419,28 @@ void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& co
         return;
     }
 
-    // initialize scanPosition
+    // initialize p->scanPosition
     p->scanPosition = 0;
+
+    // increment scanPosition
+    ++scanPosition;
 
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
+        scanPosition = -1;
         wire.fromComponent->_ScanParallel( componentsMap, scanPosition );
+
+        // ensure we're using the furthest scanPosition detected
+        p->scanPosition = std::max( p->scanPosition, ++scanPosition );
     }
 
-    // set scanPosition
-    p->scanPosition = ++scanPosition;
-
-    if ( scanPosition >= (int)componentsMap.size() )
+    // insert component at p->scanPosition
+    if ( p->scanPosition >= (int)componentsMap.size() )
     {
-        componentsMap.resize( scanPosition + 1 );
+        componentsMap.resize( p->scanPosition + 1 );
     }
-    componentsMap[scanPosition].emplace_back( this );
+    componentsMap[p->scanPosition].emplace_back( this );
 }
 
 void Component::_EndScan()
