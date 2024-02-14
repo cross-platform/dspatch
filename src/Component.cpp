@@ -69,7 +69,7 @@ public:
     }
 
 private:
-    std::atomic_flag flag = ATOMIC_VAR_INIT( true );  // true here actually mean unset / cleared
+    std::atomic_flag flag = { true };  // true here actually means unset / cleared
 };
 
 struct RefCounter final
