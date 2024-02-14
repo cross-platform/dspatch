@@ -901,6 +901,7 @@ TEST_CASE( "TenThousandComponents" )
         }
         circuit->ConnectOutToIn( last, 0, dest, i );
     }
+    circuit->Optimize();
 
     auto end = std::chrono::high_resolution_clock::now();
 
@@ -924,6 +925,7 @@ TEST_CASE( "TenThousandComponents" )
             {
                 circuit->Tick();
             }
+            circuit->Sync();
 
             end = std::chrono::high_resolution_clock::now();
 
