@@ -390,14 +390,11 @@ void Component::_TickParallel( int bufferNo )
     }
 }
 
-void Component::_Scan( std::vector<Component*>& components,
-                       std::vector<std::vector<DSPatch::Component*>>& componentsMap,
-                       int& scanPosition )
+void Component::_ScanSeries( std::vector<Component*>& components )
 {
     // continue only if this component has not already been scanned
     if ( p->scanPosition != -1 )
     {
-        scanPosition = p->scanPosition == 0 ? 0 : std::max( p->scanPosition, scanPosition );
         return;
     }
 
@@ -407,19 +404,43 @@ void Component::_Scan( std::vector<Component*>& components,
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        wire.fromComponent->_Scan( components, componentsMap, scanPosition );
+        wire.fromComponent->_ScanSeries( components );
     }
-
-    // set scanPosition
-    p->scanPosition = ++scanPosition;
 
     components.emplace_back( this );
+}
 
-    if ( scanPosition >= (int)componentsMap.size() )
+void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition )
+{
+    // continue only if this component has not already been scanned
+    if ( p->scanPosition != -1 )
     {
-        componentsMap.resize( scanPosition + 1 );
+        scanPosition = p->scanPosition == 0 ? 0 : std::max( p->scanPosition, scanPosition );
+        return;
     }
-    componentsMap[scanPosition].emplace_back( this );
+
+    // initialize p->scanPosition
+    p->scanPosition = 0;
+
+    // increment scanPosition
+    ++scanPosition;
+
+    for ( const auto& wire : p->inputWires )
+    {
+        // scan incoming components
+        scanPosition = -1;
+        wire.fromComponent->_ScanParallel( componentsMap, scanPosition );
+
+        // ensure we're using the furthest scanPosition detected
+        p->scanPosition = std::max( p->scanPosition, ++scanPosition );
+    }
+
+    // insert component at p->scanPosition
+    if ( p->scanPosition >= (int)componentsMap.size() )
+    {
+        componentsMap.resize( p->scanPosition + 1 );
+    }
+    componentsMap[p->scanPosition].emplace_back( this );
 }
 
 void Component::_EndScan()
