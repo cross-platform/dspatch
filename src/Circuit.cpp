@@ -438,7 +438,7 @@ inline void internal::Circuit::Optimize()
 
         for ( int i = (int)components.size() - 1; i >= 0; --i )
         {
-            int scanPosition = -1;
+            int scanPosition;
             components[i]->_ScanParallel( componentsMap, scanPosition );
         }
         for ( auto component : components )

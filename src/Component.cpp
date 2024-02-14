@@ -354,17 +354,15 @@ void Component::_TickParallel( int bufferNo )
     auto& outputBus = p->outputBuses[bufferNo];
     auto& refs = p->refs[bufferNo];
 
-    // clear inputs
+    // clear inputs and outputs
     inputBus.ClearAllValues();
+    outputBus.ClearAllValues();
 
     for ( const auto& wire : p->inputWires )
     {
         // get new inputs from incoming components
         wire.fromComponent->p->GetOutputParallel( bufferNo, wire.fromOutput, wire.toInput, inputBus );
     }
-
-    // clear outputs
-    outputBus.ClearAllValues();
 
     if ( p->bufferCount != 1 && p->processOrder == ProcessOrder::InOrder )
     {
@@ -415,20 +413,17 @@ void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& co
     // continue only if this component has not already been scanned
     if ( p->scanPosition != -1 )
     {
-        scanPosition = p->scanPosition == 0 ? 0 : std::max( p->scanPosition, scanPosition );
+        scanPosition = p->scanPosition;
         return;
     }
 
-    // initialize p->scanPosition
+    // initialize scanPositions
     p->scanPosition = 0;
-
-    // increment scanPosition
-    ++scanPosition;
+    scanPosition = 0;
 
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        scanPosition = -1;
         wire.fromComponent->_ScanParallel( componentsMap, scanPosition );
 
         // ensure we're using the furthest scanPosition detected

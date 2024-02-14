@@ -699,6 +699,9 @@ TEST_CASE( "WiringTest" )
     auto counter = std::make_shared<CircuitCounter>();
     auto probe = std::make_shared<CircuitProbe>();
 
+    circuit->AddComponent( counter );
+    circuit->AddComponent( probe );
+
     circuit->ConnectOutToIn( counter, 0, probe, 0 );
     circuit->ConnectOutToIn( probe, 0, counter, 0 );
 
