@@ -45,7 +45,7 @@ endif
 
 # Add static code analysis
 
-if find_program('cppcheck', required: false).found()
+if find_program('cppchecks', required: false).found()
     if host_machine.system() == 'windows'
         extra_cppcheck_args = ['-D_WIN32']
     else

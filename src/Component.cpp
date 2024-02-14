@@ -390,9 +390,27 @@ void Component::_TickParallel( int bufferNo )
     }
 }
 
-void Component::_Scan( std::vector<Component*>& components,
-                       std::vector<std::vector<DSPatch::Component*>>& componentsMap,
-                       int& scanPosition )
+void Component::_ScanSeries( std::vector<Component*>& components )
+{
+    // continue only if this component has not already been scanned
+    if ( p->scanPosition != -1 )
+    {
+        return;
+    }
+
+    // initialize scanPosition
+    p->scanPosition = 0;
+
+    for ( const auto& wire : p->inputWires )
+    {
+        // scan incoming components
+        wire.fromComponent->_ScanSeries( components );
+    }
+
+    components.emplace_back( this );
+}
+
+void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition )
 {
     // continue only if this component has not already been scanned
     if ( p->scanPosition != -1 )
@@ -407,13 +425,11 @@ void Component::_Scan( std::vector<Component*>& components,
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        wire.fromComponent->_Scan( components, componentsMap, scanPosition );
+        wire.fromComponent->_ScanParallel( componentsMap, scanPosition );
     }
 
     // set scanPosition
     p->scanPosition = ++scanPosition;
-
-    components.emplace_back( this );
 
     if ( scanPosition >= (int)componentsMap.size() )
     {

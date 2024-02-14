@@ -110,9 +110,8 @@ private:
 
     void _TickParallel( int bufferNo );
 
-    void _Scan( std::vector<Component*>& components,
-                std::vector<std::vector<DSPatch::Component*>>& componentsMap,
-                int& scanPosition );
+    void _ScanSeries( std::vector<Component*>& components );
+    void _ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
     void _EndScan();
 
     internal::Component* p;

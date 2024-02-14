@@ -417,32 +417,44 @@ void Circuit::Optimize()
 
 inline void internal::Circuit::Optimize()
 {
-    std::vector<DSPatch::Component*> orderedComponents;
-    orderedComponents.reserve( components.size() );
-
-    std::vector<std::vector<DSPatch::Component*>> componentsMap;
-
-    // scan for optimal component order
-    for ( auto component : components )
+    // scan for optimal series order -> update components
     {
-        int scanPosition = -1;
-        component->_Scan( orderedComponents, componentsMap, scanPosition );
+        std::vector<DSPatch::Component*> orderedComponents;
+        orderedComponents.reserve( components.size() );
+
+        for ( auto component : components )
+        {
+            component->_ScanSeries( orderedComponents );
+        }
+        for ( auto component : components )
+        {
+            component->_EndScan();
+        }
+
+        components = std::move( orderedComponents );
     }
 
-    // reset all isScanning flags
-    for ( auto component : components )
+    // scan for optimal parallel order -> update componentsParallel
     {
-        component->_EndScan();
+        std::vector<std::vector<DSPatch::Component*>> componentsMap;
+        for ( int i = (int)components.size() - 1; i >= 0; --i )
+        {
+            int scanPosition = -1;
+            components[i]->_ScanParallel( componentsMap, scanPosition );
+        }
+        for ( auto component : components )
+        {
+            component->_EndScan();
+        }
+
+        componentsParallel.clear();
+        componentsParallel.reserve( components.size() );
+        for ( auto& componentsMapEntry : componentsMap )
+        {
+            componentsParallel.insert( componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        }
     }
 
-    components = std::move( orderedComponents );
-
-    componentsParallel.clear();
-    componentsParallel.reserve( components.size() );
-    for ( auto& componentsMapEntry : componentsMap )
-    {
-        componentsParallel.insert( componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
-    }
-
+    // clear circuitDirty flag
     circuitDirty = false;
 }
