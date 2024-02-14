@@ -132,6 +132,7 @@ void Circuit::RemoveAllComponents()
     PauseAutoTick();
 
     p->components.clear();
+    p->componentsParallel.clear();
 
     ResumeAutoTick();
 
