@@ -437,6 +437,7 @@ inline void internal::Circuit::Optimize()
     // scan for optimal parallel order -> update componentsParallel
     {
         std::vector<std::vector<DSPatch::Component*>> componentsMap;
+
         for ( int i = (int)components.size() - 1; i >= 0; --i )
         {
             int scanPosition = -1;
