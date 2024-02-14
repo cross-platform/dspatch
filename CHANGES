@@ -1,3 +1,9 @@
+v.10.2.2 (14 February 2024)
+    - Simplified Component::_ScanParallel() logic.
+    - Removed unnecessary SetBufferCount() in ~Circuit().
+    - Removed deprecated ATOMIC_VAR_INIT macro.
+    - Pre-optimized circuit in TenThousandComponents test.
+
 v.10.2.1 (14 February 2024)
     - Fixed parallel scanning in Circuit::Optimize().
     - Updated documentation on multi-threading support.
