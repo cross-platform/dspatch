@@ -1,3 +1,7 @@
+v.10.2.1 (14 February 2024)
+    - Fixed parallel scanning in Circuit::Optimize().
+    - Updated documentation on multi-threading support.
+
 v.10.2.0 (13 February 2024)
     - Added Circuit::SetThreadCount() method.
     - Updated fast_any submodule (incl. macOS 10.15 support).
