@@ -76,8 +76,6 @@ Circuit::Circuit()
 Circuit::~Circuit()
 {
     StopAutoTick();
-    SetBufferCount( 0 );
-
     delete p;
 }
 
