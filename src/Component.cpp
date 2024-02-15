@@ -253,6 +253,7 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     p->releaseFlags.resize( bufferCount );
 
     p->refs.resize( bufferCount );
+    auto refCount = p->refs[0].size();
 
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
@@ -269,8 +270,8 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
             p->releaseFlags[i].Clear();
         }
 
-        p->refs[i].resize( p->refs[0].size() );
-        for ( size_t j = 0; j < p->refs[0].size(); ++j )
+        p->refs[i].resize( refCount );
+        for ( size_t j = 0; j < refCount; ++j )
         {
             // sync output reference counts
             p->refs[i][j].total = p->refs[0][j].total;
@@ -352,7 +353,6 @@ void Component::_TickParallel( int bufferNo )
 {
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
-    auto& refs = p->refs[bufferNo];
 
     // clear inputs and outputs
     inputBus.ClearAllValues();
@@ -382,7 +382,7 @@ void Component::_TickParallel( int bufferNo )
     }
 
     // signal that our outputs are ready
-    for ( auto& ref : refs )
+    for ( auto& ref : p->refs[bufferNo] )
     {
         ref.readyFlag.Set();
     }
@@ -495,22 +495,24 @@ inline void internal::Component::GetOutputParallel( int bufferNo, int fromOutput
     auto& signal = *outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = refs[bufferNo][fromOutput];
 
-    if ( ref.total == 1 )
-    {
-        // wait for this output to be ready
-        ref.readyFlag.WaitAndClear();
-        // there's only one reference, move the signal immediately and return
-        toBus.MoveSignal( toInput, signal );
-        return;
-    }
-
     // wait for this output to be ready
     ref.readyFlag.WaitAndClear();
 
-    if ( ++ref.count != ref.total )
+    if ( !signal.has_value() )
+    {
+        return;
+    }
+
+    if ( ref.total == 1 )
+    {
+        // there's only one reference, move the signal immediately and return
+        toBus.MoveSignal( toInput, signal );
+    }
+    else if ( ++ref.count != ref.total )
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
+
         // wake next WaitAndClear()
         ref.readyFlag.Set();
     }
