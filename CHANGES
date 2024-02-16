@@ -1,3 +1,9 @@
+v.10.2.3 (16 February 2024)
+    - Added missing componentsParallel.clear() in RemoveAllComponents().
+    - Cleaned up and (slightly) optimized thread classes.
+    - Removed some unnecessary vector indexing and size() calls.
+    - Clarified what "time-consuming" actually means in the docs.
+
 v.10.2.2 (14 February 2024)
     - Simplified Component::_ScanParallel() logic.
     - Removed unnecessary SetBufferCount() in ~Circuit().
