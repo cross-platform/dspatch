@@ -99,6 +99,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9c10ef8da11245dce92fbb2d8fb6c285"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b56070b8921fcfb1b5186f00b4fc610"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html#a6b56070b8921fcfb1b5186f00b4fc610">Sync</a> ()</td></tr>
 <tr class="separator:a6b56070b8921fcfb1b5186f00b4fc610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad9f6dfce4cdb743737404d735ef8efc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html#aad9f6dfce4cdb743737404d735ef8efc">Resume</a> ()</td></tr>
+<tr class="separator:aad9f6dfce4cdb743737404d735ef8efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5dff28d3484f4c3f313db5abd2baf33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html#ab5dff28d3484f4c3f313db5abd2baf33">SyncAndResume</a> ()</td></tr>
 <tr class="separator:ab5dff28d3484f4c3f313db5abd2baf33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -107,7 +109,7 @@ Public Member Functions</h2></td></tr>
 <p>A <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components.">CircuitThread</a> is responsible for ticking all components within a <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a>. Upon initialisation, a reference to the vector of circuit components must be provided for the thread _Run() method to loop through. Each <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components.">CircuitThread</a> has a buffer number (bufferNo), which is also provided upon initialisation. When creating multiple CircuitThreads, each thread must have their own unique buffer number, beginning at 0 and incrementing by 1 for every thread added. This buffer number corresponds with the <a class="el" href="class_d_s_patch_1_1_component.html" title="Abstract base class for DSPatch components.">Component</a>'s buffer number when calling its Tick() method in the <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components.">CircuitThread</a>'s component loop.</p>
 <p>The SyncAndResume() method causes the <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components.">CircuitThread</a> to tick all circuit components once, after which the thread will wait until instructed to resume again. As each component is done processing it hands over control to the next waiting <a class="el" href="class_d_s_patch_1_1internal_1_1_circuit_thread.html" title="Thread class for asynchronously ticking circuit components.">CircuitThread</a>, therefore, from an external control loop (I.e. <a class="el" href="class_d_s_patch_1_1_circuit.html" title="Workspace for adding and routing components.">Circuit</a>'s Tick() method) we can simply loop through our array of CircuitThreads calling SyncAndResume() on each. If a circuit thread is busy processing, a call to SyncAndResume() will block momentarily until that thread is done processing. </p>
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00062">62</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00063">63</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9bad288f8beb2d440dc1585a716fc1d7" name="a9bad288f8beb2d440dc1585a716fc1d7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9bad288f8beb2d440dc1585a716fc1d7">&#9670;&#160;</a></span>CircuitThread()</h2>
@@ -133,7 +135,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00070">70</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00071">71</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 
 </div>
 </div>
@@ -160,11 +162,38 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00074">74</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00075">75</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="aad9f6dfce4cdb743737404d735ef8efc" name="aad9f6dfce4cdb743737404d735ef8efc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad9f6dfce4cdb743737404d735ef8efc">&#9670;&#160;</a></span>Resume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DSPatch::internal::CircuitThread::Resume </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00113">113</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+
+</div>
+</div>
 <a id="ad12e3fa1b5ff8116ecfec848220dc48c" name="ad12e3fa1b5ff8116ecfec848220dc48c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad12e3fa1b5ff8116ecfec848220dc48c">&#9670;&#160;</a></span>Start()</h2>
 
@@ -199,7 +228,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00079">79</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00080">80</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 
 </div>
 </div>
@@ -226,7 +255,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00096">96</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00091">91</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 
 </div>
 </div>
@@ -253,7 +282,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00115">115</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00103">103</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 
 </div>
 </div>
@@ -280,7 +309,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00131">131</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_circuit_thread_8h_source.html#l00119">119</a> of file <a class="el" href="_circuit_thread_8h_source.html">CircuitThread.h</a>.</p>
 
 </div>
 </div>

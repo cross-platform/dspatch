@@ -238,7 +238,7 @@ _   circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
     Furthermore, to boost performance in stream processing circuits like this one, multi-buffering
     can be enabled via the SetBufferCount() method:
 
-    <b>NOTE:</b> If none of the parallel components in your circuit perform time-consuming
+    <b>NOTE:</b> If none of the parallel components in your circuit perform time-consuming (⪆10μs)
     operations, multi-buffering (or even zero buffering) will almost always outperform
     multi-threading (via SetThreadCount()). The contention overhead caused by multiple threads
     processing a single tick must be made negligible by time-consuming parallel components for any
