@@ -202,7 +202,7 @@ Tutorials</h1>
 <div class="line">_</div>
 </div><!-- fragment --><p>Lastly, in order for our circuit to do any work it must be ticked. This is performed by repeatedly calling the circuit's Tick() method. This method can be called manually in a loop, or alternatively, by calling StartAutoTick(), a seperate thread will spawn, automatically calling Tick() continuously.</p>
 <p>Furthermore, to boost performance in stream processing circuits like this one, multi-buffering can be enabled via the SetBufferCount() method:</p>
-<p><b>NOTE:</b> If none of the parallel components in your circuit perform time-consuming (⪆10μs) operations, multi-buffering (or even zero buffering) will almost always outperform multi-threading (via SetThreadCount()). The contention overhead caused by multiple threads processing a single tick must be made negligible by time-consuming parallel components for any performance improvement to be seen.</p>
+<p><b>NOTE:</b> If none of the parallel branches in your circuit are time-consuming (⪆10μs), multi-buffering (or even zero buffering) will almost always outperform multi-threading (via SetThreadCount()). The contention overhead caused by multiple threads processing a single tick must be made negligible by time-consuming parallel components for any performance improvement to be seen.</p>
 <div class="fragment"><div class="line">    <span class="comment">// 5. Tick the circuit</span></div>
 <div class="line">    <span class="comment">// ===================</span></div>
 <div class="line"> </div>

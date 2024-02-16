@@ -50,10 +50,9 @@ a connected wire, that wire is replaced with the new one. One output, on the oth
 To boost performance in stream processing circuits, multi-buffering can be enabled via the SetBufferCount() method. A circuit's
 buffer count can be adjusted at runtime.
 
-<b>NOTE:</b> If none of the parallel components in your circuit perform time-consuming (⪆10μs) operations, multi-buffering (or
-even zero buffering) will almost always outperform multi-threading (via SetThreadCount()). The contention overhead caused by
-multiple threads processing a single tick must be made negligible by time-consuming parallel components for any performance
-improvement to be seen.
+<b>NOTE:</b> If none of the parallel branches in your circuit are time-consuming (⪆10μs), multi-buffering (or even zero buffering)
+will almost always outperform multi-threading (via SetThreadCount()). The contention overhead caused by multiple threads
+processing a single tick must be made negligible by time-consuming parallel components for any performance improvement to be seen.
 
 The Circuit Tick() method runs through its internal array of components and calls each component's Tick() method. A circuit's
 Tick() method can be called in a loop from the main application thread, or alternatively, by calling StartAutoTick(), a separate
