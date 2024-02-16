@@ -47,8 +47,6 @@ class Circuit final
 public:
     inline void Optimize();
 
-    int pauseCount = 0;
-
     int bufferCount = 0;
     int threadCount = 0;
     int currentBuffer = 0;
@@ -366,42 +364,24 @@ void Circuit::Sync()
 
 void Circuit::StartAutoTick()
 {
-    if ( p->autoTickThread.IsStopped() )
-    {
-        p->autoTickThread.Start( this );
-    }
-    else
-    {
-        ResumeAutoTick();
-    }
+    p->autoTickThread.Start( this );
 }
 
 void Circuit::StopAutoTick()
 {
-    if ( !p->autoTickThread.IsStopped() )
-    {
-        p->autoTickThread.Stop();
-    }
-
+    p->autoTickThread.Stop();
     Sync();
 }
 
 void Circuit::PauseAutoTick()
 {
-    if ( !p->autoTickThread.IsStopped() && ++p->pauseCount == 1 && !p->autoTickThread.IsPaused() )
-    {
-        p->autoTickThread.Pause();
-    }
-
+    p->autoTickThread.Pause();
     Sync();
 }
 
 void Circuit::ResumeAutoTick()
 {
-    if ( p->autoTickThread.IsPaused() && --p->pauseCount == 0 )
-    {
-        p->autoTickThread.Resume();
-    }
+    p->autoTickThread.Resume();
 }
 
 void Circuit::Optimize()

@@ -105,14 +105,8 @@ public:
 
     inline void Sync()
     {
-        if ( _gotSync )
-        {
-            return;
-        }
-
         std::unique_lock<std::mutex> lock( _syncMutex );
 
-        // cppcheck-suppress knownConditionTrueFalse
         if ( !_gotSync )  // if haven't already got sync
         {
             _syncCondt.wait( lock );  // wait for sync
@@ -122,9 +116,6 @@ public:
     inline void Resume()
     {
         _gotSync = false;  // reset the sync flag
-
-        std::lock_guard<std::mutex> lock( _syncMutex );
-
         _resumeCondt.notify_all();
     }
 
@@ -173,7 +164,7 @@ private:
     int _threadNo = 0;
     int _threadCount = 0;
     bool _stop = false;
-    bool _gotSync = true;
+    bool _gotSync = false;
     std::mutex _syncMutex;
     std::condition_variable _resumeCondt, _syncCondt;
 };

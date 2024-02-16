@@ -78,16 +78,10 @@ public:
 
     inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo )
     {
-        if ( !_stopped )
-        {
-            return;
-        }
-
         _components = components;
         _bufferNo = bufferNo;
 
         _stop = false;
-        _stopped = false;
         _gotSync = false;
 
         _thread = std::thread( &CircuitThread::_Run, this );
@@ -95,16 +89,9 @@ public:
 
     inline void Stop()
     {
-        if ( _stopped )
-        {
-            return;
-        }
-
-        Sync();
-
         _stop = true;
 
-        SyncAndResume();
+        Resume();
 
         if ( _thread.joinable() )
         {
@@ -114,48 +101,24 @@ public:
 
     inline void Sync()
     {
-        if ( _stopped || _gotSync )
-        {
-            return;
-        }
-
         std::unique_lock<std::mutex> lock( _syncMutex );
 
-        // cppcheck-suppress knownConditionTrueFalse
         if ( !_gotSync )  // if haven't already got sync
         {
             _syncCondt.wait( lock );  // wait for sync
         }
     }
 
+    inline void Resume()
+    {
+        _gotSync = false;  // reset the sync flag
+        _resumeCondt.notify_all();
+    }
+
     inline void SyncAndResume()
     {
-        if ( _stopped )
-        {
-            return;
-        }
-
-        if ( _gotSync )
-        {
-            _gotSync = false;  // reset the sync flag
-
-            std::lock_guard<std::mutex> lock( _syncMutex );
-
-            _resumeCondt.notify_all();
-
-            return;
-        }
-
-        std::unique_lock<std::mutex> lock( _syncMutex );
-
-        if ( !_gotSync )  // if haven't already got sync
-        {
-            _syncCondt.wait( lock );  // wait for sync
-        }
-
-        _gotSync = false;  // reset the sync flag
-
-        _resumeCondt.notify_all();
+        Sync();
+        Resume();
     }
 
 private:
@@ -201,16 +164,13 @@ private:
                 }
             }
         }
-
-        _stopped = true;
     }
 
     std::thread _thread;
     std::vector<DSPatch::Component*>* _components = nullptr;
     int _bufferNo = 0;
     bool _stop = false;
-    bool _stopped = true;
-    bool _gotSync = true;
+    bool _gotSync = false;
     std::mutex _syncMutex;
     std::condition_variable _resumeCondt, _syncCondt;
 };
