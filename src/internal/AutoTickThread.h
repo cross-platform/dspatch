@@ -118,7 +118,6 @@ private:
                     std::unique_lock<std::mutex> lock( _resumeMutex );
 
                     _pauseCondt.notify_all();
-
                     _resumeCondt.wait( lock );  // wait for resume
                 }
             }

@@ -44,9 +44,9 @@ namespace internal
 class AtomicFlag final
 {
 public:
-    AtomicFlag() = default;
+    inline AtomicFlag() = default;
 
-    AtomicFlag( AtomicFlag&& )
+    inline AtomicFlag( AtomicFlag&& )
     {
     }
 
