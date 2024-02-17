@@ -384,7 +384,11 @@ void Component::_TickParallel( int bufferNo )
     // signal that our outputs are ready
     for ( auto& ref : p->refs[bufferNo] )
     {
-        ref.readyFlag.Set();
+        // readyFlags are cleared in GetOutputParallel() which ofc is only called on outputs with refs
+        if ( ref.total != 0 )
+        {
+            ref.readyFlag.Set();
+        }
     }
 }
 
