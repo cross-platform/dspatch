@@ -41,10 +41,9 @@ namespace internal
 /// Thread class for auto-ticking a circuit
 
 /**
-An AutoTickThread is responsible for ticking a circuit continuously in a free-running thread. Upon
-initialisation, a reference to the circuit must be provided for the thread's _Run() method to use.
-Once Start() has been called, the thread will begin, repeatedly calling the circuit's Tick()
-method until instructed to Pause() or Stop().
+An AutoTickThread is responsible for ticking a circuit continuously in a free-running thread. Upon initialisation, a reference to
+the circuit must be provided for the thread's _Run() method to use. Once Start() has been called, the thread will begin,
+repeatedly calling the circuit's Tick() method until instructed to Pause() or Stop().
 */
 
 class AutoTickThread final
@@ -59,20 +58,11 @@ public:
         Stop();
     }
 
-    inline bool IsStopped() const
-    {
-        return _stopped;
-    }
-
-    inline bool IsPaused() const
-    {
-        return _pause;
-    }
-
     inline void Start( DSPatch::Circuit* circuit )
     {
         if ( !_stopped )
         {
+            Resume();
             return;
         }
 
@@ -87,16 +77,7 @@ public:
 
     inline void Stop()
     {
-        if ( _stopped )
-        {
-            return;
-        }
-
-        Pause();
-
         _stop = true;
-
-        Resume();
 
         if ( _thread.joinable() )
         {
@@ -106,16 +87,9 @@ public:
 
     inline void Pause()
     {
-        if ( _pause || _stopped )
+        if ( !_stopped && ++pauseCount == 1 )
         {
-            return;
-        }
-
-        std::unique_lock<std::mutex> lock( _resumeMutex );
-
-        // cppcheck-suppress knownConditionTrueFalse
-        if ( !_pause && !_stopped )
-        {
+            std::unique_lock<std::mutex> lock( _resumeMutex );
             _pause = true;
             _pauseCondt.wait( lock );  // wait for pause
         }
@@ -123,18 +97,10 @@ public:
 
     inline void Resume()
     {
-        if ( !_pause )
+        if ( _pause && --pauseCount == 0 )
         {
-            return;
-        }
-
-        std::lock_guard<std::mutex> lock( _resumeMutex );
-
-        // cppcheck-suppress knownConditionTrueFalse
-        if ( _pause )
-        {
-            _resumeCondt.notify_all();
             _pause = false;
+            _resumeCondt.notify_all();
         }
     }
 
@@ -152,7 +118,6 @@ private:
                     std::unique_lock<std::mutex> lock( _resumeMutex );
 
                     _pauseCondt.notify_all();
-
                     _resumeCondt.wait( lock );  // wait for resume
                 }
             }
@@ -163,6 +128,7 @@ private:
 
     std::thread _thread;
     DSPatch::Circuit* _circuit = nullptr;
+    int pauseCount = 0;
     bool _stop = false;
     bool _pause = false;
     bool _stopped = true;

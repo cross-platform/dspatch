@@ -40,17 +40,15 @@ namespace DSPatch
 /// Signal container
 
 /**
-Components process and transfer data between each other in the form of "signals" via interconnected
-wires. SignalBuses are signal containers. Via the Process_() method, a Component receives signals
-into its "inputs" SignalBus and provides signals to its "outputs" SignalBus. The SignalBus class
-provides public getters and setters for manipulating its internal signal values, abstracting the
-need to retrieve and interface with them directly.
+Components process and transfer data between each other in the form of "signals" via interconnected wires. SignalBuses are signal
+containers. Via the Process_() method, a Component receives signals into its "inputs" SignalBus and provides signals to its
+"outputs" SignalBus. The SignalBus class provides public getters and setters for manipulating its internal signal values,
+abstracting the need to retrieve and interface with them directly.
 
-Signals can be dynamically typed at runtime, this means a signal has the ability to change its data
-type at any point during program execution. This is designed such that a SignalBus can hold any
-number of different typed variables, as well as to allow for a variable to dynamically change its
-type when needed - this can be useful for inputs that accept a number of different data types
-(E.g. Varying sample size in an audio buffer: array of byte / int / float).
+Signals can be dynamically typed at runtime, this means a signal has the ability to change its data type at any point during
+program execution. This is designed such that a SignalBus can hold any number of different typed variables, as well as to allow
+for a variable to dynamically change its type when needed - this can be useful for inputs that accept a number of different data
+types (E.g. Varying sample size in an audio buffer: array of byte / int / float).
 */
 
 class DLLEXPORT SignalBus final

@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "internal/AutoTickThread.h"
 #include "internal/CircuitThread.h"
+#include "internal/ParallelCircuitThread.h"
 
 #include <algorithm>
 #include <set>
@@ -46,17 +47,18 @@ class Circuit final
 public:
     inline void Optimize();
 
-    int pauseCount = 0;
-
     int bufferCount = 0;
+    int threadCount = 0;
     int currentBuffer = 0;
 
     AutoTickThread autoTickThread;
 
     std::vector<DSPatch::Component*> components;
     std::set<DSPatch::Component::SPtr> componentsSet;
+    std::vector<DSPatch::Component*> componentsParallel;
 
     std::vector<CircuitThread> circuitThreads;
+    std::vector<std::vector<ParallelCircuitThread>> parallelCircuitThreads;
 
     bool circuitDirty = false;
 };
@@ -72,8 +74,6 @@ Circuit::Circuit()
 Circuit::~Circuit()
 {
     StopAutoTick();
-    SetBufferCount( 0 );
-
     delete p;
 }
 
@@ -89,6 +89,7 @@ bool Circuit::AddComponent( const Component::SPtr& component )
 
     PauseAutoTick();
     p->components.emplace_back( component.get() );
+    p->componentsParallel.emplace_back( component.get() );
     ResumeAutoTick();
 
     p->componentsSet.emplace( component );
@@ -129,6 +130,7 @@ void Circuit::RemoveAllComponents()
     PauseAutoTick();
 
     p->components.clear();
+    p->componentsParallel.clear();
 
     ResumeAutoTick();
 
@@ -140,7 +142,10 @@ int Circuit::GetComponentCount() const
     return (int)p->components.size();
 }
 
-bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput )
+bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent,
+                              int fromOutput,
+                              const Component::SPtr& toComponent,
+                              int toInput )
 {
     if ( p->componentsSet.find( fromComponent ) == p->componentsSet.end() ||
          p->componentsSet.find( toComponent ) == p->componentsSet.end() )
@@ -177,6 +182,8 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
         comp->DisconnectInput( component );
     }
 
+    p->circuitDirty = true;
+
     ResumeAutoTick();
 
     return true;
@@ -197,11 +204,6 @@ void Circuit::DisconnectAllComponents()
 
 void Circuit::SetBufferCount( int bufferCount )
 {
-    if ( p->bufferCount == bufferCount )
-    {
-        return;
-    }
-
     PauseAutoTick();
 
     p->bufferCount = bufferCount;
@@ -213,12 +215,20 @@ void Circuit::SetBufferCount( int bufferCount )
     }
 
     // resize thread array
-    p->circuitThreads.resize( p->bufferCount );
-
-    // initialise and start all threads
-    for ( int i = 0; i < p->bufferCount; ++i )
+    if ( p->threadCount != 0 )
     {
-        p->circuitThreads[i].Start( &p->components, i );
+        p->circuitThreads.resize( 0 );
+        SetThreadCount( p->threadCount );
+    }
+    else
+    {
+        p->circuitThreads.resize( p->bufferCount );
+
+        // initialise and start all threads
+        for ( int i = 0; i < p->bufferCount; ++i )
+        {
+            p->circuitThreads[i].Start( &p->components, i );
+        }
     }
 
     if ( p->currentBuffer >= p->bufferCount )
@@ -240,6 +250,57 @@ int Circuit::GetBufferCount() const
     return p->bufferCount;
 }
 
+void Circuit::SetThreadCount( int threadCount )
+{
+    PauseAutoTick();
+
+    p->threadCount = threadCount;
+
+    // stop all threads
+    for ( auto& circuitThreads : p->parallelCircuitThreads )
+    {
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Stop();
+        }
+    }
+
+    // resize thread array
+    if ( p->threadCount == 0 )
+    {
+        p->parallelCircuitThreads.resize( 0 );
+        SetBufferCount( p->bufferCount );
+    }
+    else
+    {
+        p->parallelCircuitThreads.resize( p->bufferCount == 0 ? 1 : p->bufferCount );
+        for ( auto& circuitThread : p->parallelCircuitThreads )
+        {
+            circuitThread.resize( p->threadCount );
+        }
+
+        // initialise and start all threads
+        int i = 0;
+        for ( auto& circuitThreads : p->parallelCircuitThreads )
+        {
+            int j = 0;
+            for ( auto& circuitThread : circuitThreads )
+            {
+                circuitThread.Start( &p->componentsParallel, i, j++, p->threadCount );
+            }
+            ++i;
+        }
+    }
+
+    ResumeAutoTick();
+}
+
+// cppcheck-suppress unusedFunction
+int Circuit::GetThreadCount() const
+{
+    return p->threadCount;
+}
+
 void Circuit::Tick()
 {
     if ( p->circuitDirty )
@@ -249,24 +310,39 @@ void Circuit::Tick()
 
     // process in a single thread if this circuit has no threads
     // =========================================================
-    if ( p->bufferCount == 0 )
+    if ( p->bufferCount == 0 && p->threadCount == 0 )
     {
         // tick all internal components
         for ( auto component : p->components )
         {
             component->Tick();
         }
+
+        return;
     }
     // process in multiple threads if this circuit has threads
     // =======================================================
+    else if ( p->threadCount != 0 )
+    {
+        auto& circuitThreads = p->parallelCircuitThreads[p->currentBuffer];
+
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Sync();
+        }
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Resume();
+        }
+    }
     else
     {
         p->circuitThreads[p->currentBuffer].SyncAndResume();  // sync and resume thread x
+    }
 
-        if ( ++p->currentBuffer == p->bufferCount )
-        {
-            p->currentBuffer = 0;
-        }
+    if ( p->bufferCount != 0 && ++p->currentBuffer == p->bufferCount )
+    {
+        p->currentBuffer = 0;
     }
 }
 
@@ -277,46 +353,35 @@ void Circuit::Sync()
     {
         circuitThread.Sync();
     }
+    for ( auto& circuitThreads : p->parallelCircuitThreads )
+    {
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Sync();
+        }
+    }
 }
 
 void Circuit::StartAutoTick()
 {
-    if ( p->autoTickThread.IsStopped() )
-    {
-        p->autoTickThread.Start( this );
-    }
-    else
-    {
-        ResumeAutoTick();
-    }
+    p->autoTickThread.Start( this );
 }
 
 void Circuit::StopAutoTick()
 {
-    if ( !p->autoTickThread.IsStopped() )
-    {
-        p->autoTickThread.Stop();
-    }
-
+    p->autoTickThread.Stop();
     Sync();
 }
 
 void Circuit::PauseAutoTick()
 {
-    if ( !p->autoTickThread.IsStopped() && ++p->pauseCount == 1 && !p->autoTickThread.IsPaused() )
-    {
-        p->autoTickThread.Pause();
-    }
-
+    p->autoTickThread.Pause();
     Sync();
 }
 
 void Circuit::ResumeAutoTick()
 {
-    if ( p->autoTickThread.IsPaused() && --p->pauseCount == 0 )
-    {
-        p->autoTickThread.Resume();
-    }
+    p->autoTickThread.Resume();
 }
 
 void Circuit::Optimize()
@@ -331,22 +396,45 @@ void Circuit::Optimize()
 
 inline void internal::Circuit::Optimize()
 {
-    std::vector<DSPatch::Component*> orderedComponents;
-    orderedComponents.reserve( components.size() );
-
-    // scan for optimal component order
-    for ( auto component : components )
+    // scan for optimal series order -> update components
     {
-        component->_Scan( orderedComponents );
+        std::vector<DSPatch::Component*> orderedComponents;
+        orderedComponents.reserve( components.size() );
+
+        for ( auto component : components )
+        {
+            component->_ScanSeries( orderedComponents );
+        }
+        for ( auto component : components )
+        {
+            component->_EndScan();
+        }
+
+        components = std::move( orderedComponents );
     }
 
-    // reset all isScanning flags
-    for ( auto component : components )
+    // scan for optimal parallel order -> update componentsParallel
     {
-        component->_EndScan();
+        std::vector<std::vector<DSPatch::Component*>> componentsMap;
+
+        for ( int i = (int)components.size() - 1; i >= 0; --i )
+        {
+            int scanPosition;
+            components[i]->_ScanParallel( componentsMap, scanPosition );
+        }
+        for ( auto component : components )
+        {
+            component->_EndScan();
+        }
+
+        componentsParallel.clear();
+        componentsParallel.reserve( components.size() );
+        for ( auto& componentsMapEntry : componentsMap )
+        {
+            componentsParallel.insert( componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        }
     }
 
-    components = std::move( orderedComponents );
-
+    // clear circuitDirty flag
     circuitDirty = false;
 }

@@ -44,48 +44,52 @@ namespace DSPatch
 namespace internal
 {
 
-/// Thread class for asynchronously ticking circuit components
+/// Thread class for asynchronously ticking parallel circuit components
 
 /**
-A CircuitThread is responsible for ticking all components within a Circuit. Upon initialisation, a reference to the vector of
-circuit components must be provided for the thread _Run() method to loop through. Each CircuitThread has a buffer number
-(bufferNo), which is also provided upon initialisation. When creating multiple CircuitThreads, each thread must have their own
-unique buffer number, beginning at 0 and incrementing by 1 for every thread added. This buffer number corresponds with the
-Component's buffer number when calling its Tick() method in the CircuitThread's component loop.
+A ParallelCircuitThread is responsible for ticking parallel components within a Circuit. Upon initialisation, a reference to the
+parallel-ordered vector of circuit components must be provided for the thread _Run() method to loop through. Each
+ParallelCircuitThread has a buffer number (bufferNo) and thread number (threadNo), which is also provided upon initialisation.
+When creating multiple ParallelCircuitThreads, each thread must have their own unique bufferNo:threadNo combination, beginning at
+0:0 and incrementing for every buffer thread added. The buffer number corresponds with the Component's buffer number when calling
+its Tick() method in the ParallelCircuitThread's component loop, and the thread number is that buffer's thread index - i.e. a
+circuit with x threads, will spawn x threads per buffer.
 
-The SyncAndResume() method causes the CircuitThread to tick all circuit components once, after which the thread will wait until
-instructed to resume again. As each component is done processing it hands over control to the next waiting CircuitThread,
-therefore, from an external control loop (I.e. Circuit's Tick() method) we can simply loop through our array of CircuitThreads
-calling SyncAndResume() on each. If a circuit thread is busy processing, a call to SyncAndResume() will block momentarily until
-that thread is done processing.
+The Sync() method will block until the thread is ready to process. The Resume() method will then signal the ParallelCircuitThread
+to tick its components once, after which the thread will wait until instructed to resume again. As each component is done
+processing it hands over control to the next waiting CircuitThread, therefore, from an external control loop (I.e. Circuit's
+Tick() method) we can simply loop through our array of ParallelCircuitThreads twice, calling Sync() on each, then Resume() on
+each.
 */
 
-class CircuitThread final
+class ParallelCircuitThread final
 {
 public:
-    NONCOPYABLE( CircuitThread );
+    NONCOPYABLE( ParallelCircuitThread );
 
-    inline CircuitThread() = default;
+    inline ParallelCircuitThread() = default;
 
     // cppcheck-suppress missingMemberCopy
-    inline CircuitThread( CircuitThread&& )
+    inline ParallelCircuitThread( ParallelCircuitThread&& )
     {
     }
 
-    inline ~CircuitThread()
+    inline ~ParallelCircuitThread()
     {
         Stop();
     }
 
-    inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo )
+    inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo, int threadNo, int threadCount )
     {
         _components = components;
         _bufferNo = bufferNo;
+        _threadNo = threadNo;
+        _threadCount = threadCount;
 
         _stop = false;
         _gotSync = false;
 
-        _thread = std::thread( &CircuitThread::_Run, this );
+        _thread = std::thread( &ParallelCircuitThread::_Run, this );
     }
 
     inline void Stop()
@@ -116,12 +120,6 @@ public:
         _resumeCondt.notify_all();
     }
 
-    inline void SyncAndResume()
-    {
-        Sync();
-        Resume();
-    }
-
 private:
     inline void _Run()
     {
@@ -135,6 +133,9 @@ private:
 
         if ( _components )
         {
+            auto& components = *_components;
+            size_t componentsSize;
+
             while ( !_stop )
             {
                 {
@@ -148,19 +149,10 @@ private:
                 // cppcheck-suppress knownConditionTrueFalse
                 if ( !_stop )
                 {
-                    // You might be thinking: Can't we have each thread start on a different component?
-
-                    // Well no. Because bufferNo == bufferNo, in order to maintain synchronisation
-                    // within the circuit, when a component wants to process its buffers in-order, it
-                    // requires that every other in-order component in the system has not only
-                    // processed its buffers in the same order, but has processed the same number of
-                    // buffers too.
-
-                    // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
-
-                    for ( auto component : *_components )
+                    componentsSize = components.size();
+                    for ( size_t i = _threadNo; i < componentsSize; i += _threadCount )
                     {
-                        component->Tick( _bufferNo );
+                        components[i]->_TickParallel( _bufferNo );
                     }
                 }
             }
@@ -170,6 +162,8 @@ private:
     std::thread _thread;
     std::vector<DSPatch::Component*>* _components = nullptr;
     int _bufferNo = 0;
+    int _threadNo = 0;
+    int _threadCount = 0;
     bool _stop = false;
     bool _gotSync = false;
     std::mutex _syncMutex;

@@ -50,16 +50,13 @@ class Plugin;
 /// Component plugin loader
 
 /**
-A component, packaged into a shared library (.so / .dylib / .dll) and exported via the
-EXPORT_PLUGIN macro, can be dynamically loaded into a host application using the Plugin class. Each
-Plugin object represents one Component class.
-(<a href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Example component
-plugins</b></a>)
+A component, packaged into a shared library (.so / .dylib / .dll) and exported via the EXPORT_PLUGIN macro, can be dynamically
+loaded into a host application using the Plugin class. Each Plugin object represents one Component class. (<a
+href="https://github.com/cross-platform/dspatchables/tree/master/Components"><b>Example component plugins</b></a>)
 
-A Plugin should be constructed with the absolute path of the plugin (shared library) to be loaded.
-Once instantiated you should check that the plugin was successfully loaded by calling IsLoaded().
-Thereafter, the contained component type can be instantiated (mutiple times) via the Create()
-method.
+A Plugin should be constructed with the absolute path of the plugin (shared library) to be loaded. Once instantiated you should
+check that the plugin was successfully loaded by calling IsLoaded(). Thereafter, the contained component type can be instantiated
+(mutiple times) via the Create() method.
 */
 
 class DLLEXPORT Plugin final

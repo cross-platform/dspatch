@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Set version information.
 set(DSPATCH_MAJOR 10)
-set(DSPATCH_MINOR 1)
+set(DSPATCH_MINOR 2)
 set(DSPATCH_MICRO 3)
 
 if(MSVC)

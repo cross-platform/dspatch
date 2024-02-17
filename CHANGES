@@ -1,3 +1,24 @@
+v.10.2.3 (16 February 2024)
+    - Added missing componentsParallel.clear() in RemoveAllComponents().
+    - Cleaned up and (slightly) optimized thread classes.
+    - Removed some unnecessary vector indexing and size() calls.
+    - Clarified what "time-consuming" actually means in the docs.
+
+v.10.2.2 (14 February 2024)
+    - Simplified Component::_ScanParallel() logic.
+    - Removed unnecessary SetBufferCount() in ~Circuit().
+    - Removed deprecated ATOMIC_VAR_INIT macro.
+    - Pre-optimized circuit in TenThousandComponents test.
+
+v.10.2.1 (14 February 2024)
+    - Fixed parallel scanning in Circuit::Optimize().
+    - Updated documentation on multi-threading support.
+
+v.10.2.0 (13 February 2024)
+    - Added Circuit::SetThreadCount() method.
+    - Updated fast_any submodule (incl. macOS 10.15 support).
+    - Updated CI to build on macOS 11 and Windows Server 2019.
+
 v.10.1.3 (25 January 2024)
     - Removed references to pointers in Circuit component loops.
     - Reserved memory for inputWires in SetInputCount_().
