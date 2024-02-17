@@ -116,26 +116,12 @@ inline fast_any::any* SignalBus::GetSignal( int signalIndex )
     // reference counting overhead. These Get() and Set() methods are VERY frequently called, so
     // doing as little as possible with the data here is best.
 
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return &_signals[signalIndex];
-    }
-    else
-    {
-        return nullptr;
-    }
+    return &_signals[signalIndex];
 }
 
 inline bool SignalBus::HasValue( int signalIndex ) const
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex].has_value();
-    }
-    else
-    {
-        return false;
-    }
+    return _signals[signalIndex].has_value();
 }
 
 template <typename ValueType>
@@ -145,40 +131,24 @@ inline ValueType* SignalBus::GetValue( int signalIndex ) const
 
     // See: GetSignal().
 
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex].as<ValueType>();
-    }
-    else
-    {
-        return nullptr;
-    }
+    return _signals[signalIndex].as<ValueType>();
 }
 
 template <typename ValueType>
 inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        _signals[signalIndex].emplace<ValueType>( newValue );
-    }
+    _signals[signalIndex].emplace<ValueType>( newValue );
 }
 
 template <typename ValueType>
 inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        _signals[signalIndex].emplace<ValueType>( std::forward<ValueType>( newValue ) );
-    }
+    _signals[signalIndex].emplace<ValueType>( std::forward<ValueType>( newValue ) );
 }
 
 inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
 {
-    if ( (size_t)toSignalIndex < _signals.size() )
-    {
-        _signals[toSignalIndex] = fromSignal;
-    }
+    _signals[toSignalIndex] = fromSignal;
 }
 
 inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
@@ -193,10 +163,7 @@ inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal 
     // signals such that, between these two points, just two value holders need to be constructed,
     // and shared back and forth from then on.
 
-    if ( (size_t)toSignalIndex < _signals.size() )
-    {
-        _signals[toSignalIndex].swap( fromSignal );
-    }
+    _signals[toSignalIndex].swap( fromSignal );
 }
 
 inline void SignalBus::ClearAllValues()
@@ -209,14 +176,7 @@ inline void SignalBus::ClearAllValues()
 
 inline fast_any::type_info SignalBus::GetType( int signalIndex ) const
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex].type();
-    }
-    else
-    {
-        return fast_any::type_id<void>;
-    }
+    return _signals[signalIndex].type();
 }
 
 }  // namespace DSPatch
