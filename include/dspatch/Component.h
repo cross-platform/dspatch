@@ -38,9 +38,7 @@ namespace DSPatch
 
 namespace internal
 {
-class Circuit;
 class Component;
-class ParallelCircuitThread;
 }  // namespace internal
 
 /// Abstract base class for DSPatch components
