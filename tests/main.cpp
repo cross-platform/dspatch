@@ -79,9 +79,15 @@ TEST_CASE( "SignalBusTest" )
     REQUIRE( signalBus.HasValue( 3 ) );
     REQUIRE( *signalBus.GetValue<int>( 3 ) == 1 );
 
+    // no 5th input so should return false and nullptr
+    REQUIRE( !signalBus.HasValue( 4 ) );
+    REQUIRE( signalBus.GetValue<int>( 4 ) == nullptr );
+
     REQUIRE( signalBus.GetType( 0 ) != signalBus.GetType( 1 ) );
     REQUIRE( signalBus.GetType( 1 ) != signalBus.GetType( 2 ) );
     REQUIRE( signalBus.GetType( 2 ) != signalBus.GetType( 3 ) );
+    // no 5th input so should return void type_info
+    REQUIRE( signalBus.GetType( 3 ) != signalBus.GetType( 4 ) );
 }
 
 TEST_CASE( "SerialTest" )
@@ -380,7 +386,6 @@ TEST_CASE( "BufferPerformanceTest" )
     // Calculate reference efficiency
 
     SignalBus testBus;
-    testBus.SetSignalCount( 1 );
     auto measureRef = [&testBus]( std::shared_ptr<SlowCounter>& counter )
     {
         for ( int i = 0; i < 1000; ++i )
