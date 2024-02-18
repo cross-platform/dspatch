@@ -160,7 +160,7 @@ private:
 
                     for ( auto component : *_components )
                     {
-                        component->Tick( _bufferNo );
+                        component->TickSeries( _bufferNo );
                     }
                 }
             }

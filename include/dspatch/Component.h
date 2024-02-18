@@ -93,10 +93,15 @@ public:
     std::string GetInputName( int inputNo ) const;
     std::string GetOutputName( int outputNo ) const;
 
-    void SetBufferCount( int bufferCount, int startBuffer = 0 );
+    void SetBufferCount( int bufferCount, int startBuffer );
     int GetBufferCount() const;
 
-    void Tick( int bufferNo = 0 );
+    void TickSeries( int bufferNo );
+    void TickParallel( int bufferNo );
+
+    void ScanSeries( std::vector<Component*>& components );
+    void ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
+    void EndScan();
 
 protected:
     virtual void Process_( SignalBus&, SignalBus& ) = 0;
@@ -105,15 +110,6 @@ protected:
     void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
-    friend class internal::Circuit;
-    friend class internal::ParallelCircuitThread;
-
-    void _TickParallel( int bufferNo );
-
-    void _ScanSeries( std::vector<Component*>& components );
-    void _ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
-    void _EndScan();
-
     internal::Component* p;
 };
 

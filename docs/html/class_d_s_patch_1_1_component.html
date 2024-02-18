@@ -129,15 +129,27 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetInputName</
 <tr class="memitem:a2663a9bcd7a6fa9ec9e33da62764565f"><td class="memItemLeft" align="right" valign="top"><a id="a2663a9bcd7a6fa9ec9e33da62764565f" name="a2663a9bcd7a6fa9ec9e33da62764565f"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetOutputName</b> (int outputNo) const</td></tr>
 <tr class="separator:a2663a9bcd7a6fa9ec9e33da62764565f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a323474d571a31182f7499aa670f3be58"><td class="memItemLeft" align="right" valign="top"><a id="a323474d571a31182f7499aa670f3be58" name="a323474d571a31182f7499aa670f3be58"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (int bufferCount, int startBuffer=0)</td></tr>
-<tr class="separator:a323474d571a31182f7499aa670f3be58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbec2317f7f832095a34ddc4af6fc2a6"><td class="memItemLeft" align="right" valign="top"><a id="afbec2317f7f832095a34ddc4af6fc2a6" name="afbec2317f7f832095a34ddc4af6fc2a6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (int bufferCount, int startBuffer)</td></tr>
+<tr class="separator:afbec2317f7f832095a34ddc4af6fc2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea6f3a8e8da3c84692912462702e161"><td class="memItemLeft" align="right" valign="top"><a id="a5ea6f3a8e8da3c84692912462702e161" name="a5ea6f3a8e8da3c84692912462702e161"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBufferCount</b> () const</td></tr>
 <tr class="separator:a5ea6f3a8e8da3c84692912462702e161"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memItemLeft" align="right" valign="top"><a id="ab1af9c4f9b5e72e0785cd58e5cc4d673" name="ab1af9c4f9b5e72e0785cd58e5cc4d673"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (int bufferNo=0)</td></tr>
-<tr class="separator:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a103af6c65d893c4cdacbecdb68899acc"><td class="memItemLeft" align="right" valign="top"><a id="a103af6c65d893c4cdacbecdb68899acc" name="a103af6c65d893c4cdacbecdb68899acc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>TickSeries</b> (int bufferNo)</td></tr>
+<tr class="separator:a103af6c65d893c4cdacbecdb68899acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a887caa52cc2b67691c1946d814b9f74e"><td class="memItemLeft" align="right" valign="top"><a id="a887caa52cc2b67691c1946d814b9f74e" name="a887caa52cc2b67691c1946d814b9f74e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>TickParallel</b> (int bufferNo)</td></tr>
+<tr class="separator:a887caa52cc2b67691c1946d814b9f74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62bddaadfb1347b70e13f59cf6d3021a"><td class="memItemLeft" align="right" valign="top"><a id="a62bddaadfb1347b70e13f59cf6d3021a" name="a62bddaadfb1347b70e13f59cf6d3021a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ScanSeries</b> (std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> * &gt; &amp;components)</td></tr>
+<tr class="separator:a62bddaadfb1347b70e13f59cf6d3021a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848f35cc39bf835a9e0b35580d494d89"><td class="memItemLeft" align="right" valign="top"><a id="a848f35cc39bf835a9e0b35580d494d89" name="a848f35cc39bf835a9e0b35580d494d89"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ScanParallel</b> (std::vector&lt; std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a> * &gt; &gt; &amp;componentsMap, int &amp;scanPosition)</td></tr>
+<tr class="separator:a848f35cc39bf835a9e0b35580d494d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c00a7659992dc37329281cb2c4533da"><td class="memItemLeft" align="right" valign="top"><a id="a5c00a7659992dc37329281cb2c4533da" name="a5c00a7659992dc37329281cb2c4533da"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>EndScan</b> ()</td></tr>
+<tr class="separator:a5c00a7659992dc37329281cb2c4533da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>

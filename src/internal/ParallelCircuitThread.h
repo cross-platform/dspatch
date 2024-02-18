@@ -152,7 +152,7 @@ private:
                     componentsSize = components.size();
                     for ( size_t i = _threadNo; i < componentsSize; i += _threadCount )
                     {
-                        components[i]->_TickParallel( _bufferNo );
+                        components[i]->TickParallel( _bufferNo );
                     }
                 }
             }
