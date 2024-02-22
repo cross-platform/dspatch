@@ -1,3 +1,8 @@
+v.10.2.4 (22 February 2024)
+    - Added more efficient iterator loop in ParallelCircuitThread::_Run().
+    - Fixed readyFlags being set on outputs with no refs.
+    - Cleaned up some code and docs.
+
 v.10.2.3 (16 February 2024)
     - Added missing componentsParallel.clear() in RemoveAllComponents().
     - Cleaned up and (slightly) optimized thread classes.

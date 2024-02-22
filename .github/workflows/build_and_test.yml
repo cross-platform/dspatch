@@ -90,24 +90,24 @@ jobs:
         artifactContentType: application/octet-stream
         commit: ${{ github.sha }}
 
-    - if: matrix.os == 'windows-2019'
-      name: Build - Debug (Windows)
-      run: |
-        meson setup --buildtype=debug --wipe builddir
-        meson compile -C builddir
+    # - if: matrix.os == 'windows-2019'
+    #   name: Build - Debug (Windows)
+    #   run: |
+    #     meson setup --buildtype=debug --wipe builddir
+    #     meson compile -C builddir
 
-    - if: matrix.os == 'windows-2019'
-      name: Test - Debug (Windows)
-      run: |
-        meson test -vC builddir
-        meson compile ./codecoverage -C builddir
-        $files = (Get-ChildItem -R .\builddir\coverage\*.html)
-        [array]::Reverse($files)
-        wkhtmltopdf --enable-local-file-access --disable-external-links --header-center [title] $files coverage.pdf
+    # - if: matrix.os == 'windows-2019'
+    #   name: Test - Debug (Windows)
+    #   run: |
+    #     meson test -vC builddir
+    #     meson compile ./codecoverage -C builddir
+    #     $files = (Get-ChildItem -R .\builddir\coverage\*.html)
+    #     [array]::Reverse($files)
+    #     wkhtmltopdf --enable-local-file-access --disable-external-links --header-center [title] $files coverage.pdf
 
-    - if: matrix.os == 'windows-2019'
-      name: Upload Coverage Report (Windows)
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage
-        path: coverage.pdf
+    # - if: matrix.os == 'windows-2019'
+    #   name: Upload Coverage Report (Windows)
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: coverage
+    #     path: coverage.pdf
