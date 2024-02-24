@@ -277,10 +277,10 @@ TEST_CASE( "FeedbackTestNoCircuit" )
     // Tick the circuit 100 times
     for ( int i = 0; i < 100; ++i )
     {
-        counter->Tick();
-        adder->Tick();
-        passthrough->Tick();
-        probe->Tick();
+        counter->TickSeries( 0 );
+        adder->TickSeries( 0 );
+        passthrough->TickSeries( 0 );
+        probe->TickSeries( 0 );
     }
 }
 

@@ -121,7 +121,7 @@ public:
 Component::Component( ProcessOrder processOrder )
     : p( new internal::Component( processOrder ) )
 {
-    SetBufferCount( 1 );
+    SetBufferCount( 1, 0 );
 }
 
 Component::~Component()
@@ -286,7 +286,7 @@ int Component::GetBufferCount() const
     return (int)p->inputBuses.size();
 }
 
-void Component::Tick( int bufferNo )
+void Component::TickSeries( int bufferNo )
 {
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
@@ -321,35 +321,7 @@ void Component::Tick( int bufferNo )
     }
 }
 
-void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
-{
-    p->inputNames = inputNames;
-
-    for ( auto& inputBus : p->inputBuses )
-    {
-        inputBus.SetSignalCount( inputCount );
-    }
-
-    p->inputWires.reserve( inputCount );
-}
-
-void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
-{
-    p->outputNames = outputNames;
-
-    for ( auto& outputBus : p->outputBuses )
-    {
-        outputBus.SetSignalCount( outputCount );
-    }
-
-    // add reference counters for our new outputs
-    for ( auto& ref : p->refs )
-    {
-        ref.resize( outputCount );
-    }
-}
-
-void Component::_TickParallel( int bufferNo )
+void Component::TickParallel( int bufferNo )
 {
     auto& inputBus = p->inputBuses[bufferNo];
     auto& outputBus = p->outputBuses[bufferNo];
@@ -384,11 +356,15 @@ void Component::_TickParallel( int bufferNo )
     // signal that our outputs are ready
     for ( auto& ref : p->refs[bufferNo] )
     {
-        ref.readyFlag.Set();
+        // readyFlags are cleared in GetOutputParallel() which ofc is only called on outputs with refs
+        if ( ref.total != 0 )
+        {
+            ref.readyFlag.Set();
+        }
     }
 }
 
-void Component::_ScanSeries( std::vector<Component*>& components )
+void Component::ScanSeries( std::vector<Component*>& components )
 {
     // continue only if this component has not already been scanned
     if ( p->scanPosition != -1 )
@@ -402,13 +378,13 @@ void Component::_ScanSeries( std::vector<Component*>& components )
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        wire.fromComponent->_ScanSeries( components );
+        wire.fromComponent->ScanSeries( components );
     }
 
     components.emplace_back( this );
 }
 
-void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition )
+void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition )
 {
     // continue only if this component has not already been scanned
     if ( p->scanPosition != -1 )
@@ -424,7 +400,7 @@ void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& co
     for ( const auto& wire : p->inputWires )
     {
         // scan incoming components
-        wire.fromComponent->_ScanParallel( componentsMap, scanPosition );
+        wire.fromComponent->ScanParallel( componentsMap, scanPosition );
 
         // ensure we're using the furthest scanPosition detected
         p->scanPosition = std::max( p->scanPosition, ++scanPosition );
@@ -438,10 +414,38 @@ void Component::_ScanParallel( std::vector<std::vector<DSPatch::Component*>>& co
     componentsMap[p->scanPosition].emplace_back( this );
 }
 
-void Component::_EndScan()
+void Component::EndScan()
 {
     // reset scanPosition
     p->scanPosition = -1;
+}
+
+void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
+{
+    p->inputNames = inputNames;
+
+    for ( auto& inputBus : p->inputBuses )
+    {
+        inputBus.SetSignalCount( inputCount );
+    }
+
+    p->inputWires.reserve( inputCount );
+}
+
+void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
+{
+    p->outputNames = outputNames;
+
+    for ( auto& outputBus : p->outputBuses )
+    {
+        outputBus.SetSignalCount( outputCount );
+    }
+
+    // add reference counters for our new outputs
+    for ( auto& ref : p->refs )
+    {
+        ref.resize( outputCount );
+    }
 }
 
 inline void internal::Component::WaitForRelease( int threadNo )

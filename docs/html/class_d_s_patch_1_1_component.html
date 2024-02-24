@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.2.3</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.2.4</span>
    </div>
   </td>
  </tr>
@@ -129,15 +129,27 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetInputName</
 <tr class="memitem:a2663a9bcd7a6fa9ec9e33da62764565f"><td class="memItemLeft" align="right" valign="top"><a id="a2663a9bcd7a6fa9ec9e33da62764565f" name="a2663a9bcd7a6fa9ec9e33da62764565f"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>GetOutputName</b> (int outputNo) const</td></tr>
 <tr class="separator:a2663a9bcd7a6fa9ec9e33da62764565f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a323474d571a31182f7499aa670f3be58"><td class="memItemLeft" align="right" valign="top"><a id="a323474d571a31182f7499aa670f3be58" name="a323474d571a31182f7499aa670f3be58"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (int bufferCount, int startBuffer=0)</td></tr>
-<tr class="separator:a323474d571a31182f7499aa670f3be58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbec2317f7f832095a34ddc4af6fc2a6"><td class="memItemLeft" align="right" valign="top"><a id="afbec2317f7f832095a34ddc4af6fc2a6" name="afbec2317f7f832095a34ddc4af6fc2a6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>SetBufferCount</b> (int bufferCount, int startBuffer)</td></tr>
+<tr class="separator:afbec2317f7f832095a34ddc4af6fc2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea6f3a8e8da3c84692912462702e161"><td class="memItemLeft" align="right" valign="top"><a id="a5ea6f3a8e8da3c84692912462702e161" name="a5ea6f3a8e8da3c84692912462702e161"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>GetBufferCount</b> () const</td></tr>
 <tr class="separator:a5ea6f3a8e8da3c84692912462702e161"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memItemLeft" align="right" valign="top"><a id="ab1af9c4f9b5e72e0785cd58e5cc4d673" name="ab1af9c4f9b5e72e0785cd58e5cc4d673"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Tick</b> (int bufferNo=0)</td></tr>
-<tr class="separator:ab1af9c4f9b5e72e0785cd58e5cc4d673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a103af6c65d893c4cdacbecdb68899acc"><td class="memItemLeft" align="right" valign="top"><a id="a103af6c65d893c4cdacbecdb68899acc" name="a103af6c65d893c4cdacbecdb68899acc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>TickSeries</b> (int bufferNo)</td></tr>
+<tr class="separator:a103af6c65d893c4cdacbecdb68899acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a887caa52cc2b67691c1946d814b9f74e"><td class="memItemLeft" align="right" valign="top"><a id="a887caa52cc2b67691c1946d814b9f74e" name="a887caa52cc2b67691c1946d814b9f74e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>TickParallel</b> (int bufferNo)</td></tr>
+<tr class="separator:a887caa52cc2b67691c1946d814b9f74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62bddaadfb1347b70e13f59cf6d3021a"><td class="memItemLeft" align="right" valign="top"><a id="a62bddaadfb1347b70e13f59cf6d3021a" name="a62bddaadfb1347b70e13f59cf6d3021a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ScanSeries</b> (std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> * &gt; &amp;components)</td></tr>
+<tr class="separator:a62bddaadfb1347b70e13f59cf6d3021a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a848f35cc39bf835a9e0b35580d494d89"><td class="memItemLeft" align="right" valign="top"><a id="a848f35cc39bf835a9e0b35580d494d89" name="a848f35cc39bf835a9e0b35580d494d89"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ScanParallel</b> (std::vector&lt; std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a> * &gt; &gt; &amp;componentsMap, int &amp;scanPosition)</td></tr>
+<tr class="separator:a848f35cc39bf835a9e0b35580d494d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c00a7659992dc37329281cb2c4533da"><td class="memItemLeft" align="right" valign="top"><a id="a5c00a7659992dc37329281cb2c4533da" name="a5c00a7659992dc37329281cb2c4533da"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>EndScan</b> ()</td></tr>
+<tr class="separator:a5c00a7659992dc37329281cb2c4533da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -159,7 +171,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 <p>In order for a component to do any work it must be ticked. This is performed by repeatedly calling the Tick() method. This method is responsible for acquiring the next set of input signals from its input wires and populating the component's input bus. The acquired input bus is then passed to the Process_() method.</p>
 <p><b>PERFORMANCE TIP:</b> If a component is capable of processing its buffers out-of-order within a stream processing circuit, consider initialising its base with ProcessOrder::OutOfOrder to improve performance. Note however that Process_() must be thread-safe to operate in this mode. </p>
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00068">68</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00066">66</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="af0b72c3454652f20f734d81e3600021b" name="af0b72c3454652f20f734d81e3600021b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af0b72c3454652f20f734d81e3600021b">&#9670;&#160;</a></span>SPtr</h2>
@@ -173,7 +185,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00073">73</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00071">71</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>
@@ -198,7 +210,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetOutputCount_</b> (
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00075">75</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00073">73</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>

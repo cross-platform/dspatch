@@ -315,7 +315,7 @@ void Circuit::Tick()
         // tick all internal components
         for ( auto component : p->components )
         {
-            component->Tick();
+            component->TickSeries( 0 );
         }
 
         return;
@@ -403,11 +403,11 @@ inline void internal::Circuit::Optimize()
 
         for ( auto component : components )
         {
-            component->_ScanSeries( orderedComponents );
+            component->ScanSeries( orderedComponents );
         }
         for ( auto component : components )
         {
-            component->_EndScan();
+            component->EndScan();
         }
 
         components = std::move( orderedComponents );
@@ -420,11 +420,11 @@ inline void internal::Circuit::Optimize()
         for ( int i = (int)components.size() - 1; i >= 0; --i )
         {
             int scanPosition;
-            components[i]->_ScanParallel( componentsMap, scanPosition );
+            components[i]->ScanParallel( componentsMap, scanPosition );
         }
         for ( auto component : components )
         {
-            component->_EndScan();
+            component->EndScan();
         }
 
         componentsParallel.clear();
