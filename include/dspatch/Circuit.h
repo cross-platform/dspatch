@@ -59,7 +59,7 @@ Tick() method can be called in a loop from the main application thread, or alter
 thread will spawn, automatically calling Tick() continuously until PauseAutoTick() or StopAutoTick() is called.
 
 The Circuit Optimize() method rearranges components such that they process in the most optimal order during Tick(). This
-optimization will occur automatically during the first Tick() proceeding any calls to ConnectOutToIn(), however, if you'd like to
+optimization will occur automatically during the first Tick() proceeding any connection / disconnection, however, if you'd like to
 pre-order components before the next Tick() is processed, you can call Optimize() manually.
 */
 
