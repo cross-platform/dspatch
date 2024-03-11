@@ -61,10 +61,11 @@ consider initialising its base with ProcessOrder::OutOfOrder to improve performa
 thread-safe to operate in this mode.
 */
 
-class DLLEXPORT Component
+class Component
 {
 public:
-    NONCOPYABLE( Component );
+    Component( const Component& ) = delete;
+    Component& operator=( const Component& ) = delete;
 
     using SPtr = std::shared_ptr<Component>;
 
@@ -109,7 +110,8 @@ private:
     class AtomicFlag final
     {
     public:
-        NONCOPYABLE( AtomicFlag );
+        AtomicFlag( const AtomicFlag& ) = delete;
+        AtomicFlag& operator=( const AtomicFlag& ) = delete;
 
         inline AtomicFlag() = default;
 

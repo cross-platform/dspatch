@@ -69,10 +69,11 @@ optimization will occur automatically during the first Tick() proceeding any con
 pre-order components before the next Tick() is processed, you can call Optimize() manually.
 */
 
-class DLLEXPORT Circuit final
+class Circuit final
 {
 public:
-    NONCOPYABLE( Circuit );
+    Circuit( const Circuit& ) = delete;
+    Circuit& operator=( const Circuit& ) = delete;
 
     inline Circuit();
     inline ~Circuit();
@@ -112,7 +113,8 @@ private:
     class AutoTickThread final
     {
     public:
-        NONCOPYABLE( AutoTickThread );
+        AutoTickThread( const AutoTickThread& ) = delete;
+        AutoTickThread& operator=( const AutoTickThread& ) = delete;
 
         inline AutoTickThread() = default;
 
@@ -202,7 +204,8 @@ private:
     class CircuitThread final
     {
     public:
-        NONCOPYABLE( CircuitThread );
+        CircuitThread( const CircuitThread& ) = delete;
+        CircuitThread& operator=( const CircuitThread& ) = delete;
 
         inline CircuitThread() = default;
 
@@ -318,7 +321,8 @@ private:
     class ParallelCircuitThread final
     {
     public:
-        NONCOPYABLE( ParallelCircuitThread );
+        ParallelCircuitThread( const ParallelCircuitThread& ) = delete;
+        ParallelCircuitThread& operator=( const ParallelCircuitThread& ) = delete;
 
         inline ParallelCircuitThread() = default;
 

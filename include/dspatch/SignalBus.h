@@ -49,10 +49,11 @@ for a variable to dynamically change its type when needed - this can be useful f
 types (E.g. Varying sample size in an audio buffer: array of byte / int / float).
 */
 
-class DLLEXPORT SignalBus final
+class SignalBus final
 {
 public:
-    NONCOPYABLE( SignalBus );
+    SignalBus( const SignalBus& ) = delete;
+    SignalBus& operator=( const SignalBus& ) = delete;
 
     inline SignalBus();
     inline SignalBus( SignalBus&& );

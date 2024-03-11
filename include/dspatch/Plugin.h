@@ -28,6 +28,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include "Component.h"
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef WIN32_LEAN_AND_MEAN
+#define DLLEXPORT __declspec( dllexport )
+#else
+#include <dlfcn.h>
+#define DLLEXPORT
+#endif
+
+#include <string>
+
 #define EXPORT_PLUGIN( classname, ... )          \
     extern "C"                                   \
     {                                            \
@@ -36,18 +50,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             return new classname( __VA_ARGS__ ); \
         }                                        \
     }
-
-#include "Component.h"
-
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#undef WIN32_LEAN_AND_MEAN
-#else
-#include <dlfcn.h>
-#endif
-
-#include <string>
 
 namespace DSPatch
 {
@@ -64,10 +66,11 @@ check that the plugin was successfully loaded by calling IsLoaded(). Thereafter,
 (mutiple times) via the Create() method.
 */
 
-class DLLEXPORT Plugin final
+class Plugin final
 {
 public:
-    NONCOPYABLE( Plugin );
+    Plugin( const Plugin& ) = delete;
+    Plugin& operator=( const Plugin& ) = delete;
 
     inline explicit Plugin( const std::string& pluginPath );
     inline ~Plugin();
