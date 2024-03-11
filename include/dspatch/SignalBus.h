@@ -28,9 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include "Common.h"
-
-#include <fast_any/any.h>
+#include "../fast_any/any.h"
 
 #include <vector>
 

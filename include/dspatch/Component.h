@@ -109,6 +109,8 @@ private:
     class AtomicFlag final
     {
     public:
+        NONCOPYABLE( AtomicFlag );
+
         inline AtomicFlag() = default;
 
         inline AtomicFlag( AtomicFlag&& )
@@ -221,7 +223,7 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
 
 void Component::DisconnectInput( int inputNo )
 {
-    // remove wires connected to inputNo from inputWires
+    // remove wires connected to inputNo from _inputWires
     auto findFn = [&inputNo]( const auto& wire ) { return wire.toInput == inputNo; };
 
     if ( auto it = std::find_if( _inputWires.begin(), _inputWires.end(), findFn ); it != _inputWires.end() )
@@ -235,7 +237,7 @@ void Component::DisconnectInput( int inputNo )
 
 void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
-    // remove fromComponent from inputWires
+    // remove fromComponent from _inputWires
     auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent.get(); };
 
     for ( auto it = std::find_if( _inputWires.begin(), _inputWires.end(), findFn ); it != _inputWires.end();
@@ -250,11 +252,11 @@ void Component::DisconnectInput( const Component::SPtr& fromComponent )
 
 void Component::DisconnectAllInputs()
 {
-    // remove all wires from inputWires
-    for ( const auto& inputWires : _inputWires )
+    // remove all wires from _inputWires
+    for ( const auto& wire : _inputWires )
     {
         // update source output's reference count
-        inputWires.fromComponent->_DecRefs( inputWires.fromOutput );
+        wire.fromComponent->_DecRefs( wire.fromOutput );
     }
 
     _inputWires.clear();
@@ -292,7 +294,7 @@ std::string Component::GetOutputName( int outputNo ) const
 
 void Component::SetBufferCount( int bufferCount, int startBuffer )
 {
-    // bufferCount is the current thread count / bufferCount is new thread count
+    // _bufferCount is the current thread count / bufferCount is new thread count
 
     if ( bufferCount <= 0 )
     {
@@ -430,7 +432,7 @@ void Component::ScanSeries( std::vector<Component*>& components )
         return;
     }
 
-    // initialize scanPosition
+    // initialize _scanPosition
     _scanPosition = 0;
 
     for ( const auto& wire : _inputWires )
@@ -464,7 +466,7 @@ void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*>>& com
         _scanPosition = std::max( _scanPosition, ++scanPosition );
     }
 
-    // insert component at scanPosition
+    // insert component at _scanPosition
     if ( _scanPosition >= (int)componentsMap.size() )
     {
         componentsMap.resize( _scanPosition + 1 );
@@ -474,7 +476,7 @@ void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*>>& com
 
 void Component::EndScan()
 {
-    // reset scanPosition
+    // reset _scanPosition
     _scanPosition = -1;
 }
 

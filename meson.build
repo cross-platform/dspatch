@@ -84,23 +84,11 @@ endif
 
 # Configure DSPatch
 
-dspatch_src = [
-    'src/Plugin.cpp'
-]
-
 dspatch_inc = include_directories(
     'include'
 )
 
-dspatch_lib = static_library(
-    'DSPatch',
-    format_first,
-    dspatch_src,
-    include_directories: dspatch_inc
-)
-
 dspatch_dep = declare_dependency(
-  link_with: dspatch_lib,
   include_directories: dspatch_inc,
   dependencies: dependency('threads')
 )

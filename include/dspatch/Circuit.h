@@ -540,7 +540,6 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
 
     PauseAutoTick();
 
-    // remove component from _inputComponents and _inputWires
     component->DisconnectAllInputs();
 
     // remove any connections this component has to other components
@@ -763,7 +762,7 @@ void Circuit::Optimize()
 
 void Circuit::_Optimize()
 {
-    // scan for optimal series order -> update components
+    // scan for optimal series order -> update _components
     {
         std::vector<DSPatch::Component*> orderedComponents;
         orderedComponents.reserve( _components.size() );
@@ -780,7 +779,7 @@ void Circuit::_Optimize()
         _components = std::move( orderedComponents );
     }
 
-    // scan for optimal parallel order -> update componentsParallel
+    // scan for optimal parallel order -> update _componentsParallel
     {
         std::vector<std::vector<DSPatch::Component*>> componentsMap;
 
@@ -802,7 +801,7 @@ void Circuit::_Optimize()
         }
     }
 
-    // clear circuitDirty flag
+    // clear _circuitDirty flag
     _circuitDirty = false;
 }
 
