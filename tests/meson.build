@@ -1,3 +1,8 @@
+# Configure catch
+
+catch = subproject('catch')
+catch_dep = catch.get_variable('catch_dep')
+
 # Configure tests
 
 dspatch_tests_src = [
@@ -11,7 +16,7 @@ dspatch_tests = executable(
     format_first,
     dspatch_tests_src,
     include_directories: dspatch_tests_inc,
-    dependencies: dspatch_dep
+    dependencies: [dspatch_dep, catch_dep]
 )
 
 # Add code coverage

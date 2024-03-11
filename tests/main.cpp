@@ -28,9 +28,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define CATCH_CONFIG_MAIN
 
-#include <DSPatch.h>
+#include <catch.hpp>
 
-#include "catch.hpp"
+#include <DSPatch.h>
 
 #include "components/Adder.h"
 #include "components/BranchSyncProbe.h"
