@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }                                        \
     }
 
-#include <dspatch/Component.h>
+#include "Component.h"
 
 namespace DSPatch
 {

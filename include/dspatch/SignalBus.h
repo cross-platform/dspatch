@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/Common.h>
+#include "Common.h"
 
 #include <fast_any/any.h>
 
@@ -58,6 +58,7 @@ public:
 
     inline SignalBus();
     inline SignalBus( SignalBus&& );
+    inline ~SignalBus();
 
     inline void SetSignalCount( int signalCount );
     inline int GetSignalCount() const;
@@ -93,6 +94,8 @@ SignalBus::SignalBus( SignalBus&& rhs )
     : _signals( std::move( rhs._signals ) )
 {
 }
+
+SignalBus::~SignalBus() = default;
 
 void SignalBus::SetSignalCount( int signalCount )
 {

@@ -85,7 +85,6 @@ endif
 # Configure DSPatch
 
 dspatch_src = [
-    'src/Circuit.cpp',
     'src/Plugin.cpp'
 ]
 

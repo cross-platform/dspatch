@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/SignalBus.h>
+#include "SignalBus.h"
 
 #include <algorithm>
 #include <atomic>
@@ -38,11 +38,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace DSPatch
 {
-
-namespace internal
-{
-class Component;
-}  // namespace internal
 
 /// Abstract base class for DSPatch components
 
