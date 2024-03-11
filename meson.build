@@ -13,7 +13,8 @@ opencppcoverage = find_program('opencppcoverage', required: false)
 opencppcoverage_args = [
     '--sources', meson.project_name(),
     '--excluded_sources', 'subprojects',
-    '--excluded_sources', 'tests'
+    '--excluded_sources', 'tests',
+    '--excluded_sources', 'tutorial'
 ]
 
 if opencppcoverage.found()
@@ -73,6 +74,7 @@ if find_program('cppcheck', required: false).found()
 
             '-I', meson.current_source_dir() + '/include',
             '-I', meson.current_source_dir() + '/tests',
+            '-I', meson.current_source_dir() + '/tutorial',
 
             extra_cppcheck_args,
 
