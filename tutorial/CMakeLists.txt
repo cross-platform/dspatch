@@ -1,9 +1,6 @@
 project(DSPatchTutorial)
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/../include
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 file(GLOB srcs *.cpp)
 

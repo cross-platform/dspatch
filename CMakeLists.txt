@@ -23,6 +23,8 @@ install(FILES ${root_hdrs} DESTINATION include)
 install(FILES ${dspatch_hdrs} DESTINATION include/dspatch)
 install(FILES ${fast_any_hdrs} DESTINATION include/fast_any)
 
+include_directories(include)
+
 add_subdirectory(docs)
 add_subdirectory(tests)
 add_subdirectory(tutorial)

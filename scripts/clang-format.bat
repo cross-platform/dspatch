@@ -12,7 +12,7 @@ for %%f in ("*.cpp", "*.h") do (
 
 for /D %%d in (*) do (
 	cd %%d
-	if not %%d==build if not %%d==builddir if not %%d==subprojects call :processDir
+	if not %%d==build if not %%d==builddir call :processDir
 	cd ..
 )
 

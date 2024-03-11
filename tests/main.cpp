@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <DSPatch.h>
 
-#include <catch.hpp>
+#include <catch/catch.hpp>
 
 #include "components/Adder.h"
 #include "components/BranchSyncProbe.h"

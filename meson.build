@@ -12,7 +12,6 @@ opencppcoverage = find_program('opencppcoverage', required: false)
 
 opencppcoverage_args = [
     '--sources', meson.project_name(),
-    '--excluded_sources', 'subprojects',
     '--excluded_sources', 'tests',
     '--excluded_sources', 'tutorial'
 ]
@@ -69,12 +68,7 @@ if find_program('cppcheck', required: false).found()
             '--suppress=*:' + meson.current_source_dir() + '/include/fast_any/any.h',
 
             '-i', meson.current_source_dir() + '/build',
-            '-i', meson.current_source_dir() + '/builddir',
-            '-i', meson.current_source_dir() + '/subprojects',
-
             '-I', meson.current_source_dir() + '/include',
-            '-I', meson.current_source_dir() + '/tests',
-            '-I', meson.current_source_dir() + '/tutorial',
 
             extra_cppcheck_args,
 
@@ -86,12 +80,8 @@ endif
 
 # Configure DSPatch
 
-dspatch_inc = include_directories(
-    'include'
-)
-
 dspatch_dep = declare_dependency(
-  include_directories: dspatch_inc,
+  include_directories: include_directories('include'),
   dependencies: dependency('threads')
 )
 

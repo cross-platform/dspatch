@@ -703,9 +703,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is 
 # run.
 
-EXCLUDE                = ../include/DSPatchVersion.h \
-                         ../include/fast_any \
-                         ../subprojects \
+EXCLUDE                = ../include/fast_any \
                          ../tests \
                          ../tutorial
 
