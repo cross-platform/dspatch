@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['autotickthread_0',['AutoTickThread',['../class_d_s_patch_1_1internal_1_1_auto_tick_thread.html',1,'DSPatch::internal']]]
+  ['circuit_0',['Circuit',['../class_d_s_patch_1_1_circuit.html',1,'DSPatch']]],
+  ['component_1',['Component',['../class_d_s_patch_1_1_component.html',1,'DSPatch']]]
 ];

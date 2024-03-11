@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['signalbus_0',['SignalBus',['../class_d_s_patch_1_1_signal_bus.html',1,'DSPatch']]]
+  ['the_20refreshingly_20simple_20c_2b_2b_20dataflow_20framework_0',['The Refreshingly Simple C++ Dataflow Framework',['../index.html',1,'']]]
 ];
