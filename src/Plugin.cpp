@@ -48,15 +48,15 @@ class Plugin final
 public:
     inline explicit Plugin( const std::string& pluginPath )
     {
-        LoadPlugin( pluginPath );
+        _LoadPlugin( pluginPath );
     }
 
-    inline void LoadPlugin( const std::string& pluginPath );
+    inline void _LoadPlugin( const std::string& pluginPath );
 
     typedef DSPatch::Component* ( *Create_t )();
 
-    void* handle = nullptr;
-    Create_t create = nullptr;
+    void* _handle = nullptr;
+    Create_t _create = nullptr;
 };
 
 }  // namespace internal
@@ -70,12 +70,12 @@ Plugin::Plugin( const std::string& pluginPath )
 Plugin::~Plugin()
 {
     // close library
-    if ( p->handle )
+    if ( p->_handle )
     {
 #ifdef _WIN32
         FreeLibrary( (HMODULE)p->handle );
 #else
-        dlclose( p->handle );
+        dlclose( p->_handle );
 #endif
     }
 
@@ -85,46 +85,46 @@ Plugin::~Plugin()
 // cppcheck-suppress unusedFunction
 bool Plugin::IsLoaded() const
 {
-    return p->handle;
+    return p->_handle;
 }
 
 // cppcheck-suppress unusedFunction
 Component::SPtr Plugin::Create() const
 {
-    if ( p->handle )
+    if ( p->_handle )
     {
-        return Component::SPtr( p->create() );
+        return Component::SPtr( p->_create() );
     }
     return nullptr;
 }
 
-inline void internal::Plugin::LoadPlugin( const std::string& pluginPath )
+inline void internal::Plugin::_LoadPlugin( const std::string& pluginPath )
 {
     // open library
 #ifdef _WIN32
     handle = LoadLibrary( pluginPath.c_str() );
 #else
-    handle = dlopen( pluginPath.c_str(), RTLD_NOW );
+    _handle = dlopen( pluginPath.c_str(), RTLD_NOW );
 #endif
 
-    if ( handle )
+    if ( _handle )
     {
         // load symbols
 #ifdef _WIN32
         create = (Create_t)GetProcAddress( (HMODULE)handle, "Create" );
 #else
-        create = (Create_t)dlsym( handle, "Create" );
+        _create = (Create_t)dlsym( _handle, "Create" );
 #endif
 
-        if ( !create )
+        if ( !_create )
         {
 #ifdef _WIN32
             FreeLibrary( (HMODULE)handle );
 #else
-            dlclose( handle );
+            dlclose( _handle );
 #endif
 
-            handle = nullptr;
+            _handle = nullptr;
         }
     }
 }
