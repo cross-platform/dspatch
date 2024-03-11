@@ -86,7 +86,6 @@ endif
 
 dspatch_src = [
     'src/Circuit.cpp',
-    'src/Component.cpp',
     'src/Plugin.cpp'
 ]
 

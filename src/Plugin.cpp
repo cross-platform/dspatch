@@ -98,7 +98,7 @@ Component::SPtr Plugin::Create() const
     return nullptr;
 }
 
-inline void internal::Plugin::_LoadPlugin( const std::string& pluginPath )
+void internal::Plugin::_LoadPlugin( const std::string& pluginPath )
 {
     // open library
 #ifdef _WIN32

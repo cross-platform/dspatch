@@ -394,7 +394,7 @@ void Circuit::Optimize()
     }
 }
 
-inline void internal::Circuit::_Optimize()
+void internal::Circuit::_Optimize()
 {
     // scan for optimal series order -> update components
     {
