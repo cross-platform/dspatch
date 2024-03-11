@@ -28,15 +28,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/Component.h>
+#include "Component.h"
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef WIN32_LEAN_AND_MEAN
+#endif
+
+#include <algorithm>
+#include <condition_variable>
+#include <set>
+#include <thread>
 
 namespace DSPatch
 {
-
-namespace internal
-{
-class Circuit;
-}
 
 /// Workspace for adding and routing components
 
@@ -63,44 +69,744 @@ optimization will occur automatically during the first Tick() proceeding any con
 pre-order components before the next Tick() is processed, you can call Optimize() manually.
 */
 
-class DLLEXPORT Circuit final
+class Circuit final
 {
 public:
-    NONCOPYABLE( Circuit );
+    Circuit( const Circuit& ) = delete;
+    Circuit& operator=( const Circuit& ) = delete;
 
-    Circuit();
-    ~Circuit();
+    inline Circuit();
+    inline ~Circuit();
 
-    bool AddComponent( const Component::SPtr& component );
+    inline bool AddComponent( const Component::SPtr& component );
 
-    bool RemoveComponent( const Component::SPtr& component );
-    void RemoveAllComponents();
+    inline bool RemoveComponent( const Component::SPtr& component );
+    inline void RemoveAllComponents();
 
-    int GetComponentCount() const;
+    inline int GetComponentCount() const;
 
-    bool ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput );
+    inline bool ConnectOutToIn( const Component::SPtr& fromComponent,
+                                int fromOutput,
+                                const Component::SPtr& toComponent,
+                                int toInput );
 
-    bool DisconnectComponent( const Component::SPtr& component );
-    void DisconnectAllComponents();
+    inline bool DisconnectComponent( const Component::SPtr& component );
+    inline void DisconnectAllComponents();
 
-    void SetBufferCount( int bufferCount );
-    int GetBufferCount() const;
+    inline void SetBufferCount( int bufferCount );
+    inline int GetBufferCount() const;
 
-    void SetThreadCount( int threadCount );
-    int GetThreadCount() const;
+    inline void SetThreadCount( int threadCount );
+    inline int GetThreadCount() const;
 
-    void Tick();
-    void Sync();
+    inline void Tick();
+    inline void Sync();
 
-    void StartAutoTick();
-    void StopAutoTick();
-    void PauseAutoTick();
-    void ResumeAutoTick();
+    inline void StartAutoTick();
+    inline void StopAutoTick();
+    inline void PauseAutoTick();
+    inline void ResumeAutoTick();
 
-    void Optimize();
+    inline void Optimize();
 
 private:
-    internal::Circuit* p;
+    class AutoTickThread final
+    {
+    public:
+        AutoTickThread( const AutoTickThread& ) = delete;
+        AutoTickThread& operator=( const AutoTickThread& ) = delete;
+
+        inline AutoTickThread() = default;
+
+        inline ~AutoTickThread()
+        {
+            Stop();
+        }
+
+        inline void Start( DSPatch::Circuit* circuit )
+        {
+            if ( !_stopped )
+            {
+                Resume();
+                return;
+            }
+
+            _circuit = circuit;
+
+            _stop = false;
+            _stopped = false;
+            _pause = false;
+
+            _thread = std::thread( &AutoTickThread::_Run, this );
+        }
+
+        inline void Stop()
+        {
+            _stop = true;
+
+            if ( _thread.joinable() )
+            {
+                _thread.join();
+            }
+        }
+
+        inline void Pause()
+        {
+            if ( !_stopped && ++pauseCount == 1 )
+            {
+                std::unique_lock<std::mutex> lock( _resumeMutex );
+                _pause = true;
+                _pauseCondt.wait( lock );  // wait for pause
+            }
+        }
+
+        inline void Resume()
+        {
+            if ( _pause && --pauseCount == 0 )
+            {
+                _pause = false;
+                _resumeCondt.notify_all();
+            }
+        }
+
+    private:
+        inline void _Run()
+        {
+            if ( _circuit )
+            {
+                while ( !_stop )
+                {
+                    _circuit->Tick();
+
+                    if ( _pause )
+                    {
+                        std::unique_lock<std::mutex> lock( _resumeMutex );
+
+                        _pauseCondt.notify_all();
+                        _resumeCondt.wait( lock );  // wait for resume
+                    }
+                }
+            }
+
+            _stopped = true;
+        }
+
+        std::thread _thread;
+        DSPatch::Circuit* _circuit = nullptr;
+        int pauseCount = 0;
+        bool _stop = false;
+        bool _pause = false;
+        bool _stopped = true;
+        std::mutex _resumeMutex;
+        std::condition_variable _resumeCondt, _pauseCondt;
+    };
+
+    class CircuitThread final
+    {
+    public:
+        CircuitThread( const CircuitThread& ) = delete;
+        CircuitThread& operator=( const CircuitThread& ) = delete;
+
+        inline CircuitThread() = default;
+
+        // cppcheck-suppress missingMemberCopy
+        inline CircuitThread( CircuitThread&& )
+        {
+        }
+
+        inline ~CircuitThread()
+        {
+            Stop();
+        }
+
+        inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo )
+        {
+            _components = components;
+            _bufferNo = bufferNo;
+
+            _stop = false;
+            _gotSync = false;
+
+            _thread = std::thread( &CircuitThread::_Run, this );
+        }
+
+        inline void Stop()
+        {
+            _stop = true;
+
+            Resume();
+
+            if ( _thread.joinable() )
+            {
+                _thread.join();
+            }
+        }
+
+        inline void Sync()
+        {
+            std::unique_lock<std::mutex> lock( _syncMutex );
+
+            if ( !_gotSync )  // if haven't already got sync
+            {
+                _syncCondt.wait( lock );  // wait for sync
+            }
+        }
+
+        inline void Resume()
+        {
+            _gotSync = false;  // reset the sync flag
+            _resumeCondt.notify_all();
+        }
+
+        inline void SyncAndResume()
+        {
+            Sync();
+            Resume();
+        }
+
+    private:
+        inline void _Run()
+        {
+#ifdef _WIN32
+            SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );
+#else
+            sched_param sch_params;
+            sch_params.sched_priority = sched_get_priority_max( SCHED_RR );
+            pthread_setschedparam( pthread_self(), SCHED_RR, &sch_params );
+#endif
+
+            if ( _components )
+            {
+                while ( !_stop )
+                {
+                    {
+                        std::unique_lock<std::mutex> lock( _syncMutex );
+
+                        _gotSync = true;  // set the sync flag
+                        _syncCondt.notify_all();
+                        _resumeCondt.wait( lock );  // wait for resume
+                    }
+
+                    // cppcheck-suppress knownConditionTrueFalse
+                    if ( !_stop )
+                    {
+                        // You might be thinking: Can't we have each thread start on a different component?
+
+                        // Well no. Because bufferNo == bufferNo, in order to maintain synchronisation
+                        // within the circuit, when a component wants to process its buffers in-order, it
+                        // requires that every other in-order component in the system has not only
+                        // processed its buffers in the same order, but has processed the same number of
+                        // buffers too.
+
+                        // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
+
+                        for ( auto component : *_components )
+                        {
+                            component->TickSeries( _bufferNo );
+                        }
+                    }
+                }
+            }
+        }
+
+        std::thread _thread;
+        std::vector<DSPatch::Component*>* _components = nullptr;
+        int _bufferNo = 0;
+        bool _stop = false;
+        bool _gotSync = false;
+        std::mutex _syncMutex;
+        std::condition_variable _resumeCondt, _syncCondt;
+    };
+
+    class ParallelCircuitThread final
+    {
+    public:
+        ParallelCircuitThread( const ParallelCircuitThread& ) = delete;
+        ParallelCircuitThread& operator=( const ParallelCircuitThread& ) = delete;
+
+        inline ParallelCircuitThread() = default;
+
+        // cppcheck-suppress missingMemberCopy
+        inline ParallelCircuitThread( ParallelCircuitThread&& )
+        {
+        }
+
+        inline ~ParallelCircuitThread()
+        {
+            Stop();
+        }
+
+        inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo, int threadNo, int threadCount )
+        {
+            _components = components;
+            _bufferNo = bufferNo;
+            _threadNo = threadNo;
+            _threadCount = threadCount;
+
+            _stop = false;
+            _gotSync = false;
+
+            _thread = std::thread( &ParallelCircuitThread::_Run, this );
+        }
+
+        inline void Stop()
+        {
+            _stop = true;
+
+            Resume();
+
+            if ( _thread.joinable() )
+            {
+                _thread.join();
+            }
+        }
+
+        inline void Sync()
+        {
+            std::unique_lock<std::mutex> lock( _syncMutex );
+
+            if ( !_gotSync )  // if haven't already got sync
+            {
+                _syncCondt.wait( lock );  // wait for sync
+            }
+        }
+
+        inline void Resume()
+        {
+            _gotSync = false;  // reset the sync flag
+            _resumeCondt.notify_all();
+        }
+
+    private:
+        inline void _Run()
+        {
+#ifdef _WIN32
+            SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );
+#else
+            sched_param sch_params;
+            sch_params.sched_priority = sched_get_priority_max( SCHED_RR );
+            pthread_setschedparam( pthread_self(), SCHED_RR, &sch_params );
+#endif
+
+            if ( _components )
+            {
+                while ( !_stop )
+                {
+                    {
+                        std::unique_lock<std::mutex> lock( _syncMutex );
+
+                        _gotSync = true;  // set the sync flag
+                        _syncCondt.notify_all();
+                        _resumeCondt.wait( lock );  // wait for resume
+                    }
+
+                    // cppcheck-suppress knownConditionTrueFalse
+                    if ( !_stop )
+                    {
+                        for ( auto it = _components->begin() + _threadNo; it < _components->end(); it += _threadCount )
+                        {
+                            ( *it )->TickParallel( _bufferNo );
+                        }
+                    }
+                }
+            }
+        }
+
+        std::thread _thread;
+        std::vector<DSPatch::Component*>* _components = nullptr;
+        int _bufferNo = 0;
+        int _threadNo = 0;
+        int _threadCount = 0;
+        bool _stop = false;
+        bool _gotSync = false;
+        std::mutex _syncMutex;
+        std::condition_variable _resumeCondt, _syncCondt;
+    };
+
+    inline void _Optimize();
+
+    int _bufferCount = 0;
+    int _threadCount = 0;
+    int _currentBuffer = 0;
+
+    AutoTickThread _autoTickThread;
+
+    std::vector<DSPatch::Component*> _components;
+    std::set<DSPatch::Component::SPtr> _componentsSet;
+    std::vector<DSPatch::Component*> _componentsParallel;
+
+    std::vector<CircuitThread> _circuitThreads;
+    std::vector<std::vector<ParallelCircuitThread>> _parallelCircuitThreads;
+
+    bool _circuitDirty = false;
 };
+
+Circuit::Circuit() = default;
+
+Circuit::~Circuit()
+{
+    StopAutoTick();
+}
+
+bool Circuit::AddComponent( const Component::SPtr& component )
+{
+    if ( !component || _componentsSet.find( component ) != _componentsSet.end() )
+    {
+        return false;
+    }
+
+    // components within the circuit need to have as many buffers as there are threads in the circuit
+    component->SetBufferCount( _bufferCount, _currentBuffer );
+
+    PauseAutoTick();
+    _components.emplace_back( component.get() );
+    _componentsParallel.emplace_back( component.get() );
+    ResumeAutoTick();
+
+    _componentsSet.emplace( component );
+
+    return true;
+}
+
+bool Circuit::RemoveComponent( const Component::SPtr& component )
+{
+    if ( _componentsSet.find( component ) == _componentsSet.end() )
+    {
+        return false;
+    }
+
+    auto findFn = [&component]( auto comp ) { return comp == component.get(); };
+
+    if ( auto it = std::find_if( _components.begin(), _components.end(), findFn ); it != _components.end() )
+    {
+        PauseAutoTick();
+
+        DisconnectComponent( component );
+
+        _components.erase( it );
+
+        ResumeAutoTick();
+
+        _componentsSet.erase( component );
+
+        return true;
+    }
+
+    return false;
+}
+
+// cppcheck-suppress unusedFunction
+void Circuit::RemoveAllComponents()
+{
+    PauseAutoTick();
+
+    _components.clear();
+    _componentsParallel.clear();
+
+    ResumeAutoTick();
+
+    _componentsSet.clear();
+}
+
+int Circuit::GetComponentCount() const
+{
+    return (int)_components.size();
+}
+
+bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent,
+                              int fromOutput,
+                              const Component::SPtr& toComponent,
+                              int toInput )
+{
+    if ( _componentsSet.find( fromComponent ) == _componentsSet.end() ||
+         _componentsSet.find( toComponent ) == _componentsSet.end() )
+    {
+        return false;
+    }
+
+    PauseAutoTick();
+
+    bool result = toComponent->ConnectInput( fromComponent, fromOutput, toInput );
+
+    _circuitDirty = result;
+
+    ResumeAutoTick();
+
+    return result;
+}
+
+bool Circuit::DisconnectComponent( const Component::SPtr& component )
+{
+    if ( _componentsSet.find( component ) == _componentsSet.end() )
+    {
+        return false;
+    }
+
+    PauseAutoTick();
+
+    component->DisconnectAllInputs();
+
+    // remove any connections this component has to other components
+    for ( auto comp : _components )
+    {
+        comp->DisconnectInput( component );
+    }
+
+    _circuitDirty = true;
+
+    ResumeAutoTick();
+
+    return true;
+}
+
+// cppcheck-suppress unusedFunction
+void Circuit::DisconnectAllComponents()
+{
+    PauseAutoTick();
+
+    for ( auto component : _components )
+    {
+        component->DisconnectAllInputs();
+    }
+
+    ResumeAutoTick();
+}
+
+void Circuit::SetBufferCount( int bufferCount )
+{
+    PauseAutoTick();
+
+    _bufferCount = bufferCount;
+
+    // stop all threads
+    for ( auto& circuitThread : _circuitThreads )
+    {
+        circuitThread.Stop();
+    }
+
+    // resize thread array
+    if ( _threadCount != 0 )
+    {
+        _circuitThreads.resize( 0 );
+        SetThreadCount( _threadCount );
+    }
+    else
+    {
+        _circuitThreads.resize( _bufferCount );
+
+        // initialise and start all threads
+        for ( int i = 0; i < _bufferCount; ++i )
+        {
+            _circuitThreads[i].Start( &_components, i );
+        }
+    }
+
+    if ( _currentBuffer >= _bufferCount )
+    {
+        _currentBuffer = 0;
+    }
+
+    // set all components to the new buffer count
+    for ( auto component : _components )
+    {
+        component->SetBufferCount( _bufferCount, _currentBuffer );
+    }
+
+    ResumeAutoTick();
+}
+
+int Circuit::GetBufferCount() const
+{
+    return _bufferCount;
+}
+
+void Circuit::SetThreadCount( int threadCount )
+{
+    PauseAutoTick();
+
+    _threadCount = threadCount;
+
+    // stop all threads
+    for ( auto& circuitThreads : _parallelCircuitThreads )
+    {
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Stop();
+        }
+    }
+
+    // resize thread array
+    if ( _threadCount == 0 )
+    {
+        _parallelCircuitThreads.resize( 0 );
+        SetBufferCount( _bufferCount );
+    }
+    else
+    {
+        _parallelCircuitThreads.resize( _bufferCount == 0 ? 1 : _bufferCount );
+        for ( auto& circuitThread : _parallelCircuitThreads )
+        {
+            circuitThread.resize( _threadCount );
+        }
+
+        // initialise and start all threads
+        int i = 0;
+        for ( auto& circuitThreads : _parallelCircuitThreads )
+        {
+            int j = 0;
+            for ( auto& circuitThread : circuitThreads )
+            {
+                circuitThread.Start( &_componentsParallel, i, j++, _threadCount );
+            }
+            ++i;
+        }
+    }
+
+    ResumeAutoTick();
+}
+
+// cppcheck-suppress unusedFunction
+int Circuit::GetThreadCount() const
+{
+    return _threadCount;
+}
+
+void Circuit::Tick()
+{
+    if ( _circuitDirty )
+    {
+        _Optimize();
+    }
+
+    // process in a single thread if this circuit has no threads
+    // =========================================================
+    if ( _bufferCount == 0 && _threadCount == 0 )
+    {
+        // tick all internal components
+        for ( auto component : _components )
+        {
+            component->TickSeries( 0 );
+        }
+
+        return;
+    }
+    // process in multiple threads if this circuit has threads
+    // =======================================================
+    else if ( _threadCount != 0 )
+    {
+        auto& circuitThreads = _parallelCircuitThreads[_currentBuffer];
+
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Sync();
+        }
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Resume();
+        }
+    }
+    else
+    {
+        _circuitThreads[_currentBuffer].SyncAndResume();  // sync and resume thread x
+    }
+
+    if ( _bufferCount != 0 && ++_currentBuffer == _bufferCount )
+    {
+        _currentBuffer = 0;
+    }
+}
+
+void Circuit::Sync()
+{
+    // sync all threads
+    for ( auto& circuitThread : _circuitThreads )
+    {
+        circuitThread.Sync();
+    }
+    for ( auto& circuitThreads : _parallelCircuitThreads )
+    {
+        for ( auto& circuitThread : circuitThreads )
+        {
+            circuitThread.Sync();
+        }
+    }
+}
+
+void Circuit::StartAutoTick()
+{
+    _autoTickThread.Start( this );
+}
+
+void Circuit::StopAutoTick()
+{
+    _autoTickThread.Stop();
+    Sync();
+}
+
+void Circuit::PauseAutoTick()
+{
+    _autoTickThread.Pause();
+    Sync();
+}
+
+void Circuit::ResumeAutoTick()
+{
+    _autoTickThread.Resume();
+}
+
+void Circuit::Optimize()
+{
+    if ( _circuitDirty )
+    {
+        PauseAutoTick();
+        _Optimize();
+        ResumeAutoTick();
+    }
+}
+
+void Circuit::_Optimize()
+{
+    // scan for optimal series order -> update _components
+    {
+        std::vector<DSPatch::Component*> orderedComponents;
+        orderedComponents.reserve( _components.size() );
+
+        for ( auto component : _components )
+        {
+            component->ScanSeries( orderedComponents );
+        }
+        for ( auto component : _components )
+        {
+            component->EndScan();
+        }
+
+        _components = std::move( orderedComponents );
+    }
+
+    // scan for optimal parallel order -> update _componentsParallel
+    {
+        std::vector<std::vector<DSPatch::Component*>> componentsMap;
+
+        for ( int i = (int)_components.size() - 1; i >= 0; --i )
+        {
+            int scanPosition;
+            _components[i]->ScanParallel( componentsMap, scanPosition );
+        }
+        for ( auto component : _components )
+        {
+            component->EndScan();
+        }
+
+        _componentsParallel.clear();
+        _componentsParallel.reserve( _components.size() );
+        for ( auto& componentsMapEntry : componentsMap )
+        {
+            _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        }
+    }
+
+    // clear _circuitDirty flag
+    _circuitDirty = false;
+}
 
 }  // namespace DSPatch

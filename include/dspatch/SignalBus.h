@@ -28,9 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/Common.h>
-
-#include <fast_any/any.h>
+#include "../fast_any/any.h"
 
 #include <vector>
 
@@ -51,13 +49,15 @@ for a variable to dynamically change its type when needed - this can be useful f
 types (E.g. Varying sample size in an audio buffer: array of byte / int / float).
 */
 
-class DLLEXPORT SignalBus final
+class SignalBus final
 {
 public:
-    NONCOPYABLE( SignalBus );
+    SignalBus( const SignalBus& ) = delete;
+    SignalBus& operator=( const SignalBus& ) = delete;
 
     inline SignalBus();
     inline SignalBus( SignalBus&& );
+    inline ~SignalBus();
 
     inline void SetSignalCount( int signalCount );
     inline int GetSignalCount() const;
@@ -86,25 +86,27 @@ private:
     std::vector<fast_any::any> _signals;
 };
 
-inline SignalBus::SignalBus() = default;
+SignalBus::SignalBus() = default;
 
 // cppcheck-suppress missingMemberCopy
-inline SignalBus::SignalBus( SignalBus&& rhs )
+SignalBus::SignalBus( SignalBus&& rhs )
     : _signals( std::move( rhs._signals ) )
 {
 }
 
-inline void SignalBus::SetSignalCount( int signalCount )
+SignalBus::~SignalBus() = default;
+
+void SignalBus::SetSignalCount( int signalCount )
 {
     _signals.resize( signalCount );
 }
 
-inline int SignalBus::GetSignalCount() const
+int SignalBus::GetSignalCount() const
 {
     return (int)_signals.size();
 }
 
-inline fast_any::any* SignalBus::GetSignal( int signalIndex )
+fast_any::any* SignalBus::GetSignal( int signalIndex )
 {
     // You might be thinking: Why the raw pointer return here?
 
@@ -126,7 +128,7 @@ inline fast_any::any* SignalBus::GetSignal( int signalIndex )
     }
 }
 
-inline bool SignalBus::HasValue( int signalIndex ) const
+bool SignalBus::HasValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -139,7 +141,7 @@ inline bool SignalBus::HasValue( int signalIndex ) const
 }
 
 template <typename ValueType>
-inline ValueType* SignalBus::GetValue( int signalIndex ) const
+ValueType* SignalBus::GetValue( int signalIndex ) const
 {
     // You might be thinking: Why the raw pointer return here?
 
@@ -156,7 +158,7 @@ inline ValueType* SignalBus::GetValue( int signalIndex ) const
 }
 
 template <typename ValueType>
-inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
+void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -165,7 +167,7 @@ inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 }
 
 template <typename ValueType>
-inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
+void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -173,7 +175,7 @@ inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
     }
 }
 
-inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
+void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
@@ -181,7 +183,7 @@ inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSi
     }
 }
 
-inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
+void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
 {
     // You might be thinking: Why swap and not move here?
 
@@ -199,7 +201,7 @@ inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal 
     }
 }
 
-inline void SignalBus::ClearAllValues()
+void SignalBus::ClearAllValues()
 {
     for ( auto& signal : _signals )
     {
@@ -207,7 +209,7 @@ inline void SignalBus::ClearAllValues()
     }
 }
 
-inline fast_any::type_info SignalBus::GetType( int signalIndex ) const
+fast_any::type_info SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {

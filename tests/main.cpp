@@ -28,28 +28,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define CATCH_CONFIG_MAIN
 
-#include <catch.hpp>
-
 #include <DSPatch.h>
 
-#include <components/Adder.h>
-#include <components/BranchSyncProbe.h>
-#include <components/ChangingCounter.h>
-#include <components/ChangingProbe.h>
-#include <components/CircuitCounter.h>
-#include <components/CircuitProbe.h>
-#include <components/Counter.h>
-#include <components/FeedbackProbe.h>
-#include <components/FeedbackTester.h>
-#include <components/Incrementer.h>
-#include <components/NoOutputProbe.h>
-#include <components/NullInputProbe.h>
-#include <components/ParallelProbe.h>
-#include <components/PassThrough.h>
-#include <components/SerialProbe.h>
-#include <components/SlowCounter.h>
-#include <components/SporadicCounter.h>
-#include <components/ThreadingProbe.h>
+#include <catch.hpp>
+
+#include "components/Adder.h"
+#include "components/BranchSyncProbe.h"
+#include "components/ChangingCounter.h"
+#include "components/ChangingProbe.h"
+#include "components/CircuitCounter.h"
+#include "components/CircuitProbe.h"
+#include "components/Counter.h"
+#include "components/FeedbackProbe.h"
+#include "components/FeedbackTester.h"
+#include "components/Incrementer.h"
+#include "components/NoOutputProbe.h"
+#include "components/NullInputProbe.h"
+#include "components/ParallelProbe.h"
+#include "components/PassThrough.h"
+#include "components/SerialProbe.h"
+#include "components/SlowCounter.h"
+#include "components/SporadicCounter.h"
+#include "components/ThreadingProbe.h"
 
 #include <thread>
 
