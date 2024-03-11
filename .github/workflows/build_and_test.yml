@@ -54,42 +54,6 @@ jobs:
       run: |
         meson test -vC builddir
 
-    - if: matrix.os == 'windows-2019'
-      name: Release (Windows)
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        replacesArtifacts: true
-        tag: latest-win
-        name: Lastest (Windows)
-        artifacts: builddir/libDSPatch.a
-        artifactContentType: application/octet-stream
-        commit: ${{ github.sha }}
-
-    - if: matrix.os == 'macos-11'
-      name: Release (MacOS)
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        replacesArtifacts: true
-        tag: latest-mac
-        name: Lastest (MacOS)
-        artifacts: builddir/libDSPatch.a
-        artifactContentType: application/octet-stream
-        commit: ${{ github.sha }}
-
-    - if: matrix.os == 'ubuntu-20.04'
-      name: Release (Linux)
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true
-        replacesArtifacts: true
-        tag: latest-linux
-        name: Lastest (Linux)
-        artifacts: builddir/libDSPatch.a
-        artifactContentType: application/octet-stream
-        commit: ${{ github.sha }}
-
     # - if: matrix.os == 'windows-2019'
     #   name: Build - Debug (Windows)
     #   run: |

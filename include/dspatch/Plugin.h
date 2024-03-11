@@ -90,7 +90,7 @@ Plugin::Plugin( const std::string& pluginPath )
 {
     // open library
 #ifdef _WIN32
-    handle = LoadLibrary( pluginPath.c_str() );
+    _handle = LoadLibrary( pluginPath.c_str() );
 #else
     _handle = dlopen( pluginPath.c_str(), RTLD_NOW );
 #endif
@@ -99,7 +99,7 @@ Plugin::Plugin( const std::string& pluginPath )
     {
         // load symbols
 #ifdef _WIN32
-        create = (Create_t)GetProcAddress( (HMODULE)handle, "Create" );
+        _create = (Create_t)GetProcAddress( (HMODULE)_handle, "Create" );
 #else
         _create = (Create_t)dlsym( _handle, "Create" );
 #endif
@@ -107,7 +107,7 @@ Plugin::Plugin( const std::string& pluginPath )
         if ( !_create )
         {
 #ifdef _WIN32
-            FreeLibrary( (HMODULE)handle );
+            FreeLibrary( (HMODULE)_handle );
 #else
             dlclose( _handle );
 #endif
@@ -123,7 +123,7 @@ Plugin::~Plugin()
     if ( _handle )
     {
 #ifdef _WIN32
-        FreeLibrary( (HMODULE)handle );
+        FreeLibrary( (HMODULE)_handle );
 #else
         dlclose( _handle );
 #endif
