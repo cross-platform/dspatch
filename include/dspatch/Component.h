@@ -75,36 +75,36 @@ public:
         OutOfOrder
     };
 
-    inline Component( ProcessOrder processOrder = ProcessOrder::InOrder );
-    inline virtual ~Component();
+    Component( ProcessOrder processOrder = ProcessOrder::InOrder );
+    virtual ~Component();
 
-    inline bool ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput );
+    bool ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput );
 
-    inline void DisconnectInput( int inputNo );
-    inline void DisconnectInput( const Component::SPtr& fromComponent );
-    inline void DisconnectAllInputs();
+    void DisconnectInput( int inputNo );
+    void DisconnectInput( const Component::SPtr& fromComponent );
+    void DisconnectAllInputs();
 
-    inline int GetInputCount() const;
-    inline int GetOutputCount() const;
+    int GetInputCount() const;
+    int GetOutputCount() const;
 
-    inline std::string GetInputName( int inputNo ) const;
-    inline std::string GetOutputName( int outputNo ) const;
+    std::string GetInputName( int inputNo ) const;
+    std::string GetOutputName( int outputNo ) const;
 
-    inline void SetBufferCount( int bufferCount, int startBuffer );
-    inline int GetBufferCount() const;
+    void SetBufferCount( int bufferCount, int startBuffer );
+    int GetBufferCount() const;
 
-    inline void TickSeries( int bufferNo );
-    inline void TickParallel( int bufferNo );
+    void TickSeries( int bufferNo );
+    void TickParallel( int bufferNo );
 
-    inline void ScanSeries( std::vector<Component*>& components );
-    inline void ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
-    inline void EndScan();
+    void ScanSeries( std::vector<Component*>& components );
+    void ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
+    void EndScan();
 
 protected:
     inline virtual void Process_( SignalBus&, SignalBus& ) = 0;
 
-    inline void SetInputCount_( int inputCount, const std::vector<std::string>& inputNames = {} );
-    inline void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
+    void SetInputCount_( int inputCount, const std::vector<std::string>& inputNames = {} );
+    void SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames = {} );
 
 private:
     class AtomicFlag final
@@ -155,14 +155,14 @@ private:
         int toInput;
     };
 
-    inline void _WaitForRelease( int threadNo );
-    inline void _ReleaseNextThread( int threadNo );
+    void _WaitForRelease( int threadNo );
+    void _ReleaseNextThread( int threadNo );
 
-    inline void _GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
-    inline void _GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
+    void _GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
+    void _GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
 
-    inline void _IncRefs( int output );
-    inline void _DecRefs( int output );
+    void _IncRefs( int output );
+    void _DecRefs( int output );
 
     const DSPatch::Component::ProcessOrder _processOrder;
 
@@ -183,15 +183,15 @@ private:
     int _scanPosition = -1;
 };
 
-Component::Component( ProcessOrder processOrder )
+inline Component::Component( ProcessOrder processOrder )
     : _processOrder( processOrder )
 {
     SetBufferCount( 1, 0 );
 }
 
-Component::~Component() = default;
+inline Component::~Component() = default;
 
-bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput )
+inline bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput )
 {
     if ( fromOutput >= fromComponent->GetOutputCount() || toInput >= _inputBuses[0].GetSignalCount() )
     {
@@ -223,7 +223,7 @@ bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutp
     return true;
 }
 
-void Component::DisconnectInput( int inputNo )
+inline void Component::DisconnectInput( int inputNo )
 {
     // remove wires connected to inputNo from _inputWires
     auto findFn = [&inputNo]( const auto& wire ) { return wire.toInput == inputNo; };
@@ -237,7 +237,7 @@ void Component::DisconnectInput( int inputNo )
     }
 }
 
-void Component::DisconnectInput( const Component::SPtr& fromComponent )
+inline void Component::DisconnectInput( const Component::SPtr& fromComponent )
 {
     // remove fromComponent from _inputWires
     auto findFn = [&fromComponent]( const auto& wire ) { return wire.fromComponent == fromComponent.get(); };
@@ -252,7 +252,7 @@ void Component::DisconnectInput( const Component::SPtr& fromComponent )
     }
 }
 
-void Component::DisconnectAllInputs()
+inline void Component::DisconnectAllInputs()
 {
     // remove all wires from _inputWires
     for ( const auto& wire : _inputWires )
@@ -264,18 +264,18 @@ void Component::DisconnectAllInputs()
     _inputWires.clear();
 }
 
-int Component::GetInputCount() const
+inline int Component::GetInputCount() const
 {
     return _inputBuses[0].GetSignalCount();
 }
 
-int Component::GetOutputCount() const
+inline int Component::GetOutputCount() const
 {
     return _outputBuses[0].GetSignalCount();
 }
 
 // cppcheck-suppress unusedFunction
-std::string Component::GetInputName( int inputNo ) const
+inline std::string Component::GetInputName( int inputNo ) const
 {
     if ( inputNo < (int)_inputNames.size() )
     {
@@ -285,7 +285,7 @@ std::string Component::GetInputName( int inputNo ) const
 }
 
 // cppcheck-suppress unusedFunction
-std::string Component::GetOutputName( int outputNo ) const
+inline std::string Component::GetOutputName( int outputNo ) const
 {
     if ( outputNo < (int)_outputNames.size() )
     {
@@ -294,7 +294,7 @@ std::string Component::GetOutputName( int outputNo ) const
     return "";
 }
 
-void Component::SetBufferCount( int bufferCount, int startBuffer )
+inline void Component::SetBufferCount( int bufferCount, int startBuffer )
 {
     // _bufferCount is the current thread count / bufferCount is new thread count
 
@@ -343,12 +343,12 @@ void Component::SetBufferCount( int bufferCount, int startBuffer )
     _bufferCount = bufferCount;
 }
 
-int Component::GetBufferCount() const
+inline int Component::GetBufferCount() const
 {
     return (int)_inputBuses.size();
 }
 
-void Component::TickSeries( int bufferNo )
+inline void Component::TickSeries( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
     auto& outputBus = _outputBuses[bufferNo];
@@ -383,7 +383,7 @@ void Component::TickSeries( int bufferNo )
     }
 }
 
-void Component::TickParallel( int bufferNo )
+inline void Component::TickParallel( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
     auto& outputBus = _outputBuses[bufferNo];
@@ -426,7 +426,7 @@ void Component::TickParallel( int bufferNo )
     }
 }
 
-void Component::ScanSeries( std::vector<Component*>& components )
+inline void Component::ScanSeries( std::vector<Component*>& components )
 {
     // continue only if this component has not already been scanned
     if ( _scanPosition != -1 )
@@ -446,7 +446,7 @@ void Component::ScanSeries( std::vector<Component*>& components )
     components.emplace_back( this );
 }
 
-void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition )
+inline void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition )
 {
     // continue only if this component has not already been scanned
     if ( _scanPosition != -1 )
@@ -476,13 +476,13 @@ void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*>>& com
     componentsMap[_scanPosition].emplace_back( this );
 }
 
-void Component::EndScan()
+inline void Component::EndScan()
 {
     // reset _scanPosition
     _scanPosition = -1;
 }
 
-void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
+inline void Component::SetInputCount_( int inputCount, const std::vector<std::string>& inputNames )
 {
     _inputNames = inputNames;
 
@@ -494,7 +494,7 @@ void Component::SetInputCount_( int inputCount, const std::vector<std::string>& 
     _inputWires.reserve( inputCount );
 }
 
-void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
+inline void Component::SetOutputCount_( int outputCount, const std::vector<std::string>& outputNames )
 {
     _outputNames = outputNames;
 
@@ -510,12 +510,12 @@ void Component::SetOutputCount_( int outputCount, const std::vector<std::string>
     }
 }
 
-void Component::_WaitForRelease( int threadNo )
+inline void Component::_WaitForRelease( int threadNo )
 {
     _releaseFlags[threadNo].WaitAndClear();
 }
 
-void Component::_ReleaseNextThread( int threadNo )
+inline void Component::_ReleaseNextThread( int threadNo )
 {
     if ( ++threadNo == _bufferCount )  // we're actually releasing the next available thread
     {
@@ -527,7 +527,7 @@ void Component::_ReleaseNextThread( int threadNo )
     }
 }
 
-void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+inline void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
     auto& signal = *_outputBuses[bufferNo].GetSignal( fromOutput );
 
@@ -556,7 +556,7 @@ void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::
     }
 }
 
-void Component::_GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+inline void Component::_GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
     auto& signal = *_outputBuses[bufferNo].GetSignal( fromOutput );
     auto& ref = _refs[bufferNo][fromOutput];
@@ -590,7 +590,7 @@ void Component::_GetOutputParallel( int bufferNo, int fromOutput, int toInput, D
     }
 }
 
-void Component::_IncRefs( int output )
+inline void Component::_IncRefs( int output )
 {
     for ( auto& ref : _refs )
     {
@@ -598,7 +598,7 @@ void Component::_IncRefs( int output )
     }
 }
 
-void Component::_DecRefs( int output )
+inline void Component::_DecRefs( int output )
 {
     for ( auto& ref : _refs )
     {

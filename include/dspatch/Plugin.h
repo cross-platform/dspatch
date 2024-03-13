@@ -72,12 +72,12 @@ public:
     Plugin( const Plugin& ) = delete;
     Plugin& operator=( const Plugin& ) = delete;
 
-    inline explicit Plugin( const std::string& pluginPath );
-    inline ~Plugin();
+    explicit Plugin( const std::string& pluginPath );
+    ~Plugin();
 
-    inline bool IsLoaded() const;
+    bool IsLoaded() const;
 
-    inline Component::SPtr Create() const;
+    Component::SPtr Create() const;
 
 private:
     typedef DSPatch::Component* ( *Create_t )();
@@ -86,7 +86,7 @@ private:
     Create_t _create = nullptr;
 };
 
-Plugin::Plugin( const std::string& pluginPath )
+inline Plugin::Plugin( const std::string& pluginPath )
 {
     // open library
 #ifdef _WIN32
@@ -117,7 +117,7 @@ Plugin::Plugin( const std::string& pluginPath )
     }
 }
 
-Plugin::~Plugin()
+inline Plugin::~Plugin()
 {
     // close library
     if ( _handle )
@@ -131,13 +131,13 @@ Plugin::~Plugin()
 }
 
 // cppcheck-suppress unusedFunction
-bool Plugin::IsLoaded() const
+inline bool Plugin::IsLoaded() const
 {
     return _handle;
 }
 
 // cppcheck-suppress unusedFunction
-Component::SPtr Plugin::Create() const
+inline Component::SPtr Plugin::Create() const
 {
     if ( _handle )
     {

@@ -75,39 +75,36 @@ public:
     Circuit( const Circuit& ) = delete;
     Circuit& operator=( const Circuit& ) = delete;
 
-    inline Circuit();
-    inline ~Circuit();
+    Circuit();
+    ~Circuit();
 
-    inline bool AddComponent( const Component::SPtr& component );
+    bool AddComponent( const Component::SPtr& component );
 
-    inline bool RemoveComponent( const Component::SPtr& component );
-    inline void RemoveAllComponents();
+    bool RemoveComponent( const Component::SPtr& component );
+    void RemoveAllComponents();
 
-    inline int GetComponentCount() const;
+    int GetComponentCount() const;
 
-    inline bool ConnectOutToIn( const Component::SPtr& fromComponent,
-                                int fromOutput,
-                                const Component::SPtr& toComponent,
-                                int toInput );
+    bool ConnectOutToIn( const Component::SPtr& fromComponent, int fromOutput, const Component::SPtr& toComponent, int toInput );
 
-    inline bool DisconnectComponent( const Component::SPtr& component );
-    inline void DisconnectAllComponents();
+    bool DisconnectComponent( const Component::SPtr& component );
+    void DisconnectAllComponents();
 
-    inline void SetBufferCount( int bufferCount );
-    inline int GetBufferCount() const;
+    void SetBufferCount( int bufferCount );
+    int GetBufferCount() const;
 
-    inline void SetThreadCount( int threadCount );
-    inline int GetThreadCount() const;
+    void SetThreadCount( int threadCount );
+    int GetThreadCount() const;
 
-    inline void Tick();
-    inline void Sync();
+    void Tick();
+    void Sync();
 
-    inline void StartAutoTick();
-    inline void StopAutoTick();
-    inline void PauseAutoTick();
-    inline void ResumeAutoTick();
+    void StartAutoTick();
+    void StopAutoTick();
+    void PauseAutoTick();
+    void ResumeAutoTick();
 
-    inline void Optimize();
+    void Optimize();
 
 private:
     class AutoTickThread final
@@ -423,7 +420,7 @@ private:
         std::condition_variable _resumeCondt, _syncCondt;
     };
 
-    inline void _Optimize();
+    void _Optimize();
 
     int _bufferCount = 0;
     int _threadCount = 0;
@@ -441,14 +438,14 @@ private:
     bool _circuitDirty = false;
 };
 
-Circuit::Circuit() = default;
+inline Circuit::Circuit() = default;
 
-Circuit::~Circuit()
+inline Circuit::~Circuit()
 {
     StopAutoTick();
 }
 
-bool Circuit::AddComponent( const Component::SPtr& component )
+inline bool Circuit::AddComponent( const Component::SPtr& component )
 {
     if ( !component || _componentsSet.find( component ) != _componentsSet.end() )
     {
@@ -468,7 +465,7 @@ bool Circuit::AddComponent( const Component::SPtr& component )
     return true;
 }
 
-bool Circuit::RemoveComponent( const Component::SPtr& component )
+inline bool Circuit::RemoveComponent( const Component::SPtr& component )
 {
     if ( _componentsSet.find( component ) == _componentsSet.end() )
     {
@@ -496,7 +493,7 @@ bool Circuit::RemoveComponent( const Component::SPtr& component )
 }
 
 // cppcheck-suppress unusedFunction
-void Circuit::RemoveAllComponents()
+inline void Circuit::RemoveAllComponents()
 {
     PauseAutoTick();
 
@@ -508,15 +505,15 @@ void Circuit::RemoveAllComponents()
     _componentsSet.clear();
 }
 
-int Circuit::GetComponentCount() const
+inline int Circuit::GetComponentCount() const
 {
     return (int)_components.size();
 }
 
-bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent,
-                              int fromOutput,
-                              const Component::SPtr& toComponent,
-                              int toInput )
+inline bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent,
+                                     int fromOutput,
+                                     const Component::SPtr& toComponent,
+                                     int toInput )
 {
     if ( _componentsSet.find( fromComponent ) == _componentsSet.end() ||
          _componentsSet.find( toComponent ) == _componentsSet.end() )
@@ -535,7 +532,7 @@ bool Circuit::ConnectOutToIn( const Component::SPtr& fromComponent,
     return result;
 }
 
-bool Circuit::DisconnectComponent( const Component::SPtr& component )
+inline bool Circuit::DisconnectComponent( const Component::SPtr& component )
 {
     if ( _componentsSet.find( component ) == _componentsSet.end() )
     {
@@ -560,7 +557,7 @@ bool Circuit::DisconnectComponent( const Component::SPtr& component )
 }
 
 // cppcheck-suppress unusedFunction
-void Circuit::DisconnectAllComponents()
+inline void Circuit::DisconnectAllComponents()
 {
     PauseAutoTick();
 
@@ -572,7 +569,7 @@ void Circuit::DisconnectAllComponents()
     ResumeAutoTick();
 }
 
-void Circuit::SetBufferCount( int bufferCount )
+inline void Circuit::SetBufferCount( int bufferCount )
 {
     PauseAutoTick();
 
@@ -615,12 +612,12 @@ void Circuit::SetBufferCount( int bufferCount )
     ResumeAutoTick();
 }
 
-int Circuit::GetBufferCount() const
+inline int Circuit::GetBufferCount() const
 {
     return _bufferCount;
 }
 
-void Circuit::SetThreadCount( int threadCount )
+inline void Circuit::SetThreadCount( int threadCount )
 {
     PauseAutoTick();
 
@@ -666,12 +663,12 @@ void Circuit::SetThreadCount( int threadCount )
 }
 
 // cppcheck-suppress unusedFunction
-int Circuit::GetThreadCount() const
+inline int Circuit::GetThreadCount() const
 {
     return _threadCount;
 }
 
-void Circuit::Tick()
+inline void Circuit::Tick()
 {
     if ( _circuitDirty )
     {
@@ -716,7 +713,7 @@ void Circuit::Tick()
     }
 }
 
-void Circuit::Sync()
+inline void Circuit::Sync()
 {
     // sync all threads
     for ( auto& circuitThread : _circuitThreads )
@@ -732,29 +729,29 @@ void Circuit::Sync()
     }
 }
 
-void Circuit::StartAutoTick()
+inline void Circuit::StartAutoTick()
 {
     _autoTickThread.Start( this );
 }
 
-void Circuit::StopAutoTick()
+inline void Circuit::StopAutoTick()
 {
     _autoTickThread.Stop();
     Sync();
 }
 
-void Circuit::PauseAutoTick()
+inline void Circuit::PauseAutoTick()
 {
     _autoTickThread.Pause();
     Sync();
 }
 
-void Circuit::ResumeAutoTick()
+inline void Circuit::ResumeAutoTick()
 {
     _autoTickThread.Resume();
 }
 
-void Circuit::Optimize()
+inline void Circuit::Optimize()
 {
     if ( _circuitDirty )
     {
@@ -764,7 +761,7 @@ void Circuit::Optimize()
     }
 }
 
-void Circuit::_Optimize()
+inline void Circuit::_Optimize()
 {
     // scan for optimal series order -> update _components
     {

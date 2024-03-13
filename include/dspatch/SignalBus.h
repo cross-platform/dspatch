@@ -55,58 +55,58 @@ public:
     SignalBus( const SignalBus& ) = delete;
     SignalBus& operator=( const SignalBus& ) = delete;
 
-    inline SignalBus();
-    inline SignalBus( SignalBus&& );
-    inline ~SignalBus();
+    SignalBus();
+    SignalBus( SignalBus&& );
+    ~SignalBus();
 
-    inline void SetSignalCount( int signalCount );
-    inline int GetSignalCount() const;
+    void SetSignalCount( int signalCount );
+    int GetSignalCount() const;
 
-    inline fast_any::any* GetSignal( int signalIndex );
+    fast_any::any* GetSignal( int signalIndex );
 
-    inline bool HasValue( int signalIndex ) const;
-
-    template <typename ValueType>
-    inline ValueType* GetValue( int signalIndex ) const;
+    bool HasValue( int signalIndex ) const;
 
     template <typename ValueType>
-    inline void SetValue( int signalIndex, const ValueType& newValue );
+    ValueType* GetValue( int signalIndex ) const;
 
     template <typename ValueType>
-    inline void MoveValue( int signalIndex, ValueType&& newValue );
+    void SetValue( int signalIndex, const ValueType& newValue );
 
-    inline void SetSignal( int toSignalIndex, const fast_any::any& fromSignal );
-    inline void MoveSignal( int toSignalIndex, fast_any::any& fromSignal );
+    template <typename ValueType>
+    void MoveValue( int signalIndex, ValueType&& newValue );
 
-    inline void ClearAllValues();
+    void SetSignal( int toSignalIndex, const fast_any::any& fromSignal );
+    void MoveSignal( int toSignalIndex, fast_any::any& fromSignal );
 
-    inline fast_any::type_info GetType( int signalIndex ) const;
+    void ClearAllValues();
+
+    fast_any::type_info GetType( int signalIndex ) const;
 
 private:
     std::vector<fast_any::any> _signals;
 };
 
-SignalBus::SignalBus() = default;
+inline SignalBus::SignalBus() = default;
 
 // cppcheck-suppress missingMemberCopy
-SignalBus::SignalBus( SignalBus&& rhs )
+inline SignalBus::SignalBus( SignalBus&& rhs )
     : _signals( std::move( rhs._signals ) )
 {
 }
 
-SignalBus::~SignalBus() = default;
+inline SignalBus::~SignalBus() = default;
 
-void SignalBus::SetSignalCount( int signalCount )
+inline void SignalBus::SetSignalCount( int signalCount )
 {
     _signals.resize( signalCount );
 }
 
-int SignalBus::GetSignalCount() const
+inline int SignalBus::GetSignalCount() const
 {
     return (int)_signals.size();
 }
 
-fast_any::any* SignalBus::GetSignal( int signalIndex )
+inline fast_any::any* SignalBus::GetSignal( int signalIndex )
 {
     // You might be thinking: Why the raw pointer return here?
 
@@ -128,7 +128,7 @@ fast_any::any* SignalBus::GetSignal( int signalIndex )
     }
 }
 
-bool SignalBus::HasValue( int signalIndex ) const
+inline bool SignalBus::HasValue( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -141,7 +141,7 @@ bool SignalBus::HasValue( int signalIndex ) const
 }
 
 template <typename ValueType>
-ValueType* SignalBus::GetValue( int signalIndex ) const
+inline ValueType* SignalBus::GetValue( int signalIndex ) const
 {
     // You might be thinking: Why the raw pointer return here?
 
@@ -158,7 +158,7 @@ ValueType* SignalBus::GetValue( int signalIndex ) const
 }
 
 template <typename ValueType>
-void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
+inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -167,7 +167,7 @@ void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 }
 
 template <typename ValueType>
-void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
+inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
@@ -175,7 +175,7 @@ void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
     }
 }
 
-void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
+inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
 {
     if ( (size_t)toSignalIndex < _signals.size() )
     {
@@ -183,7 +183,7 @@ void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
     }
 }
 
-void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
+inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
 {
     // You might be thinking: Why swap and not move here?
 
@@ -201,7 +201,7 @@ void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
     }
 }
 
-void SignalBus::ClearAllValues()
+inline void SignalBus::ClearAllValues()
 {
     for ( auto& signal : _signals )
     {
@@ -209,7 +209,7 @@ void SignalBus::ClearAllValues()
     }
 }
 
-fast_any::type_info SignalBus::GetType( int signalIndex ) const
+inline fast_any::type_info SignalBus::GetType( int signalIndex ) const
 {
     if ( (size_t)signalIndex < _signals.size() )
     {
