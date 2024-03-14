@@ -21,18 +21,12 @@ git submodule update --init --recursive --remote
 
 DSPatch is a header-only library, to build it into your own projects, all you'll need are the files under `include`.
 
-To build the docs, tests, and tutorial projects:
+To build the tests and tutorial projects:
 
 ```
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release
+meson setup builddir --buildtype=debug
+meson compile -C builddir
 ```
-
-- *`cmake` will auto-detect your IDE / compiler. To manually select one, use `cmake -G`.*
-- *When building for an IDE, instead of `cmake --build`, simply open the cmake generated project file.*
-
 
 ### See also:
 

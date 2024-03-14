@@ -6,6 +6,11 @@ project('DSPatch', 'cpp',
     ]
 )
 
+if host_machine.system() == 'darwin'
+    add_project_arguments(['-arch', 'arm64', '-arch', 'x86_64'], language: 'cpp')
+    add_project_link_arguments(['-arch', 'arm64', '-arch', 'x86_64'], language: 'cpp')
+endif
+
 # Add code coverage
 
 opencppcoverage = find_program('opencppcoverage', required: false)
