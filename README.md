@@ -9,21 +9,24 @@ Webite: https://flowbasedprogramming.com
 DSPatch, pronounced "dispatch", is a powerful C++ dataflow framework. DSPatch is not limited to any particular domain or data type, from reactive programming to stream processing, DSPatch's generic, object-oriented API allows you to create virtually any graph processing system imaginable.
 
 
-## Build
+## Checkout
 
 ```
 git clone https://github.com/cross-platform/dspatch.git
 cd dspatch
 git submodule update --init --recursive --remote
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release
 ```
 
-- *`cmake` will auto-detect your IDE / compiler. To manually select one, use `cmake -G`.*
-- *When building for an IDE, instead of `cmake --build`, simply open the cmake generated project file.*
+## Build
 
+DSPatch is a header-only library, to build it into your own projects, all you'll need are the files under `include`.
+
+To build the tests and tutorial projects:
+
+```
+meson setup builddir --buildtype=debug
+meson compile -C builddir
+```
 
 ### See also:
 

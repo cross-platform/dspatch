@@ -28,9 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <dspatch/Common.h>
-
-#include <any>
+#include "../fast_any/any.h"
 
 #include <vector>
 
@@ -51,36 +49,38 @@ for a variable to dynamically change its type when needed - this can be useful f
 types (E.g. Varying sample size in an audio buffer: array of byte / int / float).
 */
 
-class DLLEXPORT SignalBus final
+class SignalBus final
 {
 public:
-    NONCOPYABLE( SignalBus );
+    SignalBus( const SignalBus& ) = delete;
+    SignalBus& operator=( const SignalBus& ) = delete;
 
-    inline SignalBus();
-    inline SignalBus( SignalBus&& );
+    SignalBus();
+    SignalBus( SignalBus&& );
+    ~SignalBus();
 
-    inline void SetSignalCount( int signalCount );
-    inline int GetSignalCount() const;
+    void SetSignalCount( int signalCount );
+    int GetSignalCount() const;
 
-    inline std::any* GetSignal( int signalIndex );
+    std::any* GetSignal( int signalIndex );
 
-    inline bool HasValue( int signalIndex ) const;
-
-    template <typename ValueType>
-    inline ValueType* GetValue( int signalIndex ) const;
-
-    template <typename ValueType>
-    inline void SetValue( int signalIndex, const ValueType& newValue );
+    bool HasValue( int signalIndex ) const;
 
     template <typename ValueType>
-    inline void MoveValue( int signalIndex, ValueType&& newValue );
+    ValueType* GetValue( int signalIndex ) const;
 
-    inline void SetSignal( int toSignalIndex, const std::any& fromSignal );
-    inline void MoveSignal( int toSignalIndex, std::any& fromSignal );
+    template <typename ValueType>
+    void SetValue( int signalIndex, const ValueType& newValue );
 
-    inline void ClearAllValues();
+    template <typename ValueType>
+    void MoveValue( int signalIndex, ValueType&& newValue );
 
-    inline const std::type_info& GetType( int signalIndex ) const;
+    void SetSignal( int toSignalIndex, const std::any& fromSignal );
+    void MoveSignal( int toSignalIndex, std::any& fromSignal );
+
+    void ClearAllValues();
+
+    const std::type_info& GetType( int signalIndex ) const;
 
 private:
     std::vector<std::any> _signals;
@@ -93,6 +93,8 @@ inline SignalBus::SignalBus( SignalBus&& rhs )
     : _signals( std::move( rhs._signals ) )
 {
 }
+
+inline SignalBus::~SignalBus() = default;
 
 inline void SignalBus::SetSignalCount( int signalCount )
 {

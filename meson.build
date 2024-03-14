@@ -6,14 +6,22 @@ project('DSPatch', 'cpp',
     ]
 )
 
+if host_machine.system() == 'darwin'
+    env = environment()
+    env.set('MACOSX_DEPLOYMENT_TARGET', '10.13')
+
+    add_project_arguments(['-mmacosx-version-min=10.13', '-arch', 'arm64', '-arch', 'x86_64'], language: 'cpp')
+    add_project_link_arguments(['-mmacosx-version-min=10.13', '-arch', 'arm64', '-arch', 'x86_64'], language: 'cpp')
+endif
+
 # Add code coverage
 
 opencppcoverage = find_program('opencppcoverage', required: false)
 
 opencppcoverage_args = [
     '--sources', meson.project_name(),
-    '--excluded_sources', 'subprojects',
-    '--excluded_sources', 'tests'
+    '--excluded_sources', 'tests',
+    '--excluded_sources', 'tutorial'
 ]
 
 if opencppcoverage.found()
@@ -68,11 +76,7 @@ if find_program('cppcheck', required: false).found()
             '--suppress=*:' + meson.current_source_dir() + '/include/fast_any/any.h',
 
             '-i', meson.current_source_dir() + '/build',
-            '-i', meson.current_source_dir() + '/builddir',
-            '-i', meson.current_source_dir() + '/subprojects',
-
             '-I', meson.current_source_dir() + '/include',
-            '-I', meson.current_source_dir() + '/tests',
 
             extra_cppcheck_args,
 
@@ -84,26 +88,8 @@ endif
 
 # Configure DSPatch
 
-dspatch_src = [
-    'src/Circuit.cpp',
-    'src/Component.cpp',
-    'src/Plugin.cpp'
-]
-
-dspatch_inc = include_directories(
-    'include'
-)
-
-dspatch_lib = static_library(
-    'DSPatch',
-    format_first,
-    dspatch_src,
-    include_directories: dspatch_inc
-)
-
 dspatch_dep = declare_dependency(
-  link_with: dspatch_lib,
-  include_directories: dspatch_inc,
+  include_directories: include_directories('include'),
   dependencies: dependency('threads')
 )
 

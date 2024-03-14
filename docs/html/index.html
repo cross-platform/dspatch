@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.10.2.4</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.0.2</span>
    </div>
   </td>
  </tr>
@@ -122,7 +122,7 @@ Tutorials</h1>
 <div class="line"><span class="comment">// ======================================</span></div>
 <div class="line"><span class="keyword">class </span>AndBool final : <span class="keyword">public</span> <a class="code hl_class" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></div>
 <div class="line">{</div>
-<div class="ttc" id="aclass_d_s_patch_1_1_component_html"><div class="ttname"><a href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></div><div class="ttdoc">Abstract base class for DSPatch components.</div><div class="ttdef"><b>Definition</b> <a href="_component_8h_source.html#l00066">Component.h:67</a></div></div>
+<div class="ttc" id="aclass_d_s_patch_1_1_component_html"><div class="ttname"><a href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></div><div class="ttdoc">Abstract base class for DSPatch components.</div><div class="ttdef"><b>Definition</b> <a href="_component_8h_source.html#l00064">Component.h:65</a></div></div>
 </div><!-- fragment --><p>The next step is to configure our component's input and output buses. This is achieved by calling the base protected methods: SetInputCount_() and SetOutputCount_() respectively from our component's constructor. In our component's case, we require 2 inputs and 1 output, therefore our constructor code will look like this:</p>
 <div class="fragment"><div class="line"><span class="keyword">public</span>:</div>
 <div class="line">    <span class="comment">// 2. Configure component IO buses</span></div>
@@ -154,7 +154,7 @@ Tutorials</h1>
 <div class="line">        }</div>
 <div class="line">    }</div>
 <div class="line">};</div>
-<div class="ttc" id="aclass_d_s_patch_1_1_signal_bus_html"><div class="ttname"><a href="class_d_s_patch_1_1_signal_bus.html">DSPatch::SignalBus</a></div><div class="ttdoc">Signal container.</div><div class="ttdef"><b>Definition</b> <a href="_signal_bus_8h_source.html#l00054">SignalBus.h:55</a></div></div>
+<div class="ttc" id="aclass_d_s_patch_1_1_signal_bus_html"><div class="ttname"><a href="class_d_s_patch_1_1_signal_bus.html">DSPatch::SignalBus</a></div><div class="ttdoc">Signal container.</div><div class="ttdef"><b>Definition</b> <a href="_signal_bus_8h_source.html#l00052">SignalBus.h:53</a></div></div>
 </div><!-- fragment --><p>Our component is now ready to form part of a DSPatch circuit. Next we'll look at how we can add our component to a circuit and route it to and from other components.</p>
 <p><br  />
  </p>

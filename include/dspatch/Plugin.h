@@ -28,6 +28,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include "Component.h"
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef WIN32_LEAN_AND_MEAN
+#define DLLEXPORT __declspec( dllexport )
+#else
+#include <dlfcn.h>
+#define DLLEXPORT
+#endif
+
+#include <string>
+
 #define EXPORT_PLUGIN( classname, ... )          \
     extern "C"                                   \
     {                                            \
@@ -37,15 +51,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         }                                        \
     }
 
-#include <dspatch/Component.h>
-
 namespace DSPatch
 {
-
-namespace internal
-{
-class Plugin;
-}
 
 /// Component plugin loader
 
@@ -59,10 +66,11 @@ check that the plugin was successfully loaded by calling IsLoaded(). Thereafter,
 (mutiple times) via the Create() method.
 */
 
-class DLLEXPORT Plugin final
+class Plugin final
 {
 public:
-    NONCOPYABLE( Plugin );
+    Plugin( const Plugin& ) = delete;
+    Plugin& operator=( const Plugin& ) = delete;
 
     explicit Plugin( const std::string& pluginPath );
     ~Plugin();
@@ -72,7 +80,70 @@ public:
     Component::SPtr Create() const;
 
 private:
-    internal::Plugin* p;
+    typedef DSPatch::Component* ( *Create_t )();
+
+    void* _handle = nullptr;
+    Create_t _create = nullptr;
 };
+
+inline Plugin::Plugin( const std::string& pluginPath )
+{
+    // open library
+#ifdef _WIN32
+    _handle = LoadLibrary( pluginPath.c_str() );
+#else
+    _handle = dlopen( pluginPath.c_str(), RTLD_NOW );
+#endif
+
+    if ( _handle )
+    {
+        // load symbols
+#ifdef _WIN32
+        _create = (Create_t)GetProcAddress( (HMODULE)_handle, "Create" );
+#else
+        _create = (Create_t)dlsym( _handle, "Create" );
+#endif
+
+        if ( !_create )
+        {
+#ifdef _WIN32
+            FreeLibrary( (HMODULE)_handle );
+#else
+            dlclose( _handle );
+#endif
+
+            _handle = nullptr;
+        }
+    }
+}
+
+inline Plugin::~Plugin()
+{
+    // close library
+    if ( _handle )
+    {
+#ifdef _WIN32
+        FreeLibrary( (HMODULE)_handle );
+#else
+        dlclose( _handle );
+#endif
+    }
+}
+
+// cppcheck-suppress unusedFunction
+inline bool Plugin::IsLoaded() const
+{
+    return _handle;
+}
+
+// cppcheck-suppress unusedFunction
+inline Component::SPtr Plugin::Create() const
+{
+    if ( _handle )
+    {
+        return Component::SPtr( _create() );
+    }
+    return nullptr;
+}
 
 }  // namespace DSPatch
