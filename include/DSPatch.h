@@ -63,7 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     - <b>Cross-platform</b> - DSPatch is built and tested daily on Linux, Mac and Windows.
     <a href="https://www.youtube.com/watch?v=u3A9x9bpbdo"><b>Here</b></a> we see DSPatch running
     flawlessly on a BeagleBone!
-    - <b>Easy-to-use object-oriented API</b> - DSPatch is modelled around real-world circuit
+    - <b>Easy-to-use header-only API</b> - DSPatch is modelled around real-world circuit
     entities and concepts, making code more readable and easy to understand.
     - <b>High performance multi-buffering</b> - Utilize parallel multi-buffering via
     Circuit::SetBufferCount() to maximize dataflow efficiency in stream processing circuits.
