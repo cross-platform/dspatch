@@ -1,3 +1,8 @@
+v.11.0.2 (14 March 2024)
+    - Replaced CMake with Meson.
+    - Updated fast_any submodule (incl. inline cleanup).
+    - Cleaned up all inlines.
+
 v.11.0.1 (12 March 2024)
     - Cleaned up project structure.
 
