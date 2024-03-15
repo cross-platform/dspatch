@@ -934,7 +934,7 @@ TEST_CASE( "TenThousandComponents" )
 
             diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
 
-            std::cout << i << "x Buffer, " << j << "x Thread, 10000 Components: " << diff_ms / iterationCount << "ms\n";
+            std::cout << i << "x Buffers, " << j << "x Threads, 10000 Components: " << diff_ms / iterationCount << "ms\n";
         }
     }
 
