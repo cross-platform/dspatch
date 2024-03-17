@@ -1,3 +1,8 @@
+v.11.0.5 (17 March 2024)
+    - Bypassed _componentsParallel optimization when unused.
+    - Removed unmatched cppcheck suppression.
+    - Reverted tasks.json testing change.
+
 v.11.0.4 (17 March 2024)
     - Updated fast_any submodule (incl. optimized type checking).
 
