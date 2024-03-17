@@ -621,6 +621,11 @@ inline void Circuit::SetThreadCount( int threadCount )
 {
     PauseAutoTick();
 
+    if ( _threadCount == 0 && threadCount != 0 )
+    {
+        _circuitDirty = true;
+    }
+
     _threadCount = threadCount;
 
     // stop all threads
@@ -781,6 +786,7 @@ inline void Circuit::_Optimize()
     }
 
     // scan for optimal parallel order -> update _componentsParallel
+    if ( _threadCount != 0 )
     {
         std::vector<std::vector<DSPatch::Component*>> componentsMap;
 
