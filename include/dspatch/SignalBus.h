@@ -87,7 +87,6 @@ private:
 
 inline SignalBus::SignalBus() = default;
 
-// cppcheck-suppress missingMemberCopy
 inline SignalBus::SignalBus( SignalBus&& rhs )
     : _signals( std::move( rhs._signals ) )
 {
