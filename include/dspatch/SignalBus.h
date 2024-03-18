@@ -108,34 +108,18 @@ inline std::any* SignalBus::GetSignal( int signalIndex )
 {
     // You might be thinking: Why the raw pointer return here?
 
-    // This is for usability, design, and performance reasons. Usability, because a pointer allows
-    // the user to manipulate the contained value externally. Design, because DSPatch doesn't use
-    // exceptions - a nullptr return here is the equivalent of "signal does not exist".
-    // Performance, because returning a smart pointer means having to store the value as a smart
-    // pointer too - this adds yet another level of indirection to the value, as well as some
-    // reference counting overhead. These Get() and Set() methods are VERY frequently called, so
-    // doing as little as possible with the data here is best.
+    // This is for usability and performance reasons. Usability, because a pointer allows the user
+    // to manipulate the contained value externally. Performance, because returning a smart pointer
+    // means having to store the value as a smart pointer too - this adds yet another level of
+    // indirection to the value, as well as some reference counting overhead. These Get() and Set()
+    // methods are VERY frequently called, so doing as little as possible with the data here is best.
 
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return &_signals[signalIndex];
-    }
-    else
-    {
-        return nullptr;
-    }
+    return &_signals[signalIndex];
 }
 
 inline bool SignalBus::HasValue( int signalIndex ) const
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex].has_value();
-    }
-    else
-    {
-        return false;
-    }
+    return _signals[signalIndex].has_value();
 }
 
 template <typename ValueType>
@@ -145,18 +129,11 @@ inline ValueType* SignalBus::GetValue( int signalIndex ) const
 
     // See: GetSignal().
 
-    if ( (size_t)signalIndex < _signals.size() )
+    try
     {
-        try
-        {
-            return const_cast<ValueType*>( &std::any_cast<const ValueType&>( _signals[signalIndex] ) );
-        }
-        catch ( const std::exception& )
-        {
-            return nullptr;
-        }
+        return const_cast<ValueType*>( &std::any_cast<const ValueType&>( _signals[signalIndex] ) );
     }
-    else
+    catch ( const std::exception& )
     {
         return nullptr;
     }
@@ -165,27 +142,18 @@ inline ValueType* SignalBus::GetValue( int signalIndex ) const
 template <typename ValueType>
 inline void SignalBus::SetValue( int signalIndex, const ValueType& newValue )
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        _signals[signalIndex].emplace<ValueType>( newValue );
-    }
+    _signals[signalIndex].emplace<ValueType>( newValue );
 }
 
 template <typename ValueType>
 inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        _signals[signalIndex].emplace<ValueType>( std::forward<ValueType>( newValue ) );
-    }
+    _signals[signalIndex].emplace<ValueType>( std::forward<ValueType>( newValue ) );
 }
 
 inline void SignalBus::SetSignal( int toSignalIndex, const std::any& fromSignal )
 {
-    if ( (size_t)toSignalIndex < _signals.size() )
-    {
-        _signals[toSignalIndex] = fromSignal;
-    }
+    _signals[toSignalIndex] = fromSignal;
 }
 
 inline void SignalBus::MoveSignal( int toSignalIndex, std::any& fromSignal )
@@ -200,10 +168,7 @@ inline void SignalBus::MoveSignal( int toSignalIndex, std::any& fromSignal )
     // signals such that, between these two points, just two value holders need to be constructed,
     // and shared back and forth from then on.
 
-    if ( (size_t)toSignalIndex < _signals.size() )
-    {
-        _signals[toSignalIndex].swap( fromSignal );
-    }
+    _signals[toSignalIndex].swap( fromSignal );
 }
 
 inline void SignalBus::ClearAllValues()
@@ -216,14 +181,7 @@ inline void SignalBus::ClearAllValues()
 
 inline const std::type_info& SignalBus::GetType( int signalIndex ) const
 {
-    if ( (size_t)signalIndex < _signals.size() )
-    {
-        return _signals[signalIndex].type();
-    }
-    else
-    {
-        return typeid( void );
-    }
+    return _signals[signalIndex].type();
 }
 
 }  // namespace DSPatch
