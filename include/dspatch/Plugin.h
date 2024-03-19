@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EXPORT_PLUGIN( classname, ... )          \
     extern "C"                                   \
     {                                            \
-        DLLEXPORT Component* Create()            \
+        DLLEXPORT DSPatch::Component* Create()   \
         {                                        \
             return new classname( __VA_ARGS__ ); \
         }                                        \
