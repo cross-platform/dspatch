@@ -1,3 +1,7 @@
+v.11.1.1 (21 March 2024)
+    - Namespaced exported plugin Create() method.
+    - Added thread yields after condition variable notifications.
+
 v.11.1.0 (18 March 2024)
     - Updated fast_any submodule (incl. optimized emplacement).
     - Removed size() checks from SignalBus methods.
