@@ -163,6 +163,7 @@ private:
             {
                 _pause = false;
                 _resumeCondt.notify_all();
+                std::this_thread::yield();
             }
         }
 
@@ -253,6 +254,7 @@ private:
         {
             _gotSync = false;  // reset the sync flag
             _resumeCondt.notify_all();
+            std::this_thread::yield();
         }
 
         inline void SyncAndResume()
@@ -372,6 +374,7 @@ private:
         {
             _gotSync = false;  // reset the sync flag
             _resumeCondt.notify_all();
+            std::this_thread::yield();
         }
 
     private:
