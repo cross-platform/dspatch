@@ -446,6 +446,7 @@ inline Circuit::Circuit() = default;
 inline Circuit::~Circuit()
 {
     StopAutoTick();
+    DisconnectAllComponents();
 }
 
 inline bool Circuit::AddComponent( const Component::SPtr& component )
@@ -499,6 +500,8 @@ inline bool Circuit::RemoveComponent( const Component::SPtr& component )
 inline void Circuit::RemoveAllComponents()
 {
     PauseAutoTick();
+
+    DisconnectAllComponents();
 
     _components.clear();
     _componentsParallel.clear();
@@ -559,7 +562,6 @@ inline bool Circuit::DisconnectComponent( const Component::SPtr& component )
     return true;
 }
 
-// cppcheck-suppress unusedFunction
 inline void Circuit::DisconnectAllComponents()
 {
     PauseAutoTick();
