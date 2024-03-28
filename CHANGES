@@ -1,3 +1,8 @@
+v.11.1.2 (28 March 2024)
+    - Updated fast_any submodule (incl. const T& constructor).
+    - Added DisconnectAllComponents() call to Circuit destructor.
+    - Replaced operator=() with emplace() in SignalBus::SetSignal().
+
 v.11.1.1 (21 March 2024)
     - Namespaced exported plugin Create() method.
     - Added thread yields after condition variable notifications.
