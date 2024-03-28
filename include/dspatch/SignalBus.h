@@ -147,7 +147,7 @@ inline void SignalBus::MoveValue( int signalIndex, ValueType&& newValue )
 
 inline void SignalBus::SetSignal( int toSignalIndex, const fast_any::any& fromSignal )
 {
-    _signals[toSignalIndex] = fromSignal;
+    _signals[toSignalIndex].emplace( fromSignal );
 }
 
 inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal )
