@@ -212,10 +212,15 @@ inline bool Component::ConnectInput( const Component::SPtr& fromComponent, int f
         // update source output's reference count
         it->fromComponent->_DecRefs( it->fromOutput );
 
-        _inputWires.erase( it );
+        // replace wire
+        it->fromComponent = fromComponent.get();
+        it->fromOutput = fromOutput;
     }
-
-    _inputWires.emplace_back( Wire{ fromComponent.get(), fromOutput, toInput } );
+    else
+    {
+        // add new wire
+        _inputWires.emplace_back( Wire{ fromComponent.get(), fromOutput, toInput } );
+    }
 
     // update source output's reference count
     fromComponent->_IncRefs( fromOutput );
