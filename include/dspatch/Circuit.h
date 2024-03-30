@@ -796,9 +796,9 @@ inline void Circuit::_Optimize()
         std::vector<std::vector<DSPatch::Component*>> componentsMap;
         componentsMap.reserve( _components.size() );
 
+        int scanPosition;
         for ( int i = (int)_components.size() - 1; i >= 0; --i )
         {
-            int scanPosition;
             _components[i]->ScanParallel( componentsMap, scanPosition );
         }
         for ( auto component : _components )

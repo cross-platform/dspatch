@@ -193,7 +193,7 @@ inline Component::~Component() = default;
 
 inline bool Component::ConnectInput( const Component::SPtr& fromComponent, int fromOutput, int toInput )
 {
-    if ( fromOutput >= fromComponent->GetOutputCount() || toInput >= _inputBuses[0].GetSignalCount() )
+    if ( fromOutput >= fromComponent->GetOutputCount() || toInput >= GetInputCount() )
     {
         return false;
     }
@@ -206,7 +206,7 @@ inline bool Component::ConnectInput( const Component::SPtr& fromComponent, int f
         if ( it->fromComponent == fromComponent.get() && it->fromOutput == fromOutput )
         {
             // this wire already exists
-            return false;
+            return true;
         }
 
         // update source output's reference count
@@ -320,13 +320,16 @@ inline void Component::SetBufferCount( int bufferCount, int startBuffer )
     _releaseFlags.resize( bufferCount );
 
     _refs.resize( bufferCount );
-    auto refCount = _refs[0].size();
+
+    const auto inputCount = GetInputCount();
+    const auto outputCount = GetOutputCount();
+    const auto refCount = _refs[0].size();
 
     // init vector values
     for ( int i = 0; i < bufferCount; ++i )
     {
-        _inputBuses[i].SetSignalCount( _inputBuses[0].GetSignalCount() );
-        _outputBuses[i].SetSignalCount( _outputBuses[0].GetSignalCount() );
+        _inputBuses[i].SetSignalCount( inputCount );
+        _outputBuses[i].SetSignalCount( outputCount );
 
         if ( i == startBuffer )
         {
