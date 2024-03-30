@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.1.2</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.1.3</span>
    </div>
   </td>
  </tr>
@@ -849,30 +849,31 @@ $(function() {
 <div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>    <span class="keywordflow">if</span> ( _threadCount != 0 )</div>
 <div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span>    {</div>
 <div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>        std::vector&lt;std::vector&lt;DSPatch::Component*&gt;&gt; componentsMap;</div>
-<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span> </div>
-<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>        <span class="keywordflow">for</span> ( <span class="keywordtype">int</span> i = (<span class="keywordtype">int</span>)_components.size() - 1; i &gt;= 0; --i )</div>
-<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>        {</div>
-<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>            <span class="keywordtype">int</span> scanPosition;</div>
-<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>            _components[i]-&gt;ScanParallel( componentsMap, scanPosition );</div>
-<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>        }</div>
-<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : _components )</div>
-<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>        {</div>
-<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>            component-&gt;EndScan();</div>
-<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>        }</div>
-<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span> </div>
-<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>        _componentsParallel.clear();</div>
-<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>        _componentsParallel.reserve( _components.size() );</div>
-<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; componentsMapEntry : componentsMap )</div>
-<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>        {</div>
-<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>            _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );</div>
-<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>        }</div>
-<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>    }</div>
-<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span> </div>
-<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>    <span class="comment">// clear _circuitDirty flag</span></div>
-<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>    _circuitDirty = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>}</div>
-<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span> </div>
-<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>}  <span class="comment">// namespace DSPatch</span></div>
+<div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>        componentsMap.reserve( _components.size() );</div>
+<div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span> </div>
+<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>        <span class="keywordtype">int</span> scanPosition;</div>
+<div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>        <span class="keywordflow">for</span> ( <span class="keywordtype">int</span> i = (<span class="keywordtype">int</span>)_components.size() - 1; i &gt;= 0; --i )</div>
+<div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>        {</div>
+<div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>            _components[i]-&gt;ScanParallel( componentsMap, scanPosition );</div>
+<div class="line"><a id="l00803" name="l00803"></a><span class="lineno">  803</span>        }</div>
+<div class="line"><a id="l00804" name="l00804"></a><span class="lineno">  804</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : _components )</div>
+<div class="line"><a id="l00805" name="l00805"></a><span class="lineno">  805</span>        {</div>
+<div class="line"><a id="l00806" name="l00806"></a><span class="lineno">  806</span>            component-&gt;EndScan();</div>
+<div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>        }</div>
+<div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span> </div>
+<div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>        _componentsParallel.clear();</div>
+<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>        _componentsParallel.reserve( _components.size() );</div>
+<div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; componentsMapEntry : componentsMap )</div>
+<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>        {</div>
+<div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>            _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );</div>
+<div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>        }</div>
+<div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>    }</div>
+<div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span> </div>
+<div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span>    <span class="comment">// clear _circuitDirty flag</span></div>
+<div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>    _circuitDirty = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>}</div>
+<div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span> </div>
+<div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>}  <span class="comment">// namespace DSPatch</span></div>
 <div class="ttc" id="aclass_d_s_patch_1_1_circuit_html"><div class="ttname"><a href="class_d_s_patch_1_1_circuit.html">DSPatch::Circuit</a></div><div class="ttdoc">Workspace for adding and routing components.</div><div class="ttdef"><b>Definition</b> <a href="_circuit_8h_source.html#l00072">Circuit.h:73</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
