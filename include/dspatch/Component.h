@@ -469,9 +469,10 @@ inline void Component::ScanParallel( std::vector<std::vector<DSPatch::Component*
     }
 
     // insert component at _scanPosition
-    if ( _scanPosition >= (int)componentsMap.size() )
+    if ( _scanPosition == (int)componentsMap.size() )
     {
-        componentsMap.resize( _scanPosition + 1 );
+        componentsMap.emplace_back( std::vector<DSPatch::Component*>{} );
+        componentsMap[_scanPosition].reserve( componentsMap.capacity() );
     }
     componentsMap[_scanPosition].emplace_back( this );
 }

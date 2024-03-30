@@ -794,6 +794,7 @@ inline void Circuit::_Optimize()
     if ( _threadCount != 0 )
     {
         std::vector<std::vector<DSPatch::Component*>> componentsMap;
+        componentsMap.reserve( _components.size() );
 
         for ( int i = (int)_components.size() - 1; i >= 0; --i )
         {
