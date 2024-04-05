@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.1.3</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.2.0</span>
    </div>
   </td>
  </tr>
@@ -128,12 +128,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afbec2317f7f832095a34ddc4af6fc2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea6f3a8e8da3c84692912462702e161"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a5ea6f3a8e8da3c84692912462702e161">GetBufferCount</a> () const</td></tr>
 <tr class="separator:a5ea6f3a8e8da3c84692912462702e161"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a103af6c65d893c4cdacbecdb68899acc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a103af6c65d893c4cdacbecdb68899acc">TickSeries</a> (int bufferNo)</td></tr>
-<tr class="separator:a103af6c65d893c4cdacbecdb68899acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29792d631c30f682801866f808f224ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a29792d631c30f682801866f808f224ca">Tick</a> (int bufferNo)</td></tr>
+<tr class="separator:a29792d631c30f682801866f808f224ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a887caa52cc2b67691c1946d814b9f74e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a887caa52cc2b67691c1946d814b9f74e">TickParallel</a> (int bufferNo)</td></tr>
 <tr class="separator:a887caa52cc2b67691c1946d814b9f74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62bddaadfb1347b70e13f59cf6d3021a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a62bddaadfb1347b70e13f59cf6d3021a">ScanSeries</a> (std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> * &gt; &amp;components)</td></tr>
-<tr class="separator:a62bddaadfb1347b70e13f59cf6d3021a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc36e038a8640f463b79add99bcd130c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#acc36e038a8640f463b79add99bcd130c">Scan</a> (std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> * &gt; &amp;components)</td></tr>
+<tr class="separator:acc36e038a8640f463b79add99bcd130c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a848f35cc39bf835a9e0b35580d494d89"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a848f35cc39bf835a9e0b35580d494d89">ScanParallel</a> (std::vector&lt; std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">DSPatch::Component</a> * &gt; &gt; &amp;componentsMap, int &amp;scanPosition)</td></tr>
 <tr class="separator:a848f35cc39bf835a9e0b35580d494d89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c00a7659992dc37329281cb2c4533da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_s_patch_1_1_component.html#a5c00a7659992dc37329281cb2c4533da">EndScan</a> ()</td></tr>
@@ -521,6 +521,34 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Process_</b> 
 
 </div>
 </div>
+<a id="acc36e038a8640f463b79add99bcd130c" name="acc36e038a8640f463b79add99bcd130c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc36e038a8640f463b79add99bcd130c">&#9670;&#160;</a></span>Scan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DSPatch::Component::Scan </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>components</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00437">437</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+
+</div>
+</div>
 <a id="a848f35cc39bf835a9e0b35580d494d89" name="a848f35cc39bf835a9e0b35580d494d89"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a848f35cc39bf835a9e0b35580d494d89">&#9670;&#160;</a></span>ScanParallel()</h2>
 
@@ -556,34 +584,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Process_</b> 
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00457">457</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
-
-</div>
-</div>
-<a id="a62bddaadfb1347b70e13f59cf6d3021a" name="a62bddaadfb1347b70e13f59cf6d3021a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62bddaadfb1347b70e13f59cf6d3021a">&#9670;&#160;</a></span>ScanSeries()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void DSPatch::Component::ScanSeries </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="class_d_s_patch_1_1_component.html">Component</a> * &gt; &amp;&#160;</td>
-          <td class="paramname"><em>components</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00437">437</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>
@@ -701,6 +701,34 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Process_</b> 
 
 </div>
 </div>
+<a id="a29792d631c30f682801866f808f224ca" name="a29792d631c30f682801866f808f224ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29792d631c30f682801866f808f224ca">&#9670;&#160;</a></span>Tick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DSPatch::Component::Tick </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bufferNo</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00359">359</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
+
+</div>
+</div>
 <a id="a887caa52cc2b67691c1946d814b9f74e" name="a887caa52cc2b67691c1946d814b9f74e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a887caa52cc2b67691c1946d814b9f74e">&#9670;&#160;</a></span>TickParallel()</h2>
 
@@ -726,34 +754,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Process_</b> 
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00394">394</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
-
-</div>
-</div>
-<a id="a103af6c65d893c4cdacbecdb68899acc" name="a103af6c65d893c4cdacbecdb68899acc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a103af6c65d893c4cdacbecdb68899acc">&#9670;&#160;</a></span>TickSeries()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void DSPatch::Component::TickSeries </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>bufferNo</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_component_8h_source.html#l00359">359</a> of file <a class="el" href="_component_8h_source.html">Component.h</a>.</p>
 
 </div>
 </div>

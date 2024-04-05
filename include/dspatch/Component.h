@@ -93,10 +93,10 @@ public:
     void SetBufferCount( int bufferCount, int startBuffer );
     int GetBufferCount() const;
 
-    void TickSeries( int bufferNo );
+    void Tick( int bufferNo );
     void TickParallel( int bufferNo );
 
-    void ScanSeries( std::vector<Component*>& components );
+    void Scan( std::vector<Component*>& components );
     void ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
     void EndScan();
 
@@ -155,8 +155,8 @@ private:
         int toInput;
     };
 
-    void _WaitForRelease( int threadNo );
-    void _ReleaseNextThread( int threadNo );
+    void _WaitForRelease( int bufferNo );
+    void _ReleaseNextBuffer( int bufferNo );
 
     void _GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
     void _GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
@@ -356,7 +356,7 @@ inline int Component::GetBufferCount() const
     return (int)_inputBuses.size();
 }
 
-inline void Component::TickSeries( int bufferNo )
+inline void Component::Tick( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
     auto& outputBus = _outputBuses[bufferNo];
@@ -382,7 +382,7 @@ inline void Component::TickSeries( int bufferNo )
         Process_( inputBus, outputBus );
 
         // signal that we're done processing
-        _ReleaseNextThread( bufferNo );
+        _ReleaseNextBuffer( bufferNo );
     }
     else
     {
@@ -415,7 +415,7 @@ inline void Component::TickParallel( int bufferNo )
         Process_( inputBus, outputBus );
 
         // signal that we're done processing
-        _ReleaseNextThread( bufferNo );
+        _ReleaseNextBuffer( bufferNo );
     }
     else
     {
@@ -434,7 +434,7 @@ inline void Component::TickParallel( int bufferNo )
     }
 }
 
-inline void Component::ScanSeries( std::vector<Component*>& components )
+inline void Component::Scan( std::vector<Component*>& components )
 {
     // continue only if this component has not already been scanned
     if ( _scanPosition != -1 )
@@ -448,7 +448,7 @@ inline void Component::ScanSeries( std::vector<Component*>& components )
     for ( const auto& wire : _inputWires )
     {
         // scan incoming components
-        wire.fromComponent->ScanSeries( components );
+        wire.fromComponent->Scan( components );
     }
 
     components.emplace_back( this );
@@ -519,20 +519,20 @@ inline void Component::SetOutputCount_( int outputCount, const std::vector<std::
     }
 }
 
-inline void Component::_WaitForRelease( int threadNo )
+inline void Component::_WaitForRelease( int bufferNo )
 {
-    _releaseFlags[threadNo].WaitAndClear();
+    _releaseFlags[bufferNo].WaitAndClear();
 }
 
-inline void Component::_ReleaseNextThread( int threadNo )
+inline void Component::_ReleaseNextBuffer( int bufferNo )
 {
-    if ( ++threadNo == _bufferCount )  // we're actually releasing the next available thread
+    if ( ++bufferNo == _bufferCount )  // release the next available buffer
     {
         _releaseFlags[0].Set();
     }
     else
     {
-        _releaseFlags[threadNo].Set();
+        _releaseFlags[bufferNo].Set();
     }
 }
 

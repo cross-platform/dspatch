@@ -291,17 +291,16 @@ private:
                     {
                         // You might be thinking: Can't we have each thread start on a different component?
 
-                        // Well no. Because bufferNo == bufferNo, in order to maintain synchronisation
-                        // within the circuit, when a component wants to process its buffers in-order, it
-                        // requires that every other in-order component in the system has not only
-                        // processed its buffers in the same order, but has processed the same number of
-                        // buffers too.
+                        // Well no. In order to maintain synchronisation within the circuit, when a component
+                        // wants to process its buffers in-order, it requires that every other in-order
+                        // component in the system has not only processed its buffers in the same order, but
+                        // has processed the same number of buffers too.
 
                         // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
 
                         for ( auto component : *_components )
                         {
-                            component->TickSeries( _bufferNo );
+                            component->Tick( _bufferNo );
                         }
                     }
                 }
@@ -317,20 +316,20 @@ private:
         std::condition_variable _resumeCondt, _syncCondt;
     };
 
-    class ParallelCircuitThread final
+    class CircuitThreadParallel final
     {
     public:
-        ParallelCircuitThread( const ParallelCircuitThread& ) = delete;
-        ParallelCircuitThread& operator=( const ParallelCircuitThread& ) = delete;
+        CircuitThreadParallel( const CircuitThreadParallel& ) = delete;
+        CircuitThreadParallel& operator=( const CircuitThreadParallel& ) = delete;
 
-        inline ParallelCircuitThread() = default;
+        inline CircuitThreadParallel() = default;
 
         // cppcheck-suppress missingMemberCopy
-        inline ParallelCircuitThread( ParallelCircuitThread&& )
+        inline CircuitThreadParallel( CircuitThreadParallel&& )
         {
         }
 
-        inline ~ParallelCircuitThread()
+        inline ~CircuitThreadParallel()
         {
             Stop();
         }
@@ -345,7 +344,7 @@ private:
             _stop = false;
             _gotSync = false;
 
-            _thread = std::thread( &ParallelCircuitThread::_Run, this );
+            _thread = std::thread( &CircuitThreadParallel::_Run, this );
         }
 
         inline void Stop()
@@ -431,12 +430,13 @@ private:
 
     AutoTickThread _autoTickThread;
 
-    std::vector<DSPatch::Component*> _components;
     std::set<DSPatch::Component::SPtr> _componentsSet;
+
+    std::vector<DSPatch::Component*> _components;
     std::vector<DSPatch::Component*> _componentsParallel;
 
     std::vector<CircuitThread> _circuitThreads;
-    std::vector<std::vector<ParallelCircuitThread>> _parallelCircuitThreads;
+    std::vector<std::vector<CircuitThreadParallel>> _circuitThreadsParallel;
 
     bool _circuitDirty = false;
 };
@@ -634,7 +634,7 @@ inline void Circuit::SetThreadCount( int threadCount )
     _threadCount = threadCount;
 
     // stop all threads
-    for ( auto& circuitThreads : _parallelCircuitThreads )
+    for ( auto& circuitThreads : _circuitThreadsParallel )
     {
         for ( auto& circuitThread : circuitThreads )
         {
@@ -645,20 +645,20 @@ inline void Circuit::SetThreadCount( int threadCount )
     // resize thread array
     if ( _threadCount == 0 )
     {
-        _parallelCircuitThreads.resize( 0 );
+        _circuitThreadsParallel.resize( 0 );
         SetBufferCount( _bufferCount );
     }
     else
     {
-        _parallelCircuitThreads.resize( _bufferCount == 0 ? 1 : _bufferCount );
-        for ( auto& circuitThread : _parallelCircuitThreads )
+        _circuitThreadsParallel.resize( _bufferCount == 0 ? 1 : _bufferCount );
+        for ( auto& circuitThread : _circuitThreadsParallel )
         {
             circuitThread.resize( _threadCount );
         }
 
         // initialise and start all threads
         int i = 0;
-        for ( auto& circuitThreads : _parallelCircuitThreads )
+        for ( auto& circuitThreads : _circuitThreadsParallel )
         {
             int j = 0;
             for ( auto& circuitThread : circuitThreads )
@@ -692,7 +692,7 @@ inline void Circuit::Tick()
         // tick all internal components
         for ( auto component : _components )
         {
-            component->TickSeries( 0 );
+            component->Tick( 0 );
         }
 
         return;
@@ -701,7 +701,7 @@ inline void Circuit::Tick()
     // =======================================================
     else if ( _threadCount != 0 )
     {
-        auto& circuitThreads = _parallelCircuitThreads[_currentBuffer];
+        auto& circuitThreads = _circuitThreadsParallel[_currentBuffer];
 
         for ( auto& circuitThread : circuitThreads )
         {
@@ -730,7 +730,7 @@ inline void Circuit::Sync()
     {
         circuitThread.Sync();
     }
-    for ( auto& circuitThreads : _parallelCircuitThreads )
+    for ( auto& circuitThreads : _circuitThreadsParallel )
     {
         for ( auto& circuitThread : circuitThreads )
         {
@@ -780,7 +780,7 @@ inline void Circuit::_Optimize()
 
         for ( auto component : _components )
         {
-            component->ScanSeries( orderedComponents );
+            component->Scan( orderedComponents );
         }
         for ( auto component : _components )
         {
