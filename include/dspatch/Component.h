@@ -93,10 +93,10 @@ public:
     void SetBufferCount( int bufferCount, int startBuffer );
     int GetBufferCount() const;
 
-    void TickSeries( int bufferNo );
+    void Tick( int bufferNo );
     void TickParallel( int bufferNo );
 
-    void ScanSeries( std::vector<Component*>& components );
+    void Scan( std::vector<Component*>& components );
     void ScanParallel( std::vector<std::vector<DSPatch::Component*>>& componentsMap, int& scanPosition );
     void EndScan();
 
@@ -356,7 +356,7 @@ inline int Component::GetBufferCount() const
     return (int)_inputBuses.size();
 }
 
-inline void Component::TickSeries( int bufferNo )
+inline void Component::Tick( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
     auto& outputBus = _outputBuses[bufferNo];
@@ -434,7 +434,7 @@ inline void Component::TickParallel( int bufferNo )
     }
 }
 
-inline void Component::ScanSeries( std::vector<Component*>& components )
+inline void Component::Scan( std::vector<Component*>& components )
 {
     // continue only if this component has not already been scanned
     if ( _scanPosition != -1 )
@@ -448,7 +448,7 @@ inline void Component::ScanSeries( std::vector<Component*>& components )
     for ( const auto& wire : _inputWires )
     {
         // scan incoming components
-        wire.fromComponent->ScanSeries( components );
+        wire.fromComponent->Scan( components );
     }
 
     components.emplace_back( this );
