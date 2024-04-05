@@ -1,3 +1,8 @@
+v.11.2.0 (05 April 2024)
+    - Updated fast_any submodule (incl. README update).
+    - Renamed _ReleaseNextThread() to _ReleaseNextBuffer().
+    - Post-fixed all non-series entities with "Parallel".
+
 v.11.1.3 (30 March 2024)
     - Added componentsMap reserve() in Circuit::_Optimize().
     - Slightly optimized Component::ConnectInput().

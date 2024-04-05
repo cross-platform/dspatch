@@ -22,7 +22,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.1.3</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.2.0</span>
    </div>
   </td>
  </tr>
@@ -346,152 +346,152 @@ $(function() {
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                    {</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                        <span class="comment">// You might be thinking: Can&#39;t we have each thread start on a different component?</span></div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                        <span class="comment">// Well no. Because bufferNo == bufferNo, in order to maintain synchronisation</span></div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                        <span class="comment">// within the circuit, when a component wants to process its buffers in-order, it</span></div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                        <span class="comment">// requires that every other in-order component in the system has not only</span></div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>                        <span class="comment">// processed its buffers in the same order, but has processed the same number of</span></div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>                        <span class="comment">// buffers too.</span></div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>                        <span class="comment">// E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.</span></div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : *_components )</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                        {</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                            component-&gt;TickSeries( _bufferNo );</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                        }</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                    }</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>                }</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>            }</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        }</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        std::thread _thread;</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        std::vector&lt;DSPatch::Component*&gt;* _components = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <span class="keywordtype">int</span> _bufferNo = 0;</div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="keywordtype">bool</span> _stop = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="keywordtype">bool</span> _gotSync = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        std::mutex _syncMutex;</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        std::condition_variable _resumeCondt, _syncCondt;</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    };</div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="keyword">class </span>ParallelCircuitThread final</div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    {</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        ParallelCircuitThread( <span class="keyword">const</span> ParallelCircuitThread&amp; ) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        ParallelCircuitThread&amp; operator=( <span class="keyword">const</span> ParallelCircuitThread&amp; ) = <span class="keyword">delete</span>;</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span> </div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keyword">inline</span> ParallelCircuitThread() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="comment">// cppcheck-suppress missingMemberCopy</span></div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        <span class="keyword">inline</span> ParallelCircuitThread( ParallelCircuitThread&amp;&amp; )</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        {</div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        }</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span> </div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keyword">inline</span> ~ParallelCircuitThread()</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        {</div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            Stop();</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        }</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Start( std::vector&lt;DSPatch::Component*&gt;* components, <span class="keywordtype">int</span> bufferNo, <span class="keywordtype">int</span> threadNo, <span class="keywordtype">int</span> threadCount )</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        {</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>            _components = components;</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>            _bufferNo = bufferNo;</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            _threadNo = threadNo;</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            _threadCount = threadCount;</div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            _stop = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>            _gotSync = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span> </div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            _thread = std::thread( &amp;ParallelCircuitThread::_Run, <span class="keyword">this</span> );</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        }</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Stop()</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        {</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>            _stop = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            Resume();</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span> </div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            <span class="keywordflow">if</span> ( _thread.joinable() )</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>            {</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>                _thread.join();</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            }</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        }</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Sync()</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        {</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>            std::unique_lock&lt;std::mutex&gt; lock( _syncMutex );</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>            <span class="keywordflow">if</span> ( !_gotSync )  <span class="comment">// if haven&#39;t already got sync</span></div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>            {</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>                _syncCondt.wait( lock );  <span class="comment">// wait for sync</span></div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>            }</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        }</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span> </div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Resume()</div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        {</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>            _gotSync = <span class="keyword">false</span>;  <span class="comment">// reset the sync flag</span></div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>            _resumeCondt.notify_all();</div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>            std::this_thread::yield();</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        }</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> _Run()</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>        {</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span><span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>            SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>            sched_param sch_params;</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>            sch_params.sched_priority = sched_get_priority_max( SCHED_RR );</div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>            pthread_setschedparam( pthread_self(), SCHED_RR, &amp;sch_params );</div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span> </div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>            <span class="keywordflow">if</span> ( _components )</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>            {</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>                <span class="keywordflow">while</span> ( !_stop )</div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>                {</div>
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>                    {</div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>                        std::unique_lock&lt;std::mutex&gt; lock( _syncMutex );</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>                        _gotSync = <span class="keyword">true</span>;  <span class="comment">// set the sync flag</span></div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>                        _syncCondt.notify_all();</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>                        _resumeCondt.wait( lock );  <span class="comment">// wait for resume</span></div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>                    }</div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span> </div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>                    <span class="comment">// cppcheck-suppress knownConditionTrueFalse</span></div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>                    <span class="keywordflow">if</span> ( !_stop )</div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>                    {</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>                        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> it = _components-&gt;begin() + _threadNo; it &lt; _components-&gt;end(); it += _threadCount )</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                        {</div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>                            ( *it )-&gt;TickParallel( _bufferNo );</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>                        }</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>                    }</div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>                }</div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>            }</div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>        }</div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span> </div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>        std::thread _thread;</div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        std::vector&lt;DSPatch::Component*&gt;* _components = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        <span class="keywordtype">int</span> _bufferNo = 0;</div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>        <span class="keywordtype">int</span> _threadNo = 0;</div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>        <span class="keywordtype">int</span> _threadCount = 0;</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        <span class="keywordtype">bool</span> _stop = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        <span class="keywordtype">bool</span> _gotSync = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        std::mutex _syncMutex;</div>
-<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>        std::condition_variable _resumeCondt, _syncCondt;</div>
-<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>    };</div>
-<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span> </div>
-<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span>    <span class="keywordtype">void</span> _Optimize();</div>
-<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span> </div>
-<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>    <span class="keywordtype">int</span> _bufferCount = 0;</div>
-<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>    <span class="keywordtype">int</span> _threadCount = 0;</div>
-<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span>    <span class="keywordtype">int</span> _currentBuffer = 0;</div>
-<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span> </div>
-<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span>    AutoTickThread _autoTickThread;</div>
-<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span> </div>
-<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span>    std::vector&lt;DSPatch::Component*&gt; _components;</div>
-<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>    std::set&lt;DSPatch::Component::SPtr&gt; _componentsSet;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                        <span class="comment">// Well no. In order to maintain synchronisation within the circuit, when a component</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                        <span class="comment">// wants to process its buffers in-order, it requires that every other in-order</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                        <span class="comment">// component in the system has not only processed its buffers in the same order, but</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>                        <span class="comment">// has processed the same number of buffers too.</span></div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                        <span class="comment">// E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.</span></div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : *_components )</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>                        {</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                            component-&gt;Tick( _bufferNo );</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>                        }</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                    }</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>                }</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>            }</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        }</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        std::thread _thread;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>        std::vector&lt;DSPatch::Component*&gt;* _components = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        <span class="keywordtype">int</span> _bufferNo = 0;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>        <span class="keywordtype">bool</span> _stop = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="keywordtype">bool</span> _gotSync = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        std::mutex _syncMutex;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        std::condition_variable _resumeCondt, _syncCondt;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    };</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span> </div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keyword">class </span>CircuitThreadParallel final</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    {</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        CircuitThreadParallel( <span class="keyword">const</span> CircuitThreadParallel&amp; ) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        CircuitThreadParallel&amp; operator=( <span class="keyword">const</span> CircuitThreadParallel&amp; ) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        <span class="keyword">inline</span> CircuitThreadParallel() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <span class="comment">// cppcheck-suppress missingMemberCopy</span></div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="keyword">inline</span> CircuitThreadParallel( CircuitThreadParallel&amp;&amp; )</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        {</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        }</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span> </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="keyword">inline</span> ~CircuitThreadParallel()</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        {</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            Stop();</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        }</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Start( std::vector&lt;DSPatch::Component*&gt;* components, <span class="keywordtype">int</span> bufferNo, <span class="keywordtype">int</span> threadNo, <span class="keywordtype">int</span> threadCount )</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        {</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>            _components = components;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>            _bufferNo = bufferNo;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>            _threadNo = threadNo;</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            _threadCount = threadCount;</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            _stop = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            _gotSync = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>            _thread = std::thread( &amp;CircuitThreadParallel::_Run, <span class="keyword">this</span> );</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        }</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span> </div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Stop()</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        {</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            _stop = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>            Resume();</div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span> </div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>            <span class="keywordflow">if</span> ( _thread.joinable() )</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>            {</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>                _thread.join();</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>            }</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span> </div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Sync()</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        {</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>            std::unique_lock&lt;std::mutex&gt; lock( _syncMutex );</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>            <span class="keywordflow">if</span> ( !_gotSync )  <span class="comment">// if haven&#39;t already got sync</span></div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>            {</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>                _syncCondt.wait( lock );  <span class="comment">// wait for sync</span></div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            }</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        }</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> Resume()</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        {</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>            _gotSync = <span class="keyword">false</span>;  <span class="comment">// reset the sync flag</span></div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>            _resumeCondt.notify_all();</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>            std::this_thread::yield();</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        }</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        <span class="keyword">inline</span> <span class="keywordtype">void</span> _Run()</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>        {</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span><span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>            SetThreadPriority( GetCurrentThread(), THREAD_PRIORITY_HIGHEST );</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>            sched_param sch_params;</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>            sch_params.sched_priority = sched_get_priority_max( SCHED_RR );</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>            pthread_setschedparam( pthread_self(), SCHED_RR, &amp;sch_params );</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>            <span class="keywordflow">if</span> ( _components )</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>            {</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>                <span class="keywordflow">while</span> ( !_stop )</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>                {</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>                    {</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>                        std::unique_lock&lt;std::mutex&gt; lock( _syncMutex );</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span> </div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>                        _gotSync = <span class="keyword">true</span>;  <span class="comment">// set the sync flag</span></div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>                        _syncCondt.notify_all();</div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>                        _resumeCondt.wait( lock );  <span class="comment">// wait for resume</span></div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>                    }</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span> </div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>                    <span class="comment">// cppcheck-suppress knownConditionTrueFalse</span></div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>                    <span class="keywordflow">if</span> ( !_stop )</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>                    {</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>                        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> it = _components-&gt;begin() + _threadNo; it &lt; _components-&gt;end(); it += _threadCount )</div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>                        {</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>                            ( *it )-&gt;TickParallel( _bufferNo );</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>                        }</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>                    }</div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>                }</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>            }</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        }</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span> </div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>        std::thread _thread;</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>        std::vector&lt;DSPatch::Component*&gt;* _components = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>        <span class="keywordtype">int</span> _bufferNo = 0;</div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>        <span class="keywordtype">int</span> _threadNo = 0;</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>        <span class="keywordtype">int</span> _threadCount = 0;</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>        <span class="keywordtype">bool</span> _stop = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>        <span class="keywordtype">bool</span> _gotSync = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        std::mutex _syncMutex;</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        std::condition_variable _resumeCondt, _syncCondt;</div>
+<div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>    };</div>
+<div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span> </div>
+<div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>    <span class="keywordtype">void</span> _Optimize();</div>
+<div class="line"><a id="l00426" name="l00426"></a><span class="lineno">  426</span> </div>
+<div class="line"><a id="l00427" name="l00427"></a><span class="lineno">  427</span>    <span class="keywordtype">int</span> _bufferCount = 0;</div>
+<div class="line"><a id="l00428" name="l00428"></a><span class="lineno">  428</span>    <span class="keywordtype">int</span> _threadCount = 0;</div>
+<div class="line"><a id="l00429" name="l00429"></a><span class="lineno">  429</span>    <span class="keywordtype">int</span> _currentBuffer = 0;</div>
+<div class="line"><a id="l00430" name="l00430"></a><span class="lineno">  430</span> </div>
+<div class="line"><a id="l00431" name="l00431"></a><span class="lineno">  431</span>    AutoTickThread _autoTickThread;</div>
+<div class="line"><a id="l00432" name="l00432"></a><span class="lineno">  432</span> </div>
+<div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>    std::set&lt;DSPatch::Component::SPtr&gt; _componentsSet;</div>
+<div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span> </div>
+<div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>    std::vector&lt;DSPatch::Component*&gt; _components;</div>
 <div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span>    std::vector&lt;DSPatch::Component*&gt; _componentsParallel;</div>
 <div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span> </div>
 <div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>    std::vector&lt;CircuitThread&gt; _circuitThreads;</div>
-<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    std::vector&lt;std::vector&lt;ParallelCircuitThread&gt;&gt; _parallelCircuitThreads;</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    std::vector&lt;std::vector&lt;CircuitThreadParallel&gt;&gt; _circuitThreadsParallel;</div>
 <div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span> </div>
 <div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>    <span class="keywordtype">bool</span> _circuitDirty = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>};</div>
@@ -689,7 +689,7 @@ $(function() {
 <div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>    _threadCount = threadCount;</div>
 <div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span> </div>
 <div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>    <span class="comment">// stop all threads</span></div>
-<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThreads : _parallelCircuitThreads )</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThreads : _circuitThreadsParallel )</div>
 <div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>    {</div>
 <div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThread : circuitThreads )</div>
 <div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>        {</div>
@@ -700,20 +700,20 @@ $(function() {
 <div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>    <span class="comment">// resize thread array</span></div>
 <div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>    <span class="keywordflow">if</span> ( _threadCount == 0 )</div>
 <div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>    {</div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>        _parallelCircuitThreads.resize( 0 );</div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>        _circuitThreadsParallel.resize( 0 );</div>
 <div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>        SetBufferCount( _bufferCount );</div>
 <div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>    }</div>
 <div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>    {</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>        _parallelCircuitThreads.resize( _bufferCount == 0 ? 1 : _bufferCount );</div>
-<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThread : _parallelCircuitThreads )</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>        _circuitThreadsParallel.resize( _bufferCount == 0 ? 1 : _bufferCount );</div>
+<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThread : _circuitThreadsParallel )</div>
 <div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>        {</div>
 <div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>            circuitThread.resize( _threadCount );</div>
 <div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>        }</div>
 <div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span> </div>
 <div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>        <span class="comment">// initialise and start all threads</span></div>
 <div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>        <span class="keywordtype">int</span> i = 0;</div>
-<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThreads : _parallelCircuitThreads )</div>
+<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThreads : _circuitThreadsParallel )</div>
 <div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span>        {</div>
 <div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>            <span class="keywordtype">int</span> j = 0;</div>
 <div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>            <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThread : circuitThreads )</div>
@@ -747,7 +747,7 @@ $(function() {
 <div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>        <span class="comment">// tick all internal components</span></div>
 <div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : _components )</div>
 <div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>        {</div>
-<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>            component-&gt;TickSeries( 0 );</div>
+<div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>            component-&gt;Tick( 0 );</div>
 <div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>        }</div>
 <div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span> </div>
 <div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>        <span class="keywordflow">return</span>;</div>
@@ -756,7 +756,7 @@ $(function() {
 <div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>    <span class="comment">// =======================================================</span></div>
 <div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( _threadCount != 0 )</div>
 <div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>    {</div>
-<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>        <span class="keyword">auto</span>&amp; circuitThreads = _parallelCircuitThreads[_currentBuffer];</div>
+<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>        <span class="keyword">auto</span>&amp; circuitThreads = _circuitThreadsParallel[_currentBuffer];</div>
 <div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span> </div>
 <div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThread : circuitThreads )</div>
 <div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>        {</div>
@@ -785,7 +785,7 @@ $(function() {
 <div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>    {</div>
 <div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>        circuitThread.Sync();</div>
 <div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>    }</div>
-<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThreads : _parallelCircuitThreads )</div>
+<div class="line"><a id="l00733" name="l00733"></a><span class="lineno">  733</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThreads : _circuitThreadsParallel )</div>
 <div class="line"><a id="l00734" name="l00734"></a><span class="lineno">  734</span>    {</div>
 <div class="line"><a id="l00735" name="l00735"></a><span class="lineno">  735</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; circuitThread : circuitThreads )</div>
 <div class="line"><a id="l00736" name="l00736"></a><span class="lineno">  736</span>        {</div>
@@ -835,7 +835,7 @@ $(function() {
 <div class="line"><a id="l00780" name="l00780"></a><span class="lineno">  780</span> </div>
 <div class="line"><a id="l00781" name="l00781"></a><span class="lineno">  781</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : _components )</div>
 <div class="line"><a id="l00782" name="l00782"></a><span class="lineno">  782</span>        {</div>
-<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>            component-&gt;ScanSeries( orderedComponents );</div>
+<div class="line"><a id="l00783" name="l00783"></a><span class="lineno">  783</span>            component-&gt;Scan( orderedComponents );</div>
 <div class="line"><a id="l00784" name="l00784"></a><span class="lineno">  784</span>        }</div>
 <div class="line"><a id="l00785" name="l00785"></a><span class="lineno">  785</span>        <span class="keywordflow">for</span> ( <span class="keyword">auto</span> component : _components )</div>
 <div class="line"><a id="l00786" name="l00786"></a><span class="lineno">  786</span>        {</div>
