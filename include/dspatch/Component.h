@@ -155,8 +155,8 @@ private:
         int toInput;
     };
 
-    void _WaitForRelease( int threadNo );
-    void _ReleaseNextThread( int threadNo );
+    void _WaitForRelease( int bufferNo );
+    void _ReleaseNextBuffer( int bufferNo );
 
     void _GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
     void _GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
@@ -382,7 +382,7 @@ inline void Component::TickSeries( int bufferNo )
         Process_( inputBus, outputBus );
 
         // signal that we're done processing
-        _ReleaseNextThread( bufferNo );
+        _ReleaseNextBuffer( bufferNo );
     }
     else
     {
@@ -415,7 +415,7 @@ inline void Component::TickParallel( int bufferNo )
         Process_( inputBus, outputBus );
 
         // signal that we're done processing
-        _ReleaseNextThread( bufferNo );
+        _ReleaseNextBuffer( bufferNo );
     }
     else
     {
@@ -519,20 +519,20 @@ inline void Component::SetOutputCount_( int outputCount, const std::vector<std::
     }
 }
 
-inline void Component::_WaitForRelease( int threadNo )
+inline void Component::_WaitForRelease( int bufferNo )
 {
-    _releaseFlags[threadNo].WaitAndClear();
+    _releaseFlags[bufferNo].WaitAndClear();
 }
 
-inline void Component::_ReleaseNextThread( int threadNo )
+inline void Component::_ReleaseNextBuffer( int bufferNo )
 {
-    if ( ++threadNo == _bufferCount )  // we're actually releasing the next available thread
+    if ( ++bufferNo == _bufferCount )  // release the next available buffer
     {
         _releaseFlags[0].Set();
     }
     else
     {
-        _releaseFlags[threadNo].Set();
+        _releaseFlags[bufferNo].Set();
     }
 }
 
