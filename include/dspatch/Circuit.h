@@ -685,21 +685,9 @@ inline void Circuit::Tick()
         _Optimize();
     }
 
-    // process in a single thread if this circuit has no threads
-    // =========================================================
-    if ( _bufferCount == 0 && _threadCount == 0 )
-    {
-        // tick all internal components
-        for ( auto component : _components )
-        {
-            component->Tick( 0 );
-        }
-
-        return;
-    }
     // process in multiple threads if this circuit has threads
     // =======================================================
-    else if ( _threadCount != 0 )
+    if ( _threadCount != 0 )
     {
         auto& circuitThreads = _circuitThreadsParallel[_currentBuffer];
 
@@ -711,6 +699,18 @@ inline void Circuit::Tick()
         {
             circuitThread.Resume();
         }
+    }
+    // process in a single thread if this circuit has no threads
+    // =========================================================
+    else if ( _bufferCount == 0 )
+    {
+        // tick all internal components
+        for ( auto component : _components )
+        {
+            component->Tick( 0 );
+        }
+
+        return;
     }
     else
     {
