@@ -276,7 +276,7 @@ private:
 
             if ( _components )
             {
-                while ( !_stop )
+                while ( true )
                 {
                     {
                         std::unique_lock<std::mutex> lock( _syncMutex );
@@ -286,22 +286,23 @@ private:
                         _resumeCondt.wait( lock );  // wait for resume
                     }
 
-                    // cppcheck-suppress knownConditionTrueFalse
-                    if ( !_stop )
+                    if ( _stop )
                     {
-                        // You might be thinking: Can't we have each thread start on a different component?
+                        break;
+                    }
 
-                        // Well no. In order to maintain synchronisation within the circuit, when a component
-                        // wants to process its buffers in-order, it requires that every other in-order
-                        // component in the system has not only processed its buffers in the same order, but
-                        // has processed the same number of buffers too.
+                    // You might be thinking: Can't we have each thread start on a different component?
 
-                        // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
+                    // Well no. In order to maintain synchronisation within the circuit, when a component
+                    // wants to process its buffers in-order, it requires that every other in-order
+                    // component in the system has not only processed its buffers in the same order, but
+                    // has processed the same number of buffers too.
 
-                        for ( auto component : *_components )
-                        {
-                            component->Tick( _bufferNo );
-                        }
+                    // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
+
+                    for ( auto component : *_components )
+                    {
+                        component->Tick( _bufferNo );
                     }
                 }
             }
@@ -389,7 +390,7 @@ private:
 
             if ( _components )
             {
-                while ( !_stop )
+                while ( true )
                 {
                     {
                         std::unique_lock<std::mutex> lock( _syncMutex );
@@ -399,13 +400,14 @@ private:
                         _resumeCondt.wait( lock );  // wait for resume
                     }
 
-                    // cppcheck-suppress knownConditionTrueFalse
-                    if ( !_stop )
+                    if ( _stop )
                     {
-                        for ( auto it = _components->begin() + _threadNo; it < _components->end(); it += _threadCount )
-                        {
-                            ( *it )->TickParallel( _bufferNo );
-                        }
+                        break;
+                    }
+
+                    for ( auto it = _components->begin() + _threadNo; it < _components->end(); it += _threadCount )
+                    {
+                        ( *it )->TickParallel( _bufferNo );
                     }
                 }
             }
