@@ -797,9 +797,9 @@ inline void Circuit::_Optimize()
         componentsMap.reserve( _components.size() );
 
         int scanPosition;
-        for ( int i = (int)_components.size() - 1; i >= 0; --i )
+        for ( auto component : _components )
         {
-            _components[i]->ScanParallel( componentsMap, scanPosition );
+            component->ScanParallel( componentsMap, scanPosition );
         }
         for ( auto component : _components )
         {
