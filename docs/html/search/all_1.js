@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['plugin_0',['Plugin',['../class_d_s_patch_1_1_plugin.html',1,'DSPatch']]]
+  ['2_20building_20a_20circuit_0',['2. Building a circuit',['../index.html#use_component',1,'']]]
 ];
