@@ -140,6 +140,7 @@ private:
         inline void Stop()
         {
             _stop = true;
+            _pause = true;
 
             if ( _thread.joinable() )
             {
@@ -172,12 +173,17 @@ private:
         {
             if ( _circuit )
             {
-                while ( !_stop )
+                while ( true )
                 {
                     _circuit->Tick();
 
                     if ( _pause )
                     {
+                        if ( _stop )
+                        {
+                            break;
+                        }
+
                         std::unique_lock<std::mutex> lock( _resumeMutex );
 
                         _pauseCondt.notify_all();
