@@ -353,7 +353,7 @@ inline void Component::SetBufferCount( int bufferCount, int startBuffer )
 
 inline int Component::GetBufferCount() const
 {
-    return (int)_inputBuses.size();
+    return _bufferCount;
 }
 
 inline void Component::Tick( int bufferNo )

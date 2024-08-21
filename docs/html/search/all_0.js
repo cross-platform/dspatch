@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['circuit_0',['Circuit',['../class_d_s_patch_1_1_circuit.html',1,'DSPatch']]],
-  ['component_1',['Component',['../class_d_s_patch_1_1_component.html',1,'DSPatch']]]
+  ['1_20creating_20a_20component_0',['1. Creating a component',['../index.html#create_component',1,'']]]
 ];

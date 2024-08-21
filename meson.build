@@ -68,6 +68,7 @@ if find_program('cppcheck', required: false).found()
 
             '--error-exitcode=1',
             '--enable=all',
+            '--check-level=exhaustive',
             '--inconclusive',
             '--inline-suppr',
             '--force',
