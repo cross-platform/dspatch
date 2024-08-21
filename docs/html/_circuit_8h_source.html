@@ -26,7 +26,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.3.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.3.1</span>
    </div>
   </td>
  </tr>
@@ -132,8 +132,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &lt;set&gt;</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">namespace </span>DSPatch</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>{</div>
@@ -509,7 +509,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span> </div>
 <div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>    AutoTickThread _autoTickThread;</div>
 <div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span> </div>
-<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>    std::set&lt;DSPatch::Component::SPtr&gt; _componentsSet;</div>
+<div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span>    std::unordered_set&lt;DSPatch::Component::SPtr&gt; _componentsSet;</div>
 <div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span> </div>
 <div class="line"><a id="l00443" name="l00443"></a><span class="lineno">  443</span>    std::vector&lt;DSPatch::Component*&gt; _components;</div>
 <div class="line"><a id="l00444" name="l00444"></a><span class="lineno">  444</span>    std::vector&lt;DSPatch::Component*&gt; _componentsParallel;</div>

@@ -26,7 +26,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.3.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.3.1</span>
    </div>
   </td>
  </tr>
@@ -428,7 +428,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
 <div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span><span class="keyword">inline</span> <span class="keywordtype">int</span> Component::GetBufferCount()<span class="keyword"> const</span></div>
 <div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span><span class="keyword"></span>{</div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keywordflow">return</span> (<span class="keywordtype">int</span>)_inputBuses.size();</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keywordflow">return</span> _bufferCount;</div>
 <div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>}</div>
 <div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span> </div>
 <div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Component::Tick( <span class="keywordtype">int</span> bufferNo )</div>
