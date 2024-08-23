@@ -103,8 +103,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     We begin by deriving our new "AndBool" component from Component:
 
     \code
-// 1. Derive AndBool class from Component
-// ======================================
+//  1. Derive AndBool class from Component
+//  ======================================
 class AndBool final : public DSPatch::Component
 {
     \endcode
@@ -116,8 +116,8 @@ class AndBool final : public DSPatch::Component
 
     \code
 public:
-    // 2. Configure component IO buses
-    // ===============================
+//  2. Configure component IO buses
+//  ===============================
     AndBool()
     {
         // add 2 inputs
@@ -137,8 +137,8 @@ public:
 
     \code
 protected:
-    // 3. Implement virtual Process_() method
-    // ======================================
+//  3. Implement virtual Process_() method
+//  ======================================
     void Process_( DSPatch::SignalBus& inputs, DSPatch::SignalBus& outputs ) override
     {
         // create some local pointers to hold our input values
@@ -184,12 +184,12 @@ protected:
     \code
 int main()
 {
-    // 1. Create a circuit where we can route our components
-    // =====================================================
+//  1. Create a circuit where we can route our components
+//  =====================================================
     auto circuit = std::make_shared<DSPatch::Circuit>();
 
-    // 2. Create instances of the components needed for our circuit
-    // ============================================================
+//  2. Create instances of the components needed for our circuit
+//  ============================================================
     auto genBool1 = std::make_shared<GenBool>();
     auto genBool2 = std::make_shared<GenBool>();
     auto andBool = std::make_shared<AndBool>();
@@ -199,36 +199,36 @@ int main()
     Now that we have a circuit and some components, lets add all of our components to the circuit:
 
     \code
-    // 3. Add component instances to circuit
-    // =====================================
+//  3. Add component instances to circuit
+//  =====================================
     circuit->AddComponent( genBool1 );
     circuit->AddComponent( genBool2 );
     circuit->AddComponent( andBool );
-_   circuit->AddComponent( printBool );
+    circuit->AddComponent( printBool );
     \endcode
 
     We are now ready to begin wiring the circuit:
 
     \code
-    // 4. Wire up the components inside the circuit
-    // ============================================
+//  4. Wire up the components inside the circuit
+//  ============================================
     circuit->ConnectOutToIn( genBool1, 0, andBool, 0 );
     circuit->ConnectOutToIn( genBool2, 0, andBool, 1 );
-_   circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
+    circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
     \endcode
 
     The code above results in the following wiring configuration:
-    \code
-      __________            _________
-     |          |          |         |
-     | genBool1 |-0 ===> 0-|         |           ___________
-     |__________|          |         |          |           |
-      __________           | andBool |-0 ===> 0-| printBool |
-     |          |          |         |          |___________|
-     | genBool2 |-0 ===> 1-|         |
-     |__________|          |_________|
-    _
-    \endcode
+    \verbatim
+  __________            _________
+ |          |          |         |
+ | genBool1 |-0 ===> 0-|         |           ___________
+ |__________|          |         |          |           |
+  __________           | andBool |-0 ===> 0-| printBool |
+ |          |          |         |          |___________|
+ | genBool2 |-0 ===> 1-|         |
+ |__________|          |_________|
+
+    \endverbatim
 
     Lastly, in order for our circuit to do any work it must be ticked. This is performed by
     repeatedly calling the circuit's Tick() method. This method can be called manually in a loop,
@@ -245,8 +245,8 @@ _   circuit->ConnectOutToIn( andBool, 0, printBool, 0 );
     improvement to be seen.
 
     \code
-    // 5. Tick the circuit
-    // ===================
+//  5. Tick the circuit
+//  ===================
 
     // Circuit tick method 1: Manual
     for( int i = 0; i < 10; ++i )
