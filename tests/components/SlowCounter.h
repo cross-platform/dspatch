@@ -56,6 +56,7 @@ public:
         std::chrono::duration<double, std::micro> elapsedMs;
         do
         {
+            std::this_thread::yield();
             elapsedMs = std::chrono::high_resolution_clock::now() - start;
         } while ( elapsedMs.count() < _waitMs );
 
