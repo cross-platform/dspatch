@@ -291,7 +291,7 @@ inline void Component::DisconnectAllInputs()
         inputBus.ClearAllValues();
     }
 
-    // remove a;; wires
+    // remove all wires
     _inputWires.clear();
 }
 
