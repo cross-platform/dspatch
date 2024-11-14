@@ -78,6 +78,7 @@ public:
     void SetSignal( int toSignalIndex, const fast_any::any& fromSignal );
     void MoveSignal( int toSignalIndex, fast_any::any& fromSignal );
 
+    void ClearValue( int signalIndex );
     void ClearAllValues();
 
     fast_any::type_info GetType( int signalIndex ) const;
@@ -163,6 +164,11 @@ inline void SignalBus::MoveSignal( int toSignalIndex, fast_any::any& fromSignal 
     // and shared back and forth from then on.
 
     _signals[toSignalIndex].swap( fromSignal );
+}
+
+inline void SignalBus::ClearValue( int signalIndex )
+{
+    _signals[signalIndex].reset();
 }
 
 inline void SignalBus::ClearAllValues()
