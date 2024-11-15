@@ -1,3 +1,7 @@
+v.11.4.0 (15 November 2024)
+    - Updated fast_any submodule (incl. optimized "has value" detection).
+    - Greatly optimized Tick() methods by removing unnecessary I/O resets.
+
 v.11.3.1 (21 August 2024)
     - Simplified Component::GetBufferCount().
     - Slightly optimized circuit wiring.
