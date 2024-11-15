@@ -51,6 +51,10 @@ protected:
             outputs.SetValue( 0, _count );
             _count += _increment;
         }
+        else
+        {
+            outputs.ClearValue( 0 );
+        }
     }
 
 private:

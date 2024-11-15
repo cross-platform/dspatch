@@ -212,6 +212,12 @@ inline bool Component::ConnectInput( const Component::SPtr& fromComponent, int f
         // update source output's reference count
         it->fromComponent->_DecRefs( it->fromOutput );
 
+        // clear input
+        for ( auto& inputBus : _inputBuses )
+        {
+            inputBus.ClearValue( toInput );
+        }
+
         // replace wire
         it->fromComponent = fromComponent.get();
         it->fromOutput = fromOutput;
@@ -238,6 +244,13 @@ inline void Component::DisconnectInput( int inputNo )
         // update source output's reference count
         it->fromComponent->_DecRefs( it->fromOutput );
 
+        // clear input
+        for ( auto& inputBus : _inputBuses )
+        {
+            inputBus.ClearValue( inputNo );
+        }
+
+        // remove wire
         _inputWires.erase( it );
     }
 }
@@ -253,19 +266,32 @@ inline void Component::DisconnectInput( const Component::SPtr& fromComponent )
         // update source output's reference count
         fromComponent->_DecRefs( it->fromOutput );
 
+        // clear input
+        for ( auto& inputBus : _inputBuses )
+        {
+            inputBus.ClearValue( it->toInput );
+        }
+
+        // remove wire
         it = _inputWires.erase( it );
     }
 }
 
 inline void Component::DisconnectAllInputs()
 {
-    // remove all wires from _inputWires
+    // update all source output reference counts
     for ( const auto& wire : _inputWires )
     {
-        // update source output's reference count
         wire.fromComponent->_DecRefs( wire.fromOutput );
     }
 
+    // clear all inputs
+    for ( auto& inputBus : _inputBuses )
+    {
+        inputBus.ClearAllValues();
+    }
+
+    // remove all wires
     _inputWires.clear();
 }
 
@@ -359,10 +385,6 @@ inline int Component::GetBufferCount() const
 inline void Component::Tick( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
-    auto& outputBus = _outputBuses[bufferNo];
-
-    // clear inputs
-    inputBus.ClearAllValues();
 
     for ( const auto& wire : _inputWires )
     {
@@ -370,16 +392,13 @@ inline void Component::Tick( int bufferNo )
         wire.fromComponent->_GetOutput( bufferNo, wire.fromOutput, wire.toInput, inputBus );
     }
 
-    // clear outputs
-    outputBus.ClearAllValues();
-
     if ( _bufferCount != 1 && _processOrder == ProcessOrder::InOrder )
     {
         // wait for our turn to process
         _WaitForRelease( bufferNo );
 
         // call Process_() with newly aquired inputs
-        Process_( inputBus, outputBus );
+        Process_( inputBus, _outputBuses[bufferNo] );
 
         // signal that we're done processing
         _ReleaseNextBuffer( bufferNo );
@@ -387,18 +406,13 @@ inline void Component::Tick( int bufferNo )
     else
     {
         // call Process_() with newly aquired inputs
-        Process_( inputBus, outputBus );
+        Process_( inputBus, _outputBuses[bufferNo] );
     }
 }
 
 inline void Component::TickParallel( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
-    auto& outputBus = _outputBuses[bufferNo];
-
-    // clear inputs and outputs
-    inputBus.ClearAllValues();
-    outputBus.ClearAllValues();
 
     for ( const auto& wire : _inputWires )
     {
@@ -412,7 +426,7 @@ inline void Component::TickParallel( int bufferNo )
         _WaitForRelease( bufferNo );
 
         // call Process_() with newly aquired inputs
-        Process_( inputBus, outputBus );
+        Process_( inputBus, _outputBuses[bufferNo] );
 
         // signal that we're done processing
         _ReleaseNextBuffer( bufferNo );
@@ -420,7 +434,7 @@ inline void Component::TickParallel( int bufferNo )
     else
     {
         // call Process_() with newly aquired inputs
-        Process_( inputBus, outputBus );
+        Process_( inputBus, _outputBuses[bufferNo] );
     }
 
     // signal that our outputs are ready
@@ -542,6 +556,7 @@ inline void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DS
 
     if ( !signal.has_value() )
     {
+        toBus.ClearValue( toInput );
         return;
     }
 
@@ -575,6 +590,7 @@ inline void Component::_GetOutputParallel( int bufferNo, int fromOutput, int toI
 
     if ( !signal.has_value() )
     {
+        toBus.ClearValue( toInput );
         return;
     }
 

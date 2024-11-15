@@ -77,6 +77,7 @@ public:
     void SetSignal( int toSignalIndex, const std::any& fromSignal );
     void MoveSignal( int toSignalIndex, std::any& fromSignal );
 
+    void ClearValue( int signalIndex );
     void ClearAllValues();
 
     const std::type_info& GetType( int signalIndex ) const;
@@ -169,6 +170,11 @@ inline void SignalBus::MoveSignal( int toSignalIndex, std::any& fromSignal )
     // and shared back and forth from then on.
 
     _signals[toSignalIndex].swap( fromSignal );
+}
+
+inline void SignalBus::ClearValue( int signalIndex )
+{
+    _signals[signalIndex].reset();
 }
 
 inline void SignalBus::ClearAllValues()

@@ -66,6 +66,10 @@ protected:
                     break;
             }
         }
+        else
+        {
+            outputs.ClearValue( 0 );
+        }
     }
 
 private:

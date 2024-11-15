@@ -52,6 +52,10 @@ protected:
             // inform the counter that the circuit is closed
             outputs.SetValue( 0, true );
         }
+        else
+        {
+            outputs.ClearValue( 0 );
+        }
     }
 
 private:

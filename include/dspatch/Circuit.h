@@ -38,8 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <algorithm>
 #include <condition_variable>
-#include <set>
 #include <thread>
+#include <unordered_set>
 
 namespace DSPatch
 {
@@ -438,7 +438,7 @@ private:
 
     AutoTickThread _autoTickThread;
 
-    std::set<DSPatch::Component::SPtr> _componentsSet;
+    std::unordered_set<DSPatch::Component::SPtr> _componentsSet;
 
     std::vector<DSPatch::Component*> _components;
     std::vector<DSPatch::Component*> _componentsParallel;

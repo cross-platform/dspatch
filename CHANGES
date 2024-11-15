@@ -1,3 +1,7 @@
+v.11.3.1 (21 August 2024)
+    - Simplified Component::GetBufferCount().
+    - Slightly optimized circuit wiring.
+
 v.11.3.0 (10 August 2024)
     - Updated fast_any submodule (incl. uninitialized type_id fix).
     - Simplified conditionals in Circuit::Tick().

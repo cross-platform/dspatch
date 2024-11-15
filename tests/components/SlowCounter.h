@@ -49,20 +49,29 @@ public:
 
     void Process_( SignalBus&, SignalBus& outputs ) override
     {
-        auto start = std::chrono::high_resolution_clock::now();
+        _start = std::chrono::high_resolution_clock::now();
 
         outputs.SetValue( 0, _count++ );
 
-        std::chrono::duration<double, std::micro> elapsedMs;
-        do
+        if ( _waitMs <= 0 )
         {
-            elapsedMs = std::chrono::high_resolution_clock::now() - start;
-        } while ( elapsedMs.count() < _waitMs );
+            _waitMs += 1000.0;
+        }
+        else
+        {
+            do
+            {
+                std::this_thread::yield();
+                _elapsedMs = std::chrono::high_resolution_clock::now() - _start;
+            } while ( _elapsedMs.count() < _waitMs );
 
-        _waitMs = 1000.0 - ( elapsedMs.count() - _waitMs );
+            _waitMs = 1000.0 - ( _elapsedMs.count() - _waitMs );
+        }
     }
 
 private:
+    std::chrono::high_resolution_clock::time_point _start;
+    std::chrono::duration<double, std::micro> _elapsedMs;
     int _count;
     double _waitMs = 1000.0;
 };
