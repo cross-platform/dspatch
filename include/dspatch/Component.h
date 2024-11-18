@@ -591,6 +591,17 @@ inline void Component::_GetOutputParallel( int bufferNo, int fromOutput, int toI
     if ( !signal.has_value() )
     {
         toBus.ClearValue( toInput );
+        if ( ref.total != 1 )
+        {
+            if ( ++ref.count != ref.total )
+            {
+                ref.readyFlag.Set();
+            }
+            else
+            {
+                ref.count = 0;
+            }
+        }
         return;
     }
 

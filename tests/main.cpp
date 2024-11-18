@@ -909,6 +909,8 @@ TEST_CASE( "TenThousandComponents" )
 
     int iterationCount = 1000;
 
+    double total_ms = 0.0;
+
     for ( unsigned int i = 0; i <= std::thread::hardware_concurrency(); ++i )
     {
         circuit->SetBufferCount( i );
@@ -928,10 +930,13 @@ TEST_CASE( "TenThousandComponents" )
             end = std::chrono::high_resolution_clock::now();
 
             diff_ms = std::chrono::duration_cast<std::chrono::microseconds>( end - begin ).count() / 1000.0;
+            total_ms += diff_ms / iterationCount;
 
             std::cout << i << "x Buffers, " << j << "x Threads, 10000x Components: " << diff_ms / iterationCount << "ms\n";
         }
     }
+
+    std::cout << "Average: " << total_ms / pow( (double)std::thread::hardware_concurrency() + 1.0, 2.0 ) << "ms\n";
 
     begin = std::chrono::high_resolution_clock::now();
 
