@@ -564,7 +564,7 @@ inline void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DS
 
     if ( ref.total == 1 )
     {
-        // there's only one reference, move the signal immediately
+        // there's only one reference, move the signal
         toBus.MoveSignal( toInput, signal );
     }
     else if ( ++ref.count != ref.total )
@@ -591,31 +591,30 @@ inline void Component::_GetOutputParallel( int bufferNo, int fromOutput, int toI
     if ( !signal.has_value() )
     {
         toBus.ClearValue( toInput );
+
         if ( ref.total != 1 )
         {
             if ( ++ref.count != ref.total )
             {
+                // this is not the final reference, wake next WaitAndClear()
                 ref.readyFlag.Set();
             }
             else
             {
+                // this is the final reference, reset the counter
                 ref.count = 0;
             }
         }
-        return;
     }
-
-    if ( ref.total == 1 )
+    else if ( ref.total == 1 )
     {
-        // there's only one reference, move the signal immediately and return
+        // there's only one reference, move the signal
         toBus.MoveSignal( toInput, signal );
     }
     else if ( ++ref.count != ref.total )
     {
-        // this is not the final reference, copy the signal
+        // this is not the final reference, copy the signal, wake next WaitAndClear()
         toBus.SetSignal( toInput, signal );
-
-        // wake next WaitAndClear()
         ref.readyFlag.Set();
     }
     else
