@@ -26,7 +26,7 @@
  <tr id="projectrow">
   <td id="projectlogo"><img alt="Logo" src="heartbeat.png"/></td>
   <td id="projectalign">
-   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.4.0</span>
+   <div id="projectname">DSPatch<span id="projectnumber">&#160;v.11.4.1</span>
    </div>
   </td>
  </tr>
@@ -566,10 +566,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>    }</div>
 <div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span> </div>
 <div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>    <span class="comment">// insert component at _scanPosition</span></div>
-<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>    <span class="keywordflow">if</span> ( _scanPosition == (<span class="keywordtype">int</span>)componentsMap.size() )</div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>    <span class="keywordflow">while</span> ( (<span class="keywordtype">int</span>)componentsMap.size() &lt;= _scanPosition )</div>
 <div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>    {</div>
 <div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>        componentsMap.emplace_back( std::vector&lt;DSPatch::Component*&gt;{} );</div>
-<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        componentsMap[_scanPosition].reserve( componentsMap.capacity() );</div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        componentsMap.back().reserve( componentsMap.capacity() );</div>
 <div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>    }</div>
 <div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>    componentsMap[_scanPosition].emplace_back( <span class="keyword">this</span> );</div>
 <div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>}</div>
@@ -639,7 +639,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
 <div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>    <span class="keywordflow">if</span> ( ref.total == 1 )</div>
 <div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>    {</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>        <span class="comment">// there&#39;s only one reference, move the signal immediately</span></div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>        <span class="comment">// there&#39;s only one reference, move the signal</span></div>
 <div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>        toBus.MoveSignal( toInput, signal );</div>
 <div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>    }</div>
 <div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( ++ref.count != ref.total )</div>
@@ -666,47 +666,57 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>    <span class="keywordflow">if</span> ( !signal.has_value() )</div>
 <div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>    {</div>
 <div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>        toBus.ClearValue( toInput );</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>    }</div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span> </div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>    <span class="keywordflow">if</span> ( ref.total == 1 )</div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>    {</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>        <span class="comment">// there&#39;s only one reference, move the signal immediately and return</span></div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>        toBus.MoveSignal( toInput, signal );</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>    }</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( ++ref.count != ref.total )</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>    {</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>        <span class="comment">// this is not the final reference, copy the signal</span></div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>        toBus.SetSignal( toInput, signal );</div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span> </div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>        <span class="comment">// wake next WaitAndClear()</span></div>
-<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        ref.readyFlag.Set();</div>
-<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>    }</div>
-<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>    {</div>
-<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>        <span class="comment">// this is the final reference, reset the counter, move the signal</span></div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        ref.count = 0;</div>
-<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        toBus.MoveSignal( toInput, signal );</div>
-<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>    }</div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>}</div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span> </div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Component::_IncRefs( <span class="keywordtype">int</span> output )</div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>{</div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; ref : _refs )</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span> </div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>        <span class="keywordflow">if</span> ( ref.total != 1 )</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>        {</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>            <span class="keywordflow">if</span> ( ++ref.count != ref.total )</div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>            {</div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>                <span class="comment">// this is not the final reference, wake next WaitAndClear()</span></div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>                ref.readyFlag.Set();</div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>            }</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>            {</div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                <span class="comment">// this is the final reference, reset the counter</span></div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>                ref.count = 0;</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>            }</div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>        }</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>    }</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( ref.total == 1 )</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>    {</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>        <span class="comment">// there&#39;s only one reference, move the signal</span></div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>        toBus.MoveSignal( toInput, signal );</div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>    }</div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( ++ref.count != ref.total )</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>    {</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        <span class="comment">// this is not the final reference, copy the signal, wake next WaitAndClear()</span></div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>        toBus.SetSignal( toInput, signal );</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>        ref.readyFlag.Set();</div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>    }</div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>    {</div>
-<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>        ++ref[output].total;</div>
-<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>    }</div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>}</div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span> </div>
-<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Component::_DecRefs( <span class="keywordtype">int</span> output )</div>
-<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>{</div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; ref : _refs )</div>
-<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>    {</div>
-<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>        --ref[output].total;</div>
-<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>    }</div>
-<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>}</div>
-<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span> </div>
-<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>}  <span class="comment">// namespace DSPatch</span></div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>        <span class="comment">// this is the final reference, reset the counter, move the signal</span></div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>        ref.count = 0;</div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>        toBus.MoveSignal( toInput, signal );</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>    }</div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>}</div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span> </div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Component::_IncRefs( <span class="keywordtype">int</span> output )</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>{</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; ref : _refs )</div>
+<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>    {</div>
+<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>        ++ref[output].total;</div>
+<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>    }</div>
+<div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span>}</div>
+<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span> </div>
+<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span><span class="keyword">inline</span> <span class="keywordtype">void</span> Component::_DecRefs( <span class="keywordtype">int</span> output )</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>{</div>
+<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>    <span class="keywordflow">for</span> ( <span class="keyword">auto</span>&amp; ref : _refs )</div>
+<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>    {</div>
+<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>        --ref[output].total;</div>
+<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>    }</div>
+<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>}</div>
+<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span> </div>
+<div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>}  <span class="comment">// namespace DSPatch</span></div>
 <div class="ttc" id="aclass_d_s_patch_1_1_component_html"><div class="ttname"><a href="class_d_s_patch_1_1_component.html">DSPatch::Component</a></div><div class="ttdoc">Abstract base class for DSPatch components.</div><div class="ttdef"><b>Definition</b> <a href="#l00064">Component.h:65</a></div></div>
 <div class="ttc" id="aclass_d_s_patch_1_1_signal_bus_html"><div class="ttname"><a href="class_d_s_patch_1_1_signal_bus.html">DSPatch::SignalBus</a></div><div class="ttdoc">Signal container.</div><div class="ttdef"><b>Definition</b> <a href="_signal_bus_8h_source.html#l00052">SignalBus.h:53</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
