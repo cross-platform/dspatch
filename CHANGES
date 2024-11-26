@@ -1,3 +1,7 @@
+v.11.4.1 (21 November 2024)
+    - Fixed potential hang in multi-threaded circuit ticking.
+    - Fixed potential crash in multi-threaded circuit scanning.
+
 v.11.4.0 (15 November 2024)
     - Updated fast_any submodule (incl. optimized "has value" detection).
     - Greatly optimized Tick() methods by removing unnecessary I/O resets.
