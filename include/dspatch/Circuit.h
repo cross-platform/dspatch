@@ -777,21 +777,19 @@ inline void Circuit::Optimize()
 inline void Circuit::_Optimize()
 {
     // scan for optimal series order -> update _components
+    std::vector<DSPatch::Component*> orderedComponents;
+    orderedComponents.reserve( _components.size() );
+
+    for ( auto component : _components )
     {
-        std::vector<DSPatch::Component*> orderedComponents;
-        orderedComponents.reserve( _components.size() );
-
-        for ( auto component : _components )
-        {
-            component->Scan( orderedComponents );
-        }
-        for ( auto component : _components )
-        {
-            component->EndScan();
-        }
-
-        _components = std::move( orderedComponents );
+        component->Scan( orderedComponents );
     }
+    for ( auto component : _components )
+    {
+        component->EndScan();
+    }
+
+    _components = std::move( orderedComponents );
 
     // scan for optimal parallel order -> update _componentsParallel
     std::vector<std::vector<DSPatch::Component*>> componentsMap;
