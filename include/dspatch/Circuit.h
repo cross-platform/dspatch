@@ -634,6 +634,11 @@ inline void Circuit::SetThreadCount( int threadCount )
 {
     PauseAutoTick();
 
+    if ( _threadCount == 0 && threadCount != 0 )
+    {
+        _circuitDirty = true;
+    }
+
     _threadCount = threadCount;
 
     // stop all threads
@@ -792,24 +797,27 @@ inline void Circuit::_Optimize()
     _components = std::move( orderedComponents );
 
     // scan for optimal parallel order -> update _componentsParallel
-    std::vector<std::vector<DSPatch::Component*>> componentsMap;
-    componentsMap.reserve( _components.size() );
+    if ( _threadCount != 0 )
+    {
+        std::vector<std::vector<DSPatch::Component*>> componentsMap;
+        componentsMap.reserve( _components.size() );
 
-    int scanPosition;
-    for ( auto component : _components )
-    {
-        component->ScanParallel( componentsMap, scanPosition );
-    }
-    for ( auto component : _components )
-    {
-        component->EndScan();
-    }
+        int scanPosition;
+        for ( auto component : _components )
+        {
+            component->ScanParallel( componentsMap, scanPosition );
+        }
+        for ( auto component : _components )
+        {
+            component->EndScan();
+        }
 
-    _componentsParallel.clear();
-    _componentsParallel.reserve( _components.size() );
-    for ( auto& componentsMapEntry : componentsMap )
-    {
-        _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        _componentsParallel.clear();
+        _componentsParallel.reserve( _components.size() );
+        for ( auto& componentsMapEntry : componentsMap )
+        {
+            _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        }
     }
 
     // clear _circuitDirty flag
