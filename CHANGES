@@ -1,3 +1,6 @@
+v.11.4.2 (17 March 2025)
+    - Optimized Circuit::Optimize() when _threadCount == 0.
+
 v.11.4.1 (21 November 2024)
     - Fixed potential hang in multi-threaded circuit ticking.
     - Fixed potential crash in multi-threaded circuit scanning.
