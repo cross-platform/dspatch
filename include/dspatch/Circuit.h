@@ -1,6 +1,6 @@
 /******************************************************************************
 DSPatch - The Refreshingly Simple C++ Dataflow Framework
-Copyright (c) 2024, Marcus Tomlinson
+Copyright (c) 2025, Marcus Tomlinson
 
 BSD 2-Clause License
 
@@ -634,6 +634,11 @@ inline void Circuit::SetThreadCount( int threadCount )
 {
     PauseAutoTick();
 
+    if ( _threadCount == 0 && threadCount != 0 )
+    {
+        _circuitDirty = true;
+    }
+
     _threadCount = threadCount;
 
     // stop all threads
@@ -777,41 +782,42 @@ inline void Circuit::Optimize()
 inline void Circuit::_Optimize()
 {
     // scan for optimal series order -> update _components
-    {
-        std::vector<DSPatch::Component*> orderedComponents;
-        orderedComponents.reserve( _components.size() );
+    std::vector<DSPatch::Component*> orderedComponents;
+    orderedComponents.reserve( _components.size() );
 
-        for ( auto component : _components )
-        {
-            component->Scan( orderedComponents );
-        }
-        for ( auto component : _components )
-        {
-            component->EndScan();
-        }
-
-        _components = std::move( orderedComponents );
-    }
-
-    // scan for optimal parallel order -> update _componentsParallel
-    std::vector<std::vector<DSPatch::Component*>> componentsMap;
-    componentsMap.reserve( _components.size() );
-
-    int scanPosition;
     for ( auto component : _components )
     {
-        component->ScanParallel( componentsMap, scanPosition );
+        component->Scan( orderedComponents );
     }
     for ( auto component : _components )
     {
         component->EndScan();
     }
 
-    _componentsParallel.clear();
-    _componentsParallel.reserve( _components.size() );
-    for ( auto& componentsMapEntry : componentsMap )
+    _components = std::move( orderedComponents );
+
+    // scan for optimal parallel order -> update _componentsParallel
+    if ( _threadCount != 0 )
     {
-        _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        std::vector<std::vector<DSPatch::Component*>> componentsMap;
+        componentsMap.reserve( _components.size() );
+
+        int scanPosition;
+        for ( auto component : _components )
+        {
+            component->ScanParallel( componentsMap, scanPosition );
+        }
+        for ( auto component : _components )
+        {
+            component->EndScan();
+        }
+
+        _componentsParallel.clear();
+        _componentsParallel.reserve( _components.size() );
+        for ( auto& componentsMapEntry : componentsMap )
+        {
+            _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
+        }
     }
 
     // clear _circuitDirty flag
