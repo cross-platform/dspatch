@@ -223,10 +223,11 @@ private:
             Stop();
         }
 
-        inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo )
+        inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo, int bufferCount )
         {
             _components = components;
             _bufferNo = bufferNo;
+            _loneBuffer = bufferCount <= 1;
 
             _stop = false;
             _gotSync = false;
@@ -306,9 +307,19 @@ private:
 
                     // E.g. 1,2,3 and 1,2,3. Not 1,2,3 and 2,3,1,2,3.
 
-                    for ( auto component : *_components )
+                    if ( _loneBuffer )
                     {
-                        component->Tick( _bufferNo );
+                        for ( auto component : *_components )
+                        {
+                            component->Tick();
+                        }
+                    }
+                    else
+                    {
+                        for ( auto component : *_components )
+                        {
+                            component->Tick( _bufferNo );
+                        }
                     }
                 }
             }
@@ -317,6 +328,7 @@ private:
         std::thread _thread;
         std::vector<DSPatch::Component*>* _components = nullptr;
         int _bufferNo = 0;
+        bool _loneBuffer = false;
         bool _stop = false;
         bool _gotSync = false;
         std::mutex _syncMutex;
@@ -341,10 +353,12 @@ private:
             Stop();
         }
 
-        inline void Start( std::vector<DSPatch::Component*>* components, int bufferNo, int threadNo, int threadCount )
+        inline void Start(
+            std::vector<DSPatch::Component*>* components, int bufferNo, int bufferCount, int threadNo, int threadCount )
         {
             _components = components;
             _bufferNo = bufferNo;
+            _loneBuffer = bufferCount <= 1;
             _threadNo = threadNo;
             _threadCount = threadCount;
 
@@ -411,9 +425,19 @@ private:
                         break;
                     }
 
-                    for ( auto it = _components->begin() + _threadNo; it < _components->end(); it += _threadCount )
+                    if ( _loneBuffer )
                     {
-                        ( *it )->TickParallel( _bufferNo );
+                        for ( auto it = _components->begin() + _threadNo; it < _components->end(); it += _threadCount )
+                        {
+                            ( *it )->TickParallel();
+                        }
+                    }
+                    else
+                    {
+                        for ( auto it = _components->begin() + _threadNo; it < _components->end(); it += _threadCount )
+                        {
+                            ( *it )->TickParallel( _bufferNo );
+                        }
                     }
                 }
             }
@@ -422,6 +446,7 @@ private:
         std::thread _thread;
         std::vector<DSPatch::Component*>* _components = nullptr;
         int _bufferNo = 0;
+        bool _loneBuffer = false;
         int _threadNo = 0;
         int _threadCount = 0;
         bool _stop = false;
@@ -607,7 +632,7 @@ inline void Circuit::SetBufferCount( int bufferCount )
         // initialise and start all threads
         for ( int i = 0; i < _bufferCount; ++i )
         {
-            _circuitThreads[i].Start( &_components, i );
+            _circuitThreads[i].Start( &_components, i, _bufferCount );
         }
     }
 
@@ -671,7 +696,7 @@ inline void Circuit::SetThreadCount( int threadCount )
             int j = 0;
             for ( auto& circuitThread : circuitThreads )
             {
-                circuitThread.Start( &_componentsParallel, i, j++, _threadCount );
+                circuitThread.Start( &_componentsParallel, i, _bufferCount, j++, _threadCount );
             }
             ++i;
         }
@@ -715,7 +740,7 @@ inline void Circuit::Tick()
         // tick all internal components
         for ( auto component : _components )
         {
-            component->Tick( 0 );
+            component->Tick();
         }
 
         return;
