@@ -1,3 +1,6 @@
+v.11.4.3 (30 April 2025)
+    - Optimized single buffer ticking.
+
 v.11.4.2 (17 March 2025)
     - Optimized Circuit::Optimize() when _threadCount == 0.
 
