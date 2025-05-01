@@ -93,7 +93,9 @@ public:
     void SetBufferCount( int bufferCount, int startBuffer );
     int GetBufferCount() const;
 
+    void Tick();
     void Tick( int bufferNo );
+    void TickParallel();
     void TickParallel( int bufferNo );
 
     void Scan( std::vector<Component*>& components );
@@ -158,7 +160,9 @@ private:
     void _WaitForRelease( int bufferNo );
     void _ReleaseNextBuffer( int bufferNo );
 
+    void _GetOutput( int fromOutput, int toInput, DSPatch::SignalBus& toBus );
     void _GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
+    void _GetOutputParallel( int fromOutput, int toInput, DSPatch::SignalBus& toBus );
     void _GetOutputParallel( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus );
 
     void _IncRefs( int output );
@@ -382,6 +386,20 @@ inline int Component::GetBufferCount() const
     return _bufferCount;
 }
 
+inline void Component::Tick()
+{
+    auto& inputBus = _inputBuses.front();
+
+    for ( const auto& wire : _inputWires )
+    {
+        // get new inputs from incoming components
+        wire.fromComponent->_GetOutput( wire.fromOutput, wire.toInput, inputBus );
+    }
+
+    // call Process_() with newly aquired inputs
+    Process_( inputBus, _outputBuses.front() );
+}
+
 inline void Component::Tick( int bufferNo )
 {
     auto& inputBus = _inputBuses[bufferNo];
@@ -407,6 +425,30 @@ inline void Component::Tick( int bufferNo )
     {
         // call Process_() with newly aquired inputs
         Process_( inputBus, _outputBuses[bufferNo] );
+    }
+}
+
+inline void Component::TickParallel()
+{
+    auto& inputBus = _inputBuses.front();
+
+    for ( const auto& wire : _inputWires )
+    {
+        // get new inputs from incoming components
+        wire.fromComponent->_GetOutputParallel( wire.fromOutput, wire.toInput, inputBus );
+    }
+
+    // call Process_() with newly aquired inputs
+    Process_( inputBus, _outputBuses.front() );
+
+    // signal that our outputs are ready
+    for ( auto& ref : _refs.front() )
+    {
+        // readyFlags are cleared in _GetOutputParallel() which ofc is only called on outputs with refs
+        if ( ref.total != 0 )
+        {
+            ref.readyFlag.Set();
+        }
     }
 }
 
@@ -550,6 +592,36 @@ inline void Component::_ReleaseNextBuffer( int bufferNo )
     }
 }
 
+inline void Component::_GetOutput( int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+{
+    auto& signal = *_outputBuses.front().GetSignal( fromOutput );
+
+    if ( !signal.has_value() )
+    {
+        toBus.ClearValue( toInput );
+        return;
+    }
+
+    auto& ref = _refs.front()[fromOutput];
+
+    if ( ref.total == 1 )
+    {
+        // there's only one reference, move the signal
+        toBus.MoveSignal( toInput, signal );
+    }
+    else if ( ++ref.count != ref.total )
+    {
+        // this is not the final reference, copy the signal
+        toBus.SetSignal( toInput, signal );
+    }
+    else
+    {
+        // this is the final reference, reset the counter, move the signal
+        ref.count = 0;
+        toBus.MoveSignal( toInput, signal );
+    }
+}
+
 inline void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DSPatch::SignalBus& toBus )
 {
     auto& signal = *_outputBuses[bufferNo].GetSignal( fromOutput );
@@ -571,6 +643,51 @@ inline void Component::_GetOutput( int bufferNo, int fromOutput, int toInput, DS
     {
         // this is not the final reference, copy the signal
         toBus.SetSignal( toInput, signal );
+    }
+    else
+    {
+        // this is the final reference, reset the counter, move the signal
+        ref.count = 0;
+        toBus.MoveSignal( toInput, signal );
+    }
+}
+
+inline void Component::_GetOutputParallel( int fromOutput, int toInput, DSPatch::SignalBus& toBus )
+{
+    auto& signal = *_outputBuses.front().GetSignal( fromOutput );
+    auto& ref = _refs.front()[fromOutput];
+
+    // wait for this output to be ready
+    ref.readyFlag.WaitAndClear();
+
+    if ( !signal.has_value() )
+    {
+        toBus.ClearValue( toInput );
+
+        if ( ref.total != 1 )
+        {
+            if ( ++ref.count != ref.total )
+            {
+                // this is not the final reference, wake next WaitAndClear()
+                ref.readyFlag.Set();
+            }
+            else
+            {
+                // this is the final reference, reset the counter
+                ref.count = 0;
+            }
+        }
+    }
+    else if ( ref.total == 1 )
+    {
+        // there's only one reference, move the signal
+        toBus.MoveSignal( toInput, signal );
+    }
+    else if ( ++ref.count != ref.total )
+    {
+        // this is not the final reference, copy the signal, wake next WaitAndClear()
+        toBus.SetSignal( toInput, signal );
+        ref.readyFlag.Set();
     }
     else
     {
