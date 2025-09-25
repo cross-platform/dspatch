@@ -97,6 +97,7 @@ public:
     int GetThreadCount() const;
 
     void Tick();
+    void TickParallel( int threadNo, int threadCount );
     void Sync();
 
     void StartAutoTick();
@@ -756,6 +757,14 @@ inline void Circuit::Tick()
     }
 }
 
+inline void Circuit::TickParallel( int threadNo, int threadCount )
+{
+    for ( auto it = _componentsParallel.begin() + threadNo; it < _componentsParallel.end(); it += threadCount )
+    {
+        ( *it )->TickParallel();
+    }
+}
+
 inline void Circuit::Sync()
 {
     // sync all threads
@@ -822,27 +831,24 @@ inline void Circuit::_Optimize()
     _components = std::move( orderedComponents );
 
     // scan for optimal parallel order -> update _componentsParallel
-    if ( _threadCount != 0 )
+    std::vector<std::vector<DSPatch::Component*>> componentsMap;
+    componentsMap.reserve( _components.size() );
+
+    int scanPosition;
+    for ( auto component : _components )
     {
-        std::vector<std::vector<DSPatch::Component*>> componentsMap;
-        componentsMap.reserve( _components.size() );
+        component->ScanParallel( componentsMap, scanPosition );
+    }
+    for ( auto component : _components )
+    {
+        component->EndScan();
+    }
 
-        int scanPosition;
-        for ( auto component : _components )
-        {
-            component->ScanParallel( componentsMap, scanPosition );
-        }
-        for ( auto component : _components )
-        {
-            component->EndScan();
-        }
-
-        _componentsParallel.clear();
-        _componentsParallel.reserve( _components.size() );
-        for ( auto& componentsMapEntry : componentsMap )
-        {
-            _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
-        }
+    _componentsParallel.clear();
+    _componentsParallel.reserve( _components.size() );
+    for ( auto& componentsMapEntry : componentsMap )
+    {
+        _componentsParallel.insert( _componentsParallel.end(), componentsMapEntry.begin(), componentsMapEntry.end() );
     }
 
     // clear _circuitDirty flag
