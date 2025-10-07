@@ -11,10 +11,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-13, ubuntu-22.04, windows-2019]
+        os: [macos-13, ubuntu-22.04, windows-2022]
 
     steps:
-    - if: matrix.os == 'windows-2019'
+    - if: matrix.os == 'windows-2022'
       name: Install Cppcheck, OpenCppCoverage, and wkhtmltopdf (Windows)
       run: |
         choco install -y --ignore-package-exit-codes cppcheck opencppcoverage wkhtmltopdf
@@ -22,7 +22,7 @@ jobs:
         echo "C:\Program Files\OpenCppCoverage" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         echo "C:\Program Files\wkhtmltopdf" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - if: matrix.os == 'windows-2019'
+    - if: matrix.os == 'windows-2022'
       name: Configure MSVC (Windows)
       uses: ilammy/msvc-dev-cmd@v1
 
@@ -54,13 +54,13 @@ jobs:
       run: |
         meson test -vC builddir
 
-    # - if: matrix.os == 'windows-2019'
+    # - if: matrix.os == 'windows-2022'
     #   name: Build - Debug (Windows)
     #   run: |
     #     meson setup --buildtype=debug --wipe builddir
     #     meson compile -C builddir
 
-    # - if: matrix.os == 'windows-2019'
+    # - if: matrix.os == 'windows-2022'
     #   name: Test - Debug (Windows)
     #   run: |
     #     meson test -vC builddir
@@ -69,7 +69,7 @@ jobs:
     #     [array]::Reverse($files)
     #     wkhtmltopdf --enable-local-file-access --disable-external-links --header-center [title] $files coverage.pdf
 
-    # - if: matrix.os == 'windows-2019'
+    # - if: matrix.os == 'windows-2022'
     #   name: Upload Coverage Report (Windows)
     #   uses: actions/upload-artifact@v3
     #   with:
